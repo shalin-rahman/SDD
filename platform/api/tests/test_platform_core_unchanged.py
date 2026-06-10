@@ -32,6 +32,28 @@ ALLOWED_MODULE_IMPORT_PREFIXES = (
 )
 
 
+def _git_has_committed_baseline() -> bool:
+    """True when platform core is tracked and at least one commit exists."""
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if head.returncode != 0:
+        return False
+
+    tracked = subprocess.run(
+        ["git", "ls-files", "platform/api/src/emcap/"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return bool(tracked.stdout.strip())
+
+
 def _git_diff_platform_core() -> tuple[bool, str]:
     """Return (is_git_repo, diff_output). Empty diff means core unchanged."""
     try:
@@ -108,6 +130,12 @@ def test_inventory_module_package_isolated_under_modules() -> None:
 
 def test_platform_core_has_no_git_diff_for_inventory_work() -> None:
     """Informational guard: platform/api/src/emcap/ should have no local diff."""
+    if not _git_has_committed_baseline():
+        pytest.skip(
+            "No committed platform-core baseline yet — skip until after initial commit; "
+            "use scripts/verify-platform-core.* before inventory-only PRs"
+        )
+
     is_git, diff_output = _git_diff_platform_core()
     if not is_git:
         pytest.skip("Not a git repository — run scripts/verify-platform-core.* locally")
