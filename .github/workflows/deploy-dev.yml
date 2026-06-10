@@ -1,0 +1,146 @@
+# EMCAP-P4-T06: Build image, deploy to dev via Helm, smoke-test /api/v1/health.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   REGISTRY_TOKEN  — push token for the container registry (e.g. GHCR PAT)
+#   KUBE_CONFIG     — base64-encoded kubeconfig for the dev cluster
+#
+# Optional secrets (Helm --set; use placeholders until configured):
+#   DEV_DATABASE_URL — PostgreSQL URL for emcap-dev namespace
+#   DEV_JWT_SECRET   — JWT signing secret for dev
+#
+# GitHub Environment "dev" — optional protection rules; no approval required by default.
+
+name: Deploy Dev
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_NAME: emcap/api
+  HELM_CHART: infra/helm/emcap-api
+  RELEASE_NAME: emcap-api
+  NAMESPACE: emcap-dev
+  DEV_API_HOST: emcap-api.dev.local
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          TAG="dev-${GITHUB_SHA::7}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${REGISTRY}/${IMAGE_NAME}:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+
+  deploy:
+    name: Helm deploy (dev)
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Helm upgrade --install
+        env:
+          IMAGE: ${{ needs.build.outputs.image }}
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.DEV_JWT_SECRET }}
+        run: |
+          helm upgrade --install "${RELEASE_NAME}" "${HELM_CHART}" \
+            --namespace "${NAMESPACE}" --create-namespace \
+            -f "${HELM_CHART}/values-dev.yaml" \
+            --set "image.repository=${REGISTRY}/${IMAGE_NAME}" \
+            --set "image.tag=${{ needs.build.outputs.image_tag }}" \
+            --set "secrets.databaseUrl=${DATABASE_URL:-postgresql+psycopg://emcap:CHANGE_ME@postgres.emcap-dev.svc:5432/emcap}" \
+            --set "secrets.jwtSecret=${JWT_SECRET:-dev-only-change-me}" \
+            --wait --timeout 5m
+
+      - name: Wait for rollout
+        run: |
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}" --timeout=300s
+
+  smoke-test:
+    name: Smoke test health endpoint
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: GET /api/v1/health (port-forward)
+        run: |
+          kubectl -n "${NAMESPACE}" port-forward "svc/${RELEASE_NAME}" 18080:8000 &
+          PF_PID=$!
+          trap 'kill ${PF_PID}' EXIT
+          for i in $(seq 1 30); do
+            if curl -sf "http://127.0.0.1:18080/api/v1/health"; then
+              echo ""
+              echo "Smoke test passed."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Smoke test failed: /api/v1/health did not return 200."
+          exit 1
+
+      - name: GET /api/v1/health (ingress URL, optional)
+        continue-on-error: true
+        run: |
+          curl -sfk "https://${DEV_API_HOST}/api/v1/health" \
+            && echo "Ingress health check passed." \
+            || echo "Ingress URL not reachable from runner (expected without DNS/VPN)."

@@ -1,0 +1,6 @@
+---
+# Dev deploy target — run from a CI runner or ops workstation with AWS/K8s access.
+dev:
+  hosts:
+    localhost:
+      ansible_connection: local

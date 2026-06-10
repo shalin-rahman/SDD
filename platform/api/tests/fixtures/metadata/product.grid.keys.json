@@ -1,0 +1,3 @@
+{
+  "column_fields": ["sku", "name", "unit_price", "quantity_on_hand", "reorder_level", "active"]
+}

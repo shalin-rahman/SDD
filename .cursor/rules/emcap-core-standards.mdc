@@ -1,0 +1,12 @@
+---
+description: EMCAP core platform standards — module boundaries and config-driven design
+alwaysApply: true
+---
+
+# EMCAP Core Standards
+
+1. Business code lives in `modules/` — never modify `platform/` core for a business feature.
+2. Enable features via `config/platform.yaml`, not hard-coded flags.
+3. Follow layered architecture: Presentation → Application (CQRS) → Platform Services → Infrastructure.
+4. Map changes to SDD requirement IDs in `spec/sdd/03-traceability-matrix.md`.
+5. New optional subsystems must default to disabled unless SDD specifies otherwise.

@@ -1,0 +1,98 @@
+# Production cluster overrides.
+
+replicaCount: 3
+
+image:
+  tag: stable
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: emcap-api-prod-tls
+      hosts:
+        - api.example.com
+
+config:
+  platformYaml: |
+    platform:
+      multi_tenant: true
+      white_label: true
+
+    tenant_strategy:
+      mode: shared_database
+
+    modules:
+      workflow:
+        enabled: true
+      payments:
+        enabled: true
+      notifications:
+        enabled: true
+      ai:
+        enabled: false
+
+    authentication:
+      username_password: true
+      ldap: true
+      oauth: true
+      sso: true
+
+    audit:
+      enabled: true
+      immutable: true
+
+    notifications:
+      email: true
+      sms: true
+      push: true
+      whatsapp: false
+
+    grid:
+      export_excel: true
+      export_pdf: true
+      export_csv: true
+      grouping: true
+      realtime: true
+      offline: true
+
+    workflow:
+      enabled: true
+      escalation: true
+      delegation: true
+      sla_tracking: true
+
+    rules:
+      scripting_enabled: false
+      formula_enabled: true
+
+    payments:
+      enabled: true
+
+    ai:
+      enabled: false
+
+    tenants:
+      default:
+        domain: api.example.com
+        theme: default
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+worker:
+  enabled: true
+  replicaCount: 2

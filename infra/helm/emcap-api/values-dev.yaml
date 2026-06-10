@@ -1,0 +1,94 @@
+# Dev cluster overrides (single replica, local ingress host).
+
+replicaCount: 1
+
+image:
+  tag: dev
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: emcap-api.dev.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+config:
+  platformYaml: |
+    platform:
+      multi_tenant: false
+      white_label: false
+
+    tenant_strategy:
+      mode: shared_database
+
+    modules:
+      workflow:
+        enabled: true
+      payments:
+        enabled: false
+      notifications:
+        enabled: true
+      ai:
+        enabled: false
+
+    authentication:
+      username_password: true
+      ldap: false
+      oauth: true
+      sso: false
+
+    audit:
+      enabled: true
+      immutable: true
+
+    notifications:
+      email: true
+      sms: false
+      push: true
+      whatsapp: false
+
+    grid:
+      export_excel: true
+      export_pdf: true
+      export_csv: true
+      grouping: true
+      realtime: true
+      offline: true
+
+    workflow:
+      enabled: true
+      escalation: true
+      delegation: true
+      sla_tracking: true
+
+    rules:
+      scripting_enabled: false
+      formula_enabled: true
+
+    payments:
+      enabled: false
+
+    ai:
+      enabled: false
+
+    tenants:
+      default:
+        domain: emcap-api.dev.local
+        theme: default
+
+# Example — override at install time:
+# secrets.databaseUrl: postgresql+psycopg://emcap:CHANGE_ME@postgres.dev.svc:5432/emcap
+# secrets.jwtSecret: dev-only-change-me
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+worker:
+  enabled: false

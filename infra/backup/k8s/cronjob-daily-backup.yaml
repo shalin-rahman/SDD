@@ -1,0 +1,67 @@
+# Nightly logical backup for EMCAP PostgreSQL.
+# Requires Secret `emcap-postgres-backup` with keys: PGPASSWORD, optional AWS credentials.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: emcap-postgres-daily-backup
+  namespace: emcap
+  labels:
+    app.kubernetes.io/name: emcap
+    app.kubernetes.io/component: backup
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  apk add --no-cache aws-cli gzip
+                  cp /scripts/daily-backup.sh /tmp/daily-backup.sh
+                  chmod +x /tmp/daily-backup.sh
+                  /tmp/daily-backup.sh
+              env:
+                - name: PGHOST
+                  value: emcap-postgres.emcap.svc.cluster.local
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  value: emcap
+                - name: PGDATABASE
+                  value: emcap
+                - name: BACKUP_DIR
+                  value: /backups
+                - name: RETENTION_DAYS
+                  value: "30"
+                - name: S3_BUCKET
+                  value: emcap-backups-prod
+                - name: S3_PREFIX
+                  value: emcap/postgres
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: emcap-postgres-backup
+                      key: PGPASSWORD
+              volumeMounts:
+                - name: backup-scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: backup-staging
+                  mountPath: /backups
+          volumes:
+            - name: backup-scripts
+              configMap:
+                name: emcap-backup-scripts
+                defaultMode: 0555
+            - name: backup-staging
+              emptyDir: {}

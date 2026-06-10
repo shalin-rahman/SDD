@@ -1,0 +1,20 @@
+---
+description: Python backend conventions for EMCAP FastAPI platform
+globs: platform/**/*.py
+alwaysApply: false
+---
+
+# Backend Python
+
+- FastAPI routes under `platform/api/src/emcap/api/routes/`, prefixed `/api/v1`.
+- Use Pydantic models for request/response and config (`emcap.config.models`).
+- CQRS: commands and queries in separate modules (Phase 1 layout).
+- Type hints required; `mypy --strict` must pass.
+- Format with Black; lint with Ruff (line length 100).
+- Load config via `load_platform_config()` — do not parse YAML ad hoc.
+
+```python
+# Prefer factory for testability
+def create_app() -> FastAPI:
+    ...
+```

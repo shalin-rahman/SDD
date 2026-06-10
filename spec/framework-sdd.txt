@@ -1,0 +1,564 @@
+Enterprise Multi-Tenant Core Application Platform (EMCAP)
+Software Design Document (SDD)
+Version 1.0
+
+1. Executive Summary
+Purpose
+EMCAP is an Enterprise Application Development Platform that provides reusable infrastructure, framework services, UI components, operational tooling, DevOps automation, and governance capabilities for building enterprise software systems.
+The platform must support:
+•	ERP
+•	POS
+•	HRM
+•	CRM
+•	Accounting
+•	Inventory
+•	Procurement
+•	Asset Management
+•	University Management
+•	Hospital Management
+•	Logistics
+•	Manufacturing
+•	SaaS Products
+•	Government Systems
+without modifying core platform code.
+
+2. Platform Goals
+Functional Goals
+Provide:
+•	Authentication
+•	Authorization
+•	Multi-tenancy
+•	Dynamic Menus
+•	Dynamic Forms
+•	Dynamic Grids
+•	Workflow
+•	Reporting
+•	Notifications
+•	Documents
+•	Auditing
+•	Integrations
+•	Payments
+as reusable services.
+
+Non Functional Goals
+Availability
+99.9%
+Scalability
+Horizontal
+Vertical
+Multi-region Ready
+Test Coverage
+Unit Test ≥ 80%
+
+Target ≥ 90%
+Security
+OWASP Top 10 Compliant
+
+3. Platform Modes
+This is a major addition.
+Multi-tenancy must be configurable.
+
+Deployment Mode
+platform:
+  multi_tenant: false
+Result:
+Single Organization System
+Example:
+University Management
+Hospital
+Factory
+
+SaaS Mode
+platform:
+  multi_tenant: true
+Result:
+Multiple Tenants
+
+Enterprise SaaS Mode
+platform:
+  multi_tenant: true
+  white_label: true
+Result:
+Tenant Branding
+Tenant Domains
+Tenant Themes
+
+4. Tenant Isolation Strategies
+Configurable.
+
+Strategy 1
+tenant_strategy:
+  mode: shared_database
+
+Strategy 2
+tenant_strategy:
+  mode: schema_per_tenant
+
+Strategy 3
+tenant_strategy:
+  mode: database_per_tenant
+
+Strategy 4
+tenant_strategy:
+  mode: hybrid
+
+5. Modular Feature Flags
+Every subsystem must be configurable.
+
+Example
+modules:
+
+  workflow:
+    enabled: true
+
+  payments:
+    enabled: false
+
+  notifications:
+    enabled: true
+
+  ai:
+    enabled: false
+
+6. Architecture
+Presentation Layer
+
+Angular
+Flutter
+REST API
+GraphQL API
+
+↓
+
+Application Layer
+
+Commands
+Queries
+Use Cases
+
+↓
+
+Platform Services
+
+↓
+
+Infrastructure
+
+PostgreSQL
+Redis
+Kafka
+S3
+
+7. Platform Service Domains
+Identity Domain
+Configurable
+authentication:
+
+  username_password: true
+
+  ldap: false
+
+  oauth: true
+
+  sso: false
+
+Authorization Domain
+Supports:
+•	RBAC
+•	ABAC
+•	Row Security
+•	Field Security
+Configurable.
+
+8. Entity Framework
+Core foundation.
+
+Entity Registration
+EntityDefinition(
+   code="CUSTOMER"
+)
+Platform generates:
+•	APIs
+•	Forms
+•	Grid
+•	Search
+•	Audit
+•	Documents
+•	Notes
+
+Entity Options
+EntityDefinition(
+   audit_enabled=True,
+   workflow_enabled=True,
+   notes_enabled=True,
+   document_enabled=True
+)
+
+9. Dynamic UI Platform
+
+Dynamic Forms
+Features:
+•	Layout Designer
+•	Validation Engine
+•	Conditional Logic
+•	Localization
+
+Dynamic Grid
+Universal component.
+Shared metadata contract:
+Angular
+Flutter
+Future React
+Future Desktop
+Same backend metadata.
+
+Grid Configuration
+grid:
+
+  export_excel: true
+
+  export_pdf: true
+
+  export_csv: true
+
+  grouping: true
+
+  realtime: true
+
+  offline: true
+
+10. Workflow Platform
+Configurable.
+workflow:
+
+  enabled: true
+
+  escalation: true
+
+  delegation: true
+
+  sla_tracking: true
+
+11. Rule Engine
+Business Rules.
+
+Configurable
+rules:
+
+  scripting_enabled: false
+
+  formula_enabled: true
+
+12. Reporting Platform
+Features:
+•	Reports
+•	Dashboards
+•	KPI Widgets
+•	Scheduled Reports
+
+13. Communication Platform
+Channels:
+•	Email
+•	SMS
+•	Push
+•	WhatsApp
+•	Slack
+•	Teams
+
+Channel Configuration
+notifications:
+
+  email: true
+
+  sms: false
+
+  push: true
+
+  whatsapp: false
+
+14. Document Platform
+Features:
+•	Storage
+•	OCR
+•	Versioning
+•	Preview
+•	Virus Scan
+
+15. Integration Platform
+Supports:
+•	REST
+•	GraphQL
+•	SOAP
+•	SFTP
+•	Kafka
+
+16. Payment Platform
+Configurable.
+payments:
+
+  enabled: true
+Supported:
+•	bKash
+•	Nagad
+•	Rocket
+•	Stripe
+•	PayPal
+
+17. AI Platform
+Optional.
+ai:
+
+  enabled: true
+Capabilities:
+•	Chat
+•	Summarization
+•	Semantic Search
+•	OCR Enhancement
+•	Data Insights
+
+18. Observability Platform
+Built-in.
+
+Logging
+Structured JSON Logs
+
+Metrics
+Prometheus
+
+Tracing
+OpenTelemetry
+
+Dashboards
+Grafana
+
+19. Audit Platform
+Configurable.
+audit:
+
+  enabled: true
+
+  immutable: true
+Tracks:
+•	Create
+•	Update
+•	Delete
+•	Login
+•	Workflow Actions
+
+20. Security Platform
+
+Controls
+•	MFA
+•	Encryption
+•	Secret Management
+•	Rate Limiting
+•	CSRF
+•	XSS
+•	SQL Injection Protection
+
+Security Headers
+Automatically applied.
+
+21. Deployment Architecture
+Local Development
+Docker Compose
+Services:
+•	FastAPI
+•	PostgreSQL
+•	Redis
+•	MinIO
+
+UAT
+Kubernetes
+
+Production
+Kubernetes
+Multi Node
+
+22. Infrastructure as Code
+Mandatory.
+Tools:
+Terraform
+Helm
+Ansible
+
+23. CI/CD
+Pipeline:
+Lint
+
+Unit Tests
+
+Integration Tests
+
+Security Scan
+
+Build
+
+Deploy Dev
+
+Smoke Tests
+
+Deploy UAT
+
+Deploy Production
+
+24. DevOps Requirements
+Source Control
+GitFlow
+
+Branches
+main
+
+develop
+
+release/*
+
+hotfix/*
+
+Code Quality
+Mandatory:
+Ruff
+
+Black
+
+MyPy
+
+ESLint
+
+Flutter Analyze
+
+25. Test Strategy
+Backend
+Coverage:
+≥ 80%
+Target:
+≥ 90%
+
+Required
+•	Service Tests
+•	Repository Tests
+•	Rule Engine Tests
+•	Workflow Tests
+•	Security Tests
+
+Angular
+Coverage:
+≥ 80%
+
+Flutter
+Coverage:
+≥ 80%
+
+Contract Tests
+Required.
+Ensures:
+Backend Metadata
+
+Matches
+
+Angular Renderer
+
+Matches
+
+Flutter Renderer
+
+26. SDK Platform
+New modules only implement:
+ModuleDefinition(
+  entities=[],
+  workflows=[],
+  reports=[],
+  dashboards=[]
+)
+
+Framework automatically provides:
+•	APIs
+•	Permissions
+•	Menus
+•	Localization
+•	Forms
+•	Grids
+•	Search
+•	Documents
+•	Notes
+•	Notifications
+•	Audit
+•	Reports
+•	Dashboards
+
+27. Business Module Plug-In Model
+Supported modules:
+Inventory
+
+Accounting
+
+CRM
+
+HRM
+
+Asset
+
+Procurement
+
+POS
+
+University
+
+Hospital
+
+Manufacturing
+Each module deploys independently.
+
+28. Release Management
+Versioning:
+MAJOR.MINOR.PATCH
+Example:
+1.0.0
+Migration strategy:
+Backward Compatible APIs
+Database Migration Scripts
+Rollback Support
+
+29. Disaster Recovery
+Requirements:
+Database
+PITR
+Daily Backups
+Storage
+Versioned Backup
+Recovery Objective
+RPO < 15 min
+
+RTO < 1 hour
+
+30. Definition of Done
+A new business module is considered complete when developers only define:
+ModuleDefinition(
+  entities=[],
+  workflows=[],
+  reports=[],
+  dashboards=[],
+  menus=[]
+)
+and receive automatically:
+•	Authentication
+•	Authorization
+•	Multi-Tenancy (optional on/off)
+•	Localization
+•	Dynamic Forms
+•	Dynamic Grids
+•	Mobile UI
+•	Reporting
+•	Notifications
+•	Documents
+•	Notes
+•	Workflow
+•	Audit
+•	Search
+•	APIs
+•	Monitoring
+•	DevOps Integration
+•	Deployment Automation
+•	Observability
+•	Security Controls
+without modifying platform core code.

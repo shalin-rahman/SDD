@@ -1,0 +1,26 @@
+from pydantic import BaseModel, Field
+
+
+class GridColumnMetadata(BaseModel):
+    field: str
+    label: str
+    sortable: bool = True
+    filterable: bool = True
+    width: int | None = None
+
+
+class GridExportOptions(BaseModel):
+    excel: bool = True
+    pdf: bool = True
+    csv: bool = True
+
+
+class GridMetadata(BaseModel):
+    schema_version: str = "1.0"
+    entity_code: str
+    columns: list[GridColumnMetadata] = Field(default_factory=list)
+    export: GridExportOptions = Field(default_factory=GridExportOptions)
+    grouping: bool = True
+    realtime: bool = True
+    offline: bool = True
+    i18n: dict[str, dict[str, str]] = Field(default_factory=dict)

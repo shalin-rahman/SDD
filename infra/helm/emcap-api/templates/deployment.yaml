@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "emcap-api.fullname" . }}
+  labels:
+    {{- include "emcap-api.labels" . | nindent 4 }}
+    component: api
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "emcap-api.selectorLabels" . | nindent 6 }}
+      component: api
+  template:
+    metadata:
+      labels:
+        {{- include "emcap-api.selectorLabels" . | nindent 8 }}
+        component: api
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: EMCAP_CONFIG_PATH
+              value: {{ .Values.env.emcapConfigPath | quote }}
+            - name: EMCAP_MODULES_PATH
+              value: {{ .Values.env.emcapModulesPath | quote }}
+            {{- if .Values.secrets.create }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: EMCAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: EMCAP_JWT_SECRET
+            - name: EMCAP_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: EMCAP_OAUTH_CLIENT_ID
+            - name: EMCAP_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: EMCAP_OAUTH_CLIENT_SECRET
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: platform-config
+              mountPath: /config
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: platform-config
+          configMap:
+            name: {{ include "emcap-api.fullname" . }}-config

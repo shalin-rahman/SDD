@@ -1,0 +1,123 @@
+# EMCAP-P4-T07: Deploy to UAT with GitHub Environment approval gate.
+#
+# Triggers: push to release/* branches, or manual workflow_dispatch.
+# Configure required reviewers on GitHub Environment "uat" (Settings → Environments).
+#
+# Required repository secrets:
+#   REGISTRY_TOKEN  — container registry push/pull token
+#   KUBE_CONFIG     — base64-encoded kubeconfig for the UAT cluster
+#
+# Optional secrets:
+#   UAT_DATABASE_URL — PostgreSQL URL for emcap-uat namespace
+#   UAT_JWT_SECRET   — JWT signing secret for UAT
+
+name: Deploy UAT
+
+on:
+  push:
+    branches: ['release/*']
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Override image tag (default uat-<short-sha> or branch name)
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_NAME: emcap/api
+  HELM_CHART: infra/helm/emcap-api
+  RELEASE_NAME: emcap-api
+  NAMESPACE: emcap-uat
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          if [ -n "${{ github.event.inputs.image_tag }}" ]; then
+            TAG="${{ github.event.inputs.image_tag }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            TAG="uat-${GITHUB_SHA::7}"
+          else
+            TAG="uat-${GITHUB_SHA::7}"
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${REGISTRY}/${IMAGE_NAME}:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:uat
+
+  deploy:
+    name: Helm deploy (uat)
+    needs: build
+    runs-on: ubuntu-latest
+    # Approval gate: add required reviewers under GitHub Environment "uat".
+    environment: uat
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Helm upgrade --install (values-uat.yaml)
+        env:
+          DATABASE_URL: ${{ secrets.UAT_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.UAT_JWT_SECRET }}
+        run: |
+          helm upgrade --install "${RELEASE_NAME}" "${HELM_CHART}" \
+            --namespace "${NAMESPACE}" --create-namespace \
+            -f "${HELM_CHART}/values-uat.yaml" \
+            --set "image.repository=${REGISTRY}/${IMAGE_NAME}" \
+            --set "image.tag=${{ needs.build.outputs.image_tag }}" \
+            --set "secrets.databaseUrl=${DATABASE_URL:-postgresql+psycopg://emcap:CHANGE_ME@postgres.emcap-uat.svc:5432/emcap}" \
+            --set "secrets.jwtSecret=${JWT_SECRET:-uat-only-change-me}" \
+            --wait --timeout 10m
+
+      - name: Wait for rollout
+        run: |
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}" --timeout=600s
+
+      - name: Deployment summary
+        run: |
+          echo "UAT release deployed."
+          echo "Image: ${{ needs.build.outputs.image }}"
+          helm list -n "${NAMESPACE}" --filter "${RELEASE_NAME}"

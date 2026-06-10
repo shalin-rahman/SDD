@@ -1,0 +1,161 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  EMCAP_CONFIG_PATH: ${{ github.workspace }}/config/platform.yaml
+  EMCAP_MODULES_PATH: ${{ github.workspace }}/modules
+
+jobs:
+  # Fast unit gate: lint + in-memory SQLite tests (unchanged from Phase 0).
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Ruff
+        run: ruff check src tests
+
+      - name: Black
+        run: black --check src tests
+
+      - name: MyPy
+        run: mypy src
+
+      - name: Pytest (unit)
+        env:
+          DATABASE_URL: sqlite:///:memory:
+        run: pytest -q
+
+  # P4-T04: integration stage — pytest against real PostgreSQL (service container).
+  integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/api
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: emcap
+          POSTGRES_PASSWORD: emcap
+          POSTGRES_DB: emcap
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U emcap -d emcap"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Pytest (integration)
+        env:
+          DATABASE_URL: postgresql+psycopg://emcap:emcap@localhost:5432/emcap
+        run: pytest -q -m integration
+
+  # P4-T05: dependency scan — fail the job on known high/critical CVEs in installed packages.
+  security-dependencies:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: pip-audit (dependency scan)
+        run: |
+          pip install pip-audit
+          pip-audit --desc --severity critical --severity high
+
+  # P4-T05: SAST — Bandit (high severity) plus Ruff security rules (flake8-bandit / S).
+  security-sast:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Bandit (high severity only)
+        run: |
+          pip install bandit
+          bandit -r src -q --severity-level high
+
+      - name: Ruff security rules (S / bandit equivalents)
+        # S105 ignored: documented dev seed defaults (admin user, OAuth client).
+        run: ruff check --select S --ignore S105 src
+
+  # P0-T07: ESLint (Angular scaffold) + Flutter analyze (mobile scaffold).
+  client-lint-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clients/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: clients/web/package-lock.json
+
+      - name: ESLint
+        run: |
+          npm ci
+          npm run lint
+
+  client-lint-mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clients/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter analyze
+        run: |
+          flutter pub get
+          flutter analyze --no-fatal-infos

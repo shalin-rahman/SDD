@@ -1,0 +1,217 @@
+# EMCAP-P4-T08: Production deploy on semver tag + manual rollback job.
+#
+# Deploy trigger: push tag matching v*.*.* (e.g. v1.2.3).
+# Rollback trigger: workflow_dispatch with action=rollback (production environment gate).
+#
+# Required repository secrets:
+#   REGISTRY_TOKEN  — container registry push/pull token
+#   KUBE_CONFIG     — base64-encoded kubeconfig for the production cluster
+#
+# Optional secrets:
+#   PROD_DATABASE_URL      — PostgreSQL URL for emcap-prod namespace
+#   PROD_JWT_SECRET        — JWT signing secret for production
+#   PROD_OAUTH_CLIENT_SECRET — OAuth client secret (values-prod.yaml)
+#
+# Rollback options (workflow_dispatch):
+#   - helm rollback (default): set rollback_revision to a Helm revision number, or leave
+#     empty to roll back one revision (helm rollback RELEASE 0).
+#   - redeploy previous tag: set rollback_image_tag to a prior semver tag (e.g. v1.2.2).
+
+name: Deploy Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: deploy (re-run Helm with tag) or rollback
+        required: true
+        default: rollback
+        type: choice
+        options:
+          - rollback
+          - deploy
+      rollback_revision:
+        description: Helm revision to roll back to (empty = previous revision)
+        required: false
+        type: string
+      rollback_image_tag:
+        description: Redeploy this image tag instead of helm rollback (e.g. v1.2.2)
+        required: false
+        type: string
+      deploy_tag:
+        description: Semver tag to deploy when action=deploy (e.g. v1.2.3)
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_NAME: emcap/api
+  HELM_CHART: infra/helm/emcap-api
+  RELEASE_NAME: emcap-api
+  NAMESPACE: emcap-prod
+
+jobs:
+  build:
+    name: Build and push image
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          elif [ -n "${{ github.event.inputs.deploy_tag }}" ]; then
+            TAG="${{ github.event.inputs.deploy_tag }}"
+          else
+            echo "deploy_tag is required when action=deploy via workflow_dispatch."
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${REGISTRY}/${IMAGE_NAME}:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stable
+
+  deploy:
+    name: Helm deploy (production)
+    needs: build
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Helm upgrade --install (values-prod.yaml)
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.PROD_JWT_SECRET }}
+          OAUTH_SECRET: ${{ secrets.PROD_OAUTH_CLIENT_SECRET }}
+        run: |
+          helm upgrade --install "${RELEASE_NAME}" "${HELM_CHART}" \
+            --namespace "${NAMESPACE}" --create-namespace \
+            -f "${HELM_CHART}/values-prod.yaml" \
+            --set "image.repository=${REGISTRY}/${IMAGE_NAME}" \
+            --set "image.tag=${{ needs.build.outputs.image_tag }}" \
+            --set "secrets.databaseUrl=${DATABASE_URL:-postgresql+psycopg://emcap:CHANGE_ME@postgres.emcap-prod.svc:5432/emcap}" \
+            --set "secrets.jwtSecret=${JWT_SECRET:-prod-only-change-me}" \
+            --set "secrets.oauthClientSecret=${OAUTH_SECRET:-prod-oauth-change-me}" \
+            --wait --timeout 15m
+
+      - name: Wait for rollout
+        run: |
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}" --timeout=900s
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}-worker" --timeout=900s || true
+
+      - name: Record release revision
+        run: |
+          REV=$(helm history "${RELEASE_NAME}" -n "${NAMESPACE}" --max 1 -o json | jq -r '.[0].revision')
+          echo "Production deploy complete. Helm revision: ${REV}"
+          echo "Image: ${{ needs.build.outputs.image }}"
+
+  rollback:
+    name: Rollback production
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'rollback'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Rollback via Helm revision
+        if: ${{ github.event.inputs.rollback_image_tag == '' }}
+        env:
+          REVISION: ${{ github.event.inputs.rollback_revision }}
+        run: |
+          echo "Helm history (last 5 revisions):"
+          helm history "${RELEASE_NAME}" -n "${NAMESPACE}" --max 5 || true
+          if [ -z "${REVISION}" ]; then
+            echo "Rolling back to previous revision (helm rollback ${RELEASE_NAME} 0)."
+            helm rollback "${RELEASE_NAME}" 0 -n "${NAMESPACE}" --wait --timeout 15m
+          else
+            echo "Rolling back to Helm revision ${REVISION}."
+            helm rollback "${RELEASE_NAME}" "${REVISION}" -n "${NAMESPACE}" --wait --timeout 15m
+          fi
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}" --timeout=900s
+
+      - name: Rollback via redeploy previous tag
+        if: ${{ github.event.inputs.rollback_image_tag != '' }}
+        env:
+          ROLLBACK_TAG: ${{ github.event.inputs.rollback_image_tag }}
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.PROD_JWT_SECRET }}
+          OAUTH_SECRET: ${{ secrets.PROD_OAUTH_CLIENT_SECRET }}
+        run: |
+          echo "Redeploying previous image tag: ${ROLLBACK_TAG}"
+          helm upgrade --install "${RELEASE_NAME}" "${HELM_CHART}" \
+            --namespace "${NAMESPACE}" \
+            -f "${HELM_CHART}/values-prod.yaml" \
+            --set "image.repository=${REGISTRY}/${IMAGE_NAME}" \
+            --set "image.tag=${ROLLBACK_TAG}" \
+            --set "secrets.databaseUrl=${DATABASE_URL:-postgresql+psycopg://emcap:CHANGE_ME@postgres.emcap-prod.svc:5432/emcap}" \
+            --set "secrets.jwtSecret=${JWT_SECRET:-prod-only-change-me}" \
+            --set "secrets.oauthClientSecret=${OAUTH_SECRET:-prod-oauth-change-me}" \
+            --wait --timeout 15m
+          kubectl -n "${NAMESPACE}" rollout status deployment/"${RELEASE_NAME}" --timeout=900s
+
+      - name: Rollback summary
+        run: |
+          echo "Production rollback finished."
+          helm list -n "${NAMESPACE}" --filter "${RELEASE_NAME}"
+          helm history "${RELEASE_NAME}" -n "${NAMESPACE}" --max 3

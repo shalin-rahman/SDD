@@ -1,0 +1,40 @@
+# Weekly WAL archive retention cleanup (adjust RETENTION_DAYS for compliance).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: emcap-postgres-wal-gc
+  namespace: emcap
+  labels:
+    app.kubernetes.io/name: emcap
+    app.kubernetes.io/component: backup
+spec:
+  schedule: "0 4 * * 0"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: wal-gc
+              image: alpine:3.20
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  WAL_ARCHIVE_DIR="${WAL_ARCHIVE_DIR:-/wal_archive}"
+                  RETENTION_DAYS="${RETENTION_DAYS:-14}"
+                  find "${WAL_ARCHIVE_DIR}" -type f -mtime "+${RETENTION_DAYS}" -delete
+                  echo "WAL GC complete (retention ${RETENTION_DAYS} days)"
+              env:
+                - name: WAL_ARCHIVE_DIR
+                  value: /wal_archive
+                - name: RETENTION_DAYS
+                  value: "14"
+              volumeMounts:
+                - name: wal-archive
+                  mountPath: /wal_archive
+          volumes:
+            - name: wal-archive
+              persistentVolumeClaim:
+                claimName: emcap-postgres-wal-archive

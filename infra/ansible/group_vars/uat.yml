@@ -1,0 +1,14 @@
+---
+emcap_env: uat
+emcap_namespace: emcap-uat
+
+aws_region: us-east-1
+eks_cluster_name: emcap-uat
+
+emcap_image_repository: "<registry>/emcap/api"
+
+# Placeholders only — override via Ansible Vault, CI secrets, or -e @secrets.yml.
+emcap_secrets:
+  database_url: "postgresql+psycopg://emcap:CHANGE_ME@postgres.emcap-uat.svc:5432/emcap"
+  jwt_secret: "CHANGE-ME-uat-jwt-secret"
+  oauth_client_secret: "CHANGE-ME-uat-oauth-secret"

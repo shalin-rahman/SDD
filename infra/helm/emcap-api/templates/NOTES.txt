@@ -1,0 +1,12 @@
+1. Get the EMCAP API URL:
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}/api/v1/health
+{{- end }}
+{{- else }}
+  kubectl port-forward svc/{{ include "emcap-api.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+  curl http://localhost:{{ .Values.service.port }}/api/v1/health
+{{- end }}
+
+2. Verify pods:
+  kubectl get pods -l app={{ .Values.appLabel }},app.kubernetes.io/instance={{ .Release.Name }}

@@ -1,0 +1,12 @@
+---
+description: Angular web client conventions for EMCAP metadata-driven UI
+globs: clients/web/**/*
+alwaysApply: false
+---
+
+# Frontend Angular
+
+- UI is metadata-driven: dynamic forms and universal grid only.
+- Do not create entity-specific components; consume platform metadata API.
+- ESLint runs in CI (`client-lint-web` job).
+- Target ≥80% unit test coverage.

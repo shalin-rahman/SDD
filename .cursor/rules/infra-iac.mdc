@@ -1,0 +1,12 @@
+---
+description: Infrastructure as Code conventions for EMCAP
+globs: infra/**/*
+alwaysApply: false
+---
+
+# Infrastructure
+
+- Local dev: `infra/docker/docker-compose.yml` (SDD §21).
+- Production: Kubernetes via Helm; cloud resources via Terraform (Phase 4).
+- Secrets never committed — use env vars or secret stores.
+- Pin image and provider versions in IaC files.

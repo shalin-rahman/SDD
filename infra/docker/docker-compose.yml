@@ -1,0 +1,47 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      EMCAP_CONFIG_PATH: /config/platform.yaml
+      EMCAP_MODULES_PATH: /modules
+      DATABASE_URL: postgresql+psycopg://emcap:emcap@postgres:5432/emcap
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../../config/platform.yaml:/config/platform.yaml:ro
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: emcap
+      POSTGRES_PASSWORD: emcap
+      POSTGRES_DB: emcap
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emcap"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: emcap
+      MINIO_ROOT_PASSWORD: emcapsecret
+    ports:
+      - "9000:9000"
+      - "9001:9001"

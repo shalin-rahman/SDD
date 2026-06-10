@@ -1,0 +1,6 @@
+---
+# UAT deploy target — run from a CI runner or ops workstation with AWS/K8s access.
+uat:
+  hosts:
+    localhost:
+      ansible_connection: local

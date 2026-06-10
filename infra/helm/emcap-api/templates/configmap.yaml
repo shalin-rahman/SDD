@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "emcap-api.fullname" . }}-config
+  labels:
+    {{- include "emcap-api.labels" . | nindent 4 }}
+data:
+  platform.yaml: |
+{{ .Values.config.platformYaml | nindent 4 }}

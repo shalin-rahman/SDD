@@ -1,0 +1,33 @@
+# Independent Inventory module deployment manifest (EMCAP-P5-T03)
+# Mount this package so the API discovers modules/inventory/module.py
+
+module:
+  code: INVENTORY
+  name: Inventory Module
+  path: inventory/module.py
+  permission: inventory.access
+
+env:
+  # Parent directory whose immediate subfolders contain module.py (glob: */module.py)
+  EMCAP_MODULES_PATH: /opt/emcap/modules
+
+volumes:
+  # Example: copy modules/inventory/ to /opt/emcap/modules/inventory/
+  mount:
+    source: ./inventory
+    target: /opt/emcap/modules/inventory
+
+helm:
+  # Optional snippet for infra/helm/emcap-api — inventory-only deployment
+  valuesSnippet: |
+    env:
+      emcapModulesPath: /opt/emcap/modules
+    # Mount inventory module at /opt/emcap/modules/inventory (see volumes above)
+
+docker:
+  # Standalone: mount module tree alongside platform API image
+  example: |
+    volumes:
+      - ./modules/inventory:/opt/emcap/modules/inventory:ro
+    environment:
+      EMCAP_MODULES_PATH: /opt/emcap/modules

@@ -1,0 +1,136 @@
+# Default values — override per environment with values-{dev,uat,prod}.yaml
+
+appLabel: emcap-api
+
+replicaCount: 1
+
+image:
+  repository: emcap/api
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: emcap-api.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+env:
+  emcapConfigPath: /config/platform.yaml
+  emcapModulesPath: /modules
+
+# Platform configuration mounted at /config/platform.yaml (EMCAP_CONFIG_PATH).
+config:
+  platformYaml: |
+    platform:
+      multi_tenant: false
+      white_label: false
+
+    tenant_strategy:
+      mode: shared_database
+
+    modules:
+      workflow:
+        enabled: true
+      payments:
+        enabled: false
+      notifications:
+        enabled: true
+      ai:
+        enabled: false
+
+    authentication:
+      username_password: true
+      ldap: false
+      oauth: true
+      sso: false
+
+    audit:
+      enabled: true
+      immutable: true
+
+    notifications:
+      email: true
+      sms: false
+      push: true
+      whatsapp: false
+
+    grid:
+      export_excel: true
+      export_pdf: true
+      export_csv: true
+      grouping: true
+      realtime: true
+      offline: true
+
+    workflow:
+      enabled: true
+      escalation: true
+      delegation: true
+      sla_tracking: true
+
+    rules:
+      scripting_enabled: false
+      formula_enabled: true
+
+    payments:
+      enabled: false
+
+    ai:
+      enabled: false
+
+    tenants:
+      default:
+        domain: localhost
+        theme: default
+      acme:
+        domain: acme.local
+        theme: acme-blue
+
+# Set via --set or environment-specific values file before install.
+secrets:
+  create: true
+  databaseUrl: ""
+  jwtSecret: ""
+  oauthClientId: emcap-client
+  oauthClientSecret: ""
+
+extraEnv: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Background worker stub — disabled until worker entrypoint ships.
+worker:
+  enabled: false
+  replicaCount: 1
+  command:
+    - python
+    - -c
+    - "import time; print('emcap worker stub — replace with worker module'); time.sleep(86400)"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi

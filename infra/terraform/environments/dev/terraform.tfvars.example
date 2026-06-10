@@ -1,0 +1,21 @@
+# Copy to terraform.tfvars and set secrets via environment or a local untracked file.
+# Example: export TF_VAR_postgres_master_password="$(openssl rand -base64 24)"
+
+aws_region  = "eu-west-1"
+environment = "dev"
+project     = "emcap"
+
+# Dev sizing defaults (see README for UAT overrides)
+node_desired_size = 2
+node_min_size     = 1
+node_max_size     = 3
+
+postgres_instance_class       = "db.t4g.micro"
+postgres_allocated_storage_gb = 20
+postgres_multi_az             = false
+postgres_skip_final_snapshot  = true
+
+redis_node_type          = "cache.t4g.micro"
+redis_num_cache_clusters = 1
+
+# postgres_master_password = "set-via-TF_VAR_or_secrets_manager"

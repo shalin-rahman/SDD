@@ -1,0 +1,23 @@
+# Optional PITR overlay for local dev. Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.backup.override.yml up -d postgres
+services:
+  postgres:
+    volumes:
+      - ../backup/postgresql/pitr.conf:/etc/postgresql/conf.d/pitr.conf:ro
+      - ../backup/scripts:/usr/local/bin:ro
+      - emcap-wal-archive:/var/lib/postgresql/wal_archive
+      - emcap-backups:/var/backups/emcap
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=/usr/local/bin/wal-archive.sh %p %f
+    environment:
+      WAL_ARCHIVE_DIR: /var/lib/postgresql/wal_archive
+
+volumes:
+  emcap-wal-archive:
+  emcap-backups:

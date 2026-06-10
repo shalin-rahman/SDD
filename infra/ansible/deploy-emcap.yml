@@ -1,0 +1,71 @@
+---
+# Deploy emcap-api Helm release with environment-specific values and secret overrides.
+
+- name: Deploy EMCAP API
+  hosts: localhost
+  gather_facts: false
+  vars:
+    helm_values_file: "{{ helm_chart_path }}/values-{{ emcap_env }}.yaml"
+    helm_path: "{{ lookup('env', 'PATH') }}"
+  tasks:
+    - name: Assert Helm chart and values exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: emcap_paths
+      loop:
+        - "{{ helm_chart_path }}/Chart.yaml"
+        - "{{ helm_values_file }}"
+
+    - name: Fail when chart or values file is missing
+      ansible.builtin.fail:
+        msg: "Missing {{ item.item }} — run from repo root or check emcap_env={{ emcap_env }}"
+      loop: "{{ emcap_paths.results }}"
+      when: not item.stat.exists
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Lint Helm chart
+      ansible.builtin.command:
+        cmd: helm lint {{ helm_chart_path }} -f {{ helm_values_file }}
+      changed_when: false
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+
+    - name: Deploy emcap-api Helm release
+      ansible.builtin.shell: |
+        set -euo pipefail
+        helm upgrade --install {{ emcap_release_name }} {{ helm_chart_path }} \
+          --namespace {{ emcap_namespace }} \
+          --create-namespace \
+          -f {{ helm_values_file }} \
+          --set-string image.repository={{ emcap_image_repository }} \
+          --set-string secrets.databaseUrl={{ emcap_secrets.database_url | quote }} \
+          --set-string secrets.jwtSecret={{ emcap_secrets.jwt_secret | quote }}{% if emcap_secrets.oauth_client_secret | default('') | length > 0 %} \
+          --set-string secrets.oauthClientSecret={{ emcap_secrets.oauth_client_secret | quote }}{% endif %} \
+          {{ helm_extra_args | default('') }}
+      args:
+        executable: /bin/bash
+      register: helm_deploy
+      changed_when: true
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+        PATH: "{{ helm_path }}"
+
+    - name: Wait for emcap-api rollout
+      ansible.builtin.command:
+        cmd: >-
+          kubectl rollout status deployment/{{ emcap_release_name }}
+          -n {{ emcap_namespace }}
+          --timeout=300s
+      changed_when: false
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+
+    - name: Show deployed resources
+      ansible.builtin.command:
+        cmd: >-
+          kubectl -n {{ emcap_namespace }} get pods,svc,ingress
+          -l app=emcap-api
+      changed_when: false
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"

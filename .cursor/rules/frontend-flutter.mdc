@@ -1,0 +1,12 @@
+---
+description: Flutter mobile client conventions for EMCAP metadata-driven UI
+globs: clients/mobile/**/*
+alwaysApply: false
+---
+
+# Frontend Flutter
+
+- Share form/grid metadata contract with Angular via the same backend schema.
+- Dynamic renderers only — no hard-coded entity screens.
+- `flutter analyze` runs in CI (`client-lint-mobile` job).
+- Target ≥80% unit test coverage.

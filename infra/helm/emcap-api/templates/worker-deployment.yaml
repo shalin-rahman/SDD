@@ -1,0 +1,59 @@
+{{- if .Values.worker.enabled }}
+# Stub deployment for future background workers (notifications, workflow SLA, etc.).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "emcap-api.fullname" . }}-worker
+  labels:
+    {{- include "emcap-api.labels" . | nindent 4 }}
+    component: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "emcap-api.selectorLabels" . | nindent 6 }}
+      component: worker
+  template:
+    metadata:
+      labels:
+        {{- include "emcap-api.selectorLabels" . | nindent 8 }}
+        component: worker
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            {{- toYaml .Values.worker.command | nindent 12 }}
+          env:
+            - name: EMCAP_CONFIG_PATH
+              value: {{ .Values.env.emcapConfigPath | quote }}
+            - name: EMCAP_MODULES_PATH
+              value: {{ .Values.env.emcapModulesPath | quote }}
+            {{- if .Values.secrets.create }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: EMCAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "emcap-api.fullname" . }}-secrets
+                  key: EMCAP_JWT_SECRET
+            {{- end }}
+          volumeMounts:
+            - name: platform-config
+              mountPath: /config
+              readOnly: true
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      volumes:
+        - name: platform-config
+          configMap:
+            name: {{ include "emcap-api.fullname" . }}-config
+{{- end }}

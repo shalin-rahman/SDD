@@ -1,0 +1,11 @@
+---
+# Shared EMCAP Ansible settings (no secrets).
+
+emcap_release_name: emcap-api
+helm_chart_path: "{{ playbook_dir }}/../helm/emcap-api"
+
+# Override when KUBECONFIG is set outside the default path.
+kubeconfig_path: "{{ lookup('env', 'KUBECONFIG') | default(lookup('env', 'HOME') + '/.kube/config', true) }}"
+
+helm_version: "3.14.4"
+kubectl_version: "1.29.4"
