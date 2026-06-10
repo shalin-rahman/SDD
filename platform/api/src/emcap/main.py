@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from emcap import __version__
 from emcap.api.routes import (
@@ -11,11 +12,14 @@ from emcap.api.routes import (
     integrations,
     menus,
     metadata,
+    notes,
     notifications,
     observability,
     payments,
     permissions,
+    realtime,
     reports,
+    sync,
     tenants,
     workflows,
 )
@@ -101,6 +105,13 @@ def create_app() -> FastAPI:
     app.state.report_definitions = report_definitions
     app.state.dashboard_definitions = dashboard_definitions
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(JsonLoggingMiddleware)
     app.add_middleware(RateLimitMiddleware)
@@ -112,6 +123,8 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix="/api/v1")
     app.include_router(tenants.router, prefix="/api/v1")
     app.include_router(metadata.router, prefix="/api/v1")
+    # Register stream routes before /entities/{code}/records/{record_id} (record_id="stream").
+    app.include_router(realtime.router, prefix="/api/v1")
     app.include_router(workflows.router, prefix="/api/v1")
     app.include_router(entities.router, prefix="/api/v1")
     app.include_router(menus.router, prefix="/api/v1")
@@ -123,6 +136,8 @@ def create_app() -> FastAPI:
     app.include_router(payments.router, prefix="/api/v1")
     app.include_router(ai.router, prefix="/api/v1")
     app.include_router(observability.router, prefix="/api/v1")
+    app.include_router(notes.router, prefix="/api/v1")
+    app.include_router(sync.router, prefix="/api/v1")
 
     return app
 

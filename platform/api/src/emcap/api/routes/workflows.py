@@ -41,6 +41,43 @@ def _session(request: Request) -> Session:
     return session
 
 
+@router.get("/instances")
+def list_workflow_instances(
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+    workflow_code: str | None = None,
+    assignee: str | None = None,
+    record_id: str | None = None,
+) -> dict[str, Any]:
+    session = _session(request)
+    try:
+        engine = _build_engine(request, session, tenant_id)
+        instances = engine.list_instances(
+            workflow_code=workflow_code,
+            assignee=assignee,
+            record_id=record_id,
+        )
+        return {"instances": instances}
+    finally:
+        session.close()
+
+
+@router.get("/instances/{instance_id}")
+def get_workflow_instance(
+    instance_id: str,
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+) -> dict[str, Any]:
+    session = _session(request)
+    try:
+        engine = _build_engine(request, session, tenant_id)
+        return engine.get_instance(instance_id)
+    except WorkflowEngineError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
 @router.post("/{workflow_code}/start")
 def start_workflow(
     workflow_code: str,

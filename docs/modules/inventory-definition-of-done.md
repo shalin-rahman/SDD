@@ -17,12 +17,14 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 | Dynamic forms | `test_inventory_e2e.py::test_product_form_metadata_api` | `GET /api/v1/metadata/forms/PRODUCT` |
 | Dynamic grids | `test_inventory_e2e.py::test_product_grid_metadata_api` | `GET /api/v1/metadata/grids/PRODUCT` |
 | Mobile UI (metadata contract) | `clients/mobile/lib/metadata_contract.dart`; `test_product_metadata_contract_keys` | Shared schema with web; Flutter `validateFormMetadata` / `validateGridMetadata` |
-| Reporting | `test_inventory_e2e.py::test_inventory_valuation_report` | `GET /api/v1/reports`, `POST /api/v1/reports/INVENTORY_VALUATION/run`, `GET /api/v1/reports/INVENTORY_VALUATION/runs` |
+| Reporting | `test_inventory_e2e.py::test_inventory_valuation_report`; `test_client_api_gaps.py::test_low_stock_report_filter` | `GET /api/v1/reports`, `POST /api/v1/reports/INVENTORY_VALUATION/run`, `POST /api/v1/reports/LOW_STOCK/run` (qty < reorder), `GET /api/v1/reports/INVENTORY_VALUATION/runs` |
 | Dashboards | `test_inventory_e2e.py::test_inventory_overview_dashboard` | `GET /api/v1/dashboards` → `INVENTORY_OVERVIEW` |
 | Notifications | `test_platform_services.py::test_notification_hub` | `POST /api/v1/notifications/send`, `GET /api/v1/notifications` |
-| Documents | `test_platform_services.py::test_document_upload_and_get` | `POST /api/v1/documents/upload`, `GET /api/v1/documents/{id}` (platform service; entity opt-in via `EntityOptions.document_enabled`) |
-| Notes | `modules/inventory/module.py` → `EntityOptions.notes_enabled=True` on `PRODUCT`, `WAREHOUSE` | Platform notes hook enabled in entity metadata; no core edits required |
-| Workflow | `test_inventory_e2e.py::test_stock_adjustment_workflow_lifecycle` | `POST /api/v1/workflows/STOCK_ADJUSTMENT/start`, transition/delegate on `/api/v1/workflows/instances/{id}/…` |
+| Documents | `test_platform_services.py::test_document_upload_and_get`; `test_client_api_gaps.py::test_document_list_by_record` | `POST /api/v1/documents/upload`, `GET /api/v1/documents/{id}`, `GET /api/v1/documents?entity_code=&record_id=` |
+| Notes | `test_client_api_gaps.py::test_notes_crud`; `EntityOptions.notes_enabled=True` on `PRODUCT`, `WAREHOUSE` | `GET/POST /api/v1/entities/{entity}/records/{id}/notes`; web `EmcapClient.listNotes` / `addNote` |
+| Offline sync | `test_client_api_gaps.py::test_offline_sync_snapshot_and_changes` | `GET /api/v1/sync/{entity}/snapshot`, `GET /api/v1/sync/{entity}/changes?since=`; clients `syncSnapshot()` |
+| Realtime (SSE) | `test_client_api_gaps.py::test_realtime_stream_endpoint` | `GET /api/v1/entities/{entity}/records/stream`; grid `realtime` flag in metadata |
+| Workflow | `test_inventory_e2e.py::test_stock_adjustment_workflow_lifecycle`; `test_client_api_gaps.py::test_workflow_instance_list` | `POST /api/v1/workflows/STOCK_ADJUSTMENT/start`, `GET /api/v1/workflows/instances`, `GET .../instances/{id}`, transition/delegate |
 | Audit | `test_health.py::test_customer_crud_and_audit`; `test_platform_core_unchanged.py::test_inventory_capabilities_via_generic_platform_apis` | `GET /api/v1/entities/PRODUCT/audit` after CRUD |
 | Search | `test_health.py::test_customer_crud_and_audit`; `test_platform_core_unchanged.py` (search param) | `GET /api/v1/entities/PRODUCT/records?q=CORE` |
 | APIs (auto CRUD) | `test_inventory_e2e.py::test_product_crud`, `test_warehouse_crud` | `POST/GET/PUT/DELETE /api/v1/entities/{PRODUCT\|WAREHOUSE}/records` |
@@ -48,12 +50,14 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 | Dynamic forms | Platform QA | ☑ | 2026-06-11 | PRODUCT form metadata |
 | Dynamic grids | Platform QA | ☑ | 2026-06-11 | PRODUCT grid metadata + export flags |
 | Mobile UI contract | Platform QA | ☑ | 2026-06-11 | Flutter metadata validators |
-| Reporting | Module owner | ☑ | 2026-06-11 | `INVENTORY_VALUATION`, `LOW_STOCK` declared |
+| Reporting | Module owner | ☑ | 2026-06-11 | `INVENTORY_VALUATION`, `LOW_STOCK` (filter: qty < reorder) |
 | Dashboards | Module owner | ☑ | 2026-06-11 | `INVENTORY_OVERVIEW` widgets |
 | Notifications | Platform QA | ☑ | 2026-06-11 | Email channel enabled in config |
-| Documents | Platform QA | ☑ | 2026-06-11 | Generic document service available |
-| Notes | Module owner | ☑ | 2026-06-11 | Enabled on PRODUCT and WAREHOUSE entities |
-| Workflow | Module owner | ☑ | 2026-06-11 | `STOCK_ADJUSTMENT` with delegation |
+| Documents | Platform QA | ☑ | 2026-06-11 | Upload, get-by-id, list-by-record |
+| Notes | Module owner | ☑ | 2026-06-11 | API CRUD on PRODUCT/WAREHOUSE; web client wired |
+| Offline sync | Platform QA | ☑ | 2026-06-11 | Snapshot + changes; clients show `sync_version` |
+| Realtime (SSE) | Platform QA | ☑ | 2026-06-11 | Stream endpoint verified; UI subscription optional |
+| Workflow | Module owner | ☑ | 2026-06-11 | `STOCK_ADJUSTMENT` lifecycle + instance list GET |
 | Audit | Platform QA | ☑ | 2026-06-11 | Immutable audit trail on PRODUCT |
 | Search | Platform QA | ☑ | 2026-06-11 | Query param search on entity records |
 | APIs | Module owner | ☑ | 2026-06-11 | PRODUCT + WAREHOUSE CRUD |
@@ -74,7 +78,7 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 
 ```bash
 # From repo root
-cd platform/api && pytest -q tests/test_inventory_e2e.py tests/test_platform_core_unchanged.py
+cd platform/api && pytest -q tests/test_inventory_e2e.py tests/test_client_api_gaps.py tests/test_platform_core_unchanged.py
 
 # Informational platform-core diff (always exit 0)
 bash scripts/verify-platform-core.sh

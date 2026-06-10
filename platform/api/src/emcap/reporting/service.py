@@ -29,6 +29,7 @@ class ReportingService:
             for field in entity.fields
         ]
         rows = [{col.field: record.get(col.field) for col in columns} for record in records]
+        rows = self._apply_report_filter(definition, rows)
         run_id = str(uuid4())
         row = ReportRunRow(
             id=run_id,
@@ -61,3 +62,16 @@ class ReportingService:
             }
             for row in rows
         ]
+
+    @staticmethod
+    def _apply_report_filter(
+        definition: ReportDefinition,
+        rows: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        if definition.code == "LOW_STOCK":
+            return [
+                row
+                for row in rows
+                if (row.get("quantity_on_hand") or 0) <= (row.get("reorder_level") or 0)
+            ]
+        return rows

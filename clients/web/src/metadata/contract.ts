@@ -13,6 +13,7 @@ export interface FormMetadata {
   entity_code: string;
   sections: Array<{ code: string; label: string; fields: FormFieldMetadata[] }>;
   conditions: Array<Record<string, unknown>>;
+  i18n?: Record<string, unknown>;
 }
 
 export interface GridMetadata {
@@ -23,6 +24,7 @@ export interface GridMetadata {
   grouping: boolean;
   realtime: boolean;
   offline: boolean;
+  i18n?: Record<string, unknown>;
 }
 
 export function validateFormMetadata(data: FormMetadata): boolean {

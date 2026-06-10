@@ -155,6 +155,21 @@ class DocumentRow(Base):
     )
 
 
+class NoteRow(Base):
+    __tablename__ = "notes"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(64), index=True, default="default")
+    entity_code: Mapped[str] = mapped_column(String(64), index=True)
+    record_id: Mapped[str] = mapped_column(String(36), index=True)
+    body: Mapped[str] = mapped_column(String(2048))
+    author: Mapped[str] = mapped_column(String(128), default="system")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+    )
+
+
 class IntegrationJobRow(Base):
     __tablename__ = "integration_jobs"
 

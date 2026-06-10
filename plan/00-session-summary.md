@@ -18,6 +18,19 @@
 
 **Entities:** `PRODUCT`, `WAREHOUSE` · **Workflow:** `STOCK_ADJUSTMENT` · **Reports:** `INVENTORY_VALUATION`, `LOW_STOCK` · **Dashboard:** `INVENTORY_OVERVIEW`
 
+### Client shells (SDD §9)
+
+Thin **presentation-layer** shells (`clients/web`, `clients/mobile`) render dynamic forms/grids from the shared metadata contract — no direct DB access. Both follow login → menus → entity grid + create form; web also posts optional notes on create.
+
+| Client | Path | Stack | Dev command |
+|--------|------|-------|-------------|
+| Web | `clients/web/` | Vite + TypeScript | `npm run dev` → http://localhost:4200 |
+| Mobile | `clients/mobile/` | Flutter Material 3 | `flutter run --dart-define=EMCAP_API_URL=http://localhost:8000` |
+
+API client layers: `clients/web/src/api/emcap-client.ts`, `clients/mobile/lib/api/emcap_client.dart`. Platform gap tests: `platform/api/tests/test_client_api_gaps.py` (notes, documents list, workflow GET, sync snapshot/changes, SSE, LOW_STOCK). CORS for browser dev: `CORSMiddleware` in `platform/api/src/emcap/main.py`.
+
+Full stack runbook: `plan/04-client-api-completion.md`.
+
 ### Key inventory API surface (auto-generated)
 
 ```

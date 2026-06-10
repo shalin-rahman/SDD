@@ -33,7 +33,7 @@ ALLOWED_MODULE_IMPORT_PREFIXES = (
 
 
 def _git_has_committed_baseline() -> bool:
-    """True when platform core is tracked and at least one commit exists."""
+    """True when platform core is tracked at HEAD and the working tree matches it."""
     head = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=ROOT,
@@ -51,7 +51,44 @@ def _git_has_committed_baseline() -> bool:
         text=True,
         check=False,
     )
-    return bool(tracked.stdout.strip())
+    if not tracked.stdout.strip():
+        return False
+
+    diff = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", "platform/api/src/emcap/"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if diff.returncode != 0:
+        return False
+
+    staged = subprocess.run(
+        ["git", "diff", "--cached", "--quiet",
+            "HEAD", "--", "platform/api/src/emcap/"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if staged.returncode != 0:
+        return False
+
+    untracked = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "platform/api/src/emcap/",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return not untracked.stdout.strip()
 
 
 def _git_diff_platform_core() -> tuple[bool, str]:
@@ -80,7 +117,8 @@ def _git_diff_platform_core() -> tuple[bool, str]:
         text=True,
         check=False,
     )
-    combined = "\n".join(filter(None, [result.stdout.strip(), staged.stdout.strip()]))
+    combined = "\n".join(
+        filter(None, [result.stdout.strip(), staged.stdout.strip()]))
     return True, combined
 
 
@@ -100,14 +138,18 @@ def test_inventory_module_file_exports_module_definition() -> None:
     definition = load_module_definition(INVENTORY_MODULE)
     assert isinstance(definition, ModuleDefinition)
     assert definition.code == "INVENTORY"
-    assert {entity.code for entity in definition.entities} == {"PRODUCT", "WAREHOUSE"}
-    assert {workflow.code for workflow in definition.workflows} == {"STOCK_ADJUSTMENT"}
+    assert {entity.code for entity in definition.entities} == {
+        "PRODUCT", "WAREHOUSE"}
+    assert {workflow.code for workflow in definition.workflows} == {
+        "STOCK_ADJUSTMENT"}
     assert {report.code for report in definition.reports} == {
         "INVENTORY_VALUATION",
         "LOW_STOCK",
     }
-    assert {dashboard.code for dashboard in definition.dashboards} == {"INVENTORY_OVERVIEW"}
-    assert {menu.code for menu in definition.menus} == {"products", "warehouses"}
+    assert {dashboard.code for dashboard in definition.dashboards} == {
+        "INVENTORY_OVERVIEW"}
+    assert {menu.code for menu in definition.menus} == {
+        "products", "warehouses"}
 
 
 def test_inventory_module_uses_sdk_imports_only() -> None:
@@ -132,13 +174,15 @@ def test_platform_core_has_no_git_diff_for_inventory_work() -> None:
     """Informational guard: platform/api/src/emcap/ should have no local diff."""
     if not _git_has_committed_baseline():
         pytest.skip(
-            "No committed platform-core baseline yet — skip until after initial commit; "
+            "Platform core has no clean committed baseline (missing history or local changes) — "
+            "skip until HEAD matches platform/api/src/emcap/; "
             "use scripts/verify-platform-core.* before inventory-only PRs"
         )
 
     is_git, diff_output = _git_diff_platform_core()
     if not is_git:
-        pytest.skip("Not a git repository — run scripts/verify-platform-core.* locally")
+        pytest.skip(
+            "Not a git repository — run scripts/verify-platform-core.* locally")
 
     changed = [line for line in diff_output.splitlines() if line.strip()]
     assert changed == [], (
@@ -170,7 +214,8 @@ def test_inventory_capabilities_via_generic_platform_apis(client: TestClient) ->
     assert client.get("/api/v1/metadata/forms/PRODUCT").status_code == 200
     assert client.get("/api/v1/metadata/grids/PRODUCT").status_code == 200
 
-    search = client.get("/api/v1/entities/PRODUCT/records", params={"q": "CORE"})
+    search = client.get("/api/v1/entities/PRODUCT/records",
+                        params={"q": "CORE"})
     assert search.status_code == 200
     assert len(search.json()["records"]) >= 1
 

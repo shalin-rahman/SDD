@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Annotated, Any, cast
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -42,6 +42,23 @@ def upload_document(
             filename=payload.filename,
             content=payload.content.encode("utf-8"),
         )
+    finally:
+        session.close()
+
+
+@router.get("")
+def list_documents(
+    entity_code: Annotated[str, Query()],
+    record_id: Annotated[str, Query()],
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+) -> dict[str, Any]:
+    session = _session(request)
+    try:
+        documents = DocumentService(session, tenant_id=tenant_id).list_for_record(
+            entity_code, record_id
+        )
+        return {"entity_code": entity_code, "record_id": record_id, "documents": documents}
     finally:
         session.close()
 

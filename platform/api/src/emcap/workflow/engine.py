@@ -71,6 +71,26 @@ class WorkflowEngine:
         self._session.refresh(row)
         return self._to_dict(row)
 
+    def list_instances(
+        self,
+        *,
+        workflow_code: str | None = None,
+        assignee: str | None = None,
+        record_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        query = self._session.query(WorkflowInstanceRow).filter_by(tenant_id=self._tenant_id)
+        if workflow_code:
+            query = query.filter_by(workflow_code=workflow_code)
+        if assignee:
+            query = query.filter_by(assignee=assignee)
+        if record_id:
+            query = query.filter_by(record_id=record_id)
+        rows = query.order_by(WorkflowInstanceRow.updated_at.desc()).all()
+        return [self._to_dict(row) for row in rows]
+
+    def get_instance(self, instance_id: str) -> dict[str, Any]:
+        return self._to_dict(self._get(instance_id))
+
     def escalate_overdue(self) -> list[dict[str, Any]]:
         now = datetime.now(UTC)
         rows = (
