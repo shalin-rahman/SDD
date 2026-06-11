@@ -1,70 +1,48 @@
 # EMCAP SDD — Session Summary
 
-## Phase 5 complete
+## Phase 7 complete
 
-**57 tests passing** (1 skipped: git guard when not a repo). Reference Inventory module shipped via plug-in model only — no edits to `platform/api/src/emcap/`.
+**108 / 108** backlog tasks Done. SDD §2 Partial/No client gaps closed; remaining Partial rows are documented stubs (integrations/payments API) and SaaS polish (tenant switcher, prod sign-off).
 
-### Inventory module
+| Document | Purpose |
+|----------|---------|
+| `spec/sdd/04-capability-matrix.md` | Status per goal × layer |
+| `plan/06-sdd-gap-closure.md` | Phase 7 task cards (P7-T01–T16) |
+| `plan/03-task-backlog.md` | Full backlog — all phases Done |
 
-| Area | Path |
-|------|------|
-| Module definition | `modules/inventory/module.py` |
-| Deploy manifest | `modules/inventory/deploy/manifest.yaml` |
-| Decision record | `modules/inventory/DECISION.md` |
-| DoD sign-off | `docs/modules/inventory-definition-of-done.md` |
-| E2E API tests | `platform/api/tests/test_inventory_e2e.py` |
-| Core unchanged guard | `platform/api/tests/test_platform_core_unchanged.py` |
-| Verify scripts | `scripts/verify-platform-core.sh`, `scripts/verify-platform-core.ps1` |
+### Phase 7 deliverables
 
-**Entities:** `PRODUCT`, `WAREHOUSE` · **Workflow:** `STOCK_ADJUSTMENT` · **Reports:** `INVENTORY_VALUATION`, `LOW_STOCK` · **Dashboard:** `INVENTORY_OVERVIEW`
+| Feature | Web | Mobile |
+|---------|-----|--------|
+| Workflow actions (transition/delegate) | Done | Done |
+| Document upload | Done | Done |
+| Notifications list + send | Done | Done |
+| Audit viewer on record detail | Done | Done |
+| Permissions + roles (Account) | Done | Done |
+| Dashboards (`INVENTORY_OVERVIEW`) | Done | Done |
+| Grid CSV export (`export.csv`) | Done | — |
+| Integrations / payments (Account, flag gated) | Partial | Partial |
+| Tenant mode banner | Partial | Partial |
+| Mobile SSE grid refresh | N/A | Done |
 
-### Client shells (SDD §9)
+### Verify
 
-Thin **presentation-layer** shells (`clients/web`, `clients/mobile`) render dynamic forms/grids from the shared metadata contract — no direct DB access. Both follow login → menus → entity grid + create form; web also posts optional notes on create.
-
-| Client | Path | Stack | Dev command |
-|--------|------|-------|-------------|
-| Web | `clients/web/` | Vite + TypeScript | `npm run dev` → http://localhost:4200 |
-| Mobile | `clients/mobile/` | Flutter Material 3 | `flutter run --dart-define=EMCAP_API_URL=http://localhost:8000` |
-
-API client layers: `clients/web/src/api/emcap-client.ts`, `clients/mobile/lib/api/emcap_client.dart`. Platform gap tests: `platform/api/tests/test_client_api_gaps.py` (notes, documents list, workflow GET, sync snapshot/changes, SSE, LOW_STOCK). CORS for browser dev: `CORSMiddleware` in `platform/api/src/emcap/main.py`.
-
-Full stack runbook: `plan/04-client-api-completion.md`.
-
-### Key inventory API surface (auto-generated)
-
-```
-GET  /api/v1/entities/PRODUCT|WAREHOUSE/records
-POST /api/v1/entities/PRODUCT|WAREHOUSE/records
-GET  /api/v1/metadata/forms/PRODUCT
-GET  /api/v1/metadata/grids/PRODUCT
-POST /api/v1/workflows/STOCK_ADJUSTMENT/start
-GET  /api/v1/reports/INVENTORY_VALUATION/runs
-GET  /api/v1/dashboards
-GET  /api/v1/menus
+```powershell
+cd platform/api; python -m pytest -q --cov=src --cov-fail-under=70
+cd clients/web; npm run lint; npm test
+.\scripts\verify-full-stack.ps1
 ```
 
-### Backlog
-
-**85 / 85** tasks Done. All phases complete.
-
-### Cursor (project-local)
-
-Skills and rules for this repo only — see `.cursor/README.md`. Do not depend on user-global `~/.cursor/skills-cursor/` for EMCAP work.
+**58 pytest tests** · backend coverage **~90%** · CI gate **70%** (ratchet to 80 documented).
 
 ---
 
-## Phase 4 — DevOps & production (prior)
+## Phase 6 (prior)
 
-| Workflow | Trigger | Environment |
-|----------|---------|-------------|
-| `.github/workflows/deploy-dev.yml` | push `develop`, `workflow_dispatch` | `dev` |
-| `.github/workflows/deploy-uat.yml` | push `release/*`, `workflow_dispatch` | `uat` (approval gate) |
-| `.github/workflows/deploy-production.yml` | tag `v*.*.*`, `workflow_dispatch` rollback/deploy | `production` |
+Agent memory in `docs/dev/`; Reports UI wired. See `plan/05-phase6-playbook.md`.
 
-DR: PITR + daily backup automation; semver release process documented in `docs/ops/release-process.md`.
+---
 
-### Cleanup complete (Phase 0)
+## Phases 0–5 (prior)
 
-- **P0-T07:** `clients/web` ESLint + `clients/mobile` Flutter analyze in CI
-- **P0-T05:** `scripts/setup-branch-protection.{sh,ps1}` — run after GitHub push
+Platform core, dynamic UI, services, DevOps, Inventory reference module — all Done. See `plan/02-implementation-plan.md`.

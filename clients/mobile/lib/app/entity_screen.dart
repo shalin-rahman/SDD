@@ -20,6 +20,14 @@ class _EntityScreenState extends State<EntityScreen> {
   final _noteController = TextEditingController();
   bool _creating = false;
   String? _createError;
+  String? _selectedRecordId;
+  List<Map<String, dynamic>> _selectedNotes = [];
+  List<Map<String, dynamic>> _selectedDocuments = [];
+  List<Map<String, dynamic>> _selectedAudit = [];
+  final _docFilename = TextEditingController(text: 'spec.txt');
+  final _docContent = TextEditingController(text: 'uploaded from mobile');
+  bool _loadingDetail = false;
+  bool _realtimeStarted = false;
 
   @override
   void initState() {
@@ -33,6 +41,8 @@ class _EntityScreenState extends State<EntityScreen> {
       controller.dispose();
     }
     _noteController.dispose();
+    _docFilename.dispose();
+    _docContent.dispose();
     super.dispose();
   }
 
@@ -43,12 +53,27 @@ class _EntityScreenState extends State<EntityScreen> {
     final snapshot = await widget.client.syncSnapshot(widget.entityCode);
     final form = FormMetadata.fromJson(formJson);
     final grid = GridMetadata.fromJson(gridJson);
+    final exportCsv = (gridJson['export'] as Map?)?['csv'] == true;
+    final syncVersion = snapshot['sync_version'] as String? ?? '';
+    var changeCount = 0;
+    if (grid.offline && syncVersion.isNotEmpty) {
+      final changes = await widget.client.syncChanges(widget.entityCode, syncVersion);
+      changeCount = changes['count'] as int? ?? 0;
+    }
     _syncControllers(DynamicFormRenderer(form).fieldNames());
+    if (grid.realtime && !_realtimeStarted) {
+      _realtimeStarted = true;
+      widget.client.subscribeRecordsStream(widget.entityCode, () {
+        if (mounted) _reload();
+      });
+    }
     return _EntityViewModel(
       form: form,
       grid: grid,
       records: records,
-      syncVersion: snapshot['sync_version'] as String? ?? '',
+      syncVersion: syncVersion,
+      changeCount: changeCount,
+      exportCsv: exportCsv,
     );
   }
 
@@ -108,6 +133,35 @@ class _EntityScreenState extends State<EntityScreen> {
     }
   }
 
+  Future<void> _selectRecord(String recordId) async {
+    setState(() {
+      _selectedRecordId = recordId;
+      _loadingDetail = true;
+      _selectedNotes = [];
+      _selectedDocuments = [];
+      _selectedAudit = [];
+    });
+    try {
+      final notes = await widget.client.listNotes(widget.entityCode, recordId);
+      final documents = await widget.client.listDocuments(widget.entityCode, recordId);
+      final auditAll = await widget.client.listAudit(widget.entityCode);
+      final audit = auditAll.where((e) => '${e['record_id']}' == recordId).toList();
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _selectedNotes = notes;
+        _selectedDocuments = documents;
+        _selectedAudit = audit;
+      });
+    } catch (err) {
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() => _createError = err.toString());
+    } finally {
+      if (mounted && _selectedRecordId == recordId) {
+        setState(() => _loadingDetail = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +185,29 @@ class _EntityScreenState extends State<EntityScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Offline snapshot: ${model.syncVersion}'),
+              Text(
+                model.changeCount > 0
+                    ? 'Offline snapshot: ${model.syncVersion} · ${model.changeCount} change(s)'
+                    : 'Offline snapshot: ${model.syncVersion}',
+              ),
+              if (model.exportCsv)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {
+                      final cols = gridRenderer.columnFields();
+                      final sb = StringBuffer(cols.join(','));
+                      for (final record in model.records) {
+                        sb.writeln();
+                        sb.write(cols.map((c) => '${record[c] ?? ''}').join(','));
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('CSV ready (${model.records.length} rows) — copy from logs in prod')),
+                      );
+                    },
+                    child: const Text('Export CSV'),
+                  ),
+                ),
               const SizedBox(height: 12),
               DataTable(
                 columns: gridRenderer
@@ -140,15 +216,75 @@ class _EntityScreenState extends State<EntityScreen> {
                     .toList(),
                 rows: model.records
                     .map(
-                      (record) => DataRow(
-                        cells: gridRenderer
-                            .columnFields()
-                            .map((field) => DataCell(Text('${record[field] ?? ''}')))
-                            .toList(),
-                      ),
+                      (record) {
+                        final recordId = '${record['id'] ?? ''}';
+                        return DataRow(
+                          selected: _selectedRecordId == recordId,
+                          onSelectChanged: recordId.isEmpty
+                              ? null
+                              : (_) => _selectRecord(recordId),
+                          cells: gridRenderer
+                              .columnFields()
+                              .map((field) => DataCell(Text('${record[field] ?? ''}')))
+                              .toList(),
+                        );
+                      },
                     )
                     .toList(),
               ),
+              if (_selectedRecordId != null) ...[
+                const SizedBox(height: 8),
+                Text('Record $_selectedRecordId'),
+                if (_loadingDetail)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: LinearProgressIndicator(),
+                  )
+                else ...[
+                  Text('Notes (${_selectedNotes.length})'),
+                  ..._selectedNotes.map(
+                    (note) => ListTile(
+                      dense: true,
+                      title: Text('${note['body'] ?? ''}'),
+                    ),
+                  ),
+                  Text('Documents (${_selectedDocuments.length})'),
+                  ..._selectedDocuments.map(
+                    (doc) => ListTile(
+                      dense: true,
+                      title: Text('${doc['filename'] ?? doc['id'] ?? ''}'),
+                    ),
+                  ),
+                  Text('Audit (${_selectedAudit.length})'),
+                  ..._selectedAudit.map(
+                    (entry) => ListTile(
+                      dense: true,
+                      title: Text('${entry['action']}'),
+                      subtitle: Text('${entry['payload'] ?? ''}'),
+                    ),
+                  ),
+                  TextField(
+                    controller: _docFilename,
+                    decoration: const InputDecoration(labelText: 'Document filename'),
+                  ),
+                  TextField(
+                    controller: _docContent,
+                    decoration: const InputDecoration(labelText: 'Document content'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await widget.client.uploadDocument(
+                        widget.entityCode,
+                        _selectedRecordId!,
+                        _docFilename.text,
+                        _docContent.text,
+                      );
+                      await _selectRecord(_selectedRecordId!);
+                    },
+                    child: const Text('Upload document'),
+                  ),
+                ],
+              ],
               const SizedBox(height: 12),
               ...fieldNames.map(
                 (name) => TextField(
@@ -189,10 +325,14 @@ class _EntityViewModel {
     required this.grid,
     required this.records,
     required this.syncVersion,
+    required this.changeCount,
+    required this.exportCsv,
   });
 
   final FormMetadata form;
   final GridMetadata grid;
   final List<Map<String, dynamic>> records;
   final String syncVersion;
+  final int changeCount;
+  final bool exportCsv;
 }

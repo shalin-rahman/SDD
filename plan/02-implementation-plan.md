@@ -1,6 +1,6 @@
 # EMCAP — Implementation Plan
 
-> **Status (2026-06-11):** All five phases delivered. See `plan/03-task-backlog.md` (85/85 Done) and `plan/00-session-summary.md`.
+> **Status (2026-06-11):** Phases 0–6 delivered; **Phase 7 in progress** (SDD §2 gap closure). See `plan/03-task-backlog.md` (94/108 Done) and `spec/sdd/04-capability-matrix.md`.
 
 Phased delivery aligned with SDD v1.0. Each phase ends with a demonstrable vertical slice.
 
@@ -131,6 +131,41 @@ Phased delivery aligned with SDD v1.0. Each phase ends with a demonstrable verti
 
 ---
 
+## Phase 6 — Knowledge Base + Client Completion
+
+**Goal:** In-repo agent memory and complete client shell parity (reports UI, smoke scripts).
+
+| Deliverable | SDD refs |
+|-------------|----------|
+| Codebase index, pitfalls, implementation recipes | Document control |
+| Cursor SDD workflow rule + codebase-map skill | Agent guidance |
+| Reports UI (`listReports`, `runReport`) web + mobile | §9, FR-011 |
+| Full-stack verify scripts | §25, NFR-010 |
+
+**Exit criteria:** `docs/dev/` memory complete; LOW_STOCK runnable from Reports nav; `verify-full-stack` script green (API health optional if stack down).
+
+Playbook: `plan/05-phase6-playbook.md`
+
+---
+
+## Phase 7 — SDD Gap Closure (current focus)
+
+**Goal:** Close all **Partial** and **No** rows in `spec/sdd/04-capability-matrix.md` — full §2 functional parity on API + web + mobile where applicable.
+
+| Wave | Deliverable | SDD refs |
+|------|-------------|----------|
+| 1 | Workflow, documents, notifications, audit, permissions, dashboards, grid export UI | §2, FR-008b |
+| 2 | Integrations + payments UI (flag gated) | §2, §5 |
+| 3 | SaaS tenant picker + white-label theme | §3 |
+| 4 | Coverage gates, mobile SSE, production readiness | §2 NFR, §25, §29 |
+| 5 | Traceability + matrix sync | Document control |
+
+**Exit criteria:** Capability matrix all **Done** or justified **Stub**; 108/108 backlog Done.
+
+Playbook: `plan/06-sdd-gap-closure.md`
+
+---
+
 ## Dependency Graph
 
 ```mermaid
@@ -143,6 +178,8 @@ flowchart TD
     P3[Phase 3 Platform Services]
     P4[Phase 4 DevOps and DR]
     P5[Phase 5 Reference Module]
+    P6[Phase 6 Knowledge and Clients]
+    P7[Phase 7 SDD Gap Closure]
 
     P0 --> P1A
     P1A --> P1B
@@ -151,6 +188,8 @@ flowchart TD
     P2 --> P3
     P3 --> P4
     P4 --> P5
+    P5 --> P6
+    P6 --> P7
 ```
 
 ---

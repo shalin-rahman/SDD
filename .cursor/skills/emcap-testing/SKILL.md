@@ -22,6 +22,9 @@ description: >-
 | `platform/api/tests/test_entity_registry.py` | Entity SDK |
 | `platform/api/tests/test_auth_security.py` | Auth, tenancy, security |
 | `platform/api/tests/test_metadata_workflow.py` | Metadata contract, workflow, rules |
+| `platform/api/tests/test_client_api_gaps.py` | Notes, sync, workflow GET, documents, SSE, LOW_STOCK |
+| `platform/api/tests/test_inventory_e2e.py` | Inventory module E2E |
+| `platform/api/tests/test_platform_core_unchanged.py` | Plug-in model — no accidental core edits |
 
 ## Contract test pattern
 

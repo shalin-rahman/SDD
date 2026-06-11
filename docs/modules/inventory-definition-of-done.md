@@ -17,7 +17,7 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 | Dynamic forms | `test_inventory_e2e.py::test_product_form_metadata_api` | `GET /api/v1/metadata/forms/PRODUCT` |
 | Dynamic grids | `test_inventory_e2e.py::test_product_grid_metadata_api` | `GET /api/v1/metadata/grids/PRODUCT` |
 | Mobile UI (metadata contract) | `clients/mobile/lib/metadata_contract.dart`; `test_product_metadata_contract_keys` | Shared schema with web; Flutter `validateFormMetadata` / `validateGridMetadata` |
-| Reporting | `test_inventory_e2e.py::test_inventory_valuation_report`; `test_client_api_gaps.py::test_low_stock_report_filter` | `GET /api/v1/reports`, `POST /api/v1/reports/INVENTORY_VALUATION/run`, `POST /api/v1/reports/LOW_STOCK/run` (qty < reorder), `GET /api/v1/reports/INVENTORY_VALUATION/runs` |
+| Reporting | `test_inventory_e2e.py::test_inventory_valuation_report`; `test_client_api_gaps.py::test_low_stock_report_filter` | `GET /api/v1/reports`, `POST /api/v1/reports/INVENTORY_VALUATION/run`, `POST /api/v1/reports/LOW_STOCK/run` (qty < reorder), `GET /api/v1/reports/INVENTORY_VALUATION/runs`; web/mobile Reports nav (`listReports`, `runReport`) |
 | Dashboards | `test_inventory_e2e.py::test_inventory_overview_dashboard` | `GET /api/v1/dashboards` → `INVENTORY_OVERVIEW` |
 | Notifications | `test_platform_services.py::test_notification_hub` | `POST /api/v1/notifications/send`, `GET /api/v1/notifications` |
 | Documents | `test_platform_services.py::test_document_upload_and_get`; `test_client_api_gaps.py::test_document_list_by_record` | `POST /api/v1/documents/upload`, `GET /api/v1/documents/{id}`, `GET /api/v1/documents?entity_code=&record_id=` |
@@ -50,15 +50,16 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 | Dynamic forms | Platform QA | ☑ | 2026-06-11 | PRODUCT form metadata |
 | Dynamic grids | Platform QA | ☑ | 2026-06-11 | PRODUCT grid metadata + export flags |
 | Mobile UI contract | Platform QA | ☑ | 2026-06-11 | Flutter metadata validators |
-| Reporting | Module owner | ☑ | 2026-06-11 | `INVENTORY_VALUATION`, `LOW_STOCK` (filter: qty < reorder) |
+| Reporting | Module owner | ☑ | 2026-06-11 | `INVENTORY_VALUATION`, `LOW_STOCK`; client Reports UI (Phase 6) |
 | Dashboards | Module owner | ☑ | 2026-06-11 | `INVENTORY_OVERVIEW` widgets |
 | Notifications | Platform QA | ☑ | 2026-06-11 | Email channel enabled in config |
 | Documents | Platform QA | ☑ | 2026-06-11 | Upload, get-by-id, list-by-record |
 | Notes | Module owner | ☑ | 2026-06-11 | API CRUD on PRODUCT/WAREHOUSE; web client wired |
 | Offline sync | Platform QA | ☑ | 2026-06-11 | Snapshot + changes; clients show `sync_version` |
-| Realtime (SSE) | Platform QA | ☑ | 2026-06-11 | Stream endpoint verified; UI subscription optional |
-| Workflow | Module owner | ☑ | 2026-06-11 | `STOCK_ADJUSTMENT` lifecycle + instance list GET |
-| Audit | Platform QA | ☑ | 2026-06-11 | Immutable audit trail on PRODUCT |
+| Realtime (SSE) | Platform QA | ☑ | 2026-06-11 | Stream endpoint; web + mobile grid refresh when `grid.realtime` |
+| Workflow | Module owner | ☑ | 2026-06-11 | `STOCK_ADJUSTMENT` lifecycle; inbox transition/delegate in shells |
+| Audit | Platform QA | ☑ | 2026-06-11 | Immutable audit trail; record detail audit viewer in shells |
+| Client UI (Phase 7) | Module owner | ☑ | 2026-06-11 | Upload, notifications, dashboards, permissions, CSV export (web) |
 | Search | Platform QA | ☑ | 2026-06-11 | Query param search on entity records |
 | APIs | Module owner | ☑ | 2026-06-11 | PRODUCT + WAREHOUSE CRUD |
 | Menus | Module owner | ☑ | 2026-06-11 | Products and warehouses navigation |

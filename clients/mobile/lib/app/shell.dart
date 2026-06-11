@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import 'account_screen.dart';
+import 'dashboard_screen.dart';
 import 'entity_screen.dart';
+import 'notification_screen.dart';
+import 'report_screen.dart';
+import 'workflow_inbox_screen.dart';
+
+const _fixedDestinations = 5;
 
 class EmcapShell extends StatefulWidget {
   const EmcapShell({super.key, required this.client});
@@ -15,16 +22,53 @@ class EmcapShell extends StatefulWidget {
 class _EmcapShellState extends State<EmcapShell> {
   List<Map<String, dynamic>> menus = [];
   int selected = 0;
+  String _tenantLabel = '';
 
   @override
   void initState() {
     super.initState();
     _loadMenus();
+    _loadTenant();
+  }
+
+  Future<void> _loadTenant() async {
+    try {
+      final health = await widget.client.getHealth();
+      if (!mounted) return;
+      setState(() {
+        _tenantLabel = 'tenant · ${health['tenant_strategy']} · multi=${health['multi_tenant']}';
+      });
+    } catch (_) {}
   }
 
   Future<void> _loadMenus() async {
     final loaded = await widget.client.getMenus();
-    setState(() => menus = loaded);
+    setState(() {
+      menus = loaded;
+      selected = loaded.isEmpty ? 0 : _fixedDestinations;
+    });
+  }
+
+  Widget _bodyForSelection() {
+    switch (selected) {
+      case 0:
+        return WorkflowInboxScreen(client: widget.client);
+      case 1:
+        return ReportScreen(client: widget.client);
+      case 2:
+        return DashboardScreen(client: widget.client);
+      case 3:
+        return NotificationScreen(client: widget.client);
+      case 4:
+        return AccountScreen(client: widget.client);
+      default:
+        final menu = menus[selected - _fixedDestinations];
+        return EntityScreen(
+          client: widget.client,
+          entityCode: menu['entity_code'] as String,
+          title: menu['label'] as String,
+        );
+    }
   }
 
   @override
@@ -32,7 +76,6 @@ class _EmcapShellState extends State<EmcapShell> {
     if (menus.isEmpty) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final menu = menus[selected];
     return Scaffold(
       body: Row(
         children: [
@@ -40,20 +83,34 @@ class _EmcapShellState extends State<EmcapShell> {
             selectedIndex: selected,
             onDestinationSelected: (index) => setState(() => selected = index),
             labelType: NavigationRailLabelType.all,
-            destinations: menus
-                .map(
-                  (item) => NavigationRailDestination(
-                    icon: const Icon(Icons.folder),
-                    label: Text(item['label'] as String),
-                  ),
-                )
-                .toList(),
+            destinations: [
+              const NavigationRailDestination(icon: Icon(Icons.inbox), label: Text('Tasks')),
+              const NavigationRailDestination(icon: Icon(Icons.assessment), label: Text('Reports')),
+              const NavigationRailDestination(icon: Icon(Icons.dashboard), label: Text('Boards')),
+              const NavigationRailDestination(icon: Icon(Icons.notifications), label: Text('Notify')),
+              const NavigationRailDestination(icon: Icon(Icons.person), label: Text('Account')),
+              ...menus.map(
+                (item) => NavigationRailDestination(
+                  icon: const Icon(Icons.folder),
+                  label: Text(item['label'] as String),
+                ),
+              ),
+            ],
           ),
           Expanded(
-            child: EntityScreen(
-              client: widget.client,
-              entityCode: menu['entity_code'] as String,
-              title: menu['label'] as String,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (_tenantLabel.isNotEmpty)
+                  Material(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: Text(_tenantLabel, style: Theme.of(context).textTheme.bodySmall),
+                    ),
+                  ),
+                Expanded(child: _bodyForSelection()),
+              ],
             ),
           ),
         ],

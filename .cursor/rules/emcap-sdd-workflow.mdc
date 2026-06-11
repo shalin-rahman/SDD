@@ -1,0 +1,30 @@
+---
+description: SDD workflow — read index/pitfalls/recipes before coding; update traceability after
+alwaysApply: true
+---
+
+# EMCAP SDD Workflow
+
+## Before coding
+
+1. Read `docs/dev/codebase-index.md` for file locations (avoid broad search).
+2. Read `docs/dev/known-pitfalls.md` for regressions to avoid.
+3. Follow the matching recipe in `docs/dev/recipes/`.
+4. Check `spec/sdd/04-capability-matrix.md` for Partial/No gaps.
+5. If Phase 7 work: follow `plan/06-sdd-gap-closure.md` task card exactly.
+6. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.
+
+## While coding
+
+- Business features → `modules/` only; never `platform/` core for module logic.
+- Presentation → `clients/web`, `clients/mobile` only.
+- Generic platform APIs → `platform/api/src/emcap/`.
+- Feature flags → `config/platform.yaml`.
+
+## After coding
+
+1. Run verify commands from the recipe.
+2. Update `spec/sdd/03-traceability-matrix.md` if new FR coverage.
+3. Update `spec/sdd/04-capability-matrix.md` status column.
+4. Update `plan/03-task-backlog.md` task status if applicable.
+5. Add pitfall entry + test if you fixed a recurring error.

@@ -49,7 +49,7 @@ Workflow: `.github/workflows/ci.yml` (backend lint + test in Phase 0).
 |------|------|
 | `infra/terraform/` | Cloud resources |
 | `infra/helm/` | K8s releases |
-| Ansible playbooks | TBD in Phase 4 |
+| `infra/ansible/` | Bootstrap + deploy playbooks (dev/uat inventories) |
 
 ## Coverage gates
 

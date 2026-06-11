@@ -47,3 +47,29 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | NFR-008, NFR-009 | EMCAP-P4-T01–T03 | UAT deploy |
 | NFR-014, NFR-015 | `infra/backup/`, `docs/ops/dr-runbook.md`, `docs/ops/release-process.md`, `platform/api/scripts/migrate.py` · EMCAP-P4-T09–T11 | DR drill + `migrate.py status` |
 | FR-018 (DoD) | EMCAP-P5-T01–T06 | Zero core changes sign-off |
+
+## Phase 6 — Knowledge base + client completion
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-008a | `clients/web/`, `clients/mobile/`, `docs/dev/codebase-index.md` | EMCAP-P6-T01–T05 | Web/mobile shells; `emcap-client.test.ts` contract |
+| FR-011 | `clients/web/src/app/main.ts` Reports view; `clients/mobile/lib/app/report_screen.dart` | EMCAP-P6-T03–T05 | `test_low_stock_report_filter`; manual Reports → LOW_STOCK |
+| NFR-010 | `scripts/verify-full-stack.{ps1,sh}` | EMCAP-P6-T06 | Full-stack smoke script |
+| NFR-012 | `docs/dev/known-pitfalls.md`, `.cursor/rules/emcap-sdd-workflow.mdc` | EMCAP-P6-T01–T02 | Agent memory; regression tests linked in pitfalls |
+
+## Phase 7 — SDD gap closure (complete)
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-008a | Client shells full §2 parity | EMCAP-P7-T03–T12 | `spec/sdd/04-capability-matrix.md`; `emcap-client.test.ts` 33 methods |
+| FR-002 | Permissions viewer in shells | EMCAP-P7-T07 | Account view; `test_auth_security.py::test_rbac_roles` |
+| FR-009 | Workflow actions in shells | EMCAP-P7-T03 | Inbox actions; `test_inventory_e2e.py` workflow lifecycle |
+| FR-011 | Dashboards in shells | EMCAP-P7-T08 | `test_inventory_overview_dashboard` |
+| FR-012 | Notifications UI | EMCAP-P7-T05 | `test_notification_hub` |
+| FR-013 | Document upload UI | EMCAP-P7-T04 | `test_document_list_by_record` |
+| FR-014 | Integrations status UI | EMCAP-P7-T10 | Account integrations section; stub API routes |
+| FR-015 | Payments UI (flag gated) | EMCAP-P7-T11 | Account demo when `payments.enabled`; default off |
+| FR-017 | Audit viewer UI | EMCAP-P7-T06 | Record detail audit list |
+| FR-003 | SaaS tenant + white-label shell | EMCAP-P7-T12 | Header tenant mode; `docs/dev/saas-shell.md` |
+| NFR-003, NFR-004 | CI coverage gates | EMCAP-P7-T13 | `--cov-fail-under=70` CI; local ~90%; contract expanded |
+| NFR-001, NFR-008, NFR-015 | Production readiness | EMCAP-P7-T15 | `docs/ops/production-readiness.md` checklist |

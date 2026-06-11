@@ -36,10 +36,10 @@ jobs:
       - name: MyPy
         run: mypy src
 
-      - name: Pytest (unit)
+      - name: Pytest (unit + coverage)
         env:
           DATABASE_URL: sqlite:///:memory:
-        run: pytest -q
+        run: pytest -q --cov=src --cov-report=term-missing --cov-fail-under=70
 
   # P4-T04: integration stage — pytest against real PostgreSQL (service container).
   integration:

@@ -10,3 +10,5 @@ alwaysApply: true
 3. Follow layered architecture: Presentation → Application (CQRS) → Platform Services → Infrastructure.
 4. Map changes to SDD requirement IDs in `spec/sdd/03-traceability-matrix.md`.
 5. New optional subsystems must default to disabled unless SDD specifies otherwise.
+6. Before coding: read `docs/dev/codebase-index.md` and `docs/dev/known-pitfalls.md`.
+7. Follow recipes in `docs/dev/recipes/`; update `spec/sdd/03-traceability-matrix.md` after changes.

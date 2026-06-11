@@ -26,12 +26,16 @@ class GridMetadata {
     required this.entityCode,
     required this.columns,
     required this.export,
+    this.offline = true,
+    this.realtime = true,
   });
 
   final String schemaVersion;
   final String entityCode;
   final List<Map<String, dynamic>> columns;
   final Map<String, dynamic> export;
+  final bool offline;
+  final bool realtime;
 
   factory GridMetadata.fromJson(Map<String, dynamic> json) {
     return GridMetadata(
@@ -39,6 +43,8 @@ class GridMetadata {
       entityCode: json['entity_code'] as String,
       columns: List<Map<String, dynamic>>.from(json['columns'] as List),
       export: Map<String, dynamic>.from(json['export'] as Map),
+      offline: json['offline'] as bool? ?? true,
+      realtime: json['realtime'] as bool? ?? true,
     );
   }
 

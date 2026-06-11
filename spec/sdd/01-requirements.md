@@ -14,6 +14,8 @@ Extracted from SDD v1.0 (`spec/framework-sdd.txt`). Each ID is stable for tracea
 | FR-006 | Entity registration auto-generates APIs, forms, grids, search, audit | 8 |
 | FR-007 | Dynamic forms support layout, validation, conditions, localization | 9 |
 | FR-008 | Dynamic grids share one metadata contract across clients | 9 |
+| FR-008a | Client shells consume platform APIs (auth, menus, metadata, CRUD, sync, reports) without direct DB access | 9 |
+| FR-008b | Client shells expose all §2 reusable services (workflow actions, notifications, documents upload, audit, dashboards) — Phase 7 | 2, 9 |
 | FR-009 | Workflow supports escalation, delegation, SLA tracking | 10 |
 | FR-010 | Rule engine supports formula mode; scripting optional | 11 |
 | FR-011 | Reporting: reports, dashboards, KPIs, scheduling | 12 |

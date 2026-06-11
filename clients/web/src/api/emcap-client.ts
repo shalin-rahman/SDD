@@ -124,6 +124,164 @@ export class EmcapClient {
     const query = recordId ? `?record_id=${encodeURIComponent(recordId)}` : "";
     return this.request(`/api/v1/workflows/instances${query}`);
   }
+
+  transitionWorkflow(
+    instanceId: string,
+    action: string,
+    actor: string,
+  ): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/workflows/instances/${instanceId}/transition`, {
+      method: "POST",
+      body: JSON.stringify({ action, actor }),
+    });
+  }
+
+  delegateWorkflow(instanceId: string, delegateTo: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/workflows/instances/${instanceId}/delegate`, {
+      method: "POST",
+      body: JSON.stringify({ delegate_to: delegateTo }),
+    });
+  }
+
+  uploadDocument(
+    entityCode: string,
+    recordId: string,
+    filename: string,
+    content: string,
+  ): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/documents/upload", {
+      method: "POST",
+      body: JSON.stringify({ entity_code: entityCode, record_id: recordId, filename, content }),
+    });
+  }
+
+  listAudit(entityCode: string): Promise<{ entity: string; audit: Record<string, unknown>[] }> {
+    return this.request(`/api/v1/entities/${entityCode}/audit`);
+  }
+
+  listNotifications(): Promise<{ notifications: Record<string, unknown>[] }> {
+    return this.request("/api/v1/notifications");
+  }
+
+  sendNotification(payload: {
+    channel: string;
+    recipient: string;
+    subject: string;
+    body: string;
+  }): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/notifications/send", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  getPermissions(): Promise<{ permissions: string[] }> {
+    return this.request("/api/v1/permissions");
+  }
+
+  getRoles(): Promise<{ roles: Record<string, unknown>[] }> {
+    return this.request("/api/v1/auth/roles");
+  }
+
+  listDashboards(): Promise<{ dashboards: Record<string, unknown>[] }> {
+    return this.request("/api/v1/dashboards");
+  }
+
+  getHealth(): Promise<{ status: string; multi_tenant: boolean; tenant_strategy: string }> {
+    return this.request("/api/v1/health");
+  }
+
+  getPlatformConfig(): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/config/platform");
+  }
+
+  listTenants(): Promise<{
+    multi_tenant: boolean;
+    white_label: boolean;
+    strategy: string;
+    tenants: Record<string, unknown>[];
+  }> {
+    return this.request("/api/v1/tenants");
+  }
+
+  createPaymentIntent(amount: string, currency = "USD"): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/payments/intents", {
+      method: "POST",
+      body: JSON.stringify({ amount, currency }),
+    });
+  }
+
+  dispatchRestIntegration(url: string, payload: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/integrations/rest/dispatch", {
+      method: "POST",
+      body: JSON.stringify({ url, payload }),
+    });
+  }
+
+  listReports(): Promise<{ reports: string[] }> {
+    return this.request("/api/v1/reports");
+  }
+
+  runReport(reportCode: string): Promise<{ report_code: string; rows: Record<string, unknown>[] }> {
+    return this.request(`/api/v1/reports/${reportCode}/run`, { method: "POST" });
+  }
+
+  listDocuments(
+    entityCode: string,
+    recordId: string,
+  ): Promise<{ documents: Record<string, unknown>[] }> {
+    const params = new URLSearchParams({ entity_code: entityCode, record_id: recordId });
+    return this.request(`/api/v1/documents?${params}`);
+  }
+
+  syncChanges(
+    entityCode: string,
+    since: string,
+  ): Promise<{ count: number; records: Record<string, unknown>[] }> {
+    const params = new URLSearchParams({ since });
+    return this.request(`/api/v1/sync/${entityCode}/changes?${params}`);
+  }
+
+  subscribeRecordsStream(
+    entityCode: string,
+    onEvent: (payload: Record<string, unknown>) => void,
+  ): () => void {
+    const controller = new AbortController();
+    const decoder = new TextDecoder();
+
+    void (async () => {
+      try {
+        const response = await fetch(
+          `${this.baseUrl}/api/v1/entities/${entityCode}/records/stream`,
+          { headers: this.headers(), signal: controller.signal },
+        );
+        if (!response.ok || !response.body) {
+          return;
+        }
+
+        const reader = response.body.getReader();
+        let buffer = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              onEvent(JSON.parse(line.slice(6)) as Record<string, unknown>);
+            }
+          }
+        }
+      } catch {
+        // stream closed or aborted
+      }
+    })();
+
+    return () => controller.abort();
+  }
 }
 
 export function createClient(baseUrl?: string): EmcapClient {

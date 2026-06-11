@@ -122,17 +122,32 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `GET /api/v1/entities/{entity}/records` | `listRecords()` | `listRecords()` | Entity grid |
 | `POST /api/v1/entities/{entity}/records` | `createRecord()` | `createRecord()` | Create form submit |
 | `GET /api/v1/sync/{entity}/snapshot` | `syncSnapshot()` | `syncSnapshot()` | Offline version label |
-| `GET /api/v1/sync/{entity}/changes?since=` | — | — | API only (future delta sync UI) |
-| `GET /api/v1/entities/{entity}/records/{id}/notes` | `listNotes()` | `listNotes()` | API client ready |
-| `POST /api/v1/entities/{entity}/records/{id}/notes` | `addNote()` | `addNote()` | Web create + optional note; mobile client method ready |
-| `GET /api/v1/workflows/instances` | `listWorkflowInstances(recordId?)` | `listWorkflowInstances({recordId})` | API client ready (task/inbox views) |
+| `GET /api/v1/sync/{entity}/changes?since=` | `syncChanges()` | `syncChanges()` | Entity view offline delta count |
+| `GET /api/v1/entities/{entity}/records/{id}/notes` | `listNotes()` | `listNotes()` | Record detail panel |
+| `POST /api/v1/entities/{entity}/records/{id}/notes` | `addNote()` | `addNote()` | Create form optional note |
+| `GET /api/v1/workflows/instances` | `listWorkflowInstances(recordId?)` | `listWorkflowInstances({recordId})` | Workflow tasks inbox |
+| `POST /api/v1/workflows/instances/{id}/transition` | `transitionWorkflow()` | `transitionWorkflow()` | Inbox Submit / Approve / Reject |
+| `POST /api/v1/workflows/instances/{id}/delegate` | `delegateWorkflow()` | `delegateWorkflow()` | Inbox delegate action |
 | `GET /api/v1/workflows/instances/{id}` | — | — | API only |
-| `GET /api/v1/documents?entity_code=&record_id=` | — | — | API only |
-| `GET /api/v1/entities/{entity}/records/stream` | — | — | API only (SSE; subscribe in future grid refresh) |
-| `POST /api/v1/reports/LOW_STOCK/run` | — | — | API only (Inventory report filter) |
+| `GET /api/v1/documents?entity_code=&record_id=` | `listDocuments()` | `listDocuments()` | Record detail panel |
+| `POST /api/v1/documents/upload` | `uploadDocument()` | `uploadDocument()` | Record detail upload form |
+| `GET /api/v1/entities/{entity}/audit` | `listAudit()` | `listAudit()` | Record detail audit table |
+| `GET /api/v1/entities/{entity}/records/stream` | `subscribeRecordsStream()` | `subscribeRecordsStream()` | Grid refresh on SSE heartbeat |
+| `GET /api/v1/notifications` | `listNotifications()` | `listNotifications()` | Notifications view |
+| `POST /api/v1/notifications/send` | `sendNotification()` | `sendNotification()` | Notifications send form |
+| `GET /api/v1/auth/permissions` | `getPermissions()` | `getPermissions()` | Account view |
+| `GET /api/v1/auth/roles` | `getRoles()` | `getRoles()` | Account view |
+| `GET /api/v1/dashboards` | `listDashboards()` | `listDashboards()` | Dashboards view |
+| `GET /api/v1/health` | `getHealth()` | `getHealth()` | Header tenant mode line |
+| `GET /api/v1/config/platform` | `getPlatformConfig()` | `getPlatformConfig()` | Account — payments flag |
+| `GET /api/v1/tenants` | `listTenants()` | `listTenants()` | Account — white-label flag |
+| `POST /api/v1/payments/intents` | `createPaymentIntent()` | `createPaymentIntent()` | Account demo (when enabled) |
+| `POST /api/v1/integrations/rest/dispatch` | `dispatchRestIntegration()` | `dispatchRestIntegration()` | Client API; Account lists route |
+| `GET /api/v1/reports` | `listReports()` | `listReports()` | Reports nav — list codes |
+| `POST /api/v1/reports/{code}/run` | `runReport(code)` | `runReport(code)` | Reports nav — run LOW_STOCK etc. |
 | CORS (`OPTIONS` + cross-origin `GET/POST`) | Browser automatic | Flutter web | `CORSMiddleware` in `emcap/main.py` |
 
-**Parity note:** Web and mobile shells wire optional notes on create via `addNote` after `createRecord`. Documents, SSE, sync changes, and LOW_STOCK are verified at the API layer (`test_client_api_gaps.py`) for downstream UI work.
+**Parity note:** Web and mobile shells wire workflow actions, notifications, dashboards, Account (permissions/roles/integrations/payments), record detail (notes, documents, upload, audit), Reports, and offline sync delta count. Both subscribe to SSE for grid refresh when `grid.realtime` is enabled. Web additionally exports CSV when `grid.export.csv` is set in metadata.
 
 ---
 

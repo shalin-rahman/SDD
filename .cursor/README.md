@@ -14,6 +14,7 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | File | Scope |
 |------|-------|
 | `emcap-core-standards.mdc` | Always apply — module boundaries, config-driven design |
+| `emcap-sdd-workflow.mdc` | Always apply — read index/pitfalls/recipes before coding |
 | `backend-python.mdc` | `platform/api/**` |
 | `frontend-angular.mdc` | `clients/web/**` |
 | `frontend-flutter.mdc` | `clients/mobile/**` |
@@ -23,6 +24,7 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 
 | Skill | Use when |
 |-------|----------|
+| `emcap-codebase-map` | Codebase index, pitfalls, recipes — read first |
 | `emcap-architecture` | Layering, monorepo layout, ADRs |
 | `emcap-config` | `config/platform.yaml` |
 | `emcap-entity-sdk` | Entities, modules, CRUD |
@@ -36,5 +38,12 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | `emcap-security` | Middleware, feature flags |
 | `emcap-devops` | Docker, CI/CD overview |
 | `emcap-release-dr` | Releases, migrations, backup, DR |
+
+## SDD gap tracking (Phase 7)
+
+| Document | Purpose |
+|----------|---------|
+| `spec/sdd/04-capability-matrix.md` | Partial/No status per layer |
+| `plan/06-sdd-gap-closure.md` | Executable P7 task cards |
 
 Commit this `.cursor/` tree with the repo so every contributor gets the same agent context.

@@ -12,11 +12,15 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 3 — Platform services | 14 | 0 | 0 | 14 |
 | 4 — DevOps & production | 12 | 0 | 0 | 12 |
 | 5 — Reference module | 6 | 0 | 0 | 6 |
-| **Total** | **85** | **0** | **0** | **85** |
+| 6 — Knowledge + client completion | 7 | 0 | 0 | 7 |
+| 7 — SDD gap closure (§2 Partial/No) | 16 | 0 | 0 | 16 |
+| **Total** | **108** | **0** | **0** | **108** |
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-11 · All phases complete · **57 tests passing** (1 skipped)
+**Last updated:** 2026-06-11 · Phases 0–7 complete · **58 tests passing** · backend coverage **89.8%** (CI gate 70%, ratchet to 80)
+
+**Current focus:** Phase 7 complete — review changes before commit. Remaining Partial rows documented in `spec/sdd/04-capability-matrix.md` (SaaS picker, prod sign-off).
 
 ---
 
@@ -162,12 +166,53 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 
 ---
 
+## Phase 6 — Knowledge Base + Client Completion
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P6-T01 | Codebase index, pitfalls, recipes, recall index | Phase 5 | Done |
+| EMCAP-P6-T02 | Cursor SDD workflow rule + codebase-map skill | T01 | Done |
+| EMCAP-P6-T03 | LOW_STOCK / Reports UI — web | T01 | Done |
+| EMCAP-P6-T04 | Reports UI — mobile | T01 | Done |
+| EMCAP-P6-T05 | Client API `listReports` / `runReport` | T03, T04 | Done |
+| EMCAP-P6-T06 | Full-stack smoke scripts | T03 | Done |
+| EMCAP-P6-T07 | SDD doc sync (traceability, ADR, session summary) | T01–T06 | Done |
+
+Playbook: `plan/05-phase6-playbook.md`
+
+---
+
+## Phase 7 — SDD Gap Closure (§2 Partial / No)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P7-T01 | Capability matrix (`spec/sdd/04-capability-matrix.md`) | Phase 6 | Done |
+| EMCAP-P7-T02 | Gap closure playbook + backlog | T01 | Done |
+| EMCAP-P7-T03 | Workflow transition/delegate UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T04 | Document upload UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T05 | Notifications UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T06 | Audit viewer UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T07 | Permissions viewer (web + mobile) | T02 | Done |
+| EMCAP-P7-T08 | Dashboards UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T09 | Grid CSV export from metadata flags (web) | T02 | Done |
+| EMCAP-P7-T10 | Integrations status UI (web + mobile) | T02 | Done |
+| EMCAP-P7-T11 | Payments UI — feature-flag gated | T02 | Done |
+| EMCAP-P7-T12 | Tenant picker + white-label theme shell | T02 | Done |
+| EMCAP-P7-T13 | CI coverage gates ≥80% + contract expansion | T03–T09 | Done |
+| EMCAP-P7-T14 | Mobile SSE grid refresh parity | T02 | Done |
+| EMCAP-P7-T15 | Production readiness sign-off doc + Helm notes | T12 | Done |
+| EMCAP-P7-T16 | Traceability + matrix + pitfalls sync | T03–T15 | Done |
+
+Playbook: `plan/06-sdd-gap-closure.md` · Matrix: `spec/sdd/04-capability-matrix.md`
+
+---
+
 ## Immediate Next Steps
 
-**All 85 backlog tasks complete.**
+**Phase 7 complete (108/108).** Review diff; commit when ready.
 
-1. Review changes and create initial git commit when ready.
-2. Push to GitHub; run `scripts/setup-branch-protection.ps1` to enforce `main`/`develop` rules.
-3. Configure deploy secrets (`REGISTRY_TOKEN`, `KUBE_CONFIG`) before first cluster deploy.
+1. Optional: ratchet CI `--cov-fail-under` from 70 → 80 (`docs/dev/recipes/add-coverage-gate.md`).
+2. Optional: SaaS tenant switcher + theme tokens (`docs/dev/saas-shell.md`).
+3. Production cutover: complete checklist in `docs/ops/production-readiness.md`.
 
-**Cursor project assets:** `.cursor/README.md` — skills and rules for this repo only.
+**Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`
