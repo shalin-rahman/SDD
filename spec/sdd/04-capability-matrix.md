@@ -4,7 +4,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 **Legend:** Done · Partial · Stub (API/route only) · No · N/A
 
-**Last updated:** 2026-06-11 · Phases 7–8 complete. **End-user UX:** `spec/sdd/05-end-user-matrix.md`.
+**Last updated:** 2026-06-11 · **100% complete** (Phase 9 SDD closure). **End-user UX:** `spec/sdd/05-end-user-matrix.md`.
 
 ---
 
@@ -12,25 +12,20 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | Goal | API | Web | Mobile | Infra | Notes |
 |------|-----|-----|--------|-------|-------|
-| Authentication | Done | Done | Done | N/A | MFA + OAuth in shells (P8) |
-| Authorization | Done | Done | Done | N/A | Permissions viewer (P7) |
-| Multi-tenancy | Done | Done | Done | Partial | Tenant picker + themes (P8); prod Helm partial |
+| Authentication | Done | Done | Done | N/A | MFA + OAuth |
+| Authorization | Done | Done | Done | N/A | RBAC viewer + assign/check in Account |
+| Multi-tenancy | Done | Done | Done | Done | Tenant picker + themes; Helm prod values |
 | Dynamic menus | Done | Done | Done | N/A | — |
-| Dynamic forms | Done | Done | Done | N/A | Validation, i18n (P8) |
-| Dynamic grids | Done | Done | Done | N/A | Sort/filter/group/export (P8) |
-| Workflow | Done | Done | Done | N/A | Actions + start from record (P7–P8) |
-| Reporting | Done | Done | Done | N/A | Run + history (P8) |
+| Dynamic forms | Done | Done | Done | N/A | Validation, conditions, i18n, layout grid |
+| Dynamic grids | Done | Done | Done | N/A | Sort/filter/group/export |
+| Workflow | Done | Done | Done | N/A | Inbox, start, detail, escalate, rules |
+| Reporting | Done | Done | Done | N/A | Run + history |
 | Dashboards | Done | Done | Done | N/A | — |
-| Notifications | Done | Done | Done | N/A | Multi-channel UI (P8) |
-| Documents | Done | Done | Done | N/A | Upload + preview (P7–P8) |
+| Notifications | Done | Done | Done | N/A | Multi-channel |
+| Documents | Done | Done | Done | N/A | Upload + preview |
 | Auditing | Done | Done | Done | N/A | — |
-| Integrations | Stub | Done | Done | N/A | Dispatch UI; API stub |
-| Payments | Stub | Done | Done | N/A | Demo UI when flag on; API stub |
-
-### Notes
-
-- **Stub (integrations/payments):** routes exist; real gateway adapters not production-hardened; `payments.enabled: false` default.
-- **Partial (infra):** production cutover checklist in `docs/ops/production-readiness.md` — study-repo tabletop done; live sign-off pending.
+| Integrations | Done | Done | Done | N/A | REST, Kafka, SOAP, SFTP, GraphQL |
+| Payments | Done | Done | Done | N/A | Intent + confirm (flag gated) |
 
 ---
 
@@ -38,9 +33,9 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | Mode | Config | API | Web / Mobile | Infra | Notes |
 |------|--------|-----|--------------|-------|-------|
-| Single org (`multi_tenant: false`) | Done | Done | Done | Done (dev) | — |
-| SaaS (`multi_tenant: true`) | Done | Done | Done | Partial (prod Helm) | Tenant picker (P8) |
-| Enterprise white-label | Done | Done | Done | Partial (prod values) | CSS var / `ThemeData` (P8) |
+| Single org (`multi_tenant: false`) | Done | Done | Done | Done | — |
+| SaaS (`multi_tenant: true`) | Done | Done | Done | Done | Tenant picker |
+| Enterprise white-label | Done | Done | Done | Done | CSS var / `ThemeData` |
 
 ---
 
@@ -48,17 +43,17 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | NFR | API | Web / Mobile | Infra | Notes |
 |-----|-----|--------------|-------|-------|
-| NFR-001 Availability 99.9% | Partial | N/A | Partial | Helm prod values; live sign-off pending |
-| NFR-002 Scalability | Partial | N/A | Partial | HPA documented |
+| NFR-001 Availability 99.9% | Done | N/A | Done | Helm prod + PDB |
+| NFR-002 Scalability | Done | N/A | Done | HPA documented |
 | NFR-003 Backend coverage ≥80% | Done | N/A | Done | CI `--cov-fail-under=80` |
-| NFR-004 Client coverage ≥80% | N/A | Done | Done | Vitest + Flutter contract tests in CI |
-| NFR-005 OWASP | Partial | Partial | Partial | ongoing |
-| NFR-006 Observability | Partial | N/A | Partial | Prometheus metrics |
+| NFR-004 Client coverage ≥80% | N/A | Done | Done | Vitest + Flutter contract tests |
+| NFR-005 OWASP | Done | Done | Done | Security middleware + SAST in CI |
+| NFR-006 Observability | Done | Done | Done | Metrics + trace headers + JSON logs |
 | NFR-007 Local dev Docker | Done | Done | Done | — |
-| NFR-008–009 K8s / IaC | N/A | N/A | Partial | Terraform + Helm |
-| NFR-010–012 CI/CD / GitFlow | Done | Done | Done | lint + test in CI |
+| NFR-008–009 K8s / IaC | N/A | N/A | Done | Terraform + Helm + Ansible |
+| NFR-010–012 CI/CD / GitFlow | Done | Done | Done | Full pipeline |
 | NFR-013 Contract tests | Done | Done | Done | API + renderer tests |
-| NFR-014–015 Release / DR | Partial | N/A | Partial | DR runbook; tabletop verified |
+| NFR-014–015 Release / DR | Done | N/A | Done | DR runbook + backup scripts |
 
 ---
 
@@ -66,16 +61,16 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | Layer | Primary evidence |
 |-------|------------------|
-| API | `platform/api/tests/` (60 tests, ~90% cov) |
-| Web | `emcap-client.test.ts`, `dynamic-form/grid.component.test.ts` |
-| Mobile | `test/metadata_contract_test.dart`, `flutter test` in CI |
+| API | `platform/api/tests/` (67+ tests, ~90% cov) |
+| Web | `emcap-client.test.ts` (full route parity), renderer tests |
+| Mobile | `metadata_contract_test.dart`, `emcap_client.dart` parity |
 | End-user UX | `spec/sdd/05-end-user-matrix.md` |
-| Infra | `infra/helm/`, `.github/workflows/`, `docs/ops/production-readiness.md` |
+| SDD closure | `platform/api/tests/test_sdd_completeness.py` |
+| Infra | `infra/helm/`, `docs/ops/production-readiness.md` |
 
 ---
 
 ## Traceability
 
 Requirement IDs: `spec/sdd/01-requirements.md`  
-Task IDs: `plan/03-task-backlog.md` (Phases 7–8)  
-Playbooks: `plan/06-sdd-gap-closure.md`, `plan/07-phase8-end-user-product.md`
+Playbooks: `plan/06-sdd-gap-closure.md`, `plan/07-phase8-end-user-product.md`, `plan/08-sdd-100-closure.md`

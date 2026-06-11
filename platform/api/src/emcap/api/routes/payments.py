@@ -42,3 +42,22 @@ def create_payment_intent(
         )
     finally:
         session.close()
+
+
+@router.post("/intents/{transaction_id}/confirm")
+def confirm_payment_intent(
+    transaction_id: str,
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+) -> dict[str, Any]:
+    config = request.app.state.platform_config
+    if not config.modules.payments.enabled or not config.payments.enabled:
+        raise HTTPException(status_code=403, detail="Payments disabled")
+
+    session = _session(request)
+    try:
+        return PaymentGateway(session, tenant_id=tenant_id).confirm_intent(transaction_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    finally:
+        session.close()

@@ -2,7 +2,7 @@
 
 ## All phases complete
 
-**131 / 131** backlog tasks Done. Phases 0–8 delivered per `spec/framework-sdd.txt`.
+**131 / 131** backlog tasks Done · **Phase 9 SDD 100% closure** complete.
 
 | Phase | Focus | Playbook |
 |-------|-------|----------|
@@ -10,6 +10,7 @@
 | 6 | Agent memory + Reports UI | `plan/05-phase6-playbook.md` |
 | 7 | Platform service wiring in shells | `plan/06-sdd-gap-closure.md` |
 | 8 | End-user product depth | `plan/07-phase8-end-user-product.md` |
+| 9 | SDD 100% closure | `plan/08-sdd-100-closure.md` |
 
 | Status doc | Path |
 |------------|------|
@@ -34,6 +35,6 @@ cd clients/mobile; flutter analyze; flutter test
 .\scripts\verify-full-stack.ps1
 ```
 
-**60 pytest** · **8 vitest** · **3 flutter** · coverage **~90%**
+**66 pytest** · **9 vitest** · **4 flutter** · coverage **~90%**
 
 **Current focus:** Review diff; commit when ready. Live production sign-off: `docs/ops/production-readiness.md`.

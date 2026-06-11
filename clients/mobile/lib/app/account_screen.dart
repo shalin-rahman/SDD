@@ -129,15 +129,87 @@ class _AccountScreenState extends State<AccountScreen> {
                 },
                 child: const Text('REST dispatch'),
               ),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await widget.client.publishKafkaIntegration('emcap.events', {'ping': true});
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
+                },
+                child: const Text('Kafka publish'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await widget.client.invokeSoapIntegration(
+                    'https://example.com/soap',
+                    'Ping',
+                    {},
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
+                },
+                child: const Text('SOAP invoke'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await widget.client.uploadSftpIntegration(
+                    'sftp.example.com',
+                    '/inbound/data.json',
+                    {'ok': true},
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
+                },
+                child: const Text('SFTP upload'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await widget.client.graphqlQuery('{ health { status } }');
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
+                },
+                child: const Text('GraphQL health'),
+              ),
+              const Text('Admin', style: TextStyle(fontWeight: FontWeight.bold)),
+              FutureBuilder<Map<String, dynamic>>(
+                future: widget.client.getMe(),
+                builder: (context, meSnap) {
+                  if (!meSnap.hasData) return const SizedBox.shrink();
+                  return Text('User: ${meSnap.data!['user_id'] ?? meSnap.data}');
+                },
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await widget.client.checkAuth('inventory.access');
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Allowed: ${result['allowed']}')),
+                  );
+                },
+                child: const Text('Check inventory.access'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final text = await widget.client.getMetrics();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(text.length > 80 ? text.substring(0, 80) : text)),
+                  );
+                },
+                child: const Text('Fetch metrics'),
+              ),
               if (data.paymentsEnabled) ...[
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () async {
                     try {
                       final result = await widget.client.createPaymentIntent('10.00');
+                      final txnId = '${result['transaction_id'] ?? ''}';
+                      if (txnId.isNotEmpty) {
+                        await widget.client.confirmPaymentIntent(txnId);
+                      }
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Intent: ${result['id'] ?? result}')),
+                        SnackBar(content: Text('Payment: $txnId confirmed')),
                       );
                     } catch (err) {
                       if (!context.mounted) return;

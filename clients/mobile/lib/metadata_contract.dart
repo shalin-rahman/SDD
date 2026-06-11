@@ -118,6 +118,25 @@ class DynamicFormRenderer {
     return visible;
   }
 
+  int layoutSpan(String name) {
+    final field = fieldMetadata(metadata, name);
+    return (field?['span'] as int?) ?? 12;
+  }
+
+  int layoutRow(String name) {
+    final field = fieldMetadata(metadata, name);
+    return (field?['row'] as int?) ?? 0;
+  }
+
+  List<List<String>> layoutRows(List<String> visibleNames) {
+    final byRow = <int, List<String>>{};
+    for (final name in visibleNames) {
+      byRow.putIfAbsent(layoutRow(name), () => []).add(name);
+    }
+    final rows = byRow.keys.toList()..sort();
+    return rows.map((row) => byRow[row]!).toList();
+  }
+
   String? validateField(Map<String, dynamic> field, dynamic value) {
     if (field['required'] == true && (value == null || '$value'.isEmpty)) {
       return '${field['label'] ?? field['name']} is required';

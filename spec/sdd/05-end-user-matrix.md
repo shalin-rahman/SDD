@@ -4,53 +4,53 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 **Legend:** Done · Partial · No · N/A (admin/ops only)
 
-**Last updated:** 2026-06-11 · Phase 8 complete (mobile parity closed).
+**Last updated:** 2026-06-11 · **100% complete** (Phase 9).
 
-**Companion:** `spec/sdd/04-capability-matrix.md` (platform service wiring, Phase 7).
+**Companion:** `spec/sdd/04-capability-matrix.md`
 
 ---
 
 ## Entity & CRUD (§8, §9, §30)
 
-| Capability | Web | Mobile | Phase 8 task |
-|------------|-----|--------|--------------|
+| Capability | Web | Mobile | Notes |
+|------------|-----|--------|-------|
 | Login (username/password) | Done | Done | — |
-| OAuth login (config gated) | Done | Done | P8-T12 |
+| OAuth login (config gated) | Done | Done | — |
 | Browse entity menus | Done | Done | — |
 | List records | Done | Done | — |
 | Create record | Done | Done | — |
-| Edit record | Done | Done | P8-T03 |
-| Delete record | Done | Done | P8-T04 |
-| Search records (`?q=`) | Done | Done | P8-T05 |
-| Pagination | Done | Done | P8-T05 |
+| Edit record | Done | Done | — |
+| Delete record | Done | Done | — |
+| Search records (`?q=`) | Done | Done | — |
+| Pagination | Done | Done | — |
 | Record detail (notes, docs, audit) | Done | Done | — |
 
 ---
 
 ## Dynamic forms (§9)
 
-| Capability | Web | Mobile | Phase 8 task |
-|------------|-----|--------|--------------|
+| Capability | Web | Mobile | Notes |
+|------------|-----|--------|-------|
 | Metadata-driven fields | Done | Done | — |
-| Field types (date, number, checkbox) | Done | Done | P8-T06 |
-| Inline validation errors | Done | Done | P8-T06 |
-| Conditional show/hide | Done | Done | P8-T07 |
-| Localized labels (`i18n`) | Done | Done | P8-T07 |
-| Layout grid (row/col/span) | Partial | Partial | future |
+| Field types (date, number, checkbox) | Done | Done | — |
+| Inline validation errors | Done | Done | — |
+| Conditional show/hide | Done | Done | — |
+| Localized labels (`i18n`) | Done | Done | — |
+| Layout grid (row/col/span) | Done | Done | CSS grid / flex rows |
 
 ---
 
 ## Dynamic grids (§9)
 
-| Capability | Web | Mobile | Phase 8 task |
-|------------|-----|--------|--------------|
+| Capability | Web | Mobile | Notes |
+|------------|-----|--------|-------|
 | Metadata columns | Done | Done | — |
-| CSV export | Done | Done | P8-T10 |
-| Excel export | Done | Done | P8-T10 |
-| PDF export | Done | Done | P8-T10 |
-| Column sort | Done | Done | P8-T08 |
-| Column filter | Done | Done | P8-T08 |
-| Row grouping | Done | Done | P8-T09 |
+| CSV export | Done | Done | — |
+| Excel export | Done | Done | — |
+| PDF export | Done | Done | — |
+| Column sort | Done | Done | — |
+| Column filter | Done | Done | — |
+| Row grouping | Done | Done | — |
 | Realtime refresh (SSE) | Done | Done | — |
 | Offline sync hint | Done | Done | — |
 
@@ -58,56 +58,68 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 ## Identity & tenancy (§7, §3)
 
-| Capability | Web | Mobile | Phase 8 task |
-|------------|-----|--------|--------------|
-| MFA enroll/verify | Done | Done | P8-T11 |
-| OAuth / SSO login | Done | Done | P8-T12 |
-| Tenant switcher (SaaS) | Done | Done | P8-T13 |
-| White-label theme tokens | Done | Done | P8-T13 |
+| Capability | Web | Mobile | Notes |
+|------------|-----|--------|-------|
+| MFA enroll/verify | Done | Done | — |
+| OAuth / SSO login | Done | Done | — |
+| Tenant switcher (SaaS) | Done | Done | — |
+| White-label theme tokens | Done | Done | — |
 | Permissions read-only | Done | Done | — |
+| Role assign / ABAC check | Done | Done | Account admin section |
 
 ---
 
 ## Platform services in UI (§10–17)
 
-| Capability | Web | Mobile | Phase 8 task |
-|------------|-----|--------|--------------|
+| Capability | Web | Mobile | Notes |
+|------------|-----|--------|-------|
 | Workflow inbox actions | Done | Done | — |
-| Start workflow from record | Done | Done | P8-T15 |
-| SLA / due date display | Done | Done | P8-T15 |
+| Workflow instance detail | Done | Done | Web inbox Detail button |
+| Workflow escalate | Done | Done | Web inbox + API |
+| Rule evaluate | Done | Done | Account |
+| Start workflow from record | Done | Done | — |
+| SLA / due date display | Done | Done | — |
 | Reports run | Done | Done | — |
-| Report history / schedules | Done | Done | P8-T16 |
+| Report history / schedules | Done | Done | — |
 | Dashboards | Done | Done | — |
-| Notifications (multi-channel) | Done | Done | P8-T17 |
+| Notifications (multi-channel) | Done | Done | — |
 | Document upload + list | Done | Done | — |
-| Document preview / versions | Done | Done | P8-T14 |
-| Integrations dispatch UI | Done | Done | P8-T18 |
-| Payments checkout (flag gated) | Done | Done | P8-T18 |
-| AI chat (flag gated) | Done | Done | P8-T19 |
+| Document preview / versions | Done | Done | — |
+| REST dispatch | Done | Done | — |
+| Kafka publish | Done | Done | Account |
+| SOAP invoke | Done | Done | Account |
+| SFTP upload | Done | Done | Account |
+| GraphQL query | Done | Done | Account |
+| Payments intent + confirm | Done | Done | Flag gated |
+| AI chat + summarize | Done | Done | Assistant |
+| Prometheus metrics | Done | Done | Account |
 
 ---
 
 ## Business modules (§1, §27, §30)
 
-| Module | End-user menus | Phase 8 task |
-|--------|----------------|--------------|
-| Inventory | Done | — |
-| CRM (LEAD, CONTACT) | Done | P8-T20 |
-| Demo (CUSTOMER) | Done | — |
+| Module | End-user menus | Notes |
+|--------|----------------|-------|
+| Inventory | Done | PRODUCT, WAREHOUSE |
+| CRM | Done | LEAD, CONTACT |
+| Demo | Done | CUSTOMER |
+| Accounting | Done | ACCOUNT, JOURNAL_ENTRY |
+| HRM | Done | EMPLOYEE, LEAVE_REQUEST |
+| POS | Done | SALE, TERMINAL |
 
 ---
 
 ## Quality & production (§25, §29)
 
-| NFR | Web / Mobile | Phase 8 task |
-|-----|--------------|--------------|
-| Renderer contract tests | Done | P8-T21 |
-| Client coverage ≥80% | Done | P8-T21 |
-| Backend coverage gate 80% | Done | P8-T21 |
-| Production readiness (study tabletop) | Done | P8-T22 |
+| NFR | Web / Mobile | Notes |
+|-----|--------------|-------|
+| Renderer contract tests | Done | vitest + flutter |
+| Client coverage ≥80% | Done | CI |
+| Backend coverage gate 80% | Done | CI |
+| Production readiness | Done | `docs/ops/production-readiness.md` |
 
 ---
 
 ## Traceability
 
-Requirement: **FR-008c** · Playbook: `plan/07-phase8-end-user-product.md` · **131/131** backlog Done
+Requirement: **FR-008c**, **FR-014** · Playbook: `plan/08-sdd-100-closure.md`

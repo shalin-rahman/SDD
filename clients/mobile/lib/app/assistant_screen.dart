@@ -39,20 +39,44 @@ class _AssistantScreenState extends State<AssistantScreen> {
                     maxLines: 3,
                   ),
                   if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                  ElevatedButton(
-                    onPressed: () async {
-                      setState(() {
-                        _error = null;
-                        _response = null;
-                      });
-                      try {
-                        final result = await widget.client.aiChat(_message.text);
-                        setState(() => _response = '${result['reply'] ?? result}');
-                      } catch (err) {
-                        setState(() => _error = err.toString());
-                      }
-                    },
-                    child: const Text('Send'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              _error = null;
+                              _response = null;
+                            });
+                            try {
+                              final result = await widget.client.aiChat(_message.text);
+                              setState(() => _response = '${result['reply'] ?? result}');
+                            } catch (err) {
+                              setState(() => _error = err.toString());
+                            }
+                          },
+                          child: const Text('Chat'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              _error = null;
+                              _response = null;
+                            });
+                            try {
+                              final result = await widget.client.aiSummarize(_message.text);
+                              setState(() => _response = '${result['summary'] ?? result}');
+                            } catch (err) {
+                              setState(() => _error = err.toString());
+                            }
+                          },
+                          child: const Text('Summarize'),
+                        ),
+                      ),
+                    ],
                   ),
                   if (_response != null) Expanded(child: SingleChildScrollView(child: Text(_response!))),
                 ],

@@ -200,6 +200,10 @@ export class EmcapClient {
     return this.request(`/api/v1/workflows/instances${query}`);
   }
 
+  getWorkflowInstance(instanceId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/workflows/instances/${instanceId}`);
+  }
+
   transitionWorkflow(
     instanceId: string,
     action: string,
@@ -291,6 +295,88 @@ export class EmcapClient {
       method: "POST",
       body: JSON.stringify({ url, payload }),
     });
+  }
+
+  publishKafkaIntegration(topic: string, payload: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/integrations/kafka/publish", {
+      method: "POST",
+      body: JSON.stringify({ topic, payload }),
+    });
+  }
+
+  invokeSoapIntegration(
+    endpoint: string,
+    action: string,
+    payload: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/integrations/soap/invoke", {
+      method: "POST",
+      body: JSON.stringify({ endpoint, action, payload }),
+    });
+  }
+
+  uploadSftpIntegration(
+    host: string,
+    path: string,
+    payload: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/integrations/sftp/upload", {
+      method: "POST",
+      body: JSON.stringify({ host, path, payload }),
+    });
+  }
+
+  graphqlQuery(query: string, variables: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/graphql", {
+      method: "POST",
+      body: JSON.stringify({ query, variables }),
+    });
+  }
+
+  getMe(): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/auth/me");
+  }
+
+  assignRole(userId: string, roleCode: string): Promise<{ status: string }> {
+    return this.request("/api/v1/auth/roles/assign", {
+      method: "POST",
+      body: JSON.stringify({ user_id: userId, role_code: roleCode }),
+    });
+  }
+
+  checkAuth(permission: string, tenantId?: string): Promise<{ allowed: boolean }> {
+    return this.request("/api/v1/auth/check", {
+      method: "POST",
+      body: JSON.stringify({ permission, tenant_id: tenantId ?? this.tenantId }),
+    });
+  }
+
+  escalateWorkflows(): Promise<{ escalated: number }> {
+    return this.request("/api/v1/workflows/escalate", { method: "POST" });
+  }
+
+  evaluateWorkflowRule(
+    expression: string,
+    context: Record<string, unknown>,
+  ): Promise<{ result: unknown }> {
+    return this.request("/api/v1/workflows/rules/evaluate", {
+      method: "POST",
+      body: JSON.stringify({ expression, context }),
+    });
+  }
+
+  listEntities(): Promise<{ entities: string[] }> {
+    return this.request("/api/v1/entities");
+  }
+
+  getMetrics(): Promise<string> {
+    return fetch(`${this.baseUrl}/api/v1/metrics`, { headers: this.headers() }).then((r) =>
+      r.text(),
+    );
+  }
+
+  confirmPaymentIntent(transactionId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/payments/intents/${transactionId}/confirm`, { method: "POST" });
   }
 
   listReports(): Promise<{ reports: string[] }> {

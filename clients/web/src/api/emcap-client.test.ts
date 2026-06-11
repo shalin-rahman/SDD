@@ -46,6 +46,19 @@ const REQUIRED_METHODS = [
   "getDocument",
   "aiChat",
   "aiSummarize",
+  "getWorkflowInstance",
+  "publishKafkaIntegration",
+  "invokeSoapIntegration",
+  "uploadSftpIntegration",
+  "graphqlQuery",
+  "getMe",
+  "assignRole",
+  "checkAuth",
+  "escalateWorkflows",
+  "evaluateWorkflowRule",
+  "listEntities",
+  "getMetrics",
+  "confirmPaymentIntent",
 ] as const;
 
 describe("EmcapClient contract", () => {

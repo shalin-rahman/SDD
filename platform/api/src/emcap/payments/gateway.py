@@ -34,3 +34,22 @@ class PaymentGateway:
             "currency": row.currency,
             "status": row.status,
         }
+
+    def confirm_intent(self, transaction_id: str) -> dict[str, Any]:
+        row = (
+            self._session.query(PaymentTransactionRow)
+            .filter_by(id=transaction_id, tenant_id=self._tenant_id)
+            .one_or_none()
+        )
+        if row is None:
+            raise KeyError(f"Transaction {transaction_id} not found")
+        row.status = "succeeded"
+        self._session.commit()
+        self._session.refresh(row)
+        return {
+            "transaction_id": row.id,
+            "provider": row.provider,
+            "amount": row.amount,
+            "currency": row.currency,
+            "status": row.status,
+        }

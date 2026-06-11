@@ -131,7 +131,7 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `GET /api/v1/workflows/instances` | `listWorkflowInstances(recordId?)` | `listWorkflowInstances({recordId})` | Workflow tasks inbox |
 | `POST /api/v1/workflows/instances/{id}/transition` | `transitionWorkflow()` | `transitionWorkflow()` | Inbox Submit / Approve / Reject |
 | `POST /api/v1/workflows/instances/{id}/delegate` | `delegateWorkflow()` | `delegateWorkflow()` | Inbox delegate action |
-| `GET /api/v1/workflows/instances/{id}` | — | — | API only |
+| `GET /api/v1/workflows/instances/{id}` | `getWorkflowInstance()` | `getWorkflowInstance()` | Workflow inbox Detail |
 | `GET /api/v1/documents?entity_code=&record_id=` | `listDocuments()` | `listDocuments()` | Record detail panel |
 | `POST /api/v1/documents/upload` | `uploadDocument()` | `uploadDocument()` | Record detail upload form |
 | `GET /api/v1/entities/{entity}/audit` | `listAudit()` | `listAudit()` | Record detail audit table |
@@ -156,7 +156,19 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `POST /api/v1/auth/mfa/enroll` | `enrollMfa()` | `enrollMfa()` | Account MFA |
 | `POST /api/v1/auth/mfa/verify` | `verifyMfa()` | `verifyMfa()` | Account MFA |
 | `POST /api/v1/ai/chat` | `aiChat()` | `aiChat()` | Assistant (flag gated) |
-| `POST /api/v1/ai/summarize` | `aiSummarize()` | — | Web API only |
+| `POST /api/v1/ai/summarize` | `aiSummarize()` | `aiSummarize()` | Assistant |
+| `POST /api/v1/integrations/kafka/publish` | `publishKafkaIntegration()` | `publishKafkaIntegration()` | Account |
+| `POST /api/v1/integrations/soap/invoke` | `invokeSoapIntegration()` | `invokeSoapIntegration()` | Account |
+| `POST /api/v1/integrations/sftp/upload` | `uploadSftpIntegration()` | `uploadSftpIntegration()` | Account |
+| `POST /api/v1/graphql` | `graphqlQuery()` | `graphqlQuery()` | Account |
+| `GET /api/v1/entities` | `listEntities()` | `listEntities()` | Account |
+| `GET /api/v1/auth/me` | `getMe()` | `getMe()` | Account |
+| `POST /api/v1/auth/roles/assign` | `assignRole()` | `assignRole()` | Account |
+| `POST /api/v1/auth/check` | `checkAuth()` | `checkAuth()` | Account |
+| `POST /api/v1/workflows/escalate` | `escalateWorkflows()` | `escalateWorkflows()` | Workflow inbox |
+| `POST /api/v1/workflows/rules/evaluate` | `evaluateWorkflowRule()` | `evaluateWorkflowRule()` | Account |
+| `GET /api/v1/metrics` | `getMetrics()` | `getMetrics()` | Account |
+| `POST /api/v1/payments/intents/{id}/confirm` | `confirmPaymentIntent()` | `confirmPaymentIntent()` | Account |
 | CORS (`OPTIONS` + cross-origin `GET/POST`) | Browser automatic | Flutter web | `CORSMiddleware` in `emcap/main.py` |
 
 **Parity note (Phases 7–8):** Web (`entity-view.ts` + `main.ts`) and mobile (`entity_screen.dart` + app screens) provide full entity UX: edit/delete/search/pagination, validation/conditions/i18n, grid sort/filter/group/export, workflow start, document preview, MFA/OAuth, tenant picker, multi-channel notifications, report runs, integrations dispatch, payments demo, and AI assistant when enabled. Both subscribe to SSE when `grid.realtime` is set.

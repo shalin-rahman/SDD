@@ -66,6 +66,15 @@ export class DynamicFormRenderer {
     return errors;
   }
 
+  layoutStyle(field: FormFieldMetadata): Record<string, string> {
+    const colStart = field.col + 1;
+    const colEnd = colStart + Math.max(1, field.span);
+    return {
+      gridColumn: `${colStart} / ${colEnd}`,
+      gridRow: String(field.row + 1),
+    };
+  }
+
   createInputElement(field: FormFieldMetadata, value: unknown): HTMLInputElement | HTMLSelectElement {
     const type = field.field_type ?? "text";
     if (type === "checkbox") {

@@ -122,6 +122,10 @@ class EmcapClient {
     return _request('POST', '/api/v1/ai/chat', body: {'message': message});
   }
 
+  Future<Map<String, dynamic>> aiSummarize(String text) async {
+    return _request('POST', '/api/v1/ai/summarize', body: {'text': text});
+  }
+
   Future<Map<String, dynamic>> createRecord(
     String entityCode,
     Map<String, dynamic> data,
@@ -174,6 +178,24 @@ class EmcapClient {
     final query = recordId == null ? '' : '?record_id=${Uri.encodeComponent(recordId)}';
     final body = await _request('GET', '/api/v1/workflows/instances$query');
     return List<Map<String, dynamic>>.from(body['instances'] as List);
+  }
+
+  Future<Map<String, dynamic>> getWorkflowInstance(String instanceId) async {
+    return _request('GET', '/api/v1/workflows/instances/$instanceId');
+  }
+
+  Future<Map<String, dynamic>> escalateWorkflows() async {
+    return _request('POST', '/api/v1/workflows/escalate');
+  }
+
+  Future<Map<String, dynamic>> evaluateWorkflowRule(
+    String expression,
+    Map<String, dynamic> context,
+  ) async {
+    return _request('POST', '/api/v1/workflows/rules/evaluate', body: {
+      'expression': expression,
+      'context': context,
+    });
   }
 
   Future<List<Map<String, dynamic>>> listDocuments(String entityCode, String recordId) async {
@@ -299,6 +321,86 @@ class EmcapClient {
       'url': url,
       'payload': payload,
     });
+  }
+
+  Future<Map<String, dynamic>> publishKafkaIntegration(
+    String topic,
+    Map<String, dynamic> payload,
+  ) async {
+    return _request('POST', '/api/v1/integrations/kafka/publish', body: {
+      'topic': topic,
+      'payload': payload,
+    });
+  }
+
+  Future<Map<String, dynamic>> invokeSoapIntegration(
+    String endpoint,
+    String action,
+    Map<String, dynamic> payload,
+  ) async {
+    return _request('POST', '/api/v1/integrations/soap/invoke', body: {
+      'endpoint': endpoint,
+      'action': action,
+      'payload': payload,
+    });
+  }
+
+  Future<Map<String, dynamic>> uploadSftpIntegration(
+    String host,
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    return _request('POST', '/api/v1/integrations/sftp/upload', body: {
+      'host': host,
+      'path': path,
+      'payload': payload,
+    });
+  }
+
+  Future<Map<String, dynamic>> graphqlQuery(
+    String query, {
+    Map<String, dynamic> variables = const {},
+  }) async {
+    return _request('POST', '/api/v1/graphql', body: {
+      'query': query,
+      'variables': variables,
+    });
+  }
+
+  Future<Map<String, dynamic>> getMe() async {
+    return _request('GET', '/api/v1/auth/me');
+  }
+
+  Future<Map<String, dynamic>> assignRole(String userId, String roleCode) async {
+    return _request('POST', '/api/v1/auth/roles/assign', body: {
+      'user_id': userId,
+      'role_code': roleCode,
+    });
+  }
+
+  Future<Map<String, dynamic>> checkAuth(String permission, {String? tenantId}) async {
+    return _request('POST', '/api/v1/auth/check', body: {
+      'permission': permission,
+      'tenant_id': tenantId ?? _tenantId,
+    });
+  }
+
+  Future<List<String>> listEntities() async {
+    final body = await _request('GET', '/api/v1/entities');
+    return List<String>.from(body['entities'] as List);
+  }
+
+  Future<String> getMetrics() async {
+    final uri = Uri.parse('$baseUrl/api/v1/metrics');
+    final response = await http.get(uri, headers: _headers());
+    if (response.statusCode >= 400) {
+      throw Exception('${response.statusCode}: ${response.body}');
+    }
+    return response.body;
+  }
+
+  Future<Map<String, dynamic>> confirmPaymentIntent(String transactionId) async {
+    return _request('POST', '/api/v1/payments/intents/$transactionId/confirm');
   }
 
   void subscribeRecordsStream(String entityCode, void Function() onEvent) {

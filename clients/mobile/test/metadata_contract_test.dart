@@ -15,6 +15,9 @@ void main() {
             'label': 'SKU',
             'field_type': 'text',
             'required': true,
+            'row': 0,
+            'col': 0,
+            'span': 6,
             'validation': [
               {'rule': 'required', 'message': 'SKU is required'},
             ],
@@ -24,6 +27,9 @@ void main() {
             'label': 'Email',
             'field_type': 'email',
             'required': false,
+            'row': 0,
+            'col': 6,
+            'span': 6,
             'validation': [
               {'rule': 'email', 'message': 'Invalid email'},
             ],
@@ -53,6 +59,14 @@ void main() {
     final renderer = DynamicFormRenderer(form);
     expect(renderer.isVisible('email', {'active': false}), isFalse);
     expect(renderer.isVisible('email', {'active': true}), isTrue);
+  });
+
+  test('layout grid rows', () {
+    final renderer = DynamicFormRenderer(form);
+    final rows = renderer.layoutRows(['sku', 'email']);
+    expect(rows.length, 1);
+    expect(rows.first, ['sku', 'email']);
+    expect(renderer.layoutSpan('sku'), 6);
   });
 
   test('grid sort and filter', () {

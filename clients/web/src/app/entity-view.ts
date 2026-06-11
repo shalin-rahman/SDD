@@ -107,12 +107,17 @@ export async function renderEntityView(
   const rebuildForm = (values: Record<string, unknown> = {}): void => {
     if (!formRenderer) return;
     form.innerHTML = "";
+    form.style.display = "grid";
+    form.style.gridTemplateColumns = "repeat(12, 1fr)";
+    form.style.gap = "0.5rem";
     formError = el("p", "", "error");
+    formError.style.gridColumn = "1 / -1";
     const draft = { ...values };
     for (const name of formRenderer.visibleFieldNames(draft)) {
       const field = formRenderer.getField(name);
       if (!field) continue;
       const label = el("label", formRenderer.label(name));
+      Object.assign(label.style, formRenderer.layoutStyle(field));
       const input = formRenderer.createInputElement(field, draft[name]);
       input.name = name;
       input.required = formRenderer.isRequired(name);

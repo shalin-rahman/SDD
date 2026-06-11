@@ -508,7 +508,21 @@ class _EntityScreenState extends State<EntityScreen> {
                 ],
               ],
               const SizedBox(height: 12),
-              ...visibleFields.map((name) => _fieldInput(formRenderer, name)),
+              ...formRenderer.layoutRows(visibleFields).map(
+                (rowNames) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final name in rowNames)
+                      Expanded(
+                        flex: formRenderer.layoutSpan(name),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8, bottom: 8),
+                          child: _fieldInput(formRenderer, name),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               if (_editingId == null)
                 TextField(
                   controller: _noteController,

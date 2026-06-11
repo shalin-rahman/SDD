@@ -8,6 +8,7 @@ from emcap.api.routes import (
     config,
     documents,
     entities,
+    graphql,
     health,
     integrations,
     menus,
@@ -34,6 +35,7 @@ from emcap.module.loader import load_modules
 from emcap.module.models import ModuleDefinition
 from emcap.observability.logging_middleware import JsonLoggingMiddleware
 from emcap.observability.metrics import MetricsMiddleware
+from emcap.observability.tracing_middleware import TracingMiddleware
 from emcap.persistence.database import get_session_factory, init_db
 from emcap.reporting.models import DashboardDefinition, ReportDefinition
 from emcap.tenancy.middleware import TenantMiddleware
@@ -112,6 +114,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(TracingMiddleware)
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(JsonLoggingMiddleware)
     app.add_middleware(RateLimitMiddleware)
@@ -133,6 +136,7 @@ def create_app() -> FastAPI:
     app.include_router(notifications.router, prefix="/api/v1")
     app.include_router(documents.router, prefix="/api/v1")
     app.include_router(integrations.router, prefix="/api/v1")
+    app.include_router(graphql.router, prefix="/api/v1")
     app.include_router(payments.router, prefix="/api/v1")
     app.include_router(ai.router, prefix="/api/v1")
     app.include_router(observability.router, prefix="/api/v1")

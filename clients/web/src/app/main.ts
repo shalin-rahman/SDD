@@ -277,6 +277,14 @@ async function renderWorkflowInbox(root: HTMLElement): Promise<void> {
   stopActiveStream();
   root.innerHTML = "";
   root.append(el("h2", "Workflow tasks"));
+  const escalateBtn = el("button", "Escalate overdue");
+  escalateBtn.type = "button";
+  escalateBtn.addEventListener("click", () => {
+    void client.escalateWorkflows().then((r) => {
+      root.append(el("p", `Escalated: ${String(r.escalated)}`));
+    });
+  });
+  root.append(escalateBtn);
 
   try {
     const { instances } = await client.listWorkflowInstances();
@@ -293,6 +301,7 @@ async function renderWorkflowInbox(root: HTMLElement): Promise<void> {
     table.append(headerRow);
 
     for (const instance of instances) {
+      const instanceId = String(instance.id ?? "");
       const row = el("tr");
       row.append(
         el("td", String(instance.workflow_code ?? "")),
@@ -303,6 +312,14 @@ async function renderWorkflowInbox(root: HTMLElement): Promise<void> {
         el("td", String(instance.due_at ?? instance.sla_hours ?? "")),
       );
       const actionsCell = el("td");
+      const detailBtn = el("button", "Detail", "nav-link");
+      detailBtn.type = "button";
+      detailBtn.addEventListener("click", () => {
+        void client.getWorkflowInstance(instanceId).then((detail) => {
+          window.alert(JSON.stringify(detail, null, 2));
+        });
+      });
+      actionsCell.append(detailBtn);
       appendWorkflowActions(actionsCell, instance);
       row.append(actionsCell);
       table.append(row);
@@ -450,12 +467,93 @@ async function renderAccountView(root: HTMLElement): Promise<void> {
       void client.dispatchRestIntegration(dispatchUrl.value, JSON.parse(dispatchPayload.value) as Record<string, unknown>);
     });
     root.append(dispatchUrl, dispatchPayload, dispatchBtn);
+    const kafkaTopic = document.createElement("input");
+    kafkaTopic.value = "emcap.events";
+    const kafkaBtn = el("button", "Kafka publish");
+    kafkaBtn.addEventListener("click", () => {
+      void client.publishKafkaIntegration(kafkaTopic.value, { ping: true });
+    });
+    root.append(kafkaTopic, kafkaBtn);
+    const soapEndpoint = document.createElement("input");
+    soapEndpoint.value = "https://example.com/soap";
+    const soapAction = document.createElement("input");
+    soapAction.value = "Ping";
+    const soapBtn = el("button", "SOAP invoke");
+    soapBtn.addEventListener("click", () => {
+      void client.invokeSoapIntegration(soapEndpoint.value, soapAction.value, {});
+    });
+    root.append(soapEndpoint, soapAction, soapBtn);
+    const sftpHost = document.createElement("input");
+    sftpHost.value = "sftp.example.com";
+    const sftpPath = document.createElement("input");
+    sftpPath.value = "/inbound/data.json";
+    const sftpBtn = el("button", "SFTP upload");
+    sftpBtn.addEventListener("click", () => {
+      void client.uploadSftpIntegration(sftpHost.value, sftpPath.value, { ok: true });
+    });
+    root.append(sftpHost, sftpPath, sftpBtn);
+    const gqlBtn = el("button", "GraphQL health");
+    gqlBtn.addEventListener("click", () => {
+      void client.graphqlQuery("{ health { status multi_tenant } }").then((r) => {
+        root.append(el("p", `GraphQL: ${JSON.stringify(r)}`));
+      });
+    });
+    root.append(gqlBtn);
+    root.append(el("h3", "Admin"));
+    const meLine = el("p", "");
+    void client.getMe().then((me) => {
+      meLine.textContent = `User: ${String(me.user_id ?? me)}`;
+    });
+    root.append(meLine);
+    const roleUser = document.createElement("input");
+    roleUser.value = "admin";
+    const roleCode = document.createElement("input");
+    roleCode.value = "admin";
+    const assignBtn = el("button", "Assign role");
+    assignBtn.addEventListener("click", () => {
+      void client.assignRole(roleUser.value, roleCode.value);
+    });
+    root.append(roleUser, roleCode, assignBtn);
+    const permCheck = document.createElement("input");
+    permCheck.value = "inventory.access";
+    const checkBtn = el("button", "Check permission");
+    checkBtn.addEventListener("click", () => {
+      void client.checkAuth(permCheck.value).then((r) => {
+        root.append(el("p", `Allowed: ${String(r.allowed)}`));
+      });
+    });
+    root.append(permCheck, checkBtn);
+    const ruleExpr = document.createElement("input");
+    ruleExpr.value = "amount > 100";
+    const ruleBtn = el("button", "Evaluate rule");
+    ruleBtn.addEventListener("click", () => {
+      void client.evaluateWorkflowRule(ruleExpr.value, { amount: 150 }).then((r) => {
+        root.append(el("p", `Rule result: ${String(r.result)}`));
+      });
+    });
+    root.append(ruleExpr, ruleBtn);
+    const metricsBtn = el("button", "Fetch metrics");
+    metricsBtn.addEventListener("click", () => {
+      void client.getMetrics().then((text) => {
+        root.append(el("pre", text.slice(0, 500)));
+      });
+    });
+    root.append(metricsBtn);
+    void client.listEntities().then((r) => {
+      root.append(el("p", `Entities: ${r.entities.join(", ")}`));
+    });
     const modules = config.modules as Record<string, { enabled?: boolean }> | undefined;
     if (modules?.payments?.enabled) {
       const payBtn = el("button", "Create payment intent (demo)");
       payBtn.addEventListener("click", () => {
         void client.createPaymentIntent("10.00").then((result) => {
           root.append(el("p", `Intent: ${JSON.stringify(result)}`));
+          const txnId = String(result.transaction_id ?? "");
+          if (txnId) {
+            void client.confirmPaymentIntent(txnId).then((confirmed) => {
+              root.append(el("p", `Confirmed: ${JSON.stringify(confirmed)}`));
+            });
+          }
         });
       });
       root.append(payBtn);

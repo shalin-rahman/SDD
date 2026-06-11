@@ -58,4 +58,12 @@ describe("DynamicFormRenderer", () => {
     expect(validateField(field, "bad")).toBe("Invalid email");
     expect(validateField(field, "a@b.com")).toBeNull();
   });
+
+  it("applies layout grid row/col/span", () => {
+    const renderer = new DynamicFormRenderer(sampleForm);
+    const sku = renderer.getField("sku");
+    expect(renderer.layoutStyle(sku!)).toEqual({ gridColumn: "1 / 7", gridRow: "1" });
+    const email = renderer.getField("email");
+    expect(renderer.layoutStyle(email!)).toEqual({ gridColumn: "7 / 13", gridRow: "1" });
+  });
 });
