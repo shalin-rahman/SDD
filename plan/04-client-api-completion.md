@@ -132,7 +132,7 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `POST /api/v1/reports/LOW_STOCK/run` | — | — | API only (Inventory report filter) |
 | CORS (`OPTIONS` + cross-origin `GET/POST`) | Browser automatic | Flutter web | `CORSMiddleware` in `emcap/main.py` |
 
-**Parity note:** Web shell wires notes on create via `addNote` after `createRecord`. Mobile implements metadata grid/form, sync snapshot label, and CRUD; notes/workflow client methods exist but are not yet wired in `EntityScreen`. Documents, SSE, sync changes, and LOW_STOCK are verified at the API layer (`test_client_api_gaps.py`) for downstream UI work.
+**Parity note:** Web and mobile shells wire optional notes on create via `addNote` after `createRecord`. Documents, SSE, sync changes, and LOW_STOCK are verified at the API layer (`test_client_api_gaps.py`) for downstream UI work.
 
 ---
 

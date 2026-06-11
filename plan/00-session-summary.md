@@ -2,7 +2,7 @@
 
 ## Phase 5 complete
 
-**51 tests passing** (1 skipped: git guard when not a repo). Reference Inventory module shipped via plug-in model only — no edits to `platform/api/src/emcap/`.
+**57 tests passing** (1 skipped: git guard when not a repo). Reference Inventory module shipped via plug-in model only — no edits to `platform/api/src/emcap/`.
 
 ### Inventory module
 

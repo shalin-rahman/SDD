@@ -17,6 +17,7 @@ class EntityScreen extends StatefulWidget {
 class _EntityScreenState extends State<EntityScreen> {
   late Future<_EntityViewModel> _future;
   final Map<String, TextEditingController> _controllers = {};
+  final _noteController = TextEditingController();
   bool _creating = false;
   String? _createError;
 
@@ -31,6 +32,7 @@ class _EntityScreenState extends State<EntityScreen> {
     for (final controller in _controllers.values) {
       controller.dispose();
     }
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -63,8 +65,17 @@ class _EntityScreenState extends State<EntityScreen> {
       _createError = null;
     });
     try {
-      await widget.client.createRecord(widget.entityCode, _collectDraft());
+      final created = await widget.client.createRecord(widget.entityCode, _collectDraft());
+      final note = _noteController.text.trim();
+      if (note.isNotEmpty) {
+        await widget.client.addNote(
+          widget.entityCode,
+          created['id'] as String,
+          note,
+        );
+      }
       _clearControllers();
+      _noteController.clear();
       await _reload();
     } catch (err) {
       if (!mounted) return;
@@ -144,6 +155,11 @@ class _EntityScreenState extends State<EntityScreen> {
                   controller: _controllers[name],
                   decoration: InputDecoration(labelText: name),
                 ),
+              ),
+              TextField(
+                controller: _noteController,
+                decoration: const InputDecoration(labelText: 'Note (optional)'),
+                maxLines: 2,
               ),
               if (_createError != null) ...[
                 Text(_createError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),

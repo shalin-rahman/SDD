@@ -57,4 +57,6 @@ class SyncService:
             parsed = datetime.fromisoformat(updated.replace("Z", "+00:00"))
         else:
             parsed = updated
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=UTC)
         return parsed >= since

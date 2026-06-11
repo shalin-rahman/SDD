@@ -16,7 +16,7 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-11 · All phases complete · **51 tests passing** (1 skipped)
+**Last updated:** 2026-06-11 · All phases complete · **57 tests passing** (1 skipped)
 
 ---
 
