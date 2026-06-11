@@ -16,6 +16,7 @@ Extracted from SDD v1.0 (`spec/framework-sdd.txt`). Each ID is stable for tracea
 | FR-008 | Dynamic grids share one metadata contract across clients | 9 |
 | FR-008a | Client shells consume platform APIs (auth, menus, metadata, CRUD, sync, reports) without direct DB access | 9 |
 | FR-008b | Client shells expose all §2 reusable services (workflow actions, notifications, documents upload, audit, dashboards) — Phase 7 | 2, 9 |
+| FR-008c | Client shells deliver §9 end-user UX depth (edit/delete, search, validation, conditions, i18n, grid sort/filter/group/export, auth MFA/OAuth, SaaS themes) — Phase 8 | 9 |
 | FR-009 | Workflow supports escalation, delegation, SLA tracking | 10 |
 | FR-010 | Rule engine supports formula mode; scripting optional | 11 |
 | FR-011 | Reporting: reports, dashboards, KPIs, scheduling | 12 |

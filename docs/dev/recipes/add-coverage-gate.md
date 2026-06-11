@@ -7,7 +7,7 @@
    ```yaml
    run: pytest --cov=src --cov-fail-under=80 -q
    ```
-3. Ratchet: if below 80%, set `--cov-fail-under=70` temporarily; document in `plan/06-sdd-gap-closure.md`.
+3. Ratchet: Phase 7 used 70%; Phase 8 raised to **80%** (current gate).
 4. Web: `"test:coverage": "vitest run --coverage"` in `package.json`.
 5. Mobile: `flutter test --coverage` when Flutter in CI.
 

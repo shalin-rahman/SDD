@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../theme.dart';
 import 'account_screen.dart';
+import 'assistant_screen.dart';
 import 'dashboard_screen.dart';
 import 'entity_screen.dart';
 import 'notification_screen.dart';
 import 'report_screen.dart';
 import 'workflow_inbox_screen.dart';
-
-const _fixedDestinations = 5;
 
 class EmcapShell extends StatefulWidget {
   const EmcapShell({super.key, required this.client});
@@ -23,21 +23,41 @@ class _EmcapShellState extends State<EmcapShell> {
   List<Map<String, dynamic>> menus = [];
   int selected = 0;
   String _tenantLabel = '';
+  bool _multiTenant = false;
+  bool _aiEnabled = false;
+  List<Map<String, dynamic>> _tenants = [];
+  String? _selectedTenantId;
+
+  int get _fixedDestinations => _aiEnabled ? 6 : 5;
 
   @override
   void initState() {
     super.initState();
-    _loadMenus();
-    _loadTenant();
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    await _loadTenant();
+    await _loadMenus();
   }
 
   Future<void> _loadTenant() async {
     try {
       final health = await widget.client.getHealth();
+      final tenants = await widget.client.listTenants();
+      final config = await widget.client.getPlatformConfig();
+      final modules = config['modules'] as Map<String, dynamic>? ?? {};
       if (!mounted) return;
       setState(() {
+        _multiTenant = health['multi_tenant'] == true;
         _tenantLabel = 'tenant · ${health['tenant_strategy']} · multi=${health['multi_tenant']}';
+        _tenants = List<Map<String, dynamic>>.from(tenants['tenants'] as List? ?? []);
+        _selectedTenantId = widget.client.getTenantId();
+        _aiEnabled = (modules['ai'] as Map?)?['enabled'] == true;
       });
+      if (tenants['white_label'] == true) {
+        EmcapTheme.seedColor.value = const Color(0xFF1A56DB);
+      }
     } catch (_) {}
   }
 
@@ -50,25 +70,45 @@ class _EmcapShellState extends State<EmcapShell> {
   }
 
   Widget _bodyForSelection() {
-    switch (selected) {
-      case 0:
-        return WorkflowInboxScreen(client: widget.client);
-      case 1:
-        return ReportScreen(client: widget.client);
-      case 2:
-        return DashboardScreen(client: widget.client);
-      case 3:
-        return NotificationScreen(client: widget.client);
-      case 4:
-        return AccountScreen(client: widget.client);
-      default:
-        final menu = menus[selected - _fixedDestinations];
-        return EntityScreen(
-          client: widget.client,
-          entityCode: menu['entity_code'] as String,
-          title: menu['label'] as String,
-        );
+    if (_aiEnabled) {
+      switch (selected) {
+        case 0:
+          return WorkflowInboxScreen(client: widget.client);
+        case 1:
+          return ReportScreen(client: widget.client);
+        case 2:
+          return DashboardScreen(client: widget.client);
+        case 3:
+          return NotificationScreen(client: widget.client);
+        case 4:
+          return AccountScreen(client: widget.client);
+        case 5:
+          return AssistantScreen(client: widget.client, enabled: _aiEnabled);
+        default:
+          break;
+      }
+    } else {
+      switch (selected) {
+        case 0:
+          return WorkflowInboxScreen(client: widget.client);
+        case 1:
+          return ReportScreen(client: widget.client);
+        case 2:
+          return DashboardScreen(client: widget.client);
+        case 3:
+          return NotificationScreen(client: widget.client);
+        case 4:
+          return AccountScreen(client: widget.client);
+        default:
+          break;
+      }
     }
+    final menu = menus[selected - _fixedDestinations];
+    return EntityScreen(
+      client: widget.client,
+      entityCode: menu['entity_code'] as String,
+      title: menu['label'] as String,
+    );
   }
 
   @override
@@ -76,6 +116,15 @@ class _EmcapShellState extends State<EmcapShell> {
     if (menus.isEmpty) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+    final fixedDestinations = <NavigationRailDestination>[
+      const NavigationRailDestination(icon: Icon(Icons.inbox), label: Text('Tasks')),
+      const NavigationRailDestination(icon: Icon(Icons.assessment), label: Text('Reports')),
+      const NavigationRailDestination(icon: Icon(Icons.dashboard), label: Text('Boards')),
+      const NavigationRailDestination(icon: Icon(Icons.notifications), label: Text('Notify')),
+      const NavigationRailDestination(icon: Icon(Icons.person), label: Text('Account')),
+      if (_aiEnabled)
+        const NavigationRailDestination(icon: Icon(Icons.smart_toy), label: Text('Assistant')),
+    ];
     return Scaffold(
       body: Row(
         children: [
@@ -84,11 +133,7 @@ class _EmcapShellState extends State<EmcapShell> {
             onDestinationSelected: (index) => setState(() => selected = index),
             labelType: NavigationRailLabelType.all,
             destinations: [
-              const NavigationRailDestination(icon: Icon(Icons.inbox), label: Text('Tasks')),
-              const NavigationRailDestination(icon: Icon(Icons.assessment), label: Text('Reports')),
-              const NavigationRailDestination(icon: Icon(Icons.dashboard), label: Text('Boards')),
-              const NavigationRailDestination(icon: Icon(Icons.notifications), label: Text('Notify')),
-              const NavigationRailDestination(icon: Icon(Icons.person), label: Text('Account')),
+              ...fixedDestinations,
               ...menus.map(
                 (item) => NavigationRailDestination(
                   icon: const Icon(Icons.folder),
@@ -101,14 +146,34 @@ class _EmcapShellState extends State<EmcapShell> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (_tenantLabel.isNotEmpty)
-                  Material(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: Text(_tenantLabel, style: Theme.of(context).textTheme.bodySmall),
+                Material(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(_tenantLabel, style: Theme.of(context).textTheme.bodySmall)),
+                        if (_multiTenant && _tenants.isNotEmpty)
+                          DropdownButton<String>(
+                            value: _selectedTenantId,
+                            items: _tenants
+                                .map(
+                                  (t) => DropdownMenuItem(
+                                    value: '${t['id'] ?? t['code'] ?? 'default'}',
+                                    child: Text('${t['name'] ?? t['code'] ?? t['id']}'),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              widget.client.setTenantId(value);
+                              setState(() => _selectedTenantId = value);
+                            },
+                          ),
+                      ],
                     ),
                   ),
+                ),
                 Expanded(child: _bodyForSelection()),
               ],
             ),
@@ -132,12 +197,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController(text: 'admin');
   final _password = TextEditingController(text: 'admin123');
   String? _error;
+  bool _oauthAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProviders();
+  }
+
+  Future<void> _loadProviders() async {
+    try {
+      final providers = await widget.client.getAuthProviders();
+      if (!mounted) return;
+      setState(() => _oauthAvailable = providers.contains('oauth'));
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
     _username.dispose();
     _password.dispose();
     super.dispose();
+  }
+
+  void _enterShell(Map<String, dynamic> result) {
+    widget.client.setToken(
+      result['access_token'] as String,
+      (result['tenant_id'] as String?) ?? 'default',
+    );
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => EmcapShell(client: widget.client)),
+    );
   }
 
   @override
@@ -160,20 +251,27 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () async {
                 try {
                   final result = await widget.client.login(_username.text, _password.text);
-                  widget.client.setToken(
-                    result['access_token'] as String,
-                    result['tenant_id'] as String,
-                  );
-                  if (!context.mounted) return;
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => EmcapShell(client: widget.client)),
-                  );
+                  _enterShell(result);
                 } catch (err) {
                   setState(() => _error = err.toString());
                 }
               },
               child: const Text('Sign in'),
             ),
+            if (_oauthAvailable) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () async {
+                  try {
+                    final result = await widget.client.loginOAuth('emcap-client', 'emcap-secret');
+                    _enterShell(result);
+                  } catch (err) {
+                    setState(() => _error = err.toString());
+                  }
+                },
+                child: const Text('OAuth (client credentials)'),
+              ),
+            ],
           ],
         ),
       ),

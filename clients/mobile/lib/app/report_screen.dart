@@ -15,6 +15,7 @@ class _ReportScreenState extends State<ReportScreen> {
   late Future<List<String>> _reportsFuture;
   String? _selectedCode;
   Future<Map<String, dynamic>>? _runFuture;
+  List<Map<String, dynamic>> _runs = [];
 
   @override
   void initState() {
@@ -26,6 +27,10 @@ class _ReportScreenState extends State<ReportScreen> {
     setState(() {
       _selectedCode = code;
       _runFuture = widget.client.runReport(code);
+    });
+    widget.client.listReportRuns(code).then((runs) {
+      if (!mounted) return;
+      setState(() => _runs = runs);
     });
   }
 
@@ -64,6 +69,11 @@ class _ReportScreenState extends State<ReportScreen> {
                       .toList(),
                 ),
               ),
+              if (_selectedCode != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text('Past runs: ${_runs.length} · schedule: cron in module def'),
+                ),
               if (_runFuture != null)
                 Expanded(
                   child: FutureBuilder<Map<String, dynamic>>(
@@ -84,15 +94,11 @@ class _ReportScreenState extends State<ReportScreen> {
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columns: columns
-                              .map((col) => DataColumn(label: Text(col)))
-                              .toList(),
+                          columns: columns.map((col) => DataColumn(label: Text(col))).toList(),
                           rows: rows
                               .map(
                                 (row) => DataRow(
-                                  cells: columns
-                                      .map((col) => DataCell(Text('${row[col] ?? ''}')))
-                                      .toList(),
+                                  cells: columns.map((col) => DataCell(Text('${row[col] ?? ''}'))).toList(),
                                 ),
                               )
                               .toList(),

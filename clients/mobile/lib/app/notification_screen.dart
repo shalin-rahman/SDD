@@ -17,11 +17,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final _subject = TextEditingController(text: 'EMCAP alert');
   final _body = TextEditingController(text: 'Stock level notification');
   String? _error;
+  List<String> _channels = ['email'];
+  String _selectedChannel = 'email';
 
   @override
   void initState() {
     super.initState();
     _future = widget.client.listNotifications();
+    _loadChannels();
+  }
+
+  Future<void> _loadChannels() async {
+    try {
+      final config = await widget.client.getPlatformConfig();
+      final notifications = config['notifications'] as Map<String, dynamic>? ?? {};
+      final enabled = notifications.entries
+          .where((e) => e.value == true)
+          .map((e) => e.key)
+          .toList();
+      if (!mounted || enabled.isEmpty) return;
+      setState(() {
+        _channels = enabled;
+        _selectedChannel = enabled.first;
+      });
+    } catch (_) {}
   }
 
   @override
@@ -36,7 +55,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     setState(() => _error = null);
     try {
       await widget.client.sendNotification(
-        channel: 'email',
+        channel: _selectedChannel,
         recipient: _recipient.text,
         subject: _subject.text,
         body: _body.text,
@@ -54,11 +73,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          DropdownButtonFormField<String>(
+            value: _selectedChannel,
+            decoration: const InputDecoration(labelText: 'Channel'),
+            items: _channels.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+            onChanged: (value) {
+              if (value != null) setState(() => _selectedChannel = value);
+            },
+          ),
           TextField(controller: _recipient, decoration: const InputDecoration(labelText: 'Recipient')),
           TextField(controller: _subject, decoration: const InputDecoration(labelText: 'Subject')),
           TextField(controller: _body, decoration: const InputDecoration(labelText: 'Body'), maxLines: 2),
           if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          ElevatedButton(onPressed: _send, child: const Text('Send email')),
+          ElevatedButton(onPressed: _send, child: const Text('Send')),
           const SizedBox(height: 16),
           FutureBuilder<List<Map<String, dynamic>>>(
             future: _future,

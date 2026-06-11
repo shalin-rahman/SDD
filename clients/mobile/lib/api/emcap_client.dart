@@ -65,9 +65,61 @@ class EmcapClient {
     return _request('GET', '/api/v1/metadata/grids/$entityCode');
   }
 
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode) async {
-    final body = await _request('GET', '/api/v1/entities/$entityCode/records');
+  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+    final query = q == null || q.isEmpty ? '' : '?q=${Uri.encodeComponent(q)}';
+    final body = await _request('GET', '/api/v1/entities/$entityCode/records$query');
     return List<Map<String, dynamic>>.from(body['records'] as List);
+  }
+
+  void setTenantId(String tenantId) {
+    _tenantId = tenantId;
+  }
+
+  String getTenantId() => _tenantId;
+
+  Future<List<String>> getAuthProviders() async {
+    final body = await _request('GET', '/api/v1/auth/providers');
+    return List<String>.from(body['providers'] as List);
+  }
+
+  Future<Map<String, dynamic>> loginOAuth(String clientId, String clientSecret) async {
+    return _request('POST', '/api/v1/auth/oauth/token', body: {
+      'grant_type': 'client_credentials',
+      'client_id': clientId,
+      'client_secret': clientSecret,
+    });
+  }
+
+  Future<Map<String, dynamic>> startWorkflow(
+    String workflowCode,
+    String recordId, {
+    String assignee = 'admin',
+  }) async {
+    return _request('POST', '/api/v1/workflows/$workflowCode/start', body: {
+      'record_id': recordId,
+      'assignee': assignee,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> listReportRuns(String reportCode) async {
+    final body = await _request('GET', '/api/v1/reports/$reportCode/runs');
+    return List<Map<String, dynamic>>.from(body['runs'] as List);
+  }
+
+  Future<Map<String, dynamic>> getDocument(String documentId) async {
+    return _request('GET', '/api/v1/documents/$documentId');
+  }
+
+  Future<Map<String, dynamic>> enrollMfa() async {
+    return _request('POST', '/api/v1/auth/mfa/enroll');
+  }
+
+  Future<Map<String, dynamic>> verifyMfa(String code) async {
+    return _request('POST', '/api/v1/auth/mfa/verify', body: {'code': code});
+  }
+
+  Future<Map<String, dynamic>> aiChat(String message) async {
+    return _request('POST', '/api/v1/ai/chat', body: {'message': message});
   }
 
   Future<Map<String, dynamic>> createRecord(

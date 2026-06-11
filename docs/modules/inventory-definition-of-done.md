@@ -59,7 +59,7 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 | Realtime (SSE) | Platform QA | ☑ | 2026-06-11 | Stream endpoint; web + mobile grid refresh when `grid.realtime` |
 | Workflow | Module owner | ☑ | 2026-06-11 | `STOCK_ADJUSTMENT` lifecycle; inbox transition/delegate in shells |
 | Audit | Platform QA | ☑ | 2026-06-11 | Immutable audit trail; record detail audit viewer in shells |
-| Client UI (Phase 7) | Module owner | ☑ | 2026-06-11 | Upload, notifications, dashboards, permissions, CSV export (web) |
+| Client UI (Phase 7–8) | Module owner | ☑ | 2026-06-11 | Full entity UX web + mobile: edit/delete/search/export/workflow |
 | Search | Platform QA | ☑ | 2026-06-11 | Query param search on entity records |
 | APIs | Module owner | ☑ | 2026-06-11 | PRODUCT + WAREHOUSE CRUD |
 | Menus | Module owner | ☑ | 2026-06-11 | Products and warehouses navigation |
@@ -79,7 +79,7 @@ Reference sign-off for EMCAP Phase 5. The Inventory module (`modules/inventory/m
 
 ```bash
 # From repo root
-cd platform/api && pytest -q tests/test_inventory_e2e.py tests/test_client_api_gaps.py tests/test_platform_core_unchanged.py
+cd platform/api && pytest -q tests/test_inventory_e2e.py tests/test_client_api_gaps.py tests/test_crm_e2e.py tests/test_platform_core_unchanged.py
 
 # Informational platform-core diff (always exit 0)
 bash scripts/verify-platform-core.sh

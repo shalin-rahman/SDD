@@ -1,0 +1,4 @@
+module_code: CRM
+version: 1.0.0
+mount_path: /opt/emcap/modules/crm
+entry: module.py

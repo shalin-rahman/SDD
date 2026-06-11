@@ -36,6 +36,16 @@ const REQUIRED_METHODS = [
   "createPaymentIntent",
   "dispatchRestIntegration",
   "setToken",
+  "setTenantId",
+  "getAuthProviders",
+  "loginOAuth",
+  "enrollMfa",
+  "verifyMfa",
+  "startWorkflow",
+  "listReportRuns",
+  "getDocument",
+  "aiChat",
+  "aiSummarize",
 ] as const;
 
 describe("EmcapClient contract", () => {

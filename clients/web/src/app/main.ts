@@ -1,11 +1,20 @@
 import { createClient } from "../api/emcap-client";
-import { DynamicFormRenderer } from "../dynamic-form.component";
-import { DynamicGridRenderer } from "../dynamic-grid.component";
-import type { GridMetadata } from "../metadata/contract";
-import { validateFormMetadata, validateGridMetadata } from "../metadata/contract";
+import { renderEntityView } from "./entity-view";
 
 const client = createClient();
 let activeStreamCleanup: (() => void) | null = null;
+let aiEnabled = false;
+
+const entityHandles = {
+  stopStream: () => {
+    activeStreamCleanup?.();
+    activeStreamCleanup = null;
+  },
+  setStreamCleanup: (cleanup: (() => void) | null) => {
+    activeStreamCleanup?.();
+    activeStreamCleanup = cleanup;
+  },
+};
 
 function el(tag: string, text = "", className = ""): HTMLElement {
   const node = document.createElement(tag);
@@ -34,7 +43,9 @@ function renderLogin(root: HTMLElement): void {
   button.type = "submit";
   button.textContent = "Sign in";
   const error = el("p", "", "error");
-  form.append(user, pass, button, error);
+  const oauthBtn = el("button", "OAuth (client credentials)");
+  oauthBtn.type = "button";
+  form.append(user, pass, button, oauthBtn, error);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
@@ -45,25 +56,54 @@ function renderLogin(root: HTMLElement): void {
       error.textContent = err instanceof Error ? err.message : "Login failed";
     }
   });
+  oauthBtn.addEventListener("click", () => {
+    void (async () => {
+      try {
+        const providers = await client.getAuthProviders();
+        if (!providers.providers.includes("oauth")) {
+          error.textContent = "OAuth disabled in config";
+          return;
+        }
+        const result = await client.loginOAuth("emcap-client", "emcap-secret");
+        client.setToken(result.access_token, result.tenant_id);
+        void renderShell(root);
+      } catch (err) {
+        error.textContent = err instanceof Error ? err.message : "OAuth failed";
+      }
+    })();
+  });
   root.append(el("h1", "EMCAP"), form);
 }
 
-function downloadCsv(columns: string[], rows: Record<string, unknown>[], filename: string): void {
-  const escape = (value: unknown): string => `"${String(value ?? "").replace(/"/g, '""')}"`;
-  const lines = [columns.map(escape).join(",")];
-  for (const row of rows) {
-    lines.push(columns.map((col) => escape(row[col])).join(","));
+async function renderAssistantView(root: HTMLElement): Promise<void> {
+  stopActiveStream();
+  root.innerHTML = "";
+  root.append(el("h2", "Assistant"));
+  if (!aiEnabled) {
+    root.append(el("p", "AI disabled in platform config."));
+    return;
   }
-  const blob = new Blob([lines.join("\n")], { type: "text/csv" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
+  const input = document.createElement("textarea");
+  input.value = "Summarize inventory status";
+  const sendBtn = el("button", "Chat");
+  const out = el("pre", "");
+  sendBtn.addEventListener("click", () => {
+    void client.aiChat(input.value).then((r) => {
+      out.textContent = JSON.stringify(r, null, 2);
+    });
+  });
+  root.append(input, sendBtn, out);
 }
 
 async function renderShell(root: HTMLElement): Promise<void> {
   stopActiveStream();
+  try {
+    const config = await client.getPlatformConfig();
+    const modules = config.modules as Record<string, { enabled?: boolean }> | undefined;
+    aiEnabled = modules?.ai?.enabled === true;
+  } catch {
+    aiEnabled = false;
+  }
   root.innerHTML = "";
   const header = el("header", "", "app-header");
   const titleWrap = el("div");
@@ -72,11 +112,34 @@ async function renderShell(root: HTMLElement): Promise<void> {
   titleWrap.append(tenantLine);
   header.append(titleWrap, el("button", "Sign out"));
   header.querySelector("button")?.addEventListener("click", () => renderLogin(root));
-  void client.getHealth().then((health) => {
+  const tenantSelect = document.createElement("select");
+  tenantSelect.style.display = "none";
+  void client.getHealth().then(async (health) => {
     tenantLine.textContent = `mode: multi_tenant=${String(health.multi_tenant)} · ${health.tenant_strategy}`;
+    const tenants = await client.listTenants();
+    if (health.multi_tenant) {
+      tenantSelect.style.display = "block";
+      tenantSelect.innerHTML = "";
+      for (const tenant of tenants.tenants) {
+        const opt = document.createElement("option");
+        opt.value = String(tenant.id ?? tenant.code ?? "default");
+        opt.textContent = String(tenant.name ?? tenant.code ?? tenant.id);
+        tenantSelect.append(opt);
+      }
+      tenantSelect.addEventListener("change", () => {
+        client.setTenantId(tenantSelect.value);
+      });
+    }
+    const config = await client.getPlatformConfig();
+    const modules = config.modules as Record<string, { enabled?: boolean }> | undefined;
+    aiEnabled = modules?.ai?.enabled === true;
+    if (tenants.white_label) {
+      document.documentElement.style.setProperty("--emcap-primary", "#1a56db");
+    }
   }).catch(() => {
     tenantLine.textContent = "";
   });
+  titleWrap.append(tenantSelect);
 
   const nav = el("nav", "", "app-nav");
   const main = el("main", "", "app-main");
@@ -88,8 +151,12 @@ async function renderShell(root: HTMLElement): Promise<void> {
     ["Dashboards", () => renderDashboardsView(main)],
     ["Notifications", () => renderNotificationsView(main)],
     ["Account", () => renderAccountView(main)],
+    ["Assistant", () => renderAssistantView(main)],
   ];
   for (const [label, handler] of navViews) {
+    if (label === "Assistant" && !aiEnabled) {
+      continue;
+    }
     const link = el("button", label, "nav-link");
     link.addEventListener("click", () => {
       void handler();
@@ -102,12 +169,12 @@ async function renderShell(root: HTMLElement): Promise<void> {
     for (const menu of menus) {
       const link = el("button", menu.label, "nav-link");
       link.addEventListener("click", () => {
-        void renderEntityView(main, menu.entity_code, menu.label);
+        void renderEntityView(main, client, menu.entity_code, menu.label, entityHandles);
       });
       nav.append(link);
     }
     if (menus.length > 0) {
-      await renderEntityView(main, menus[0].entity_code, menus[0].label);
+      await renderEntityView(main, client, menus[0].entity_code, menus[0].label, entityHandles);
     }
   } catch (err) {
     main.append(el("p", err instanceof Error ? err.message : "Failed to load menus", "error"));
@@ -137,8 +204,10 @@ async function renderReportsView(root: HTMLElement): Promise<void> {
           resultArea.innerHTML = "";
           resultArea.append(el("p", `Running ${code}...`));
           try {
+            const runs = await client.listReportRuns(code);
             const result = await client.runReport(code);
             resultArea.innerHTML = "";
+            resultArea.append(el("p", `Past runs: ${runs.runs.length} · schedule: daily (cron in module)`));
             resultArea.append(el("h3", `${result.report_code} (${result.rows.length} rows)`));
             if (result.rows.length === 0) {
               resultArea.append(el("p", "No rows returned."));
@@ -218,7 +287,7 @@ async function renderWorkflowInbox(root: HTMLElement): Promise<void> {
 
     const table = el("table", "", "grid-table");
     const headerRow = el("tr");
-    for (const column of ["workflow", "entity", "record", "state", "assignee", "actions"]) {
+    for (const column of ["workflow", "entity", "record", "state", "assignee", "due_at", "actions"]) {
       headerRow.append(el("th", column));
     }
     table.append(headerRow);
@@ -231,6 +300,7 @@ async function renderWorkflowInbox(root: HTMLElement): Promise<void> {
         el("td", String(instance.record_id ?? "")),
         el("td", String(instance.current_state ?? "")),
         el("td", String(instance.assignee ?? "")),
+        el("td", String(instance.due_at ?? instance.sla_hours ?? "")),
       );
       const actionsCell = el("td");
       appendWorkflowActions(actionsCell, instance);
@@ -271,7 +341,18 @@ async function renderNotificationsView(root: HTMLElement): Promise<void> {
   stopActiveStream();
   root.innerHTML = "";
   root.append(el("h2", "Notifications"));
+  const config = await client.getPlatformConfig();
+  const channels = (config.notifications as Record<string, boolean>) ?? { email: true };
   const form = el("form", "", "record-form");
+  const channelSelect = document.createElement("select");
+  for (const [name, enabled] of Object.entries(channels)) {
+    if (enabled) {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      channelSelect.append(opt);
+    }
+  }
   const recipient = document.createElement("input");
   recipient.placeholder = "Recipient";
   recipient.value = "ops@example.com";
@@ -281,16 +362,16 @@ async function renderNotificationsView(root: HTMLElement): Promise<void> {
   const body = document.createElement("textarea");
   body.placeholder = "Body";
   body.value = "Stock notification";
-  const sendBtn = el("button", "Send email");
+  const sendBtn = el("button", "Send");
   sendBtn.type = "submit";
   const formError = el("p", "", "error");
-  form.append(recipient, subject, body, sendBtn, formError);
+  form.append(channelSelect, recipient, subject, body, sendBtn, formError);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     void (async () => {
       try {
         await client.sendNotification({
-          channel: "email",
+          channel: channelSelect.value,
           recipient: recipient.value,
           subject: subject.value,
           body: body.value,
@@ -340,9 +421,35 @@ async function renderAccountView(root: HTMLElement): Promise<void> {
       roleList.append(el("li", String(role.code ?? role.name ?? role)));
     }
     root.append(roleList);
+    root.append(el("h3", "MFA"));
+    const mfaSecret = el("p", "");
+    const mfaCode = document.createElement("input");
+    mfaCode.placeholder = "TOTP code";
+    const enrollBtn = el("button", "Enroll MFA");
+    const verifyBtn = el("button", "Verify MFA");
+    enrollBtn.addEventListener("click", () => {
+      void client.enrollMfa().then((r) => {
+        mfaSecret.textContent = `Secret: ${r.secret}`;
+      });
+    });
+    verifyBtn.addEventListener("click", () => {
+      void client.verifyMfa(mfaCode.value).then((r) => {
+        client.setToken(r.access_token, client.getTenantId());
+        root.append(el("p", "MFA verified — token refreshed"));
+      });
+    });
+    root.append(enrollBtn, verifyBtn, mfaCode, mfaSecret);
+
     root.append(el("h3", "Integrations"));
-    root.append(el("p", "REST: POST /api/v1/integrations/rest/dispatch"));
-    root.append(el("p", "Kafka: POST /api/v1/integrations/kafka/publish"));
+    const dispatchUrl = document.createElement("input");
+    dispatchUrl.value = "https://httpbin.org/post";
+    const dispatchPayload = document.createElement("textarea");
+    dispatchPayload.value = '{"ping":true}';
+    const dispatchBtn = el("button", "REST dispatch");
+    dispatchBtn.addEventListener("click", () => {
+      void client.dispatchRestIntegration(dispatchUrl.value, JSON.parse(dispatchPayload.value) as Record<string, unknown>);
+    });
+    root.append(dispatchUrl, dispatchPayload, dispatchBtn);
     const modules = config.modules as Record<string, { enabled?: boolean }> | undefined;
     if (modules?.payments?.enabled) {
       const payBtn = el("button", "Create payment intent (demo)");
@@ -357,238 +464,6 @@ async function renderAccountView(root: HTMLElement): Promise<void> {
     }
   } catch (err) {
     root.append(el("p", err instanceof Error ? err.message : "Failed to load account", "error"));
-  }
-}
-
-function renderGridTable(
-  table: HTMLTableElement,
-  gridRenderer: DynamicGridRenderer,
-  records: Record<string, unknown>[],
-  selectedId: string | null,
-  onSelect: (recordId: string) => void,
-): void {
-  table.innerHTML = "";
-  const headerRow = el("tr");
-  for (const field of gridRenderer.columnFields()) {
-    headerRow.append(el("th", field));
-  }
-  table.append(headerRow);
-
-  for (const record of records) {
-    const recordId = String(record.id ?? "");
-    const row = el("tr", "", selectedId === recordId ? "row-selected" : "");
-    if (recordId) {
-      row.style.cursor = "pointer";
-      row.addEventListener("click", () => onSelect(recordId));
-    }
-    for (const field of gridRenderer.columnFields()) {
-      row.append(el("td", String(record[field] ?? "")));
-    }
-    table.append(row);
-  }
-}
-
-async function renderRecordDetail(
-  container: HTMLElement,
-  entityCode: string,
-  recordId: string,
-): Promise<void> {
-  container.innerHTML = "";
-  container.append(el("h3", `Record ${recordId}`));
-
-  try {
-    const [notesPayload, documentsPayload, auditPayload] = await Promise.all([
-      client.listNotes(entityCode, recordId),
-      client.listDocuments(entityCode, recordId),
-      client.listAudit(entityCode),
-    ]);
-    const auditForRecord = auditPayload.audit.filter((entry) => String(entry.record_id) === recordId);
-
-    container.append(el("h4", `Notes (${notesPayload.notes.length})`));
-    if (notesPayload.notes.length === 0) {
-      container.append(el("p", "No notes."));
-    } else {
-      const notesList = el("ul");
-      for (const note of notesPayload.notes) {
-        notesList.append(el("li", String(note.body ?? "")));
-      }
-      container.append(notesList);
-    }
-
-    container.append(el("h4", `Documents (${documentsPayload.documents.length})`));
-    if (documentsPayload.documents.length === 0) {
-      container.append(el("p", "No documents."));
-    } else {
-      const docsList = el("ul");
-      for (const doc of documentsPayload.documents) {
-        docsList.append(el("li", String(doc.filename ?? doc.id ?? "")));
-      }
-      container.append(docsList);
-    }
-
-    container.append(el("h4", `Audit (${auditForRecord.length})`));
-    if (auditForRecord.length === 0) {
-      container.append(el("p", "No audit entries for this record."));
-    } else {
-      const auditList = el("ul");
-      for (const entry of auditForRecord) {
-        auditList.append(el("li", `${String(entry.action)} — ${JSON.stringify(entry.payload ?? {})}`));
-      }
-      container.append(auditList);
-    }
-
-    const uploadForm = el("form", "", "record-form");
-    const filenameInput = document.createElement("input");
-    filenameInput.value = "spec.txt";
-    const contentInput = document.createElement("textarea");
-    contentInput.value = "uploaded from web";
-    const uploadBtn = el("button", "Upload document");
-    uploadBtn.type = "submit";
-    const uploadError = el("p", "", "error");
-    uploadForm.append(filenameInput, contentInput, uploadBtn, uploadError);
-    uploadForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      void (async () => {
-        try {
-          await client.uploadDocument(entityCode, recordId, filenameInput.value, contentInput.value);
-          await renderRecordDetail(container, entityCode, recordId);
-        } catch (err) {
-          uploadError.textContent = err instanceof Error ? err.message : "Upload failed";
-        }
-      })();
-    });
-    container.append(uploadForm);
-  } catch (err) {
-    container.append(el("p", err instanceof Error ? err.message : "Failed to load record", "error"));
-  }
-}
-
-async function renderEntityView(root: HTMLElement, entityCode: string, title: string): Promise<void> {
-  stopActiveStream();
-  root.innerHTML = "";
-  root.append(el("h2", title));
-
-  const statusLine = el("p", "");
-  const table = el("table", "", "grid-table");
-  const detailPanel = el("section", "", "record-detail");
-  const form = el("form", "", "record-form");
-  root.append(statusLine, table, detailPanel, form);
-
-  let selectedRecordId: string | null = null;
-  let gridRenderer: DynamicGridRenderer | null = null;
-  let gridMeta: GridMetadata | null = null;
-  let snapshotSince = "1970-01-01T00:00:00+00:00";
-  let currentRecords: Record<string, unknown>[] = [];
-
-  const reloadGrid = async (): Promise<void> => {
-    if (!gridRenderer) {
-      return;
-    }
-    const recordsPayload = await client.listRecords(entityCode);
-    currentRecords = recordsPayload.records;
-    renderGridTable(table, gridRenderer, currentRecords, selectedRecordId, (recordId) => {
-      selectedRecordId = recordId;
-      void renderRecordDetail(detailPanel, entityCode, recordId).then(() => {
-        void reloadGrid();
-      });
-    });
-
-    if (gridMeta?.offline) {
-      const changes = await client.syncChanges(entityCode, snapshotSince);
-      statusLine.textContent = `Offline snapshot · ${changes.count} change(s) since baseline`;
-    }
-  };
-
-  try {
-    const [formMeta, loadedGridMeta, recordsPayload, snapshot] = await Promise.all([
-      client.getFormMetadata(entityCode),
-      client.getGridMetadata(entityCode),
-      client.listRecords(entityCode),
-      client.syncSnapshot(entityCode),
-    ]);
-
-    if (!validateFormMetadata(formMeta) || !validateGridMetadata(loadedGridMeta)) {
-      root.append(el("p", "Invalid metadata contract", "error"));
-      return;
-    }
-
-    const formRenderer = new DynamicFormRenderer(formMeta);
-    gridRenderer = new DynamicGridRenderer(loadedGridMeta);
-    gridMeta = loadedGridMeta;
-    snapshotSince = String(snapshot.sync_version ?? snapshotSince);
-
-    statusLine.textContent = `Offline snapshot v: ${String(snapshot.sync_version ?? "n/a")}`;
-
-    currentRecords = recordsPayload.records;
-    if (gridMeta.export.csv) {
-      const exportBtn = el("button", "Export CSV");
-      exportBtn.type = "button";
-      exportBtn.addEventListener("click", () => {
-        if (gridRenderer) {
-          downloadCsv(gridRenderer.columnFields(), currentRecords, `${entityCode}-export.csv`);
-        }
-      });
-      root.insertBefore(exportBtn, table);
-    }
-
-    renderGridTable(table, gridRenderer, currentRecords, selectedRecordId, (recordId) => {
-      selectedRecordId = recordId;
-      void renderRecordDetail(detailPanel, entityCode, recordId).then(() => {
-        void reloadGrid();
-      });
-    });
-
-    if (gridMeta.offline) {
-      const changes = await client.syncChanges(entityCode, snapshotSince);
-      statusLine.textContent = `Offline snapshot v: ${String(snapshot.sync_version ?? "n/a")} · ${changes.count} change(s)`;
-    }
-
-    if (gridMeta.realtime) {
-      activeStreamCleanup = client.subscribeRecordsStream(entityCode, () => {
-        void reloadGrid();
-      });
-    }
-
-    const inputs: Record<string, HTMLInputElement> = {};
-    for (const name of formRenderer.fieldNames()) {
-      const label = el("label", name);
-      const input = document.createElement("input");
-      input.name = name;
-      input.required = formRenderer.isRequired(name);
-      inputs[name] = input;
-      form.append(label, input);
-    }
-    const noteInput = document.createElement("textarea");
-    noteInput.placeholder = "Note (optional)";
-    const submit = document.createElement("button");
-    submit.type = "submit";
-    submit.textContent = "Create record";
-    const formError = el("p", "", "error");
-    form.append(noteInput, submit, formError);
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      void (async () => {
-        try {
-          const payload: Record<string, unknown> = {};
-          for (const [name, input] of Object.entries(inputs)) {
-            payload[name] = input.type === "checkbox" ? input.checked : input.value;
-          }
-          const created = await client.createRecord(entityCode, payload);
-          if (noteInput.value.trim()) {
-            await client.addNote(entityCode, String(created.id), noteInput.value.trim());
-          }
-          noteInput.value = "";
-          for (const input of Object.values(inputs)) {
-            input.value = "";
-          }
-          await reloadGrid();
-        } catch (err) {
-          formError.textContent = err instanceof Error ? err.message : "Create failed";
-        }
-      })();
-    });
-  } catch (err) {
-    root.append(el("p", err instanceof Error ? err.message : "Failed to load entity", "error"));
   }
 }
 

@@ -1,6 +1,6 @@
 # EMCAP — Implementation Plan
 
-> **Status (2026-06-11):** Phases 0–6 delivered; **Phase 7 in progress** (SDD §2 gap closure). See `plan/03-task-backlog.md` (94/108 Done) and `spec/sdd/04-capability-matrix.md`.
+> **Status (2026-06-11):** Phases 0–8 delivered. See `plan/03-task-backlog.md` (131/131 Done) and `spec/sdd/05-end-user-matrix.md`.
 
 Phased delivery aligned with SDD v1.0. Each phase ends with a demonstrable vertical slice.
 
@@ -148,21 +148,29 @@ Playbook: `plan/05-phase6-playbook.md`
 
 ---
 
-## Phase 7 — SDD Gap Closure (current focus)
+## Phase 7 — SDD Gap Closure (complete)
 
-**Goal:** Close all **Partial** and **No** rows in `spec/sdd/04-capability-matrix.md` — full §2 functional parity on API + web + mobile where applicable.
+**Goal:** Close **Partial** and **No** rows in `spec/sdd/04-capability-matrix.md` — platform services wired in thin shells.
+
+Playbook: `plan/06-sdd-gap-closure.md` · **108/108** backlog tasks Done.
+
+---
+
+## Phase 8 — End-User Product Depth (complete)
+
+**Goal:** Close **No** and **Partial** rows in `spec/sdd/05-end-user-matrix.md` — business users can edit, search, validate, export, authenticate fully, and use a second module (CRM).
 
 | Wave | Deliverable | SDD refs |
 |------|-------------|----------|
-| 1 | Workflow, documents, notifications, audit, permissions, dashboards, grid export UI | §2, FR-008b |
-| 2 | Integrations + payments UI (flag gated) | §2, §5 |
-| 3 | SaaS tenant picker + white-label theme | §3 |
-| 4 | Coverage gates, mobile SSE, production readiness | §2 NFR, §25, §29 |
-| 5 | Traceability + matrix sync | Document control |
+| 1 | Record edit/delete, search, pagination | §8, §9, FR-008c |
+| 2 | Form validation, conditions, i18n; grid sort/filter/group/export | §9 |
+| 3 | MFA, OAuth/SSO, full SaaS tenant + themes | §7, §3 |
+| 4 | Documents, workflow start, reports, notifications, integrations, AI UI | §10–17 |
+| 5 | CRM module, renderer contract tests, prod sign-off, doc sync | §27, §25, §29 |
 
-**Exit criteria:** Capability matrix all **Done** or justified **Stub**; 108/108 backlog Done.
+**Exit criteria:** Met — see `spec/sdd/05-end-user-matrix.md` and `plan/03-task-backlog.md` (131/131).
 
-Playbook: `plan/06-sdd-gap-closure.md`
+Playbook: `plan/07-phase8-end-user-product.md`
 
 ---
 
@@ -180,6 +188,7 @@ flowchart TD
     P5[Phase 5 Reference Module]
     P6[Phase 6 Knowledge and Clients]
     P7[Phase 7 SDD Gap Closure]
+    P8[Phase 8 End User Product]
 
     P0 --> P1A
     P1A --> P1B
@@ -190,6 +199,7 @@ flowchart TD
     P4 --> P5
     P5 --> P6
     P6 --> P7
+    P7 --> P8
 ```
 
 ---

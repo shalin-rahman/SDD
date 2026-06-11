@@ -2,7 +2,7 @@
 
 Extends the platform after Phase 5 with **client-consumable platform APIs** and **thin presentation shells** in `clients/web` and `clients/mobile`. Business modules still register only via `ModuleDefinition` under `modules/`; these changes extend platform services and presentation clients per SDD layering.
 
-**Verification:** `platform/api/tests/test_client_api_gaps.py` · **Plan trace:** post–Phase 5 client slice
+**Status:** Phases 7–8 complete · **Verification:** `test_client_api_gaps.py`, `test_crm_e2e.py`, vitest, flutter test · **UX matrix:** `spec/sdd/05-end-user-matrix.md`
 
 ---
 
@@ -119,7 +119,10 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `GET /api/v1/menus` | `getMenus()` | `getMenus()` | Nav / NavigationRail |
 | `GET /api/v1/metadata/forms/{entity}` | `getFormMetadata()` | `getFormMetadata()` | Create forms |
 | `GET /api/v1/metadata/grids/{entity}` | `getGridMetadata()` | `getGridMetadata()` | Grid columns |
-| `GET /api/v1/entities/{entity}/records` | `listRecords()` | `listRecords()` | Entity grid |
+| `GET /api/v1/entities/{entity}/records` | `listRecords(entity, { q? })` | `listRecords(entity, q:)` | Entity grid + search |
+| `GET /api/v1/entities/{entity}/records/{id}` | `getRecord()` | `getRecord()` | Edit form pre-fill |
+| `PUT /api/v1/entities/{entity}/records/{id}` | `updateRecord()` | `updateRecord()` | Save changes |
+| `DELETE /api/v1/entities/{entity}/records/{id}` | `deleteRecord()` | `deleteRecord()` | Delete with confirm |
 | `POST /api/v1/entities/{entity}/records` | `createRecord()` | `createRecord()` | Create form submit |
 | `GET /api/v1/sync/{entity}/snapshot` | `syncSnapshot()` | `syncSnapshot()` | Offline version label |
 | `GET /api/v1/sync/{entity}/changes?since=` | `syncChanges()` | `syncChanges()` | Entity view offline delta count |
@@ -142,12 +145,21 @@ Same SDD §9 contract as web, implemented as a **Flutter Material 3** shell. Sha
 | `GET /api/v1/config/platform` | `getPlatformConfig()` | `getPlatformConfig()` | Account — payments flag |
 | `GET /api/v1/tenants` | `listTenants()` | `listTenants()` | Account — white-label flag |
 | `POST /api/v1/payments/intents` | `createPaymentIntent()` | `createPaymentIntent()` | Account demo (when enabled) |
-| `POST /api/v1/integrations/rest/dispatch` | `dispatchRestIntegration()` | `dispatchRestIntegration()` | Client API; Account lists route |
+| `POST /api/v1/integrations/rest/dispatch` | `dispatchRestIntegration()` | `dispatchRestIntegration()` | Account REST dispatch form |
 | `GET /api/v1/reports` | `listReports()` | `listReports()` | Reports nav — list codes |
 | `POST /api/v1/reports/{code}/run` | `runReport(code)` | `runReport(code)` | Reports nav — run LOW_STOCK etc. |
+| `GET /api/v1/reports/{code}/runs` | `listReportRuns(code)` | `listReportRuns(code)` | Report history |
+| `POST /api/v1/workflows/{code}/start` | `startWorkflow()` | `startWorkflow()` | Start workflow from record |
+| `GET /api/v1/documents/{id}` | `getDocument()` | `getDocument()` | Document preview |
+| `GET /api/v1/auth/providers` | `getAuthProviders()` | `getAuthProviders()` | OAuth button visibility |
+| `POST /api/v1/auth/oauth/token` | `loginOAuth()` | `loginOAuth()` | OAuth login |
+| `POST /api/v1/auth/mfa/enroll` | `enrollMfa()` | `enrollMfa()` | Account MFA |
+| `POST /api/v1/auth/mfa/verify` | `verifyMfa()` | `verifyMfa()` | Account MFA |
+| `POST /api/v1/ai/chat` | `aiChat()` | `aiChat()` | Assistant (flag gated) |
+| `POST /api/v1/ai/summarize` | `aiSummarize()` | — | Web API only |
 | CORS (`OPTIONS` + cross-origin `GET/POST`) | Browser automatic | Flutter web | `CORSMiddleware` in `emcap/main.py` |
 
-**Parity note:** Web and mobile shells wire workflow actions, notifications, dashboards, Account (permissions/roles/integrations/payments), record detail (notes, documents, upload, audit), Reports, and offline sync delta count. Both subscribe to SSE for grid refresh when `grid.realtime` is enabled. Web additionally exports CSV when `grid.export.csv` is set in metadata.
+**Parity note (Phases 7–8):** Web (`entity-view.ts` + `main.ts`) and mobile (`entity_screen.dart` + app screens) provide full entity UX: edit/delete/search/pagination, validation/conditions/i18n, grid sort/filter/group/export, workflow start, document preview, MFA/OAuth, tenant picker, multi-channel notifications, report runs, integrations dispatch, payments demo, and AI assistant when enabled. Both subscribe to SSE when `grid.realtime` is set.
 
 ---
 
@@ -183,7 +195,7 @@ uvicorn emcap.main:app --reload --app-dir src --host 0.0.0.0 --port 8000
 
 ```bash
 cd platform/api
-pytest -q tests/test_client_api_gaps.py tests/test_inventory_e2e.py
+pytest -q tests/test_client_api_gaps.py tests/test_inventory_e2e.py tests/test_crm_e2e.py
 ```
 
 ### 3. Start web client
@@ -210,10 +222,10 @@ flutter run --dart-define=EMCAP_API_URL=http://10.0.2.2:8000
 ### Full-stack smoke test
 
 1. API health returns `200`.
-2. Web login → Inventory menus (Products, Warehouses) → grid loads from metadata.
-3. Create a product with optional note → record appears; note via `addNote` on web.
-4. Mobile login → same menus → grid and create form from shared metadata contract.
-5. `pytest tests/test_client_api_gaps.py` green.
+2. Web login → Products → search, edit, delete, export, start workflow on a product.
+3. CRM menus (Leads, Contacts) visible when `modules/crm` loaded.
+4. Mobile login → same flows; OAuth button when `oauth: true` in config.
+5. `pytest -q --cov=src --cov-fail-under=80` and `npm test` green.
 
 ---
 

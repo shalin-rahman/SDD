@@ -14,13 +14,14 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 5 — Reference module | 6 | 0 | 0 | 6 |
 | 6 — Knowledge + client completion | 7 | 0 | 0 | 7 |
 | 7 — SDD gap closure (§2 Partial/No) | 16 | 0 | 0 | 16 |
-| **Total** | **108** | **0** | **0** | **108** |
+| 8 — End-user product depth (§9 UX) | 23 | 0 | 0 | 23 |
+| **Total** | **131** | **0** | **0** | **131** |
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-11 · Phases 0–7 complete · **58 tests passing** · backend coverage **89.8%** (CI gate 70%, ratchet to 80)
+**Last updated:** 2026-06-11 · Phases 0–8 complete · **60 pytest + 8 vitest + 3 flutter** · backend **~90%** (CI gate 80%)
 
-**Current focus:** Phase 7 complete — review changes before commit. Remaining Partial rows documented in `spec/sdd/04-capability-matrix.md` (SaaS picker, prod sign-off).
+**Current focus:** Phase 8 complete — review changes before commit.
 
 ---
 
@@ -207,12 +208,44 @@ Playbook: `plan/06-sdd-gap-closure.md` · Matrix: `spec/sdd/04-capability-matrix
 
 ---
 
+## Phase 8 — End-User Product Depth (§9 UX)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P8-T01 | End-user matrix (`spec/sdd/05-end-user-matrix.md`) | Phase 7 | Done |
+| EMCAP-P8-T02 | Playbook + backlog | T01 | Done |
+| EMCAP-P8-T03 | Record edit UI (web + mobile) | T02 | Done |
+| EMCAP-P8-T04 | Record delete with confirm (web + mobile) | T02 | Done |
+| EMCAP-P8-T05 | Entity search + pagination (web + mobile) | T03 | Done |
+| EMCAP-P8-T06 | Form validation + field types in renderers | T04 | Done |
+| EMCAP-P8-T07 | Conditional logic + i18n labels | T06 | Done |
+| EMCAP-P8-T08 | Grid sort + filter | T05 | Done |
+| EMCAP-P8-T09 | Grid grouping | T08 | Done |
+| EMCAP-P8-T10 | Grid excel/pdf export (+ mobile CSV) | T09 | Done |
+| EMCAP-P8-T11 | MFA enrollment/verify UI | T02 | Done |
+| EMCAP-P8-T12 | OAuth/SSO login (config gated) | T11 | Done |
+| EMCAP-P8-T13 | Tenant picker + white-label themes (full) | T12 | Done |
+| EMCAP-P8-T14 | Document preview/download/versions | T02 | Done |
+| EMCAP-P8-T15 | Workflow start from record + SLA display | T02 | Done |
+| EMCAP-P8-T16 | Report history + schedule status UI | T15 | Done |
+| EMCAP-P8-T17 | Multi-channel notifications UI | T02 | Done |
+| EMCAP-P8-T18 | Integrations dispatch + payments checkout | T02 | Done |
+| EMCAP-P8-T19 | AI chat UI (flag gated) | T02 | Done |
+| EMCAP-P8-T20 | CRM business module scaffold | T03 | Done |
+| EMCAP-P8-T21 | Renderer contract tests + coverage 80% | T06–T10 | Done |
+| EMCAP-P8-T22 | Production readiness execution | T13 | Done |
+| EMCAP-P8-T23 | Traceability + matrix + pitfalls sync | T03–T22 | Done |
+
+Playbook: `plan/07-phase8-end-user-product.md` · Matrix: `spec/sdd/05-end-user-matrix.md`
+
+---
+
 ## Immediate Next Steps
 
-**Phase 7 complete (108/108).** Review diff; commit when ready.
+**Phase 8 complete (131/131).** Review diff; commit when ready.
 
-1. Optional: ratchet CI `--cov-fail-under` from 70 → 80 (`docs/dev/recipes/add-coverage-gate.md`).
-2. Optional: SaaS tenant switcher + theme tokens (`docs/dev/saas-shell.md`).
-3. Production cutover: complete checklist in `docs/ops/production-readiness.md`.
+1. Manual smoke: Inventory Products — search, edit, delete, export, start workflow.
+2. CRM menus: Leads, Contacts — create/edit/delete.
+3. Production cutover: `docs/ops/production-readiness.md` sign-off when deploying.
 
 **Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`

@@ -71,5 +71,25 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-015 | Payments UI (flag gated) | EMCAP-P7-T11 | Account demo when `payments.enabled`; default off |
 | FR-017 | Audit viewer UI | EMCAP-P7-T06 | Record detail audit list |
 | FR-003 | SaaS tenant + white-label shell | EMCAP-P7-T12 | Header tenant mode; `docs/dev/saas-shell.md` |
-| NFR-003, NFR-004 | CI coverage gates | EMCAP-P7-T13 | `--cov-fail-under=70` CI; local ~90%; contract expanded |
+| NFR-003, NFR-004 | CI coverage gates | EMCAP-P7-T13 | Ratcheted to 80% in P8-T21 |
 | NFR-001, NFR-008, NFR-015 | Production readiness | EMCAP-P7-T15 | `docs/ops/production-readiness.md` checklist |
+
+## Phase 8 — End-user product depth (complete)
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-008c | Full §9 renderer + entity UX | EMCAP-P8-T03–T10 | `05-end-user-matrix.md`; web + mobile parity |
+| FR-006 | Edit/delete/search/pagination | EMCAP-P8-T03–T05 | `test_crm_e2e.py`; entity screens |
+| FR-007 | Validation, conditions, i18n | EMCAP-P8-T06–T07 | vitest + `metadata_contract_test.dart` |
+| FR-008 | Grid sort/filter/group/export | EMCAP-P8-T08–T10 | `dynamic-grid.component.test.ts` |
+| FR-001 | MFA + OAuth login UX | EMCAP-P8-T11–T12 | `test_auth_security.py`; Account + Login |
+| FR-003 | SaaS tenant picker + themes | EMCAP-P8-T13 | `docs/dev/saas-shell.md` |
+| FR-009 | Workflow start + SLA display | EMCAP-P8-T15 | `entity-view.ts`, `entity_screen.dart` |
+| FR-011 | Report runs + schedule UI | EMCAP-P8-T16 | `listReportRuns` in report screens |
+| FR-012 | Multi-channel notifications | EMCAP-P8-T17 | channel dropdown from config |
+| FR-013 | Document preview/download | EMCAP-P8-T14 | `getDocument` in record detail |
+| FR-014, FR-015 | Integrations dispatch + payments UX | EMCAP-P8-T18 | Account screens |
+| FR-016 | AI chat UI | EMCAP-P8-T19 | Assistant nav when `ai.enabled` |
+| FR-018 | CRM reference module | EMCAP-P8-T20 | `modules/crm/`, `test_crm_e2e.py` |
+| NFR-003, NFR-004, NFR-013 | Renderer contract tests + 80% gate | EMCAP-P8-T21 | 60 pytest, 8 vitest, 3 flutter; CI |
+| NFR-001, NFR-008, NFR-015 | Prod readiness execution | EMCAP-P8-T22 | `docs/ops/production-readiness.md` tabletop |

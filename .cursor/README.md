@@ -39,11 +39,14 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | `emcap-devops` | Docker, CI/CD overview |
 | `emcap-release-dr` | Releases, migrations, backup, DR |
 
-## SDD gap tracking (Phase 7)
+## SDD status tracking
 
 | Document | Purpose |
 |----------|---------|
-| `spec/sdd/04-capability-matrix.md` | Partial/No status per layer |
-| `plan/06-sdd-gap-closure.md` | Executable P7 task cards |
+| `spec/sdd/04-capability-matrix.md` | Platform service status (Phase 7 complete) |
+| `spec/sdd/05-end-user-matrix.md` | End-user UX status (Phase 8 complete) |
+| `plan/06-sdd-gap-closure.md` | Phase 7 playbook |
+| `plan/07-phase8-end-user-product.md` | Phase 8 playbook |
+| `plan/03-task-backlog.md` | 131/131 task status |
 
 Commit this `.cursor/` tree with the repo so every contributor gets the same agent context.

@@ -15,6 +15,7 @@
 |---------|------|--------|---------|
 | 1.0 | 2026-06-10 | Platform team | Initial SDD; Phase 0 scaffold started |
 | 1.1 | 2026-06-11 | Platform team | Phase 6–7: capability matrix, gap closure playbook |
+| 1.2 | 2026-06-11 | Platform team | Phase 8: end-user matrix, FR-008c, ADR-004; 131/131 backlog Done |
 
 ## Related documents
 
@@ -24,9 +25,11 @@
 | Architecture | `spec/sdd/02-architecture.md` |
 | Traceability matrix | `spec/sdd/03-traceability-matrix.md` |
 | Capability matrix | `spec/sdd/04-capability-matrix.md` |
+| End-user UX matrix | `spec/sdd/05-end-user-matrix.md` |
 | Implementation plan | `plan/02-implementation-plan.md` |
 | Task backlog | `plan/03-task-backlog.md` |
 | Phase 7 playbook | `plan/06-sdd-gap-closure.md` |
+| Phase 8 playbook | `plan/07-phase8-end-user-product.md` |
 | ADRs | `spec/sdd/adrs/` |
 
 ## Scope

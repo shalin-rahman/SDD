@@ -57,9 +57,13 @@ def test_customer_crud_and_audit(client: TestClient) -> None:
 def test_menus_and_permissions(client: TestClient) -> None:
     menus = client.get("/api/v1/menus")
     assert menus.status_code == 200
-    assert menus.json()["menus"][0]["entity_code"] == "CUSTOMER"
+    menu_entities = {menu["entity_code"] for menu in menus.json()["menus"]}
+    assert "CUSTOMER" in menu_entities
+    assert "LEAD" in menu_entities
 
     permissions = client.get("/api/v1/permissions")
     assert permissions.status_code == 200
-    assert "customer.read" in permissions.json()["permissions"]
-    assert "demo.access" in permissions.json()["permissions"]
+    perms = permissions.json()["permissions"]
+    assert "customer.read" in perms
+    assert "demo.access" in perms
+    assert "crm.access" in perms

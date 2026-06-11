@@ -39,7 +39,7 @@ jobs:
       - name: Pytest (unit + coverage)
         env:
           DATABASE_URL: sqlite:///:memory:
-        run: pytest -q --cov=src --cov-report=term-missing --cov-fail-under=70
+        run: pytest -q --cov=src --cov-report=term-missing --cov-fail-under=80
 
   # P4-T04: integration stage — pytest against real PostgreSQL (service container).
   integration:
@@ -137,10 +137,11 @@ jobs:
           cache: npm
           cache-dependency-path: clients/web/package-lock.json
 
-      - name: ESLint
+      - name: ESLint and contract tests
         run: |
           npm ci
           npm run lint
+          npm test
 
   client-lint-mobile:
     runs-on: ubuntu-latest
@@ -155,7 +156,8 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Flutter analyze
+      - name: Flutter analyze and contract tests
         run: |
           flutter pub get
           flutter analyze --no-fatal-infos
+          flutter test

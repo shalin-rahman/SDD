@@ -1,48 +1,39 @@
 # EMCAP SDD — Session Summary
 
-## Phase 7 complete
+## All phases complete
 
-**108 / 108** backlog tasks Done. SDD §2 Partial/No client gaps closed; remaining Partial rows are documented stubs (integrations/payments API) and SaaS polish (tenant switcher, prod sign-off).
+**131 / 131** backlog tasks Done. Phases 0–8 delivered per `spec/framework-sdd.txt`.
 
-| Document | Purpose |
-|----------|---------|
-| `spec/sdd/04-capability-matrix.md` | Status per goal × layer |
-| `plan/06-sdd-gap-closure.md` | Phase 7 task cards (P7-T01–T16) |
-| `plan/03-task-backlog.md` | Full backlog — all phases Done |
+| Phase | Focus | Playbook |
+|-------|-------|----------|
+| 0–5 | Platform core + Inventory module | `plan/02-implementation-plan.md` |
+| 6 | Agent memory + Reports UI | `plan/05-phase6-playbook.md` |
+| 7 | Platform service wiring in shells | `plan/06-sdd-gap-closure.md` |
+| 8 | End-user product depth | `plan/07-phase8-end-user-product.md` |
 
-### Phase 7 deliverables
+| Status doc | Path |
+|------------|------|
+| Platform services | `spec/sdd/04-capability-matrix.md` |
+| End-user UX | `spec/sdd/05-end-user-matrix.md` |
+| Backlog | `plan/03-task-backlog.md` |
 
-| Feature | Web | Mobile |
-|---------|-----|--------|
-| Workflow actions (transition/delegate) | Done | Done |
-| Document upload | Done | Done |
-| Notifications list + send | Done | Done |
-| Audit viewer on record detail | Done | Done |
-| Permissions + roles (Account) | Done | Done |
-| Dashboards (`INVENTORY_OVERVIEW`) | Done | Done |
-| Grid CSV export (`export.csv`) | Done | — |
-| Integrations / payments (Account, flag gated) | Partial | Partial |
-| Tenant mode banner | Partial | Partial |
-| Mobile SSE grid refresh | N/A | Done |
+### Phase 8 highlights
+
+- Entity edit/delete/search/pagination (web + mobile)
+- Form validation, conditions, i18n; grid sort/filter/group/export
+- MFA, OAuth, tenant picker, white-label themes
+- CRM module (`LEAD`, `CONTACT`); renderer contract tests
+- CI: pytest 80%, vitest, flutter test; prod readiness tabletop
 
 ### Verify
 
 ```powershell
-cd platform/api; python -m pytest -q --cov=src --cov-fail-under=70
+cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
 cd clients/web; npm run lint; npm test
+cd clients/mobile; flutter analyze; flutter test
 .\scripts\verify-full-stack.ps1
 ```
 
-**58 pytest tests** · backend coverage **~90%** · CI gate **70%** (ratchet to 80 documented).
+**60 pytest** · **8 vitest** · **3 flutter** · coverage **~90%**
 
----
-
-## Phase 6 (prior)
-
-Agent memory in `docs/dev/`; Reports UI wired. See `plan/05-phase6-playbook.md`.
-
----
-
-## Phases 0–5 (prior)
-
-Platform core, dynamic UI, services, DevOps, Inventory reference module — all Done. See `plan/02-implementation-plan.md`.
+**Current focus:** Review diff; commit when ready. Live production sign-off: `docs/ops/production-readiness.md`.

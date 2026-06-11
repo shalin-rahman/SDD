@@ -308,5 +308,5 @@ flowchart TD
 
 - All rows in `04-capability-matrix.md` are **Done** or documented **Stub** with feature flag off.
 - Client API contract tests list every shell method.
-- Coverage gate ≥80% backend in CI (or documented ratchet plan).
+- Coverage gate ≥80% backend in CI (achieved in Phase 8 P8-T21; was 70% in P7).
 - **108/108** backlog tasks Done (92 + 16 Phase 7).

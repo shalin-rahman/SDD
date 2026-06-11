@@ -28,6 +28,14 @@ export class EmcapClient {
     this.tenantId = tenantId;
   }
 
+  setTenantId(tenantId: string): void {
+    this.tenantId = tenantId;
+  }
+
+  getTenantId(): string {
+    return this.tenantId;
+  }
+
   private headers(): HeadersInit {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -73,8 +81,75 @@ export class EmcapClient {
     return this.request(`/api/v1/metadata/grids/${entityCode}`);
   }
 
-  listRecords(entityCode: string): Promise<{ records: Record<string, unknown>[] }> {
-    return this.request(`/api/v1/entities/${entityCode}/records`);
+  listRecords(
+    entityCode: string,
+    options?: { q?: string },
+  ): Promise<{ records: Record<string, unknown>[] }> {
+    const params = new URLSearchParams();
+    if (options?.q) {
+      params.set("q", options.q);
+    }
+    const query = params.toString();
+    return this.request(`/api/v1/entities/${entityCode}/records${query ? `?${query}` : ""}`);
+  }
+
+  getAuthProviders(): Promise<{ providers: string[] }> {
+    return this.request("/api/v1/auth/providers");
+  }
+
+  loginOAuth(clientId: string, clientSecret: string): Promise<LoginResult> {
+    return this.request<LoginResult>("/api/v1/auth/oauth/token", {
+      method: "POST",
+      body: JSON.stringify({
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret,
+      }),
+    });
+  }
+
+  enrollMfa(): Promise<{ secret: string }> {
+    return this.request("/api/v1/auth/mfa/enroll", { method: "POST" });
+  }
+
+  verifyMfa(code: string): Promise<{ access_token: string }> {
+    return this.request("/api/v1/auth/mfa/verify", {
+      method: "POST",
+      body: JSON.stringify({ code }),
+    });
+  }
+
+  startWorkflow(
+    workflowCode: string,
+    recordId: string,
+    assignee = "admin",
+  ): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/workflows/${workflowCode}/start`, {
+      method: "POST",
+      body: JSON.stringify({ record_id: recordId, assignee }),
+    });
+  }
+
+  listReportRuns(reportCode: string): Promise<{ runs: Record<string, unknown>[] }> {
+    return this.request(`/api/v1/reports/${reportCode}/runs`);
+  }
+
+  getDocument(documentId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/documents/${documentId}`);
+  }
+
+  aiChat(message: string): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/ai/chat", {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+  }
+
+  aiSummarize(text: string): Promise<Record<string, unknown>> {
+    return this.request("/api/v1/ai/summarize", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    });
   }
 
   getRecord(entityCode: string, recordId: string): Promise<Record<string, unknown>> {

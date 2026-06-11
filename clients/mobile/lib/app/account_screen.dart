@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
@@ -13,11 +15,23 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   late Future<_AccountData> _future;
+  final _mfaCode = TextEditingController();
+  final _dispatchUrl = TextEditingController(text: 'https://httpbin.org/post');
+  final _dispatchPayload = TextEditingController(text: '{"ping":true}');
+  String? _mfaSecret;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+  }
+
+  @override
+  void dispose() {
+    _mfaCode.dispose();
+    _dispatchUrl.dispose();
+    _dispatchPayload.dispose();
+    super.dispose();
   }
 
   Future<_AccountData> _load() async {
@@ -57,6 +71,35 @@ class _AccountScreenState extends State<AccountScreen> {
               Text('Tenant mode: ${data.health['multi_tenant']} · ${data.health['tenant_strategy']}'),
               if (data.tenants['white_label'] == true) const Text('White-label enabled'),
               const SizedBox(height: 12),
+              Text('MFA', style: Theme.of(context).textTheme.titleMedium),
+              if (_mfaSecret != null) Text('Secret: $_mfaSecret'),
+              TextField(controller: _mfaCode, decoration: const InputDecoration(labelText: 'TOTP code')),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final result = await widget.client.enrollMfa();
+                      setState(() => _mfaSecret = '${result['secret']}');
+                    },
+                    child: const Text('Enroll'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final result = await widget.client.verifyMfa(_mfaCode.text);
+                      widget.client.setToken(
+                        result['access_token'] as String,
+                        widget.client.getTenantId(),
+                      );
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('MFA verified — token refreshed')),
+                      );
+                    },
+                    child: const Text('Verify'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
               Text('Permissions (${data.permissions.length})', style: Theme.of(context).textTheme.titleMedium),
               ...data.permissions.take(20).map((p) => ListTile(dense: true, title: Text(p))),
               const SizedBox(height: 12),
@@ -64,8 +107,28 @@ class _AccountScreenState extends State<AccountScreen> {
               ...data.roles.map((r) => ListTile(dense: true, title: Text('${r['code'] ?? r['name'] ?? r}'))),
               const SizedBox(height: 12),
               const Text('Integrations', style: TextStyle(fontWeight: FontWeight.bold)),
-              const ListTile(dense: true, title: Text('REST dispatch — POST /api/v1/integrations/rest/dispatch')),
-              const ListTile(dense: true, title: Text('Kafka publish — POST /api/v1/integrations/kafka/publish')),
+              TextField(controller: _dispatchUrl, decoration: const InputDecoration(labelText: 'REST URL')),
+              TextField(
+                controller: _dispatchPayload,
+                decoration: const InputDecoration(labelText: 'JSON payload'),
+                maxLines: 2,
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    final payload = _dispatchPayload.text.trim().isEmpty
+                        ? <String, dynamic>{}
+                        : Map<String, dynamic>.from(jsonDecode(_dispatchPayload.text) as Map);
+                    final result = await widget.client.dispatchRestIntegration(_dispatchUrl.text, payload);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
+                  } catch (err) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$err')));
+                  }
+                },
+                child: const Text('REST dispatch'),
+              ),
               if (data.paymentsEnabled) ...[
                 const SizedBox(height: 12),
                 ElevatedButton(
@@ -91,6 +154,7 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
+
 }
 
 class _AccountData {

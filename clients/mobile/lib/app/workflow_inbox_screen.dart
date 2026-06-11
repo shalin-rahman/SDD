@@ -125,6 +125,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                         Text('${item['workflow_code']} · $state', style: Theme.of(context).textTheme.titleMedium),
                         Text('${item['entity_code']} / ${item['record_id']}'),
                         if (item['assignee'] != null) Text('Assignee: ${item['assignee']}'),
+                        if (item['due_at'] != null) Text('Due: ${item['due_at']}'),
                         Wrap(spacing: 4, children: _actionsFor(state, id)),
                       ],
                     ),

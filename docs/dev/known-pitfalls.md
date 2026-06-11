@@ -150,3 +150,63 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | Partial/No rows stale after merge |
 | **Fix** | Update `spec/sdd/04-capability-matrix.md` in same PR as UI |
 | **Test** | Review checklist P7-T16 |
+
+---
+
+## Phase 8 — End-user UX (prevent reintroduction)
+
+### Edit form submits create instead of update
+
+| | |
+|--|--|
+| **Symptom** | Duplicate records after Save on selected row |
+| **Fix** | Branch on `selectedRecordId`: `updateRecord` vs `createRecord` |
+| **Test** | Manual edit flow; extend renderer contract test |
+
+### Search without debounce floods API
+
+| | |
+|--|--|
+| **Symptom** | Rate limit or slow grid on every keystroke |
+| **Fix** | Debounce search input 300ms; minimum 2 chars optional |
+| **Test** | Manual search on Products |
+
+### Condition evaluator trusts client-only
+
+| | |
+|--|--|
+| **Symptom** | Hidden fields still sent in payload |
+| **Fix** | Strip hidden field keys before submit; server validates anyway |
+| **Test** | Form renderer unit test |
+
+### i18n key shown instead of label
+
+| | |
+|--|--|
+| **Symptom** | UI shows `product.name` not "Product Name" |
+| **Fix** | Resolve `i18n[field.label_key] ?? field.label` |
+| **Test** | `test_inventory_e2e.py` metadata keys |
+
+### End-user matrix not updated
+
+| | |
+|--|--|
+| **Symptom** | Phase 8 tasks marked Done but matrix still No |
+| **Fix** | Update `spec/sdd/05-end-user-matrix.md` in same PR |
+| **Test** | Review checklist P8-T23 |
+
+### Mobile circular import (main ↔ shell)
+
+| | |
+|--|--|
+| **Symptom** | Analyzer error importing `main.dart` from `shell.dart` for theme |
+| **Fix** | Shared theme in `lib/theme.dart`; both import `theme.dart` |
+| **Test** | `flutter analyze` |
+
+### Flutter test package import
+
+| | |
+|--|--|
+| **Symptom** | `package:emcap_mobile/...` not found in test |
+| **Fix** | Use package name from `pubspec.yaml` (`emcap_mobile`) |
+| **Test** | `flutter test` |
