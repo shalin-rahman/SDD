@@ -27,4 +27,4 @@ Import `infra/grafana/dashboard.json` and point Prometheus at the API scrape tar
 
 ## OpenTelemetry
 
-Tracing is not fully wired yet. Add OTEL exporters in Phase 4 alongside Kubernetes deployment.
+Tracing is not fully wired yet. Add OTEL exporters alongside Kubernetes deployment when needed. Prometheus metrics and JSON logging are live (`GET /api/v1/metrics`).

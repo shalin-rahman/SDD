@@ -78,6 +78,12 @@ Runbook: `docs/ops/dr-runbook.md`
 | Documents | S3/MinIO versioning restore |
 | Config | Revert `config/platform.yaml` at tag |
 
+## Production readiness
+
+Tabletop checklist (study repo): `docs/ops/production-readiness.md`
+
+Covers availability, DR, client quality gates (80% pytest, vitest, flutter test). Physical sign-off required before real cutover.
+
 ## Traceability
 
-- NFR-014, NFR-015 → EMCAP-P4-T09–T11 → DR drill + backup verification
+- NFR-014, NFR-015 → EMCAP-P4-T09–T11, P8-T22 → DR drill + production readiness

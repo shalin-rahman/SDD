@@ -40,17 +40,28 @@ Platform auto-provides: permissions, menus, localization, notifications, DevOps 
 
 1. Business modules declare definitions only — no edits to `platform/` core.
 2. Entity `code` is uppercase stable identifier (e.g. `CUSTOMER`, `INVOICE`).
-3. Register entities at module load time via platform registry (Phase 1).
+3. Register entities at module load time via `EntityRegistry` on app startup.
 4. Generated APIs live under `/api/v1/entities/{code}/`.
+
+## Reference modules
+
+| Module | Entities | Path |
+|--------|----------|------|
+| `demo` | `CUSTOMER` | `modules/demo/module.py` |
+| `inventory` | `PRODUCT`, `WAREHOUSE` | `modules/inventory/module.py` |
+| `crm` | `LEAD`, `CONTACT` | `modules/crm/module.py` |
+
+Avoid entity code clashes across modules (e.g. CRM uses `LEAD`/`CONTACT`, not `CUSTOMER`).
 
 ## Implementation status
 
-| Component | Phase | Path |
-|-----------|-------|------|
-| Config loader | 0 ✓ | `platform/api/src/emcap/config/` |
-| Entity registry | 1 | TBD |
-| Module loader | 1 | `modules/` |
-| Metadata API | 2 | TBD |
+| Component | Path |
+|-----------|------|
+| Config loader | `platform/api/src/emcap/config/` |
+| Entity registry | `platform/api/src/emcap/entity/registry.py` |
+| Module loader | `platform/api/src/emcap/module/loader.py` |
+| Metadata API | `platform/api/src/emcap/api/routes/metadata.py` |
+| Metadata builder | `platform/api/src/emcap/metadata/builder.py` |
 
 ## References
 

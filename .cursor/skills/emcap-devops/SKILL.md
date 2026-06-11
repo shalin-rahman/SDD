@@ -29,29 +29,42 @@ Services: API (:8000), PostgreSQL (:5432), Redis (:6379), MinIO (:9000/:9001).
 
 Health check: `GET http://localhost:8000/api/v1/health`
 
+Web shell: `cd clients/web && npm run dev` → http://localhost:4200
+
 ## CI pipeline (SDD §23)
 
-Stages: Lint → Unit tests → Integration tests → Security scan → Build → Deploy.
+Stages: Lint → Unit tests → Integration tests → Security scan → Client tests → Deploy.
 
-Workflow: `.github/workflows/ci.yml` (backend lint + test in Phase 0).
+Workflow: `.github/workflows/ci.yml`
+
+| Job | Stack |
+|-----|-------|
+| `backend` | Ruff, Black, MyPy, pytest 80% coverage |
+| `integration` | PostgreSQL service container |
+| `security-dependencies` | pip-audit |
+| `security-sast` | Bandit + Ruff S |
+| `client-lint-web` | ESLint + vitest |
+| `client-lint-mobile` | flutter analyze + flutter test |
 
 ## Code quality (mandatory)
 
 | Stack | Tools |
 |-------|-------|
 | Python | Ruff, Black, MyPy |
-| Angular | ESLint (Phase 2) |
-| Flutter | Flutter Analyze (Phase 2) |
+| Web (Vite/TS) | ESLint, vitest |
+| Flutter | Flutter Analyze, flutter test |
 
-## IaC layout (Phase 4)
+## IaC layout
 
 | Path | Tool |
 |------|------|
 | `infra/terraform/` | Cloud resources |
 | `infra/helm/` | K8s releases |
 | `infra/ansible/` | Bootstrap + deploy playbooks (dev/uat inventories) |
+| `infra/backup/` | Daily backup + PITR scripts |
 
 ## Coverage gates
 
-- Minimum 80% unit coverage (target 90%) — SDD §25
-- Contract tests required before client releases
+- Backend: `--cov-fail-under=80` in CI (current ~90%)
+- Client: vitest + `metadata_contract_test.dart` on every PR
+- Production tabletop: `docs/ops/production-readiness.md`

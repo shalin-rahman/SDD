@@ -48,6 +48,17 @@ tenants:
 
 API: `GET /api/v1/tenants`
 
+## Client shell (Phase 8)
+
+When `platform.multi_tenant: true`, shells show a tenant picker and send `X-Tenant-ID` on every request.
+
+| Concern | Web | Mobile |
+|---------|-----|--------|
+| Tenant picker | `main.ts` header `<select>` | `shell.dart` `DropdownButton` |
+| White-label theme | CSS vars on `:root` | `lib/theme.dart` (`EmcapTheme`) |
+
+Full guide: `docs/dev/saas-shell.md` · Pitfall: do not import `main.dart` from `shell.dart`.
+
 ## Rules
 
 1. Every entity record must include `tenant_id`

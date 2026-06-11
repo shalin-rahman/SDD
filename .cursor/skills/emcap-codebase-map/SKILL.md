@@ -13,10 +13,11 @@ description: >-
 1. `docs/dev/codebase-index.md` — file → purpose lookup
 2. `docs/dev/known-pitfalls.md` — errors already fixed; do not reintroduce
 3. `docs/dev/recipes/<task>.md` — step-by-step implementation
-4. `spec/sdd/04-capability-matrix.md` — Partial/No gaps (Phase 7)
-5. `plan/06-sdd-gap-closure.md` — current executable playbook
-6. `plan/03-task-backlog.md` — task status
-7. `spec/sdd/03-traceability-matrix.md` — requirement IDs
+4. `spec/sdd/05-end-user-matrix.md` — end-user UX status (Phase 8)
+5. `spec/sdd/04-capability-matrix.md` — platform service status (Phase 7)
+6. `plan/07-phase8-end-user-product.md` — end-user UX playbook
+7. `plan/03-task-backlog.md` — task status (131/131 Done)
+8. `spec/sdd/03-traceability-matrix.md` — requirement IDs
 
 ## Quick zones
 
@@ -24,17 +25,23 @@ description: >-
 |-----------|-------|
 | New platform endpoint | `platform/api/src/emcap/api/routes/` + recipe `add-platform-route.md` |
 | New client method | `clients/web/src/api/emcap-client.ts` + `add-client-api-method.md` |
+| Entity UX (web) | `clients/web/src/app/entity-view.ts` + `add-record-edit-ui.md` |
+| Entity UX (mobile) | `clients/mobile/lib/app/entity_screen.dart` |
 | New business module | `modules/<name>/module.py` + `add-business-module.md` |
 | Report UI | `add-report-ui.md` |
-| Inventory reference | `modules/inventory/module.py` |
+| Reference modules | `modules/inventory/module.py`, `modules/crm/module.py` |
+| SaaS / white-label | `docs/dev/saas-shell.md`, `clients/mobile/lib/theme.dart` |
 
 ## Verify
 
 ```powershell
-cd platform/api; python -m pytest -q
+cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
 cd clients/web; npm run lint; npm test
+cd clients/mobile; flutter analyze; flutter test
 .\scripts\verify-full-stack.ps1
 ```
+
+**Current gates:** 60 pytest · 8 vitest · 3 flutter · backend ~90% (CI gate 80%).
 
 ## External recall
 

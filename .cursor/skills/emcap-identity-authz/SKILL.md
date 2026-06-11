@@ -50,3 +50,14 @@ Registry: `emcap.auth.providers.registry.AuthProviderRegistry`
 
 - Secret: `EMCAP_JWT_SECRET` env var
 - Bearer token in `Authorization` header
+
+## Client shell UX (Phase 8)
+
+| Feature | Web | Mobile |
+|---------|-----|--------|
+| Login | `clients/web/src/app/main.ts` | `clients/mobile/lib/app/shell.dart` |
+| OAuth | `getAuthProviders()`, `loginOAuth()` | same |
+| MFA enroll/verify | `clients/web/src/app/main.ts` Account view | `clients/mobile/lib/app/account_screen.dart` |
+| Permissions viewer | Account view | `account_screen.dart` |
+
+Tests: `tests/test_auth_security.py`

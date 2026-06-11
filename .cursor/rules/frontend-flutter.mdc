@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Frontend Flutter
 
-- Share form/grid metadata contract with Angular via the same backend schema.
-- Dynamic renderers only — no hard-coded entity screens.
-- `flutter analyze` runs in CI (`client-lint-mobile` job).
-- Target ≥80% unit test coverage.
+- Share form/grid metadata contract with web client via the same backend schema (`lib/metadata_contract.dart`).
+- Entity UX in `lib/app/entity_screen.dart`; shared theme in `lib/theme.dart` (not `main.dart`).
+- Dynamic renderers only — no hard-coded entity field layouts.
+- `flutter analyze` + `flutter test` run in CI (`client-lint-mobile` job).

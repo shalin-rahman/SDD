@@ -1,12 +1,13 @@
 ---
-description: Angular web client conventions for EMCAP metadata-driven UI
+description: Vite/TypeScript web client conventions for EMCAP metadata-driven UI
 globs: clients/web/**/*
 alwaysApply: false
 ---
 
-# Frontend Angular
+# Frontend Web (Vite/TypeScript)
 
 - UI is metadata-driven: dynamic forms and universal grid only.
-- Do not create entity-specific components; consume platform metadata API.
-- ESLint runs in CI (`client-lint-web` job).
-- Target ≥80% unit test coverage.
+- Entity UX lives in `src/app/entity-view.ts`; shell in `src/app/main.ts`.
+- Do not create entity-specific field components; consume platform metadata API.
+- ESLint + vitest run in CI (`client-lint-web` job).
+- Parity with Flutter: same contract in `src/metadata/contract.ts`.

@@ -10,7 +10,7 @@ description: >-
 
 ## Layers (top to bottom)
 
-1. **Presentation** — `clients/web` (Angular), `clients/mobile` (Flutter), REST/GraphQL
+1. **Presentation** — `clients/web` (Vite/TypeScript thin shell), `clients/mobile` (Flutter), REST
 2. **Application** — Commands, queries, use cases (CQRS) in `platform/api`
 3. **Platform services** — Identity, entity SDK, workflow, notifications, etc.
 4. **Infrastructure** — PostgreSQL, Redis, Kafka, S3/MinIO via `infra/`
@@ -28,7 +28,7 @@ description: >-
 |------|---------|
 | `platform/api/` | FastAPI platform core |
 | `modules/` | Business plug-ins (`ModuleDefinition`) |
-| `clients/` | Angular + Flutter |
+| `clients/` | Vite/TS web shell + Flutter mobile |
 | `config/` | Platform YAML |
 | `infra/` | Docker, Terraform, Helm |
 | `spec/sdd/` | Formal SDD artifacts |

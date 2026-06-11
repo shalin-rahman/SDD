@@ -31,6 +31,10 @@ Disabled modules return HTTP 403 from route handlers.
 - `DocumentHooks.scan_virus()` — pluggable hook (default returns `clean`)
 - Store files under tenant-scoped paths: `{tenant}/{entity}/{record}/{id}/{filename}`
 
+## Client shell
+
+Account and login views surface flag-gated features (payments, REST dispatch, MFA). See `emcap-identity-authz` and `clients/web/src/app/main.ts`, `clients/mobile/lib/app/account_screen.dart`.
+
 ## Related skill
 
 See `emcap-identity-authz` for RBAC, ABAC, MFA, and JWT patterns.

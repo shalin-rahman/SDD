@@ -42,3 +42,5 @@ Defined in `platform/api/src/emcap/config/models.py`. Add new config sections th
 ## API introspection
 
 `GET /api/v1/config/platform` returns loaded config (non-secret fields only).
+
+Client shells call this at login to gate optional UI (payments, AI, notification channels). See `clients/web/src/app/main.ts` and `clients/mobile/lib/app/shell.dart`.

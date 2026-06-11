@@ -43,6 +43,19 @@ description: >-
 - Gated by `modules.ai.enabled` and `ai.enabled`
 - Service: `emcap.ai.service.AIService`
 
+## Client shell (Phase 8)
+
+| Service | Web | Mobile |
+|---------|-----|--------|
+| Notifications (multi-channel) | `main.ts` | `notification_screen.dart` |
+| Document preview | `entity-view.ts` → `getDocument()` | `entity_screen.dart` |
+| Report runs history | `main.ts` reports view | `report_screen.dart` |
+| REST dispatch | Account view | `account_screen.dart` |
+| Payments demo | Account view (flag gated) | `account_screen.dart` |
+| AI assistant | `main.ts` Assistant nav | `assistant_screen.dart` |
+
+All flag-gated features read `GET /api/v1/config/platform` before showing UI.
+
 ## Module metadata
 
 Register reports and dashboards on `ModuleDefinition` in `modules/*/module.py`.

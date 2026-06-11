@@ -11,7 +11,10 @@ description: >-
 
 Definitions: `emcap.workflow.models.WorkflowDefinition`
 
-Demo workflow: `CUSTOMER_APPROVAL` in `modules/demo/module.py`
+| Module | Workflow | Entity |
+|--------|----------|--------|
+| `demo` | `CUSTOMER_APPROVAL` | `CUSTOMER` |
+| `inventory` | `STOCK_ADJUSTMENT` | `PRODUCT` |
 
 | Endpoint | Purpose |
 |----------|---------|
@@ -39,3 +42,13 @@ Engine: `emcap.rules.engine.evaluate_formula()` — safe AST evaluation only.
 ## Module registration
 
 Add `WorkflowDefinition` to `ModuleDefinition.workflows` list.
+
+## Client shell (Phase 8)
+
+| Feature | Web | Mobile |
+|---------|-----|--------|
+| Inbox actions | `main.ts` workflow view | `shell.dart` nav |
+| Start from record | `entity-view.ts` → `startWorkflow()` | `entity_screen.dart` |
+| SLA display | `due_at` in inbox + record detail | same |
+
+Tests: `tests/test_inventory_e2e.py`, `tests/test_metadata_workflow.py`

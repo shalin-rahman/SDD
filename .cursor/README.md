@@ -16,7 +16,7 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | `emcap-core-standards.mdc` | Always apply — module boundaries, config-driven design |
 | `emcap-sdd-workflow.mdc` | Always apply — read index/pitfalls/recipes before coding |
 | `backend-python.mdc` | `platform/api/**` |
-| `frontend-angular.mdc` | `clients/web/**` |
+| `frontend-angular.mdc` | `clients/web/**` (Vite/TS thin shell) |
 | `frontend-flutter.mdc` | `clients/mobile/**` |
 | `infra-iac.mdc` | `infra/**` |
 
@@ -24,7 +24,7 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 
 | Skill | Use when |
 |-------|----------|
-| `emcap-codebase-map` | Codebase index, pitfalls, recipes — read first |
+| `emcap-codebase-map` | **Read first** — index, pitfalls, recipes, Phase 8 matrix |
 | `emcap-architecture` | Layering, monorepo layout, ADRs |
 | `emcap-config` | `config/platform.yaml` |
 | `emcap-entity-sdk` | Entities, modules, CRUD |
