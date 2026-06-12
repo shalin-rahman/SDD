@@ -83,6 +83,22 @@ class TenantBrandingSettings(BaseModel):
     theme: str = "default"
 
 
+class SeedCoreSettings(BaseModel):
+    enabled: bool = True
+    path: str = "data/seed/core"
+
+
+class SeedDemoSettings(BaseModel):
+    enabled: bool = True
+    path: str = "data/seed/demo"
+    remove_when_disabled: bool = True
+
+
+class SeedSettings(BaseModel):
+    core: SeedCoreSettings = Field(default_factory=SeedCoreSettings)
+    demo: SeedDemoSettings = Field(default_factory=SeedDemoSettings)
+
+
 class PlatformConfig(BaseModel):
     platform: PlatformSettings = Field(default_factory=PlatformSettings)
     tenant_strategy: TenantStrategySettings = Field(default_factory=TenantStrategySettings)
@@ -98,3 +114,4 @@ class PlatformConfig(BaseModel):
     tenants: dict[str, TenantBrandingSettings] = Field(
         default_factory=lambda: {"default": TenantBrandingSettings()}
     )
+    seed: SeedSettings = Field(default_factory=SeedSettings)

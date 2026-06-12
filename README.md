@@ -4,78 +4,65 @@ Software design and implementation workspace for EMCAP (SDD v1.0).
 
 ## Quick start
 
+**Windows (tests + stack + seed + web):**
+
+```bat
+scripts\run-emcap.bat
+```
+
+**Manual:**
+
 ```bash
 cd infra/docker
 docker compose up --build
+cd clients/web
+npm ci && npm start
 ```
 
 - API: http://localhost:8000/api/v1/health
-- Config: http://localhost:8000/api/v1/config/platform
-- Web shell: http://localhost:4200 (`admin` / `admin123`)
-
-Local Python (without Docker):
-
-```bash
-cd platform/api
-pip install -e ".[dev]"
-set EMCAP_CONFIG_PATH=../../config/platform.yaml   # Windows
-set EMCAP_MODULES_PATH=../../modules
-pytest -q --cov=src --cov-fail-under=80
-uvicorn emcap.main:app --reload --app-dir src
-```
+- Web: http://localhost:4200 (`admin` / `admin123`)
+- Seed data: `data/seed/` (see `data/seed/README.md`; toggle demo in `config/platform.yaml`)
 
 ## Project layout
 
 ```
 SDD/
-├── spec/                  # SDD source and formal artifacts
-│   ├── framework-sdd.txt  # Original SDD
-│   └── sdd/               # Requirements, architecture, traceability, ADRs
-├── plan/                  # Implementation plan and task backlog
-├── config/                # Platform YAML configuration
+├── spec/sdd/              # Requirements, ADRs, traceability
+├── plan/                  # Implementation playbooks
 ├── platform/api/          # FastAPI platform core
-├── modules/               # Business plug-ins (inventory, crm, demo)
-├── clients/               # Vite/TypeScript web + Flutter mobile shells
+├── modules/               # Business plug-ins
+├── clients/web/           # Angular CLI 19 web client (SDD §9)
+├── clients/web-legacy/    # Archived Vite shell (reference)
+├── clients/mobile/        # Flutter mobile client
 ├── infra/                 # Docker, Terraform, Helm, Ansible
-├── docs/dev/              # Codebase index, recipes, pitfalls
 └── .cursor/               # Agent skills and rules
 ```
 
-## SDD documents
+## Key documents
 
 | Document | Path |
 |----------|------|
-| Document control | `spec/sdd/00-document-control.md` |
-| Requirements | `spec/sdd/01-requirements.md` |
-| Architecture | `spec/sdd/02-architecture.md` |
-| Traceability | `spec/sdd/03-traceability-matrix.md` |
-| Platform capability matrix | `spec/sdd/04-capability-matrix.md` |
+| Angular web ADR | `spec/sdd/adrs/005-angular-cli-web-client.md` |
+| Phase 10 playbook | `plan/10-angular-cli-web.md` |
 | End-user UX matrix | `spec/sdd/05-end-user-matrix.md` |
-| Task backlog | `plan/03-task-backlog.md` |
-| Session summary | `plan/00-session-summary.md` |
-
-## Phase status
-
-**131 / 131** backlog tasks Done (Phases 0–8).
-
-| Phase | Focus | Playbook |
-|-------|-------|----------|
-| 0–5 | Platform core + Inventory module | `plan/02-implementation-plan.md` |
-| 6 | Agent memory + Reports UI | `plan/05-phase6-playbook.md` |
-| 7 | Platform service wiring in shells | `plan/06-sdd-gap-closure.md` |
-| 8 | End-user product depth (§9 UX) | `plan/07-phase8-end-user-product.md` |
+| Codebase index | `docs/dev/codebase-index.md` |
+| Pitfalls | `docs/dev/known-pitfalls.md` |
 
 ## Verify
 
 ```powershell
-cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run lint; npm test
-cd clients/mobile; flutter analyze; flutter test
-.\scripts\verify-full-stack.ps1
+scripts\lint-format.bat
+scripts\run-emcap.bat
 ```
 
-**60 pytest** · **8 vitest** · **3 flutter** · backend coverage **~90%** (CI gate 80%)
+Or layer by layer:
+
+```powershell
+cd platform/api; ruff check src tests; black --check src tests; python -m pytest -q --cov=src --cov-fail-under=80
+cd clients/web; npm run format:check; npm run lint; npm run build; npm run test:ci
+cd clients/mobile; dart format --output=none --set-exit-if-changed .; flutter analyze; flutter test
+```
 
 ## Definition of done
 
-Business modules supply only `ModuleDefinition(...)` and receive platform capabilities without modifying `platform/` core. See SDD §30 and `modules/README.md`.
+Business modules supply only `ModuleDefinition(...)` — no edits to `platform/` core. See SDD §30.

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "description": "Core platform roles — upserted by code",
+  "roles": [
+    {
+      "code": "admin",
+      "name": "Administrator",
+      "permissions": ["*.*", "demo.access", "customer.*", "crm.access", "inventory.*"]
+    },
+    {
+      "code": "viewer",
+      "name": "Viewer",
+      "permissions": ["*.read"]
+    },
+    {
+      "code": "operator",
+      "name": "Operator",
+      "permissions": ["inventory.*", "crm.*", "customer.*"]
+    }
+  ]
+}

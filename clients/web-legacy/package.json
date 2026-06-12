@@ -1,0 +1,22 @@
+{
+  "name": "emcap-web-client",
+  "private": true,
+  "version": "0.1.0",
+  "description": "EMCAP Vite/TypeScript metadata-driven thin client shell (SDD §9)",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1",
+    "vite": "^6.0.3",
+    "vitest": "^3.0.5",
+    "@vitest/coverage-v8": "^3.0.5"
+  }
+}

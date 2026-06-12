@@ -6,14 +6,16 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 API_URL="${EMCAP_API_URL:-http://localhost:8000}"
 
+"$REPO_ROOT/scripts/lint-format.sh"
+
 echo "[verify-full-stack] Platform API tests..."
 cd "$REPO_ROOT/platform/api"
 python -m pytest -q
 
 echo "[verify-full-stack] Web client lint + test..."
 cd "$REPO_ROOT/clients/web"
-npm run lint
-npm test
+npm run build
+npm run test:ci
 
 echo "[verify-full-stack] API health ($API_URL)..."
 if curl -sf "$API_URL/api/v1/health" >/dev/null; then

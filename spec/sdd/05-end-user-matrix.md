@@ -113,7 +113,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 | NFR | Web / Mobile | Notes |
 |-----|--------------|-------|
-| Renderer contract tests | Done | vitest + flutter |
+| Renderer contract tests | Done | Karma + flutter |
 | Client coverage ≥80% | Done | CI |
 | Backend coverage gate 80% | Done | CI |
 | Production readiness | Done | `docs/ops/production-readiness.md` |

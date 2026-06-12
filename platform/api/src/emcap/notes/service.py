@@ -8,7 +8,9 @@ from emcap.persistence.database import NoteRow
 
 
 class NotesService:
-    def __init__(self, session: Session, registry: EntityRegistry, tenant_id: str = "default") -> None:
+    def __init__(
+        self, session: Session, registry: EntityRegistry, tenant_id: str = "default"
+    ) -> None:
         self._session = session
         self._registry = registry
         self._tenant_id = tenant_id

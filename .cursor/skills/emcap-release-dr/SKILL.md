@@ -82,7 +82,7 @@ Runbook: `docs/ops/dr-runbook.md`
 
 Tabletop checklist (study repo): `docs/ops/production-readiness.md`
 
-Covers availability, DR, client quality gates (80% pytest, vitest, flutter test). Physical sign-off required before real cutover.
+Covers availability, DR, client quality gates (80% pytest, Angular Karma CI, flutter test). Physical sign-off required before real cutover.
 
 ## Traceability
 

@@ -5,6 +5,7 @@ WORKDIR /app
 COPY platform/api/pyproject.toml .
 COPY platform/api/src ./src
 COPY config /config
+COPY data /data
 COPY modules /modules
 
 ENV EMCAP_CONFIG_PATH=/config/platform.yaml

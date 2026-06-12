@@ -122,7 +122,7 @@ jobs:
         # S105 ignored: documented dev seed defaults (admin user, OAuth client).
         run: ruff check --select S --ignore S105 src
 
-  # P0-T07: ESLint (Angular scaffold) + Flutter analyze (mobile scaffold).
+  # Angular CLI web client: build + Karma contract tests.
   client-lint-web:
     runs-on: ubuntu-latest
     defaults:
@@ -137,11 +137,15 @@ jobs:
           cache: npm
           cache-dependency-path: clients/web/package-lock.json
 
-      - name: ESLint and contract tests
+      - uses: browser-actions/setup-chrome@v1
+
+      - name: Angular format, lint, build and tests
         run: |
           npm ci
+          npm run format:check
           npm run lint
-          npm test
+          npm run build
+          npm run test:ci
 
   client-lint-mobile:
     runs-on: ubuntu-latest
@@ -156,8 +160,9 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Flutter analyze and contract tests
+      - name: Flutter format, analyze and contract tests
         run: |
           flutter pub get
+          dart format --output=none --set-exit-if-changed .
           flutter analyze --no-fatal-infos
           flutter test

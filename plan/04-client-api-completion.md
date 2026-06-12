@@ -2,7 +2,7 @@
 
 Extends the platform after Phase 5 with **client-consumable platform APIs** and **thin presentation shells** in `clients/web` and `clients/mobile`. Business modules still register only via `ModuleDefinition` under `modules/`; these changes extend platform services and presentation clients per SDD layering.
 
-**Status:** Phases 7–8 complete · **Verification:** `test_client_api_gaps.py`, `test_crm_e2e.py`, vitest, flutter test · **UX matrix:** `spec/sdd/05-end-user-matrix.md`
+**Status:** Phases 7–10 complete · **Web:** Angular CLI 19 (`clients/web/`) · **Verification:** pytest, `ng test:ci`, flutter test
 
 ---
 
@@ -32,7 +32,7 @@ Gaps identified during client integration — generic platform routes, not inven
 
 ## Web shell architecture (SDD §9 presentation layer)
 
-SDD §9 defines a **metadata-driven presentation layer**: one backend form/grid contract drives renderers. The web client is a **Vite + TypeScript thin shell** (Angular-style renderer classes, no full Angular framework in this scaffold).
+SDD §9 defines a **metadata-driven presentation layer**: one backend form/grid contract drives renderers. The web client is a **full Angular CLI 19** app (`clients/web/`). Archived Vite shell: `clients/web-legacy/`.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -70,7 +70,7 @@ SDD §9 defines a **metadata-driven presentation layer**: one backend form/grid 
 5. **Render** — dynamic grid table + dynamic create form; optional note on create via notes API.
 6. **Offline hint** — display `sync_version` from snapshot (SDD grid `offline` flag support).
 
-Default dev URL: `http://localhost:4200` (Vite). API default: `http://localhost:8000`.
+Default dev URL: `http://localhost:4200` (`ng serve`). API default: `http://localhost:8000`.
 
 ---
 

@@ -10,7 +10,7 @@ description: >-
 
 ## Layers (top to bottom)
 
-1. **Presentation** — `clients/web` (Vite/TypeScript thin shell), `clients/mobile` (Flutter), REST
+1. **Presentation** — `clients/web` (Angular CLI 19), `clients/mobile` (Flutter), REST
 2. **Application** — Commands, queries, use cases (CQRS) in `platform/api`
 3. **Platform services** — Identity, entity SDK, workflow, notifications, etc.
 4. **Infrastructure** — PostgreSQL, Redis, Kafka, S3/MinIO via `infra/`
@@ -28,7 +28,9 @@ description: >-
 |------|---------|
 | `platform/api/` | FastAPI platform core |
 | `modules/` | Business plug-ins (`ModuleDefinition`) |
-| `clients/` | Vite/TS web shell + Flutter mobile |
+| `clients/web/` | Angular CLI web shell (canonical) |
+| `clients/web-legacy/` | Archived Vite shell (reference only) |
+| `clients/mobile/` | Flutter mobile shell |
 | `config/` | Platform YAML |
 | `infra/` | Docker, Terraform, Helm |
 | `spec/sdd/` | Formal SDD artifacts |
@@ -42,4 +44,5 @@ description: >-
 ## References
 
 - `spec/sdd/02-architecture.md`
+- `spec/sdd/adrs/005-angular-cli-web-client.md`
 - `spec/sdd/adrs/001-monorepo-and-layered-architecture.md`

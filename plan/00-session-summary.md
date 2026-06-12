@@ -2,7 +2,7 @@
 
 ## All phases complete
 
-**131 / 131** backlog tasks Done · **Phase 9 SDD 100% closure** complete.
+**131 / 131** backlog Done · Phase 9 SDD closure · **Phase 10 Angular CLI web** complete.
 
 | Phase | Focus | Playbook |
 |-------|-------|----------|
@@ -11,6 +11,7 @@
 | 7 | Platform service wiring in shells | `plan/06-sdd-gap-closure.md` |
 | 8 | End-user product depth | `plan/07-phase8-end-user-product.md` |
 | 9 | SDD 100% closure | `plan/08-sdd-100-closure.md` |
+| 10 | Angular CLI web | `plan/10-angular-cli-web.md` |
 
 | Status doc | Path |
 |------------|------|
@@ -24,17 +25,17 @@
 - Form validation, conditions, i18n; grid sort/filter/group/export
 - MFA, OAuth, tenant picker, white-label themes
 - CRM module (`LEAD`, `CONTACT`); renderer contract tests
-- CI: pytest 80%, vitest, flutter test; prod readiness tabletop
+- CI: pytest 80%, Angular Karma CI, flutter test; prod readiness tabletop
 
 ### Verify
 
 ```powershell
 cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run lint; npm test
+cd clients/web; npm run build; npm run test:ci
 cd clients/mobile; flutter analyze; flutter test
 .\scripts\verify-full-stack.ps1
 ```
 
-**66 pytest** · **9 vitest** · **4 flutter** · coverage **~90%**
+**66 pytest** · Angular Karma CI · **4 flutter** · coverage **~90%**
 
 **Current focus:** Review diff; commit when ready. Live production sign-off: `docs/ops/production-readiness.md`.

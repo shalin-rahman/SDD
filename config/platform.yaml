@@ -62,3 +62,14 @@ tenants:
   acme:
     domain: acme.local
     theme: acme-blue
+
+# JSON seed packs under data/seed/ (see data/seed/README.md).
+# Set seed.demo.enabled: false to skip demo inserts; remove_when_disabled purges demo IDs.
+seed:
+  core:
+    enabled: true
+    path: data/seed/core
+  demo:
+    enabled: true
+    path: data/seed/demo
+    remove_when_disabled: true

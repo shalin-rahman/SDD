@@ -1,13 +1,27 @@
 ---
-description: Vite/TypeScript web client conventions for EMCAP metadata-driven UI
+description: Angular CLI web client conventions for EMCAP metadata-driven UI
 globs: clients/web/**/*
 alwaysApply: false
 ---
 
-# Frontend Web (Vite/TypeScript)
+# Frontend Angular (CLI 19)
 
-- UI is metadata-driven: dynamic forms and universal grid only.
-- Entity UX lives in `src/app/entity-view.ts`; shell in `src/app/main.ts`.
-- Do not create entity-specific field components; consume platform metadata API.
-- ESLint + vitest run in CI (`client-lint-web` job).
-- Parity with Flutter: same contract in `src/metadata/contract.ts`.
+- **Stack:** Angular CLI 19 standalone components, routing, Karma/Jasmine tests.
+- UI is metadata-driven: dynamic forms and universal grid only — no entity-specific field components.
+- Entity UX: `src/app/pages/entity/entity.component.ts`.
+- Shell: `src/app/pages/shell/shell.component.ts` + child routes in `app.routes.ts`.
+- API: `EmcapApiService` → `api/emcap-client.ts` (Bearer + `X-Tenant-ID`).
+- Metadata: `src/app/metadata/contract.ts` + `dynamic-form.renderer.ts` / `dynamic-grid.renderer.ts`.
+- CI: `npm run build` + `npm run test:ci` (ChromeHeadless).
+- Archived Vite shell: `clients/web-legacy/` — do not edit.
+
+## TypeScript
+
+`tsconfig.json` sets `noPropertyAccessFromIndexSignature: false` for API `Record<string, unknown>` payloads.
+
+## Scaffold new components
+
+```bash
+cd clients/web
+ng generate component pages/my-feature --standalone
+```

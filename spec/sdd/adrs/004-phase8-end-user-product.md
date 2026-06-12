@@ -21,7 +21,7 @@ Phase 7 closed platform-service wiring in thin shells (`spec/sdd/04-capability-m
 
 - Backlog grew 108 → 131 tasks; all Phase 8 tasks Done (2026-06-11).
 - Agents read `05-end-user-matrix.md` + playbook before UX work.
-- Full Angular framework replacement is out of scope; deepen existing Vite/Flutter thin shells per SDD metadata contract.
+- Full Angular framework replacement deferred here; completed in ADR-005 (Phase 10).
 
 ## References
 

@@ -107,7 +107,7 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 
 | | |
 |--|--|
-| **Symptom** | New `emcap-client.ts` method ships without vitest guard |
+| **Symptom** | New API method ships without Jasmine contract test |
 | **Fix** | Add to `REQUIRED_METHODS` in `emcap-client.test.ts` same PR |
 | **Test** | `npm test` in `clients/web` |
 
@@ -210,3 +210,53 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | `package:emcap_mobile/...` not found in test |
 | **Fix** | Use package name from `pubspec.yaml` (`emcap_mobile`) |
 | **Test** | `flutter test` |
+
+## Phase 10 — Angular CLI web client
+
+### npm ENOENT when running `npx ng new` (Windows)
+
+| | |
+|--|--|
+| **Symptom** | `ENOENT: no such file or directory, lstat '%APPDATA%\npm'` |
+| **Fix** | `New-Item -ItemType Directory -Force -Path "$env:APPDATA\npm"` then re-run `npx` |
+| **Test** | `npx @angular/cli@19 version` |
+
+### `ng new` fails mid-install (`readable-stream`)
+
+| | |
+|--|--|
+| **Symptom** | Scaffold files created but `package.json` / `node_modules` incomplete |
+| **Fix** | `cd clients/web && npm install` then `npm run build` |
+| **Test** | `npm run build` succeeds |
+
+### TS4111 on `Record<string, unknown>` (Angular strict)
+
+| | |
+|--|--|
+| **Symptom** | Build errors: property must be accessed with `['field']` |
+| **Fix** | `tsconfig.json` → `"noPropertyAccessFromIndexSignature": false` |
+| **Test** | `npm run build` |
+
+### Editing archived Vite shell
+
+| | |
+|--|--|
+| **Symptom** | Changes in `clients/web-legacy/` do not appear in CI |
+| **Fix** | Edit `clients/web/src/app/` only; legacy is read-only archive |
+| **Test** | `cd clients/web && npm run build` |
+
+### Karma hangs in CI or locally
+
+| | |
+|--|--|
+| **Symptom** | `ng test` waits for browser or never exits |
+| **Fix** | Use `npm run test:ci` (`--watch=false --browsers=ChromeHeadless`); CI needs `browser-actions/setup-chrome` |
+| **Test** | `npm run test:ci` |
+
+### CI still runs ESLint on web
+
+| | |
+|--|--|
+| **Symptom** | `npm run lint` missing in Angular project |
+| **Fix** | CI uses `npm run build` + `npm run test:ci` (see `.github/workflows/ci.yml`) |
+| **Test** | Push to PR; `client-lint-web` job green |

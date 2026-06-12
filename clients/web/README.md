@@ -1,50 +1,40 @@
-# EMCAP web thin client
+# EMCAP Angular web client
 
-Metadata-driven presentation shell aligned with **SDD §9 Dynamic UI Platform**. The Vite/TypeScript client consumes the same backend form/grid metadata contract as the Flutter mobile client.
+Full **Angular CLI 19** application — metadata-driven presentation shell aligned with **SDD §9**. Replaces the archived Vite thin shell in `clients/web-legacy/`.
 
-## SDD §9 structure
+## Structure
 
-| Layer | Path | Role |
-|-------|------|------|
-| **API client** | `src/api/emcap-client.ts` | 40+ methods; Bearer + `X-Tenant-ID` |
-| **Metadata contract** | `src/metadata/contract.ts` | Form/grid types, i18n helpers |
-| **Dynamic renderers** | `src/dynamic-form.component.ts`, `src/dynamic-grid.component.ts` | Validation, sort/filter/group |
-| **Entity view** | `src/app/entity-view.ts` | Edit/delete/search/pagination/export |
-| **Shell app** | `src/app/main.ts` | Login, nav, workflow, reports, account, AI |
-| **Host** | `index.html` | `#app`, `window.EMCAP_API_URL` |
+| Path | Role |
+|------|------|
+| `src/app/api/emcap-client.ts` | Platform HTTP client (40+ methods) |
+| `src/app/metadata/contract.ts` | Form/grid metadata types |
+| `src/app/metadata/dynamic-form.renderer.ts` | Validation, conditions, layout grid |
+| `src/app/metadata/dynamic-grid.renderer.ts` | Sort, filter, group, paginate |
+| `src/app/services/auth.service.ts` | Session token + tenant |
+| `src/app/services/emcap-api.service.ts` | Injectable API client |
+| `src/app/pages/shell/` | Header, tenant picker, nav |
+| `src/app/pages/entity/` | Full entity CRUD UX |
+| `src/app/pages/*` | Workflow, reports, dashboards, notifications, account, assistant |
+| `src/index.html` | `window.EMCAP_API_URL` |
 
-## Capabilities (Phases 7–8)
-
-| Area | Features |
-|------|----------|
-| Entity CRUD | Create, **edit**, **delete**, **search**, pagination |
-| Dynamic forms | Field types, validation, conditions, i18n labels |
-| Dynamic grids | Sort, filter, group, CSV/excel/PDF export |
-| Workflow | Inbox actions, **start from record**, SLA display |
-| Platform | Notifications (multi-channel), dashboards, reports + **history** |
-| Identity | MFA, OAuth, **tenant picker**, white-label CSS vars |
-| Documents | Upload, list, **preview**, versions |
-| Integrations | REST dispatch, payments demo (flag gated), AI assistant |
-
-## How to run
+## Run
 
 ```bash
 cd clients/web
 npm ci
-npm run dev
+npm start          # http://localhost:4200
 ```
 
-Open **http://localhost:4200**. API default: **http://localhost:8000**. Login: `admin` / `admin123`.
+API default: `http://localhost:8000` (set in `src/index.html`). Login: `admin` / `admin123`.
 
-## Quality checks
+## Quality
 
 ```bash
-npm run lint
-npm test
-npm run test:coverage   # optional
 npm run build
+npm test           # Karma + Jasmine (interactive)
+npm run test:ci    # ChromeHeadless (CI)
 ```
 
-**Tests:** 8 vitest (contract + renderer). CI runs lint + test on every PR.
+Contract tests: `src/app/api/emcap-client.spec.ts`, `src/app/metadata/dynamic-form.renderer.spec.ts`.
 
-See `plan/04-client-api-completion.md` for full API mapping.
+See `plan/10-angular-cli-web.md` and `plan/04-client-api-completion.md`.

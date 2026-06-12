@@ -13,8 +13,7 @@ def test_registry_rejects_duplicate_entity() -> None:
     registry = EntityRegistry()
     entity = EntityDefinition(
         code="ITEM",
-        fields=[FieldDefinition(
-            name="name", field_type=FieldType.STRING, required=True)],
+        fields=[FieldDefinition(name="name", field_type=FieldType.STRING, required=True)],
     )
     registry.register(entity)
     with pytest.raises(EntityRegistryError):

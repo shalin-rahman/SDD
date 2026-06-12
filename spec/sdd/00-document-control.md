@@ -16,6 +16,7 @@
 | 1.0 | 2026-06-10 | Platform team | Initial SDD; Phase 0 scaffold started |
 | 1.1 | 2026-06-11 | Platform team | Phase 6–7: capability matrix, gap closure playbook |
 | 1.2 | 2026-06-11 | Platform team | Phase 8: end-user matrix, FR-008c, ADR-004; 131/131 backlog Done |
+| 1.3 | 2026-06-11 | Platform team | Phase 10: Angular CLI web client, ADR-005; `clients/web-legacy` archived |
 
 ## Related documents
 
@@ -30,7 +31,8 @@
 | Task backlog | `plan/03-task-backlog.md` |
 | Phase 7 playbook | `plan/06-sdd-gap-closure.md` |
 | Phase 8 playbook | `plan/07-phase8-end-user-product.md` |
-| ADRs | `spec/sdd/adrs/` |
+| Phase 10 Angular web | `plan/10-angular-cli-web.md` |
+| ADRs | `spec/sdd/adrs/` (incl. ADR-005 Angular CLI) |
 
 ## Scope
 

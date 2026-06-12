@@ -46,7 +46,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 | NFR-001 Availability 99.9% | Done | N/A | Done | Helm prod + PDB |
 | NFR-002 Scalability | Done | N/A | Done | HPA documented |
 | NFR-003 Backend coverage ≥80% | Done | N/A | Done | CI `--cov-fail-under=80` |
-| NFR-004 Client coverage ≥80% | N/A | Done | Done | Vitest + Flutter contract tests |
+| NFR-004 Client coverage ≥80% | N/A | Done | Done | Angular Karma + Flutter contract tests |
 | NFR-005 OWASP | Done | Done | Done | Security middleware + SAST in CI |
 | NFR-006 Observability | Done | Done | Done | Metrics + trace headers + JSON logs |
 | NFR-007 Local dev Docker | Done | Done | Done | — |

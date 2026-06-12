@@ -7,16 +7,19 @@ $ApiUrl = if ($env:EMCAP_API_URL) { $env:EMCAP_API_URL } else { "http://localhos
 
 Set-Location $RepoRoot
 
+& "$RepoRoot\scripts\lint-format.ps1"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 Write-Host "[verify-full-stack] Platform API tests..."
 Set-Location "$RepoRoot\platform\api"
 python -m pytest -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-Write-Host "[verify-full-stack] Web client lint + test..."
+Write-Host "[verify-full-stack] Web client build + test..."
 Set-Location "$RepoRoot\clients\web"
-npm run lint
+npm run build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-npm test
+npm run test:ci
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "[verify-full-stack] API health ($ApiUrl)..."
@@ -31,16 +34,6 @@ try {
 } catch {
     Write-Host "[verify-full-stack] WARN: API not reachable at $ApiUrl (start docker compose or uvicorn)"
     Write-Host "[verify-full-stack] Platform + web checks passed; skipping health failure."
-}
-
-$flutter = Get-Command flutter -ErrorAction SilentlyContinue
-if ($flutter) {
-    Write-Host "[verify-full-stack] Flutter analyze..."
-    Set-Location "$RepoRoot\clients\mobile"
-    flutter analyze
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-} else {
-    Write-Host "[verify-full-stack] Flutter SDK not on PATH — skipping mobile analyze"
 }
 
 Write-Host "[verify-full-stack] OK"

@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 import emcap.persistence.database as database
 
 ROOT = Path(__file__).resolve().parents[3]
-CONFIG_PATH = ROOT / "config" / "platform.yaml"
+CONFIG_PATH = ROOT / "config" / "platform-test.yaml"
 MODULES_PATH = ROOT / "modules"
 
 

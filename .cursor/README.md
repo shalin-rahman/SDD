@@ -16,7 +16,7 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | `emcap-core-standards.mdc` | Always apply — module boundaries, config-driven design |
 | `emcap-sdd-workflow.mdc` | Always apply — read index/pitfalls/recipes before coding |
 | `backend-python.mdc` | `platform/api/**` |
-| `frontend-angular.mdc` | `clients/web/**` (Vite/TS thin shell) |
+| `frontend-angular.mdc` | `clients/web/**` (Angular CLI 19) |
 | `frontend-flutter.mdc` | `clients/mobile/**` |
 | `infra-iac.mdc` | `infra/**` |
 
@@ -47,6 +47,8 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 | `spec/sdd/05-end-user-matrix.md` | End-user UX status (Phase 8 complete) |
 | `plan/06-sdd-gap-closure.md` | Phase 7 playbook |
 | `plan/07-phase8-end-user-product.md` | Phase 8 playbook |
-| `plan/03-task-backlog.md` | 131/131 task status |
+| `plan/10-angular-cli-web.md` | Angular CLI web client |
+| `spec/sdd/adrs/005-angular-cli-web-client.md` | ADR-005 |
+| `plan/03-task-backlog.md` | Task status |
 
 Commit this `.cursor/` tree with the repo so every contributor gets the same agent context.

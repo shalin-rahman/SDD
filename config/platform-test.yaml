@@ -1,0 +1,74 @@
+# Test profile — same as platform.yaml but demo seed disabled for isolated pytest DBs.
+platform:
+  multi_tenant: false
+  white_label: false
+
+tenant_strategy:
+  mode: shared_database
+
+modules:
+  workflow:
+    enabled: true
+  payments:
+    enabled: false
+  notifications:
+    enabled: true
+  ai:
+    enabled: false
+
+authentication:
+  username_password: true
+  ldap: false
+  oauth: true
+  sso: false
+
+audit:
+  enabled: true
+  immutable: true
+
+notifications:
+  email: true
+  sms: false
+  push: true
+  whatsapp: false
+
+grid:
+  export_excel: true
+  export_pdf: true
+  export_csv: true
+  grouping: true
+  realtime: true
+  offline: true
+
+workflow:
+  enabled: true
+  escalation: true
+  delegation: true
+  sla_tracking: true
+
+rules:
+  scripting_enabled: false
+  formula_enabled: true
+
+payments:
+  enabled: false
+
+ai:
+  enabled: false
+
+tenants:
+  default:
+    domain: localhost
+    theme: default
+  acme:
+    domain: acme.local
+    theme: acme-blue
+
+seed:
+  core:
+    enabled: true
+    path: data/seed/core
+  demo:
+    enabled: false
+    path: data/seed/demo
+    remove_when_disabled: true

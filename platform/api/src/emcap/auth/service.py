@@ -32,8 +32,10 @@ def get_user_by_username(session: Session, username: str) -> UserRow | None:
 
 
 def list_user_permissions(session: Session, user: UserRow) -> list[str]:
-    rows = session.query(RoleRow).join(UserRoleRow, UserRoleRow.role_id == RoleRow.id).filter(
-        UserRoleRow.user_id == user.id
+    rows = (
+        session.query(RoleRow)
+        .join(UserRoleRow, UserRoleRow.role_id == RoleRow.id)
+        .filter(UserRoleRow.user_id == user.id)
     )
     permissions: set[str] = set()
     for role in rows:

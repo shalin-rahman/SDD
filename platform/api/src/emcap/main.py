@@ -38,6 +38,7 @@ from emcap.observability.metrics import MetricsMiddleware
 from emcap.observability.tracing_middleware import TracingMiddleware
 from emcap.persistence.database import get_session_factory, init_db
 from emcap.reporting.models import DashboardDefinition, ReportDefinition
+from emcap.seed.loader import apply_configured_seeds
 from emcap.tenancy.middleware import TenantMiddleware
 from emcap.tenancy.strategies import get_tenant_strategy
 from emcap.workflow.models import WorkflowDefinition
@@ -83,6 +84,7 @@ def create_app() -> FastAPI:
     init_db()
     seed_session = get_session_factory()()
     try:
+        apply_configured_seeds(seed_session, platform_config)
         seed_default_auth(seed_session)
     finally:
         seed_session.close()

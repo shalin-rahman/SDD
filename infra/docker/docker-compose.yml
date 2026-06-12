@@ -16,6 +16,8 @@ services:
         condition: service_started
     volumes:
       - ../../config/platform.yaml:/config/platform.yaml:ro
+      - ../../data:/data:ro
+      - ../../modules:/modules:ro
 
   postgres:
     image: postgres:16-alpine

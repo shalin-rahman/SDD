@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "description": "Core users — upserted by username; use password_hash in production",
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "tenant_id": "default",
+      "roles": ["admin"],
+      "attributes": { "department": "platform" }
+    },
+    {
+      "username": "operator",
+      "password": "operator123",
+      "tenant_id": "default",
+      "roles": ["operator"],
+      "attributes": { "department": "operations" }
+    },
+    {
+      "username": "viewer",
+      "password": "viewer123",
+      "tenant_id": "default",
+      "roles": ["viewer"],
+      "attributes": { "department": "audit" }
+    }
+  ]
+}

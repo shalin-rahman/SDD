@@ -32,7 +32,7 @@ SDD NFR-001, NFR-002, NFR-008, NFR-015. Study-repo tabletop verification — phy
 ## Client & quality gates (Phase 8)
 
 - [x] Backend pytest coverage ≥80% in CI
-- [x] Web renderer contract tests (vitest)
+- [x] Web renderer contract tests (Angular Karma CI)
 - [x] Flutter `metadata_contract_test.dart`
 - [x] Web + mobile end-user matrix rows Done or Stub
 
@@ -42,10 +42,10 @@ SDD NFR-001, NFR-002, NFR-008, NFR-015. Study-repo tabletop verification — phy
 .\scripts\verify-full-stack.ps1
 helm template infra/helm/emcap-api -f infra/helm/emcap-api/values-prod.yaml
 cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm test
+cd clients/web; npm run build; npm run test:ci
 cd clients/mobile; flutter test
 ```
 
-**Test counts:** 60 pytest · 8 vitest · 3 flutter · backend ~90% (gate 80%).
+**Test counts:** 66 pytest · Angular Karma CI · 4 flutter · backend ~90% (gate 80%).
 
 Sign-off (production cutover): _______________ Date: _______________

@@ -13,8 +13,9 @@ Session summaries outside the repo point here. **Canonical content lives in-repo
 | `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase7-gap-plan.md` | Phase 7 SDD gap closure plan | `plan/06-sdd-gap-closure.md`, `spec/sdd/04-capability-matrix.md` |
 | `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase7-implementation.md` | Phase 7 implementation complete | `plan/00-session-summary.md`, `plan/04-client-api-completion.md` |
 | `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase8-end-user-plan.md` | Phase 8 end-user product plan | `plan/07-phase8-end-user-product.md`, `spec/sdd/05-end-user-matrix.md` |
-| `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase8-implementation.md` | Phase 8 implementation complete | `modules/crm/`, `clients/web/src/app/entity-view.ts` |
+| `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase8-implementation.md` | Phase 8 implementation (Vite era) | `clients/web-legacy/`, `modules/crm/` |
 | `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-phase8-mobile-parity.md` | Phase 8 mobile parity + prod tabletop | `spec/sdd/05-end-user-matrix.md`, `docs/ops/production-readiness.md` |
+| `C:\Users\u1074139\.cursor\task-summaries\2026-06-11-emcap-angular-cli-docs-sync.md` | Phase 10 Angular CLI + pitfalls | `plan/10-angular-cli-web.md`, ADR-005, `clients/web/` |
 
 ## Agent rule
 

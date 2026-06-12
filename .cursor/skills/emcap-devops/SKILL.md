@@ -9,13 +9,6 @@ description: >-
 
 ## GitFlow (SDD §24)
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production releases |
-| `develop` | Integration branch |
-| `release/*` | Release stabilization |
-| `hotfix/*` | Production fixes |
-
 See `docs/dev/gitflow.md`.
 
 ## Local stack (SDD §21)
@@ -23,48 +16,38 @@ See `docs/dev/gitflow.md`.
 ```bash
 cd infra/docker
 docker compose up --build
+cd clients/web && npm start    # Angular → :4200
 ```
 
-Services: API (:8000), PostgreSQL (:5432), Redis (:6379), MinIO (:9000/:9001).
-
-Health check: `GET http://localhost:8000/api/v1/health`
-
-Web shell: `cd clients/web && npm run dev` → http://localhost:4200
-
 ## CI pipeline (SDD §23)
-
-Stages: Lint → Unit tests → Integration tests → Security scan → Client tests → Deploy.
 
 Workflow: `.github/workflows/ci.yml`
 
 | Job | Stack |
 |-----|-------|
-| `backend` | Ruff, Black, MyPy, pytest 80% coverage |
-| `integration` | PostgreSQL service container |
-| `security-dependencies` | pip-audit |
-| `security-sast` | Bandit + Ruff S |
-| `client-lint-web` | ESLint + vitest |
-| `client-lint-mobile` | flutter analyze + flutter test |
+| `backend` | Ruff, Black, MyPy, pytest 80% |
+| `integration` | PostgreSQL |
+| `security-*` | pip-audit, Bandit, Ruff S |
+| `client-lint-web` | `ng build` + `ng test:ci` (ChromeHeadless) |
+| `client-lint-mobile` | flutter analyze + test |
 
-## Code quality (mandatory)
+## Code quality
 
 | Stack | Tools |
 |-------|-------|
 | Python | Ruff, Black, MyPy |
-| Web (Vite/TS) | ESLint, vitest |
+| Web (Angular) | Angular CLI build, Karma/Jasmine |
 | Flutter | Flutter Analyze, flutter test |
 
-## IaC layout
+## Angular web CI prerequisites
 
-| Path | Tool |
-|------|------|
-| `infra/terraform/` | Cloud resources |
-| `infra/helm/` | K8s releases |
-| `infra/ansible/` | Bootstrap + deploy playbooks (dev/uat inventories) |
-| `infra/backup/` | Daily backup + PITR scripts |
+- `browser-actions/setup-chrome` in workflow (Karma headless).
+- `clients/web`: `npm run test:ci` not interactive `ng test`.
 
-## Coverage gates
+## IaC
 
-- Backend: `--cov-fail-under=80` in CI (current ~90%)
-- Client: vitest + `metadata_contract_test.dart` on every PR
-- Production tabletop: `docs/ops/production-readiness.md`
+`infra/terraform/`, `infra/helm/`, `infra/ansible/`, `infra/backup/`
+
+## References
+
+- `plan/10-angular-cli-web.md` — scaffold pitfalls (npm path, TS4111)

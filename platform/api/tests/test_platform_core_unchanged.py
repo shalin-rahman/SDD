@@ -65,8 +65,7 @@ def _git_has_committed_baseline() -> bool:
         return False
 
     staged = subprocess.run(
-        ["git", "diff", "--cached", "--quiet",
-            "HEAD", "--", "platform/api/src/emcap/"],
+        ["git", "diff", "--cached", "--quiet", "HEAD", "--", "platform/api/src/emcap/"],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -117,8 +116,7 @@ def _git_diff_platform_core() -> tuple[bool, str]:
         text=True,
         check=False,
     )
-    combined = "\n".join(
-        filter(None, [result.stdout.strip(), staged.stdout.strip()]))
+    combined = "\n".join(filter(None, [result.stdout.strip(), staged.stdout.strip()]))
     return True, combined
 
 
@@ -138,26 +136,22 @@ def test_inventory_module_file_exports_module_definition() -> None:
     definition = load_module_definition(INVENTORY_MODULE)
     assert isinstance(definition, ModuleDefinition)
     assert definition.code == "INVENTORY"
-    assert {entity.code for entity in definition.entities} == {
-        "PRODUCT", "WAREHOUSE"}
-    assert {workflow.code for workflow in definition.workflows} == {
-        "STOCK_ADJUSTMENT"}
+    assert {entity.code for entity in definition.entities} == {"PRODUCT", "WAREHOUSE"}
+    assert {workflow.code for workflow in definition.workflows} == {"STOCK_ADJUSTMENT"}
     assert {report.code for report in definition.reports} == {
         "INVENTORY_VALUATION",
         "LOW_STOCK",
     }
-    assert {dashboard.code for dashboard in definition.dashboards} == {
-        "INVENTORY_OVERVIEW"}
-    assert {menu.code for menu in definition.menus} == {
-        "products", "warehouses"}
+    assert {dashboard.code for dashboard in definition.dashboards} == {"INVENTORY_OVERVIEW"}
+    assert {menu.code for menu in definition.menus} == {"products", "warehouses"}
 
 
 def test_inventory_module_uses_sdk_imports_only() -> None:
     """Business module must not import platform internals beyond the public SDK."""
     for module_name in _inventory_module_imports():
-        assert module_name.startswith(ALLOWED_MODULE_IMPORT_PREFIXES), (
-            f"Unexpected import in inventory module: {module_name}"
-        )
+        assert module_name.startswith(
+            ALLOWED_MODULE_IMPORT_PREFIXES
+        ), f"Unexpected import in inventory module: {module_name}"
 
 
 def test_inventory_module_package_isolated_under_modules() -> None:
@@ -181,13 +175,13 @@ def test_platform_core_has_no_git_diff_for_inventory_work() -> None:
 
     is_git, diff_output = _git_diff_platform_core()
     if not is_git:
-        pytest.skip(
-            "Not a git repository — run scripts/verify-platform-core.* locally")
+        pytest.skip("Not a git repository — run scripts/verify-platform-core.* locally")
 
     changed = [line for line in diff_output.splitlines() if line.strip()]
-    assert changed == [], (
-        "Platform core must remain unchanged for plug-in modules. "
-        "Modified files:\n" + "\n".join(changed)
+    assert (
+        changed == []
+    ), "Platform core must remain unchanged for plug-in modules. " "Modified files:\n" + "\n".join(
+        changed
     )
 
 
@@ -214,8 +208,7 @@ def test_inventory_capabilities_via_generic_platform_apis(client: TestClient) ->
     assert client.get("/api/v1/metadata/forms/PRODUCT").status_code == 200
     assert client.get("/api/v1/metadata/grids/PRODUCT").status_code == 200
 
-    search = client.get("/api/v1/entities/PRODUCT/records",
-                        params={"q": "CORE"})
+    search = client.get("/api/v1/entities/PRODUCT/records", params={"q": "CORE"})
     assert search.status_code == 200
     assert len(search.json()["records"]) >= 1
 

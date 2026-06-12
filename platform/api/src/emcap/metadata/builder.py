@@ -41,10 +41,10 @@ def build_form_metadata(entity: EntityDefinition) -> FormMetadata:
                 name=field.name,
                 label=_label(field),
                 field_type=(
-            LayoutFieldType.EMAIL
-            if field.name == "email"
-            else FIELD_TYPE_MAP.get(field.field_type, LayoutFieldType.TEXT)
-        ),
+                    LayoutFieldType.EMAIL
+                    if field.name == "email"
+                    else FIELD_TYPE_MAP.get(field.field_type, LayoutFieldType.TEXT)
+                ),
                 required=field.required,
                 row=index // 2,
                 col=(index % 2) * 6,

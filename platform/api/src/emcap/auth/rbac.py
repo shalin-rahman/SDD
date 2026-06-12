@@ -19,11 +19,7 @@ def assign_role(session: Session, user_id: str, role_code: str) -> None:
         msg = f"Unknown role: {role_code}"
         raise KeyError(msg)
 
-    existing = (
-        session.query(UserRoleRow)
-        .filter_by(user_id=user_id, role_id=role.id)
-        .one_or_none()
-    )
+    existing = session.query(UserRoleRow).filter_by(user_id=user_id, role_id=role.id).one_or_none()
     if existing is None:
         session.add(UserRoleRow(user_id=user_id, role_id=role.id))
         session.commit()
