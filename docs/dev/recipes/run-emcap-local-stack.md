@@ -4,6 +4,7 @@
 
 - Docker Desktop running
 - Python 3.11+, Node 20+, npm
+- API dev deps (auto-installed on first lint run): `cd platform/api && pip install -e ".[dev]"`
 - Optional: Flutter SDK, Chrome (Karma)
 
 ## Start

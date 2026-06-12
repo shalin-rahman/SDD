@@ -333,3 +333,12 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | `[stack] FAILED` right after `docker compose up` |
 | **Fix** | Start Docker Desktop; inspect `logs/emcap/<session>/docker-start.log` |
 | **Test** | Manual |
+
+### `ruff` / `black` / `mypy` not recognized
+
+| | |
+|--|--|
+| **Symptom** | `'ruff' is not recognized` when running `lint-format.bat` or `run-emcap.bat` |
+| **Cause** | Dev tools installed in `platform/api` venv, not on global PATH |
+| **Fix** | Scripts use `python -m ruff` etc.; `_ensure-python-dev.bat` runs `pip install -e ".[dev]"` if missing |
+| **Test** | `scripts\lint-format.bat` from repo root |

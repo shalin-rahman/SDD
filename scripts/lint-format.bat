@@ -4,19 +4,25 @@ setlocal EnableExtensions
 call "%CD%\scripts\_resolve-scripts.bat" 2>nul
 if errorlevel 1 call "%~dp0_resolve-scripts.bat"
 if errorlevel 1 exit /b 1
-set "ERR=0"
 
+call "%EMCAP_SCRIPTS%_ensure-python-dev.bat"
+if errorlevel 1 (
+  echo [lint-format] FAILED: could not install Python dev dependencies.
+  exit /b 1
+)
+
+set "ERR=0"
 cd /d "%EMCAP_ROOT%"
 
 echo [lint-format] Python - ruff, black, mypy...
 pushd "%EMCAP_API_DIR%"
-ruff check src tests
+python -m ruff check src tests
 if errorlevel 1 set ERR=1
 if %ERR% neq 0 goto :failed
-black --check src tests
+python -m black --check src tests
 if errorlevel 1 set ERR=1
 if %ERR% neq 0 goto :failed
-mypy src
+python -m mypy src
 if errorlevel 1 set ERR=1
 popd
 if %ERR% neq 0 goto :failed
