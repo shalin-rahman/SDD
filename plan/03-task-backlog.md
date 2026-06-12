@@ -15,13 +15,14 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 6 — Knowledge + client completion | 7 | 0 | 0 | 7 |
 | 7 — SDD gap closure (§2 Partial/No) | 16 | 0 | 0 | 16 |
 | 8 — End-user product depth (§9 UX) | 23 | 0 | 0 | 23 |
-| **Total** | **131** | **0** | **0** | **131** |
+| 11 — Local dev tooling (scripts, seed, lint) | 12 | 0 | 0 | 12 |
+| **Total** | **143** | **0** | **0** | **143** |
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-11 · Phases 0–8 complete · **60 pytest + 8 vitest + 3 flutter** · backend **~90%** (CI gate 80%)
+**Last updated:** 2026-06-12 · Phases 0–8 + 11 complete · **71 pytest** · Angular Karma CI · **4 flutter** · backend **~90%** (CI gate 80%)
 
-**Current focus:** Phase 8 complete — review changes before commit.
+**Current focus:** Phase 11 complete — review diff; commit when ready.
 
 ---
 
@@ -240,12 +241,33 @@ Playbook: `plan/07-phase8-end-user-product.md` · Matrix: `spec/sdd/05-end-user-
 
 ---
 
+## Phase 11 — Local dev tooling (scripts, seed, lint)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P11-T01 | JSON core/demo seed packs + `config/platform.yaml` seed section | — | Done |
+| EMCAP-P11-T02 | `emcap/seed/loader.py` + API startup + `apply-seed.py` | T01 | Done |
+| EMCAP-P11-T03 | `config/platform-test.yaml` (demo seed off for pytest) | T02 | Done |
+| EMCAP-P11-T04 | `run-emcap.bat` / `stop-emcap` / `logs-emcap` / session log files | T02 | Done |
+| EMCAP-P11-T05 | Fix batch paths: `_resolve-scripts.bat` (PowerShell `%~dp0` bug) | T04 | Done |
+| EMCAP-P11-T06 | `lint-format.bat` + wire before tests in run/verify scripts | — | Done |
+| EMCAP-P11-T07 | Angular ESLint + Prettier; CI `format:check` + `lint` | T06 | Done |
+| EMCAP-P11-T08 | CI YAML quote `sqlite:///:memory:` | — | Done |
+| EMCAP-P11-T09 | Web live logs (`run-web-with-logs.ps1`) + `pause` / errorlevel fixes | T04 | Done |
+| EMCAP-P11-T10 | `test_seed_loader.py` + pytest regression for seed purge | T02–T03 | Done |
+| EMCAP-P11-T11 | Docker compose mount `data/`; Dockerfile COPY data | T01 | Done |
+| EMCAP-P11-T12 | Docs, pitfalls Phase 11, recipe, skills, backlog sync | T01–T11 | Done |
+
+Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-local-stack.md`
+
+---
+
 ## Immediate Next Steps
 
-**Phase 8 complete (131/131).** Review diff; commit when ready.
+**Phase 11 complete (143/143).** Review diff; commit when ready.
 
-1. Manual smoke: Inventory Products — search, edit, delete, export, start workflow.
-2. CRM menus: Leads, Contacts — create/edit/delete.
+1. `scripts\run-emcap.bat --stack-only` — confirm Docker + web + logs.
+2. Manual smoke: Inventory Products — search, edit, delete, export, start workflow.
 3. Production cutover: `docs/ops/production-readiness.md` sign-off when deploying.
 
 **Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`

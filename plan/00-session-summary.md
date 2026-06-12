@@ -1,8 +1,8 @@
 # EMCAP SDD — Session Summary
 
-## All phases complete
+## Phases complete
 
-**131 / 131** backlog Done · Phase 9 SDD closure · **Phase 10 Angular CLI web** complete.
+**143 / 143** backlog Done · Phases 0–8 · Phase 9 SDD closure · Phase 10 Angular · **Phase 11 local dev tooling**.
 
 | Phase | Focus | Playbook |
 |-------|-------|----------|
@@ -12,30 +12,30 @@
 | 8 | End-user product depth | `plan/07-phase8-end-user-product.md` |
 | 9 | SDD 100% closure | `plan/08-sdd-100-closure.md` |
 | 10 | Angular CLI web | `plan/10-angular-cli-web.md` |
+| 11 | Scripts, seed, lint gates | `plan/11-local-dev-tooling.md` |
 
 | Status doc | Path |
 |------------|------|
 | Platform services | `spec/sdd/04-capability-matrix.md` |
 | End-user UX | `spec/sdd/05-end-user-matrix.md` |
 | Backlog | `plan/03-task-backlog.md` |
+| Pitfalls | `docs/dev/known-pitfalls.md` |
 
-### Phase 8 highlights
+### Phase 11 highlights
 
-- Entity edit/delete/search/pagination (web + mobile)
-- Form validation, conditions, i18n; grid sort/filter/group/export
-- MFA, OAuth, tenant picker, white-label themes
-- CRM module (`LEAD`, `CONTACT`); renderer contract tests
-- CI: pytest 80%, Angular Karma CI, flutter test; prod readiness tabletop
+- `run-emcap.bat` — lint, tests, Docker stack, seed, web, persisted session logs
+- JSON seed: `data/seed/` + `emcap/seed/loader.py`
+- `lint-format.bat` + Angular ESLint/Prettier in CI
+- Fixes: PowerShell batch paths, CI YAML quoting, pytest seed isolation
 
 ### Verify
 
-```powershell
-cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run build; npm run test:ci
-cd clients/mobile; flutter analyze; flutter test
-.\scripts\verify-full-stack.ps1
+```bat
+cd C:\path\to\SDD
+scripts\lint-format.bat
+scripts\run-emcap.bat --stack-only
 ```
 
-**66 pytest** · Angular Karma CI · **4 flutter** · coverage **~90%**
+**71 pytest** · Angular format+lint+Karma · **4 flutter** · coverage **~90%**
 
-**Current focus:** Review diff; commit when ready. Live production sign-off: `docs/ops/production-readiness.md`.
+**Current focus:** Review diff; commit when ready.

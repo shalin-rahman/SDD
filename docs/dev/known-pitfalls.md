@@ -258,5 +258,78 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | | |
 |--|--|
 | **Symptom** | `npm run lint` missing in Angular project |
-| **Fix** | CI uses `npm run build` + `npm run test:ci` (see `.github/workflows/ci.yml`) |
+| **Fix** | CI runs `format:check` + `lint` + `build` + `test:ci` (see `.github/workflows/ci.yml`) |
 | **Test** | Push to PR; `client-lint-web` job green |
+
+---
+
+## Phase 11 — Local dev scripts, seed, lint gates
+
+### Batch `%~dp0` empty when run from PowerShell
+
+| | |
+|--|--|
+| **Symptom** | `'...\SDD\emcap-env.bat' is not recognized` (missing `scripts\`) |
+| **Cause** | `scripts\run-emcap.bat` from PowerShell; `%~dp0` / `%EMCAP_SCRIPTS%` empty at parse time |
+| **Fix** | `scripts/_resolve-scripts.bat` resolves `%CD%\scripts\`; run from **repo root** |
+| **Test** | `cd SDD && scripts\run-emcap.bat --stack-only --no-follow` |
+
+### Nested `call` clears `errorlevel`
+
+| | |
+|--|--|
+| **Symptom** | `[stack] FAILED` but parent script reports success |
+| **Cause** | `if errorlevel 1` after `call :log` or stale expansion |
+| **Fix** | `set ERR=!errorlevel!` immediately after `call start-emcap-stack.bat` |
+| **Test** | Manual: stop Docker → stack fails → run-emcap exits non-zero |
+
+### Empty `:log ""` prints `ECHO is off`
+
+| | |
+|--|--|
+| **Symptom** | `ECHO is off.` in console output |
+| **Fix** | `:log` subroutine returns early when argument is empty |
+| **Test** | Visual check running `run-emcap.bat` |
+
+### GitHub Actions YAML: `sqlite:///:memory:`
+
+| | |
+|--|--|
+| **Symptom** | `Invalid workflow file` on line with `DATABASE_URL: sqlite:///:memory:` |
+| **Cause** | Trailing `:` in unquoted YAML value starts a new mapping key |
+| **Fix** | Quote URL: `DATABASE_URL: "sqlite:///:memory:"` |
+| **Test** | `python -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"` |
+
+### Pytest polluted by demo seed JSON
+
+| | |
+|--|--|
+| **Symptom** | `test_customer_crud_and_audit` sees 2 records instead of 1 |
+| **Cause** | `config/platform.yaml` has `seed.demo.enabled: true` on API startup in tests |
+| **Fix** | `config/platform-test.yaml` (demo off); `conftest.py` points to it |
+| **Test** | `platform/api/tests/test_seed_loader.py`, full pytest suite |
+
+### `verify-full-stack` calls missing `npm run lint`
+
+| | |
+|--|--|
+| **Symptom** | `npm run lint` fails on Angular project |
+| **Fix** | Scripts call `scripts/lint-format.bat` first, then `build` + `test:ci` |
+| **Test** | `.\scripts\verify-full-stack.ps1` |
+
+### PowerShell date in `emcap-env.bat` breaks session folder
+
+| | |
+|--|--|
+| **Symptom** | Log dir `logs\emcap\` with no timestamp |
+| **Cause** | Nested quotes in `Get-Date -Format 'yyyyMMdd-HHmmss'` inside `for /f` |
+| **Fix** | Use `Get-Date -Format yyyyMMdd-HHmmss` (no inner quotes); fallback `session` |
+| **Test** | Run `run-emcap.bat`; log path includes timestamp folder |
+
+### Docker not running
+
+| | |
+|--|--|
+| **Symptom** | `[stack] FAILED` right after `docker compose up` |
+| **Fix** | Start Docker Desktop; inspect `logs/emcap/<session>/docker-start.log` |
+| **Test** | Manual |

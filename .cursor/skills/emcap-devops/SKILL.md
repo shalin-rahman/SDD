@@ -13,11 +13,36 @@ See `docs/dev/gitflow.md`.
 
 ## Local stack (SDD §21)
 
-```bash
-cd infra/docker
-docker compose up --build
-cd clients/web && npm start    # Angular → :4200
+**Windows (recommended):**
+
+```bat
+cd C:\path\to\SDD
+scripts\run-emcap.bat --stack-only
 ```
+
+- API: http://localhost:8000
+- Web: http://localhost:4200 (`admin` / `admin123`)
+- Logs: `logs/emcap/<session>/`
+- Recipe: `docs/dev/recipes/run-emcap-local-stack.md`
+
+**Manual:**
+
+```bash
+cd infra/docker && docker compose up --build
+cd clients/web && npm start
+```
+
+## Lint before test (Phase 11)
+
+```bat
+scripts\lint-format.bat
+```
+
+| Stack | Tools |
+|-------|-------|
+| Python | ruff, black --check, mypy |
+| Web | prettier --check, ng lint |
+| Mobile | dart format, flutter analyze |
 
 ## CI pipeline (SDD §23)
 
@@ -26,23 +51,18 @@ Workflow: `.github/workflows/ci.yml`
 | Job | Stack |
 |-----|-------|
 | `backend` | Ruff, Black, MyPy, pytest 80% |
-| `integration` | PostgreSQL |
+| `integration` | PostgreSQL (`DATABASE_URL` **quoted** in YAML) |
 | `security-*` | pip-audit, Bandit, Ruff S |
-| `client-lint-web` | `ng build` + `ng test:ci` (ChromeHeadless) |
-| `client-lint-mobile` | flutter analyze + test |
+| `client-lint-web` | format:check, lint, build, test:ci |
+| `client-lint-mobile` | dart format, analyze, test |
 
-## Code quality
+## Windows batch pitfalls
 
-| Stack | Tools |
-|-------|-------|
-| Python | Ruff, Black, MyPy |
-| Web (Angular) | Angular CLI build, Karma/Jasmine |
-| Flutter | Flutter Analyze, flutter test |
+- Run `scripts\*.bat` from **repo root**, not from inside `scripts\`.
+- Do not rely on `%~dp0` alone from PowerShell — use `scripts/_resolve-scripts.bat`.
+- Quote `sqlite:///:memory:` in GitHub Actions YAML.
 
-## Angular web CI prerequisites
-
-- `browser-actions/setup-chrome` in workflow (Karma headless).
-- `clients/web`: `npm run test:ci` not interactive `ng test`.
+See `docs/dev/known-pitfalls.md` → Phase 11.
 
 ## IaC
 
@@ -50,4 +70,6 @@ Workflow: `.github/workflows/ci.yml`
 
 ## References
 
-- `plan/10-angular-cli-web.md` — scaffold pitfalls (npm path, TS4111)
+- `plan/11-local-dev-tooling.md` — run-emcap, seed, logs
+- `plan/10-angular-cli-web.md` — Angular scaffold pitfalls
+- `data/seed/README.md` — JSON seed configuration

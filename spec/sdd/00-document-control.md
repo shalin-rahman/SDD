@@ -7,7 +7,7 @@
 | Version | 1.0 |
 | Status | Approved for implementation |
 | Source | `spec/framework-sdd.txt` |
-| Last updated | 2026-06-11 |
+| Last updated | 2026-06-12 |
 
 ## Revision history
 
@@ -17,6 +17,7 @@
 | 1.1 | 2026-06-11 | Platform team | Phase 6–7: capability matrix, gap closure playbook |
 | 1.2 | 2026-06-11 | Platform team | Phase 8: end-user matrix, FR-008c, ADR-004; 131/131 backlog Done |
 | 1.3 | 2026-06-11 | Platform team | Phase 10: Angular CLI web client, ADR-005; `clients/web-legacy` archived |
+| 1.4 | 2026-06-12 | Platform team | Phase 11: run-emcap scripts, JSON seed, lint gates; pitfalls + 143-task backlog |
 
 ## Related documents
 

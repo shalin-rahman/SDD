@@ -4,11 +4,18 @@ Software design and implementation workspace for EMCAP (SDD v1.0).
 
 ## Quick start
 
-**Windows (tests + stack + seed + web):**
+**Windows (tests + stack + seed + web + live logs):**
 
 ```bat
-scripts\run-emcap.bat
+cd C:\path\to\SDD
+scripts\run-emcap.bat              rem run from repo root; tails Docker logs
+scripts\run-emcap.bat --stack-only rem skip lint/tests; start stack only
+scripts\logs-emcap.bat             rem re-attach to Docker logs
+scripts\stop-emcap.bat             rem stop all services
 ```
+
+Logs are written under `logs/emcap/<session>/` (`run.log`, `web.log`, `docker.log`, `pytest.log`, …).  
+The **EMCAP Web** PowerShell window shows Angular live output and writes `web.log`.
 
 **Manual:**
 
@@ -29,6 +36,9 @@ npm ci && npm start
 SDD/
 ├── spec/sdd/              # Requirements, ADRs, traceability
 ├── plan/                  # Implementation playbooks
+├── scripts/               # run-emcap, lint-format, seed apply
+├── data/seed/             # JSON core + demo seed packs
+├── logs/emcap/            # Local run logs (gitignored)
 ├── platform/api/          # FastAPI platform core
 ├── modules/               # Business plug-ins
 ├── clients/web/           # Angular CLI 19 web client (SDD §9)
@@ -42,11 +52,12 @@ SDD/
 
 | Document | Path |
 |----------|------|
+| Local stack recipe | `docs/dev/recipes/run-emcap-local-stack.md` |
+| Phase 11 playbook | `plan/11-local-dev-tooling.md` |
 | Angular web ADR | `spec/sdd/adrs/005-angular-cli-web-client.md` |
-| Phase 10 playbook | `plan/10-angular-cli-web.md` |
-| End-user UX matrix | `spec/sdd/05-end-user-matrix.md` |
+| Task backlog | `plan/03-task-backlog.md` |
 | Codebase index | `docs/dev/codebase-index.md` |
-| Pitfalls | `docs/dev/known-pitfalls.md` |
+| Pitfalls (Phase 11) | `docs/dev/known-pitfalls.md` |
 
 ## Verify
 

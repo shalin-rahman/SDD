@@ -2,34 +2,40 @@
 name: emcap-codebase-map
 description: >-
   EMCAP in-repo codebase index, known pitfalls, and implementation recipes.
-  Use at the start of any task to avoid re-exploring the monorepo — read index
-  and pitfalls before searching files.
+  Use before broad file search — read index, recipes, and pitfalls before searching files.
 ---
 
-# EMCAP Codebase Map
+# EMCAP codebase map
 
-## Read first
+## Read first (in order)
 
-1. `docs/dev/codebase-index.md`
-2. `docs/dev/known-pitfalls.md` — includes Angular migration pitfalls
-3. `plan/10-angular-cli-web.md` — web client stack
-4. `spec/sdd/05-end-user-matrix.md`
-5. `plan/03-task-backlog.md`
+1. `docs/dev/codebase-index.md` — zones, scripts, tests
+2. `docs/dev/known-pitfalls.md` — Phase 11 batch/CI/seed regressions
+3. `docs/dev/recipes/` — task-specific how-tos
 
-## Web client zones
+## Local dev (Phase 11)
 
-| Task | Path |
-|------|------|
-| Angular pages | `clients/web/src/app/pages/` |
-| API client | `clients/web/src/app/api/emcap-client.ts` |
-| Metadata renderers | `clients/web/src/app/metadata/` |
-| Routes | `clients/web/src/app/app.routes.ts` |
-| Archived Vite | `clients/web-legacy/` (read-only) |
+| Doc | When |
+|-----|------|
+| `plan/11-local-dev-tooling.md` | run-emcap, seed, lint gates |
+| `docs/dev/recipes/run-emcap-local-stack.md` | Start stack on Windows |
+| `data/seed/README.md` | JSON seed format |
 
-## Verify
+**Run from repo root:** `scripts\run-emcap.bat`
 
-```powershell
-cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run build; npm run test:ci
-cd clients/mobile; flutter test
-```
+## Phase highlights
+
+| Phase | Playbook |
+|-------|----------|
+| 10 | `plan/10-angular-cli-web.md` — Angular CLI web |
+| 9 | `plan/08-sdd-100-closure.md` |
+| 8 | `plan/07-phase8-end-user-product.md` |
+| Backlog | `plan/03-task-backlog.md` (143 tasks) |
+
+## Canonical web paths
+
+Edit `clients/web/src/app/` only — not `clients/web-legacy/`.
+
+## Test config
+
+Pytest uses `config/platform-test.yaml` (demo seed disabled). Production/local stack uses `config/platform.yaml`.

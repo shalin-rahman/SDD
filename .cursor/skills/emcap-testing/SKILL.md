@@ -20,6 +20,7 @@ description: >-
 | Path | Purpose |
 |------|---------|
 | `platform/api/tests/` | pytest suite |
+| `platform/api/tests/test_seed_loader.py` | JSON seed apply + demo purge |
 | `clients/web/src/app/api/emcap-client.spec.ts` | API method contract (Jasmine) |
 | `clients/web/src/app/metadata/dynamic-form.renderer.spec.ts` | Form renderer |
 | `clients/mobile/test/metadata_contract_test.dart` | Flutter parity |
@@ -27,11 +28,15 @@ description: >-
 ## Web (Angular)
 
 ```powershell
+scripts\lint-format.bat
 cd clients/web
+npm run format:check
+npm run lint
 npm run build
 npm run test:ci    # CI: ChromeHeadless, no watch
-npm test           # local: opens browser
 ```
+
+Pytest uses `config/platform-test.yaml` (demo seed off). Local stack uses `config/platform.yaml`.
 
 Do not use `clients/web-legacy` vitest in CI — archived.
 
@@ -40,7 +45,8 @@ Do not use `clients/web-legacy` vitest in CI — archived.
 | Job | Command |
 |-----|---------|
 | `backend` | `pytest --cov-fail-under=80` |
-| `client-lint-web` | `npm run build && npm run test:ci` |
+| `client-lint-web` | `format:check`, `lint`, `build`, `test:ci` |
+| Local (Windows) | `scripts\lint-format.bat` then `scripts\run-emcap.bat` |
 | `client-lint-mobile` | `flutter test` |
 
 ## Run all locally

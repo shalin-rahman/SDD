@@ -1,12 +1,13 @@
 @echo off
 setlocal EnableExtensions
 
-set "ROOT=%~dp0.."
-set "DOCKER_DIR=%ROOT%\infra\docker"
+call "%CD%\scripts\_resolve-scripts.bat" 2>nul
+if errorlevel 1 call "%~dp0_resolve-scripts.bat"
+if errorlevel 1 exit /b 1
 
 echo [stop-emcap] Stopping Docker stack...
-if exist "%DOCKER_DIR%\docker-compose.yml" (
-  pushd "%DOCKER_DIR%"
+if exist "%EMCAP_DOCKER_DIR%\docker-compose.yml" (
+  pushd "%EMCAP_DOCKER_DIR%"
   docker compose down
   popd
 )

@@ -93,3 +93,13 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-018 | CRM reference module | EMCAP-P8-T20 | `modules/crm/`, `test_crm_e2e.py` |
 | NFR-003, NFR-004, NFR-013 | Renderer contract tests + 80% gate | EMCAP-P8-T21 | 60 pytest, 8 vitest, 3 flutter; CI |
 | NFR-001, NFR-008, NFR-015 | Prod readiness execution | EMCAP-P8-T22 | `docs/ops/production-readiness.md` tabletop |
+
+## Phase 11 — Local dev tooling
+
+| Req / goal | Implementation | Task IDs | Evidence |
+|------------|----------------|----------|----------|
+| NFR-007 Local dev Docker | `scripts/run-emcap.bat`, compose stack | EMCAP-P11-T04 | `plan/11-local-dev-tooling.md` |
+| Seed / demo data | `data/seed/`, `emcap/seed/loader.py` | EMCAP-P11-T01–T03 | `test_seed_loader.py` |
+| Lint before test | `scripts/lint-format.bat`, CI format+lint | EMCAP-P11-T06–T07 | `.github/workflows/ci.yml` |
+| CI workflow validity | Quoted `DATABASE_URL` in YAML | EMCAP-P11-T08 | Workflow parse / green CI |
+| Dev ergonomics | `_resolve-scripts.bat`, session logs | EMCAP-P11-T05, T09 | `docs/dev/known-pitfalls.md` Phase 11 |

@@ -1,130 +1,141 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 
-set "ROOT=%~dp0.."
-set "DOCKER_DIR=%ROOT%\infra\docker"
+rem Run from repository root:  scripts\run-emcap.bat
+rem   --stack-only   skip lint/tests
+rem   --skip-tests   lint only
+rem   --skip-lint    tests only
+rem   --no-follow    do not tail Docker logs at end
+
+set "SKIP_LINT=0"
+set "SKIP_TESTS=0"
+set "STACK_ONLY=0"
+set "NO_FOLLOW=0"
+
+:parse_args
+if "%~1"=="" goto :args_done
+if /i "%~1"=="--stack-only" set "STACK_ONLY=1" & shift & goto :parse_args
+if /i "%~1"=="--skip-tests" set "SKIP_TESTS=1" & shift & goto :parse_args
+if /i "%~1"=="--skip-lint" set "SKIP_LINT=1" & shift & goto :parse_args
+if /i "%~1"=="--no-follow" set "NO_FOLLOW=1" & shift & goto :parse_args
+echo Unknown option: %~1
+exit /b 1
+:args_done
+
+if "%STACK_ONLY%"=="1" (
+  set "SKIP_LINT=1"
+  set "SKIP_TESTS=1"
+)
+
+call "%CD%\scripts\_resolve-scripts.bat" 2>nul
+if errorlevel 1 call "%~dp0_resolve-scripts.bat"
+if errorlevel 1 (
+  echo.
+  echo [run-emcap] ERROR: Start from the repository root, then run:
+  echo   scripts\run-emcap.bat
+  echo.
+  echo Current directory: %CD%
+  pause
+  exit /b 1
+)
+
+call "!EMCAP_SCRIPTS!emcap-env.bat"
+if errorlevel 1 goto :failed
 set "ERR=0"
 
-cd /d "%ROOT%"
+cd /d "%EMCAP_ROOT%"
 
-echo ========================================
-echo  EMCAP - tests, stack, seed, web client
-echo ========================================
+call :log "========================================"
+call :log " EMCAP run - tests, stack, logs"
+call :log " Log directory: %EMCAP_LOG_DIR%"
+call :log "========================================"
 
-call "%~dp0stop-emcap.bat"
+if "%SKIP_LINT%"=="0" (
+  call :log ""
+  call :log "[run-emcap] Lint and format checks..."
+  call "!EMCAP_SCRIPTS!lint-format.bat" >>"%EMCAP_LOG_DIR%\run.log" 2>&1
+  if errorlevel 1 goto :failed
+)
 
-echo.
-echo [run-emcap] Lint and format checks...
-call "%~dp0lint-format.bat"
-if errorlevel 1 goto :failed
-
-echo.
-echo [run-emcap] Backend tests (pytest)...
-pushd "%ROOT%\platform\api"
-python -m pytest -q --cov=src --cov-fail-under=80
-if errorlevel 1 set ERR=1
-popd
-if %ERR% neq 0 goto :failed
-
-echo.
-echo [run-emcap] Web client build...
-pushd "%ROOT%\clients\web"
-call npm run build
-if errorlevel 1 set ERR=1
-popd
-if %ERR% neq 0 goto :failed
-
-echo.
-echo [run-emcap] Web client tests (Karma CI)...
-pushd "%ROOT%\clients\web"
-call npm run test:ci
-if errorlevel 1 set ERR=1
-popd
-if %ERR% neq 0 goto :failed
-
-where flutter >nul 2>&1
-if %errorlevel%==0 (
-  echo.
-  echo [run-emcap] Mobile tests...
-  pushd "%ROOT%\clients\mobile"
-  flutter test
+if "%SKIP_TESTS%"=="0" (
+  call :log ""
+  call :log "[run-emcap] Backend tests (pytest)..."
+  pushd "%EMCAP_API_DIR%"
+  python -m pytest -q --cov=src --cov-fail-under=80 >>"%EMCAP_LOG_DIR%\pytest.log" 2>&1
   if errorlevel 1 set ERR=1
   popd
-  if %ERR% neq 0 goto :failed
-) else (
-  echo [run-emcap] Flutter SDK not found - skipping mobile tests.
+  if !ERR! neq 0 goto :failed
+  type "%EMCAP_LOG_DIR%\pytest.log"
+
+  call :log ""
+  call :log "[run-emcap] Web client build..."
+  pushd "%EMCAP_WEB_DIR%"
+  call npm run build >>"%EMCAP_LOG_DIR%\web-build.log" 2>&1
+  if errorlevel 1 set ERR=1
+  popd
+  if !ERR! neq 0 goto :failed
+
+  call :log ""
+  call :log "[run-emcap] Web client tests (Karma CI)..."
+  pushd "%EMCAP_WEB_DIR%"
+  call npm run test:ci >>"%EMCAP_LOG_DIR%\web-test.log" 2>&1
+  if errorlevel 1 set ERR=1
+  popd
+  if !ERR! neq 0 goto :failed
+
+  where flutter >nul 2>&1
+  if !errorlevel!==0 (
+    call :log ""
+    call :log "[run-emcap] Mobile tests..."
+    pushd "%EMCAP_MOBILE_DIR%"
+    flutter test >>"%EMCAP_LOG_DIR%\flutter-test.log" 2>&1
+    if errorlevel 1 set ERR=1
+    popd
+    if !ERR! neq 0 goto :failed
+  ) else (
+    call :log "[run-emcap] Flutter SDK not found - skipping mobile tests."
+  )
 )
 
-echo.
-echo [run-emcap] Starting infrastructure (postgres, redis, minio)...
-pushd "%DOCKER_DIR%"
-docker compose up -d postgres redis minio
-if errorlevel 1 set ERR=1
-popd
-if %ERR% neq 0 goto :failed
+call :log "[run-emcap] Starting stack..."
+call "!EMCAP_SCRIPTS!start-emcap-stack.bat"
+set "ERR=!errorlevel!"
+if !ERR! neq 0 goto :failed
 
-echo [run-emcap] Waiting for PostgreSQL...
-set /a PG_WAIT=0
-:wait_pg
-pushd "%DOCKER_DIR%"
-docker compose exec -T postgres pg_isready -U emcap >nul 2>&1
-popd
-if errorlevel 1 (
-  set /a PG_WAIT+=1
-  if %PG_WAIT% geq 30 goto :pg_timeout
-  timeout /t 2 /nobreak >nul
-  goto wait_pg
-)
-echo [run-emcap] PostgreSQL ready.
+if "%NO_FOLLOW%"=="1" goto :done_pause
 
-echo.
-echo [run-emcap] Starting API...
-pushd "%DOCKER_DIR%"
-docker compose up -d api
+call :log ""
+call :log "[run-emcap] Following Docker service logs (Ctrl+C to stop follow)..."
+call :log "[run-emcap] Web logs: EMCAP Web window + %EMCAP_LOG_DIR%\web.log"
+call :log ""
+
+pushd "%EMCAP_DOCKER_DIR%"
+docker compose logs -f --timestamps api postgres redis minio 2>&1 | powershell -NoProfile -Command "$input | Tee-Object -FilePath '%EMCAP_LOG_DIR%\docker.log' -Append"
 popd
 
-echo [run-emcap] Waiting for API health...
-set /a API_WAIT=0
-:wait_api
-curl -sf http://localhost:8000/api/v1/health >nul 2>&1
-if errorlevel 1 (
-  set /a API_WAIT+=1
-  if %API_WAIT% geq 45 goto :api_timeout
-  timeout /t 2 /nobreak >nul
-  goto wait_api
-)
-echo [run-emcap] API ready.
-
-echo.
-echo [run-emcap] Applying seed data (config-driven JSON)...
-python "%ROOT%\scripts\apply-seed.py"
-if errorlevel 1 set ERR=1
-if %ERR% neq 0 goto :failed
-
-echo.
-echo [run-emcap] Starting Angular web client in new window...
-start "EMCAP Web" cmd /k "cd /d %ROOT%\clients\web && npm start"
-
-echo.
-echo ========================================
-echo  EMCAP stack is running
-echo  API: http://localhost:8000/api/v1/health
-echo  Web: http://localhost:4200
-echo  Login: admin / admin123
-echo ========================================
-goto :eof
-
-:pg_timeout
-echo [run-emcap] ERROR: PostgreSQL did not become ready within 60s.
-set ERR=1
-goto :failed
-
-:api_timeout
-echo [run-emcap] ERROR: API did not become healthy within 90s.
-set ERR=1
-goto :failed
+goto :done_pause
 
 :failed
+if not defined ERR set ERR=1
+
+:done_pause
 echo.
-echo [run-emcap] FAILED (exit code %ERR%).
+if defined EMCAP_LOG_DIR (
+  echo Log files: %EMCAP_LOG_DIR%
+) else (
+  echo Log files: ^(not created^)
+)
+echo.
+if %ERR% neq 0 (
+  echo Run failed.
+) else (
+  echo Stack running. Open http://localhost:4200
+)
+pause
 exit /b %ERR%
+
+:log
+if "%~1"=="" exit /b 0
+echo %~1
+if defined EMCAP_LOG_DIR >>"%EMCAP_LOG_DIR%\run.log" echo %~1
+exit /b 0

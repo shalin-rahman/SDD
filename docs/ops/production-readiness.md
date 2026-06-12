@@ -39,13 +39,15 @@ SDD NFR-001, NFR-002, NFR-008, NFR-015. Study-repo tabletop verification — phy
 ## Verification
 
 ```powershell
+.\scripts\lint-format.bat
 .\scripts\verify-full-stack.ps1
+scripts\run-emcap.bat --stack-only
 helm template infra/helm/emcap-api -f infra/helm/emcap-api/values-prod.yaml
 cd platform/api; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run build; npm run test:ci
+cd clients/web; npm run format:check; npm run lint; npm run build; npm run test:ci
 cd clients/mobile; flutter test
 ```
 
-**Test counts:** 66 pytest · Angular Karma CI · 4 flutter · backend ~90% (gate 80%).
+**Test counts:** 71 pytest · Angular format+lint+Karma · 4 flutter · backend ~90% (gate 80%).
 
 Sign-off (production cutover): _______________ Date: _______________
