@@ -33,8 +33,8 @@ description: >-
 | `src/app/services/emcap-api.service.ts` | Injectable wrapper |
 | `src/app/metadata/dynamic-form.renderer.ts` | Validation, conditions, layout grid |
 | `src/app/metadata/dynamic-grid.renderer.ts` | Sort, filter, group, export |
-| `src/app/pages/entity/entity.component.ts` | Full entity UX |
-| `src/app/pages/shell/shell.component.ts` | Nav + tenant picker |
+| `src/app/pages/entity/entity.component.ts` | Full entity UX → **Phase 12 master–detail** |
+| `src/app/pages/shell/shell.component.ts` | Nav + tenant picker → **Phase 12 module sidenav** |
 | `src/index.html` | `window.EMCAP_API_URL` |
 
 Archived Vite implementation: `clients/web-legacy/`.

@@ -10,12 +10,14 @@ Software design and implementation workspace for EMCAP (SDD v1.0).
 cd C:\path\to\SDD
 scripts\run-emcap.bat              rem run from repo root; tails Docker logs
 scripts\run-emcap.bat --stack-only rem skip lint/tests; start stack only
+scripts\run-emcap.bat --stack-only --local rem no Docker; SQLite + uvicorn
 scripts\logs-emcap.bat             rem re-attach to Docker logs
 scripts\stop-emcap.bat             rem stop all services
 ```
 
-Logs are written under `logs/emcap/<session>/` (`run.log`, `web.log`, `docker.log`, `pytest.log`, …).  
-The **EMCAP Web** PowerShell window shows Angular live output and writes `web.log`.
+**No Docker?** Use `scripts\run-emcap.bat --stack-only --local` (SQLite + uvicorn).
+
+Logs: `logs/emcap/<session>/`. See **`docs/dev/windows-local-dev.md`** if anything fails.
 
 **Manual:**
 
@@ -34,30 +36,34 @@ npm ci && npm start
 
 ```
 SDD/
-├── spec/sdd/              # Requirements, ADRs, traceability
-├── plan/                  # Implementation playbooks
+├── spec/sdd/              # Requirements, ADRs, traceability, UX matrices
+├── plan/                  # Implementation playbooks (Phase 12 = enterprise UI)
+├── docs/dev/              # Index, pitfalls, recipes (incl. doc-sync)
 ├── scripts/               # run-emcap, lint-format, seed apply
 ├── data/seed/             # JSON core + demo seed packs
-├── logs/emcap/            # Local run logs (gitignored)
 ├── platform/api/          # FastAPI platform core
 ├── modules/               # Business plug-ins
-├── clients/web/           # Angular CLI 19 web client (SDD §9)
+├── clients/web/           # Angular CLI 19 web client
+│   └── src/app/shared/    # Reusable layout, grid, forms (Phase 12+)
 ├── clients/web-legacy/    # Archived Vite shell (reference)
 ├── clients/mobile/        # Flutter mobile client
 ├── infra/                 # Docker, Terraform, Helm, Ansible
-└── .cursor/               # Agent skills and rules
+└── .cursor/               # Agent skills + rules (emcap-doc-sync)
 ```
 
 ## Key documents
 
 | Document | Path |
 |----------|------|
-| Local stack recipe | `docs/dev/recipes/run-emcap-local-stack.md` |
-| Phase 11 playbook | `plan/11-local-dev-tooling.md` |
-| Angular web ADR | `spec/sdd/adrs/005-angular-cli-web-client.md` |
-| Task backlog | `plan/03-task-backlog.md` |
+| **Doc sync (mandatory after changes)** | `docs/dev/recipes/sync-docs-after-change.md` |
 | Codebase index | `docs/dev/codebase-index.md` |
-| Pitfalls (Phase 11) | `docs/dev/known-pitfalls.md` |
+| Shared web components | `clients/web/src/app/shared/README.md` |
+| Task backlog | `plan/03-task-backlog.md` |
+| Phase 12 playbook | `plan/12-enterprise-product-ui.md` |
+| Phase 12 DoD checklist | `plan/12-phase12-dod-checklist.md` |
+| Product/admin UX matrix | `spec/sdd/06-admin-product-ui-matrix.md` |
+| Pitfalls | `docs/dev/known-pitfalls.md` |
+| Agent skill (Phase 12) | `.cursor/skills/emcap-enterprise-ui/SKILL.md` |
 
 ## Verify
 
@@ -76,4 +82,5 @@ cd clients/mobile; dart format --output=none --set-exit-if-changed .; flutter an
 
 ## Definition of done
 
-Business modules supply only `ModuleDefinition(...)` — no edits to `platform/` core. See SDD §30.
+- Business modules: `ModuleDefinition(...)` only — no edits to `platform/` core (SDD §30).
+- **All changes:** update docs in the same PR — see `.cursor/rules/emcap-doc-sync.mdc`.

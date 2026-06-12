@@ -331,8 +331,35 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | | |
 |--|--|
 | **Symptom** | `[stack] FAILED` right after `docker compose up` |
-| **Fix** | Start Docker Desktop; inspect `logs/emcap/<session>/docker-start.log` |
+| **Fix** | Start Docker Desktop; use `scripts\run-emcap.bat --stack-only --local` when Docker is not installed; `stop-emcap.bat` skips compose when `docker` is not on PATH |
 | **Test** | Manual |
+
+### Stale local API (admin routes 404)
+
+| | |
+|--|--|
+| **Symptom** | `GET /api/v1/admin/users` → 404; OpenAPI has no `/admin/*` paths; web Admin pages fail |
+| **Cause** | Uvicorn still running an old build from before admin routes were added |
+| **Fix** | Restart API (`stop-emcap.bat` then `start-emcap-local.bat`, or kill port 8000 and rerun `run-api-with-logs.ps1`) |
+| **Test** | `openapi.json` lists `/api/v1/admin/users`; admin users page loads |
+
+### SQLite `emcap-local.db` schema drift
+
+| | |
+|--|--|
+| **Symptom** | `sqlalchemy.exc.OperationalError: no such column: users.active` in `logs/emcap/api.log`; login fails after API restart |
+| **Cause** | `create_all()` does not alter existing SQLite tables when models add columns |
+| **Fix** | `init_db()` now applies SQLite column patches; or delete `emcap-local.db` and rerun `apply-seed.py` |
+| **Test** | API starts; `POST /auth/login` returns 200 |
+
+### `timeout`: Input redirection is not supported
+
+| | |
+|--|--|
+| **Symptom** | `ERROR: Input redirection is not supported` when piping `run-emcap.bat` in PowerShell |
+| **Cause** | Windows `timeout.exe` exits immediately if stdin is redirected |
+| **Fix** | Scripts use `scripts/_sleep.bat` (`ping` loop) instead of `timeout` |
+| **Test** | Run `scripts\run-emcap.bat --stack-only --local` directly (not piped) |
 
 ### `ruff` / `black` / `mypy` not recognized
 
@@ -342,3 +369,140 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Cause** | Dev tools installed in `platform/api` venv, not on global PATH |
 | **Fix** | Scripts use `python -m ruff` etc.; `_ensure-python-dev.bat` runs `pip install -e ".[dev]"` if missing |
 | **Test** | `scripts\lint-format.bat` from repo root |
+
+### IDE Flake8 E501 on `scripts/*.py`
+
+| | |
+|--|--|
+| **Symptom** | Flake8 line too long (79) in `scripts/apply-seed.py`; Ruff passes at 100 cols |
+| **Cause** | IDE Flake8 defaults differ from `platform/api` Ruff config |
+| **Fix** | Wrap lines in `scripts/` or exclude from Flake8; CI gate is `lint-format.bat` (Ruff) |
+| **Test** | `python -m ruff check ../../scripts/apply-seed.py` |
+
+### Uvicorn INFO shown as PowerShell errors (red)
+
+| | |
+|--|--|
+| **Symptom** | `python : INFO: Started server process` with `NativeCommandError` in **EMCAP API** window |
+| **Cause** | Uvicorn logs to stderr; PowerShell treats native stderr as errors when piping `python ... 2>&1 \| Tee-Object` |
+| **Fix** | `scripts/run-api-with-logs.ps1` runs uvicorn via `cmd /c "... 2>&1"` before Tee-Object |
+| **Note** | API is fine if you see `200 OK` on `/api/v1/health` |
+
+### PowerShell `curl` is not curl
+
+| | |
+|--|--|
+| **Symptom** | `Invoke-WebRequest` parameter errors when running `curl -sf ...` |
+| **Cause** | PowerShell aliases `curl` to `Invoke-WebRequest` |
+| **Fix** | Use `curl.exe` or browser; batch scripts use `curl.exe` where needed |
+| **Test** | `curl.exe http://localhost:8000/api/v1/health` |
+
+### Do not pipe batch files in PowerShell
+
+| | |
+|--|--|
+| **Symptom** | Odd errors when running `cmd /c "scripts\run-emcap.bat ..." \| Select-Object` |
+| **Cause** | Redirected stdin breaks `timeout` (legacy) and can confuse nested `start` |
+| **Fix** | Run `scripts\run-emcap.bat` directly in terminal |
+| **Guide** | `docs/dev/windows-local-dev.md` |
+
+---
+
+## Phase 12 — Enterprise product UI & admin (prevent repeat of “100% but bare UI”)
+
+### Matrix 04/05 updated but 06 not
+
+| | |
+|--|--|
+| **Symptom** | Stakeholders think admin/settings done; only API or Account demo exists |
+| **Fix** | Update `spec/sdd/06-admin-product-ui-matrix.md` in same PR; use `plan/12-phase12-dod-checklist.md` |
+| **Test** | PR checklist section 6 |
+
+### Flat nav ignores `menu.module`
+
+| | |
+|--|--|
+| **Symptom** | All entity links in one row; no Inventory/CRM grouping |
+| **Where** | `clients/web/src/app/pages/shell/shell.component.ts` |
+| **Fix** | Group `GET /menus` by `module`; API already returns field (`menus.py`) |
+| **Test** | `shell.component.spec.ts` asserts multiple module groups |
+
+### Account page used as admin console
+
+| | |
+|--|--|
+| **Symptom** | Role assign by raw user ID; no user list/create |
+| **Fix** | Dedicated `/app/admin/users`, `/app/admin/roles` routes |
+| **Test** | Manual: create user in admin → login as that user |
+
+### Admin API without UI (or reverse)
+
+| | |
+|--|--|
+| **Symptom** | pytest green but no screen in sidenav |
+| **Fix** | Same PR: route + page + nav link + matrix row |
+| **Test** | DoD checklist sections 2–3 |
+
+### Settings PUT returns secrets
+
+| | |
+|--|--|
+| **Symptom** | Payment API keys visible in GET settings |
+| **Fix** | Mask secrets; accept `***` placeholder on PUT to mean unchanged |
+| **Test** | `test_admin_settings.py` asserts no raw secret in response |
+
+### Module menus shown when module disabled
+
+| | |
+|--|--|
+| **Symptom** | CRM menus visible after `modules.crm.enabled: false` |
+| **Fix** | Filter menus client-side AND optionally server-side in `list_menus` |
+| **Test** | Toggle in settings → nav updates without YAML edit |
+
+### Master–detail still stacked on desktop
+
+| | |
+|--|--|
+| **Symptom** | List above form; not single-page ERP layout |
+| **Fix** | `mat-sidenav-container` or CSS grid split ≥1024px |
+| **Test** | `entity.component.spec.ts`; visual at 1280px |
+
+### New admin client method without contract test
+
+| | |
+|--|--|
+| **Symptom** | Web has `listAdminUsers`; mobile/contract missing |
+| **Fix** | `emcap-client.spec.ts` + `emcap_client.dart` same PR |
+| **Test** | Recipe `docs/dev/recipes/add-client-api-method.md` |
+
+### Hard-coded English after i18n task
+
+| | |
+|--|--|
+| **Symptom** | Toolbar still "Sign out" without translation key |
+| **Fix** | All new chrome strings in `assets/i18n/*.json` |
+| **Test** | Switch locale → toolbar text changes |
+
+### Phase 12 work in `modules/` by mistake
+
+| | |
+|--|--|
+| **Symptom** | User CRUD in `modules/inventory/` |
+| **Fix** | Admin in `platform/api/src/emcap/admin/` only |
+| **Test** | `verify-platform-core.ps1`; architecture review |
+
+### Skipping Windows smoke after shell change
+
+| | |
+|--|--|
+| **Symptom** | Works in IDE; batch stack fails |
+| **Fix** | `scripts\run-emcap.bat --stack-only --local --skip-tests --skip-lint` from repo root |
+| **Guide** | `docs/dev/windows-local-dev.md` |
+
+### Docs not updated with code (mandatory gate)
+
+| | |
+|--|--|
+| **Symptom** | Task Done; backlog Pending; index stale; recipes reference old paths |
+| **Fix** | Same change: `docs/dev/recipes/sync-docs-after-change.md` · rule `.cursor/rules/emcap-doc-sync.mdc` |
+| **Test** | PR checklist section 6 in `plan/12-phase12-dod-checklist.md` |

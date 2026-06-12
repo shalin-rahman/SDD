@@ -8,6 +8,17 @@ description: >-
 
 # EMCAP Testing
 
+## Phase 12 tests (FR-008d)
+
+| Path | Purpose |
+|------|---------|
+| `tests/test_admin_users.py` | Admin user CRUD + 403 (add in P12B) |
+| `tests/test_admin_settings.py` | Settings PUT + audit (add in P12C) |
+| `clients/web/src/app/services/shell-nav.util.spec.ts` | Nav filter + module groups |
+| `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Toolbar title |
+
+**DoD:** `plan/12-phase12-dod-checklist.md` + **`sync-docs-after-change.md`** same PR.
+
 ## Coverage targets (SDD §25)
 
 - Backend: ≥80% CI gate (~90%)
@@ -22,6 +33,8 @@ description: >-
 | `platform/api/tests/` | pytest suite |
 | `platform/api/tests/test_seed_loader.py` | JSON seed apply + demo purge |
 | `clients/web/src/app/api/emcap-client.spec.ts` | API method contract (Jasmine) |
+| `clients/web/src/app/services/shell-nav.util.spec.ts` | Module nav filter/group |
+| `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Page title from route |
 | `clients/web/src/app/metadata/dynamic-form.renderer.spec.ts` | Form renderer |
 | `clients/mobile/test/metadata_contract_test.dart` | Flutter parity |
 
@@ -37,6 +50,8 @@ npm run test:ci    # CI: ChromeHeadless, no watch
 ```
 
 Pytest uses `config/platform-test.yaml` (demo seed off). Local stack uses `config/platform.yaml`.
+
+Windows issues (ruff PATH, batch pipes): `docs/dev/windows-local-dev.md`.
 
 Do not use `clients/web-legacy` vitest in CI — archived.
 

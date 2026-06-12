@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from emcap.auth.abac import DEFAULT_POLICIES, evaluate_abac
+from emcap.auth.abac import AbacPolicy, evaluate_abac
 from emcap.auth.dependencies import get_optional_user, require_user
 from emcap.auth.jwt import create_access_token
 from emcap.auth.models import CurrentUser
@@ -180,13 +180,15 @@ def auth_me(user: Annotated[CurrentUser | None, Depends(get_optional_user)]) -> 
 @router.post("/check")
 def auth_check(
     payload: dict[str, str],
+    request: Request,
     user: Annotated[CurrentUser | None, Depends(get_optional_user)],
 ) -> dict[str, bool]:
     permission = payload.get("permission", "")
     resource = {"tenant_id": payload.get("tenant_id", "default")}
     user_attrs = {"tenant_id": user.tenant_id if user else ""}
+    policies: list[AbacPolicy] = request.app.state.abac_policies
     allowed = evaluate_abac(
-        DEFAULT_POLICIES,
+        policies,
         permission=permission,
         user_attrs=user_attrs,
         resource_attrs=resource,

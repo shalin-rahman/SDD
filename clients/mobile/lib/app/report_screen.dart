@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.client});
@@ -12,7 +13,7 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  late Future<List<String>> _reportsFuture;
+  late Future<List<Map<String, dynamic>>> _reportsFuture;
   String? _selectedCode;
   Future<Map<String, dynamic>>? _runFuture;
   List<Map<String, dynamic>> _runs = [];
@@ -21,6 +22,14 @@ class _ReportScreenState extends State<ReportScreen> {
   void initState() {
     super.initState();
     _reportsFuture = widget.client.listReports();
+  }
+
+  String _scheduleLabel(Map<String, dynamic> report) {
+    final cron = report['schedule_cron'];
+    if (cron == null || '$cron'.isEmpty) {
+      return EmcapLocale.t('platform.reports.noSchedule');
+    }
+    return '$cron';
   }
 
   void _runReport(String code) {
@@ -37,33 +46,50 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
-      body: FutureBuilder<List<String>>(
+      appBar: AppBar(title: Text(EmcapLocale.t('platform.reports.title'))),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _reportsFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Failed to load: ${snapshot.error}'));
+            return Center(
+              child: Text('${EmcapLocale.t('platform.common.failed')}: ${snapshot.error}'),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
           final reports = snapshot.data!;
           if (reports.isEmpty) {
-            return const Center(child: Text('No reports registered.'));
+            return Center(child: Text(EmcapLocale.t('platform.reports.noReports')));
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: reports
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text(EmcapLocale.t('platform.reports.colCode'))),
+                    DataColumn(label: Text(EmcapLocale.t('platform.reports.colName'))),
+                    DataColumn(label: Text(EmcapLocale.t('platform.reports.colEntity'))),
+                    DataColumn(label: Text(EmcapLocale.t('platform.reports.colSchedule'))),
+                    DataColumn(label: Text(EmcapLocale.t('platform.reports.colActions'))),
+                  ],
+                  rows: reports
                       .map(
-                        (code) => ElevatedButton(
-                          onPressed: () => _runReport(code),
-                          child: Text(code),
+                        (report) => DataRow(
+                          cells: [
+                            DataCell(Text('${report['code'] ?? ''}')),
+                            DataCell(Text('${report['name'] ?? ''}')),
+                            DataCell(Text('${report['entity_code'] ?? ''}')),
+                            DataCell(Text(_scheduleLabel(report))),
+                            DataCell(
+                              TextButton(
+                                onPressed: () => _runReport('${report['code']}'),
+                                child: Text(EmcapLocale.t('platform.reports.run')),
+                              ),
+                            ),
+                          ],
                         ),
                       )
                       .toList(),
@@ -72,7 +98,9 @@ class _ReportScreenState extends State<ReportScreen> {
               if (_selectedCode != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text('Past runs: ${_runs.length} · schedule: cron in module def'),
+                  child: Text(
+                    '${EmcapLocale.t('platform.reports.pastRuns')}: ${_runs.length} · ${EmcapLocale.t('platform.reports.schedule')}: ${_scheduleLabelForCode(reports, _selectedCode!)}',
+                  ),
                 ),
               if (_runFuture != null)
                 Expanded(
@@ -80,7 +108,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     future: _runFuture,
                     builder: (context, runSnapshot) {
                       if (runSnapshot.hasError) {
-                        return Center(child: Text('Run failed: ${runSnapshot.error}'));
+                        return Center(child: Text(EmcapLocale.t('platform.reports.runFailed')));
                       }
                       if (!runSnapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
@@ -88,7 +116,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       final result = runSnapshot.data!;
                       final rows = List<Map<String, dynamic>>.from(result['rows'] as List);
                       if (rows.isEmpty) {
-                        return Center(child: Text('$_selectedCode: no rows'));
+                        return Center(child: Text(EmcapLocale.t('platform.reports.noRows')));
                       }
                       final columns = rows.first.keys.toList();
                       return SingleChildScrollView(
@@ -112,5 +140,14 @@ class _ReportScreenState extends State<ReportScreen> {
         },
       ),
     );
+  }
+
+  String _scheduleLabelForCode(List<Map<String, dynamic>> reports, String code) {
+    for (final report in reports) {
+      if ('${report['code']}' == code) {
+        return _scheduleLabel(report);
+      }
+    }
+    return EmcapLocale.t('platform.reports.noSchedule');
   }
 }

@@ -1,24 +1,34 @@
 # Recipe — Run EMCAP local stack (Windows)
 
+## Choose your mode
+
+| You have… | Command |
+|-----------|---------|
+| **Docker Desktop** | `scripts\run-emcap.bat --stack-only` |
+| **No Docker** | `scripts\run-emcap.bat --stack-only --local` |
+
 ## Prerequisites
 
-- Docker Desktop running
 - Python 3.11+, Node 20+, npm
-- API dev deps (auto-installed on first lint run): `cd platform/api && pip install -e ".[dev]"`
-- Optional: Flutter SDK, Chrome (Karma)
+- API dev deps: auto-installed by `lint-format.bat` / `_ensure-python-dev.bat`
+- Docker: only for non-`--local` mode
+- Optional: Flutter, Chrome (Karma in full `run-emcap.bat`)
 
 ## Start
 
 ```bat
 cd C:\path\to\SDD
-scripts\run-emcap.bat --stack-only
+scripts\run-emcap.bat --stack-only --local
 ```
 
-Full pipeline (lint + tests + stack + live logs):
+Full pipeline (lint + tests + stack):
 
 ```bat
 scripts\run-emcap.bat
+scripts\run-emcap.bat --local
 ```
+
+Run **directly** in terminal — do not pipe (`| Select-Object`) batch output.
 
 ## URLs
 
@@ -33,11 +43,9 @@ scripts\run-emcap.bat
 | Output | Location |
 |--------|----------|
 | Orchestrator | `logs/emcap/<session>/run.log` |
-| Docker services | `logs/emcap/<session>/docker.log` (live tail + file) |
+| API (local mode) | **EMCAP API** window + `api.log` |
+| Docker (compose mode) | `docker.log` |
 | Angular | **EMCAP Web** window + `web.log` |
-| Latest session | `logs/emcap/latest.txt` |
-
-Re-attach Docker logs: `scripts\logs-emcap.bat`
 
 ## Stop
 
@@ -47,12 +55,12 @@ scripts\stop-emcap.bat
 
 ## Troubleshooting
 
+See `docs/dev/windows-local-dev.md` and `docs/dev/known-pitfalls.md` → Phase 11.
+
 | Symptom | Fix |
 |---------|-----|
-| `emcap-env.bat` not recognized | Run from **repo root**, not `scripts\` |
-| Window closes immediately | Script now `pause`s; check `run.log` under `logs/emcap/` |
-| `[stack] FAILED` | Start Docker Desktop; see `docker-start.log` in session folder |
-| Web not opening | Check **EMCAP Web** PowerShell window; see `web.log` |
-| Demo data in pytest | Tests use `config/platform-test.yaml` (demo seed off) |
-
-Details: `docs/dev/known-pitfalls.md` → Phase 11.
+| `emcap-env.bat` not recognized | Run from **repo root** |
+| `[stack] FAILED` + docker not found | Use `--local` or install Docker |
+| `ruff` not recognized | `scripts\lint-format.bat` (uses `python -m ruff`) |
+| `Input redirection is not supported` | Don't pipe batch; fixed via `_sleep.bat` |
+| Health check in PS | Use `curl.exe`, not `curl` |

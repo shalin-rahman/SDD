@@ -6,11 +6,13 @@ rem   --stack-only   skip lint/tests
 rem   --skip-tests   lint only
 rem   --skip-lint    tests only
 rem   --no-follow    do not tail Docker logs at end
+rem   --local        SQLite + uvicorn (no Docker)
 
 set "SKIP_LINT=0"
 set "SKIP_TESTS=0"
 set "STACK_ONLY=0"
 set "NO_FOLLOW=0"
+set "LOCAL=0"
 
 :parse_args
 if "%~1"=="" goto :args_done
@@ -18,6 +20,7 @@ if /i "%~1"=="--stack-only" set "STACK_ONLY=1" & shift & goto :parse_args
 if /i "%~1"=="--skip-tests" set "SKIP_TESTS=1" & shift & goto :parse_args
 if /i "%~1"=="--skip-lint" set "SKIP_LINT=1" & shift & goto :parse_args
 if /i "%~1"=="--no-follow" set "NO_FOLLOW=1" & shift & goto :parse_args
+if /i "%~1"=="--local" set "LOCAL=1" & shift & goto :parse_args
 echo Unknown option: %~1
 exit /b 1
 :args_done
@@ -98,10 +101,15 @@ if "%SKIP_TESTS%"=="0" (
 )
 
 call :log "[run-emcap] Starting stack..."
-call "!EMCAP_SCRIPTS!start-emcap-stack.bat"
+if "%LOCAL%"=="1" (
+  call "!EMCAP_SCRIPTS!start-emcap-local.bat"
+) else (
+  call "!EMCAP_SCRIPTS!start-emcap-stack.bat"
+)
 set "ERR=!errorlevel!"
 if !ERR! neq 0 goto :failed
 
+if "%LOCAL%"=="1" goto :done_pause
 if "%NO_FOLLOW%"=="1" goto :done_pause
 
 call :log ""

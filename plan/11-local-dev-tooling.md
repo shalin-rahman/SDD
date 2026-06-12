@@ -16,15 +16,19 @@
 | Seed loader | `platform/api/src/emcap/seed/loader.py` |
 | Test profile (no demo seed) | `config/platform-test.yaml` |
 | Web live + file logs | `scripts/run-web-with-logs.ps1` |
+| No-Docker local stack | `scripts/start-emcap-local.bat`, `--local` flag |
+| Helpers | `_resolve-scripts`, `_ensure-python-dev`, `_find-docker`, `_sleep` |
+| Windows guide | `docs/dev/windows-local-dev.md` |
 
 ## Run (Windows)
 
-**Always from repository root:**
+**Always from repository root** (see `docs/dev/windows-local-dev.md`):
 
 ```bat
 cd C:\path\to\SDD
 scripts\run-emcap.bat
 scripts\run-emcap.bat --stack-only
+scripts\run-emcap.bat --stack-only --local
 ```
 
 Logs: `logs/emcap/<session>/` (`run.log`, `docker.log`, `web.log`, …). Pointer: `logs/emcap/latest.txt`.
@@ -37,6 +41,7 @@ Logs: `logs/emcap/<session>/` (`run.log`, `docker.log`, `web.log`, …). Pointer
 | `--skip-lint` | Skip lint-format only |
 | `--skip-tests` | Skip pytest / web / flutter tests |
 | `--no-follow` | Start stack; pause instead of tailing Docker logs |
+| `--local` | SQLite + uvicorn (no Docker) |
 
 ## Configuration
 

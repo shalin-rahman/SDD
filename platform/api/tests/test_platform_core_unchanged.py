@@ -223,7 +223,8 @@ def test_inventory_capabilities_via_generic_platform_apis(client: TestClient) ->
     assert workflow.status_code == 200
 
     reports = client.get("/api/v1/reports").json()["reports"]
-    assert "INVENTORY_VALUATION" in reports
+    report_codes = [r["code"] if isinstance(r, dict) else r for r in reports]
+    assert "INVENTORY_VALUATION" in report_codes
 
     menus = client.get("/api/v1/menus").json()["menus"]
     assert any(menu["module"] == "INVENTORY" for menu in menus)

@@ -97,6 +97,13 @@ def test_product_form_metadata_api(client: TestClient) -> None:
     assert body["schema_version"] == "1.0"
     assert body["entity_code"] == "PRODUCT"
     assert body["sections"][0]["fields"][0]["name"] == "sku"
+    assert body["sections"][0]["fields"][0]["i18n"]["bn"] == "এসকেইউ"
+
+
+def test_product_grid_metadata_bn_labels(client: TestClient) -> None:
+    body = client.get("/api/v1/metadata/grids/PRODUCT").json()
+    assert body["i18n"]["bn"]["sku"] == "এসকেইউ"
+    assert body["i18n"]["bn"]["name"] == "নাম"
 
 
 def test_product_grid_metadata_api(client: TestClient) -> None:
@@ -161,7 +168,10 @@ def test_inventory_valuation_report(client: TestClient) -> None:
 
     listed = client.get("/api/v1/reports")
     assert listed.status_code == 200
-    assert "INVENTORY_VALUATION" in listed.json()["reports"]
+    report_codes = [r["code"] for r in listed.json()["reports"]]
+    assert "INVENTORY_VALUATION" in report_codes
+    valuation = next(r for r in listed.json()["reports"] if r["code"] == "INVENTORY_VALUATION")
+    assert valuation["schedule_cron"] == "0 6 * * *"
 
     run = client.post("/api/v1/reports/INVENTORY_VALUATION/run")
     assert run.status_code == 200

@@ -1,0 +1,35 @@
+.security-entity-list {
+  min-width: 0;
+}
+
+.security-entity-list .admin-table {
+  width: 100%;
+  min-width: 280px;
+}
+
+.security-entity-list .admin-table__row {
+  cursor: pointer;
+}
+
+.security-entity-list .admin-table__row--selected {
+  background: #e8eaf6;
+}
+
+.security-detail h3 {
+  margin-top: 0;
+}
+
+.security-summary {
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.security-rules {
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.security-rules p {
+  margin: 0.35rem 0;
+}

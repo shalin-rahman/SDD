@@ -1,0 +1,38 @@
+.data-grid__toolbar,
+.data-grid__export {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.data-grid__status {
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+}
+
+.data-grid__scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--emcap-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.data-grid__table {
+  min-width: 100%;
+  margin: 0;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f5f5f5;
+    z-index: 1;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+  }
+}

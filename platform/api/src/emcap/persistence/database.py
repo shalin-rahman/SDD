@@ -64,6 +64,7 @@ class UserRow(Base):
     password_hash: Mapped[str] = mapped_column(String(256))
     tenant_id: Mapped[str] = mapped_column(String(64), index=True, default="default")
     attributes: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    active: Mapped[bool] = mapped_column(default=True)
     mfa_enabled: Mapped[bool] = mapped_column(default=False)
     mfa_secret: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
@@ -185,6 +186,53 @@ class IntegrationJobRow(Base):
     )
 
 
+class SettingOverrideRow(Base):
+    __tablename__ = "setting_overrides"
+
+    key: Mapped[str] = mapped_column(String(128), primary_key=True)
+    value: Mapped[Any] = mapped_column(JSON)
+    updated_by: Mapped[str] = mapped_column(String(128), default="system")
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+
+class NotificationTemplateRow(Base):
+    __tablename__ = "notification_templates"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    tenant_id: Mapped[str] = mapped_column(String(64), index=True, default="default")
+    code: Mapped[str] = mapped_column(String(64), index=True)
+    channel: Mapped[str] = mapped_column(String(32), default="email")
+    subject: Mapped[str] = mapped_column(String(256), default="")
+    body: Mapped[str] = mapped_column(String(2048), default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+
+class AdminAuditRow(Base):
+    __tablename__ = "admin_audit_logs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    actor: Mapped[str] = mapped_column(String(128))
+    action: Mapped[str] = mapped_column(String(64))
+    target: Mapped[str] = mapped_column(String(128))
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+    )
+
+
 class PaymentTransactionRow(Base):
     __tablename__ = "payment_transactions"
 
@@ -228,9 +276,30 @@ def get_session_factory() -> sessionmaker[Session]:
     return _session_factory
 
 
+def _apply_sqlite_schema_patches(engine: Engine) -> None:
+    """SQLite local DBs from older create_all() runs may miss new columns."""
+    if engine.dialect.name != "sqlite":
+        return
+    patches: list[tuple[str, str, str]] = [
+        ("users", "active", "BOOLEAN NOT NULL DEFAULT 1"),
+        ("users", "mfa_enabled", "BOOLEAN NOT NULL DEFAULT 0"),
+        ("users", "mfa_secret", "VARCHAR(64)"),
+    ]
+    with engine.begin() as conn:
+        for table, column, ddl in patches:
+            existing = {
+                row[1]
+                for row in conn.exec_driver_sql(f"PRAGMA table_info({table})").fetchall()
+            }
+            if column not in existing:
+                conn.exec_driver_sql(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
+
 def init_db() -> None:
     configure_database()
-    Base.metadata.create_all(bind=get_engine())
+    engine = get_engine()
+    Base.metadata.create_all(bind=engine)
+    _apply_sqlite_schema_patches(engine)
 
 
 def get_session() -> Generator[Session, None, None]:

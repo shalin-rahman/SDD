@@ -1,195 +1,52 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 import { DynamicFormRenderer } from '../../metadata/dynamic-form.renderer';
 import { DynamicGridRenderer, SortDirection } from '../../metadata/dynamic-grid.renderer';
-import type { FormFieldMetadata, GridMetadata } from '../../metadata/contract';
+import type { FormFieldMetadata, FormMetadata, GridMetadata } from '../../metadata/contract';
 import { validateFormMetadata, validateGridMetadata } from '../../metadata/contract';
 import { EmcapApiService } from '../../services/emcap-api.service';
-
-const PAGE_SIZE = 10;
-
-function downloadBlob(content: string, filename: string, mime: string): void {
-  const blob = new Blob([content], { type: mime });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
-function downloadCsv(columns: string[], rows: Record<string, unknown>[], filename: string): void {
-  const escape = (value: unknown): string => `"${String(value ?? '').replace(/"/g, '""')}"`;
-  const lines = [columns.map(escape).join(',')];
-  for (const row of rows) {
-    lines.push(columns.map((col) => escape(row[col])).join(','));
-  }
-  downloadBlob(lines.join('\n'), filename, 'text/csv');
-}
-
-function printPdfTable(columns: string[], rows: Record<string, unknown>[], title: string): void {
-  const win = window.open('', '_blank');
-  if (!win) return;
-  const headers = columns.map((c) => `<th>${c}</th>`).join('');
-  const body = rows
-    .map((row) => `<tr>${columns.map((c) => `<td>${String(row[c] ?? '')}</td>`).join('')}</tr>`)
-    .join('');
-  win.document.write(
-    `<html><head><title>${title}</title></head><body><h1>${title}</h1><table border="1"><tr>${headers}</tr>${body}</table></body></html>`,
-  );
-  win.document.close();
-  win.print();
-}
+import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
+import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
+import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { DynamicDataGridComponent } from '../../shared/data/dynamic-data-grid.component';
+import { RecordTabsComponent } from '../../shared/entity/record-tabs.component';
+import type { RecordAuditEntry, RecordDocument, RecordNote } from '../../shared/entity/record-tabs.component';
+import { DynamicFormViewComponent } from '../../shared/forms/dynamic-form-view.component';
+import { LayoutService } from '../../shared/services/layout.service';
+import { I18nService } from '../../shared/services/i18n.service';
+import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from '../../shared/constants/layout.constants';
+import { downloadCsv, printPdfTable } from '../../shared/utils/export.util';
+import { recordId } from '../../shared/utils/record.util';
 
 @Component({
   selector: 'app-entity',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <h2>{{ title }}</h2>
-    <p *ngIf="loadError" class="error">{{ loadError }}</p>
-    <ng-container *ngIf="gridRenderer">
-      <div class="entity-toolbar">
-        <input
-          placeholder="Search records"
-          [(ngModel)]="searchInput"
-          (ngModelChange)="onSearchChange()"
-        />
-        <button type="button" (click)="prevPage()" [disabled]="page <= 1">Prev</button>
-        <span>{{ pageLabel }}</span>
-        <button type="button" (click)="nextPage()" [disabled]="page >= totalPages">Next</button>
-        <button type="button" (click)="toggleGroup()">{{ groupBy ? 'Ungroup' : 'Group' }}</button>
-      </div>
-      <div *ngIf="exportCsv || exportExcel || exportPdf" class="export-bar">
-        <button *ngIf="exportCsv" type="button" (click)="exportCsvFile()">Export CSV</button>
-        <button *ngIf="exportExcel" type="button" (click)="exportExcelFile()">Export Excel</button>
-        <button *ngIf="exportPdf" type="button" (click)="exportPdfFile()">Export PDF</button>
-      </div>
-      <p *ngIf="statusLine">{{ statusLine }}</p>
-      <table class="grid-table">
-        <tr>
-          <th
-            *ngFor="let field of columnFields"
-            [style.cursor]="gridRenderer.isSortable(field) ? 'pointer' : 'default'"
-            (click)="onSort(field)"
-          >
-            {{ gridRenderer.columnLabel(field) }}
-          </th>
-        </tr>
-        <tr>
-          <th *ngFor="let field of columnFields">
-            <input
-              *ngIf="gridRenderer.isFilterable(field)"
-              placeholder="Filter"
-              [ngModel]="filters[field]"
-              (ngModelChange)="onFilterChange(field, $event)"
-            />
-          </th>
-        </tr>
-        <ng-container *ngFor="let group of displayGroups">
-          <tr *ngIf="groupBy && group.key">
-            <td [attr.colspan]="columnFields.length">{{ groupBy }}: {{ group.key }}</td>
-          </tr>
-          <tr
-            *ngFor="let record of group.records"
-            [class.row-selected]="selectedRecordId === recordId(record)"
-            [style.cursor]="recordId(record) ? 'pointer' : 'default'"
-            (click)="selectRecord(record)"
-          >
-            <td *ngFor="let field of columnFields">{{ record[field] }}</td>
-          </tr>
-        </ng-container>
-      </table>
-      <section *ngIf="selectedRecordId" class="record-detail">
-        <h3>Record {{ selectedRecordId }}</h3>
-        <button type="button" (click)="startEdit()">Edit</button>
-        <button type="button" (click)="deleteRecord()">Delete</button>
-        <button *ngIf="entityCode === 'PRODUCT'" type="button" (click)="startWorkflow()">
-          Start STOCK_ADJUSTMENT
-        </button>
-        <p *ngIf="workflowStarted">Workflow started.</p>
-        <p *ngIf="detailError" class="error">{{ detailError }}</p>
-        <h4>Notes ({{ notes.length }})</h4>
-        <ul>
-          <li *ngFor="let note of notes">{{ note.body }}</li>
-        </ul>
-        <h4>Documents ({{ documents.length }})</h4>
-        <ul>
-          <li *ngFor="let doc of documents">
-            {{ doc.filename }} v{{ doc.version }} · {{ doc.virus_scan_status }}
-            <button type="button" (click)="previewDocument(doc)">Preview</button>
-          </li>
-        </ul>
-        <h4>Audit ({{ auditEntries.length }})</h4>
-        <ul>
-          <li *ngFor="let entry of auditEntries">{{ entry.action }} — {{ entry.payloadJson }}</li>
-        </ul>
-        <form class="record-form" (ngSubmit)="uploadDocument()">
-          <input [(ngModel)]="uploadFilename" name="uploadFilename" />
-          <textarea [(ngModel)]="uploadContent" name="uploadContent"></textarea>
-          <button type="submit">Upload document</button>
-        </form>
-      </section>
-      <form *ngIf="formRenderer" class="record-form entity-form" (ngSubmit)="submitForm()">
-        <label *ngFor="let field of visibleFields" [ngStyle]="formRenderer.layoutStyle(field)">
-          {{ formRenderer.label(field.name) }}
-          <input
-            *ngIf="field.field_type !== 'checkbox'"
-            [type]="inputType(field)"
-            [name]="field.name"
-            [required]="formRenderer.isRequired(field.name)"
-            [ngModel]="formValues[field.name]"
-            (ngModelChange)="onFormFieldChange(field.name, $event)"
-          />
-          <input
-            *ngIf="field.field_type === 'checkbox'"
-            type="checkbox"
-            [name]="field.name"
-            [ngModel]="formValues[field.name]"
-            (ngModelChange)="onFormFieldChange(field.name, $event)"
-          />
-        </label>
-        <textarea
-          *ngIf="!editingId"
-          placeholder="Note (optional)"
-          [(ngModel)]="noteInput"
-          name="noteInput"
-        ></textarea>
-        <button type="submit">{{ editingId ? 'Save changes' : 'Create record' }}</button>
-        <button *ngIf="editingId" type="button" (click)="cancelEdit()">Cancel edit</button>
-        <p *ngIf="formError" class="error">{{ formError }}</p>
-      </form>
-    </ng-container>
-  `,
-  styles: [
-    `
-      .entity-toolbar {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        margin-bottom: 0.5rem;
-        flex-wrap: wrap;
-      }
-      .entity-form {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        gap: 0.5rem;
-        max-width: none;
-      }
-    `,
+  imports: [
+    PageHeaderComponent,
+    MasterDetailLayoutComponent,
+    DynamicDataGridComponent,
+    DynamicFormViewComponent,
+    RecordTabsComponent,
+    DetailPlaceholderComponent,
   ],
+  templateUrl: './entity.component.html',
+  styleUrl: './entity.component.scss',
 })
 export class EntityComponent implements OnInit, OnDestroy {
   private readonly api = inject(EmcapApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly layout = inject(LayoutService);
+  readonly i18n = inject(I18nService);
+  private readonly destroy$ = new Subject<void>();
 
   entityCode = '';
   title = '';
   loadError = '';
   formRenderer: DynamicFormRenderer | null = null;
   gridRenderer: DynamicGridRenderer | null = null;
+  private formMeta: FormMetadata | null = null;
   gridMeta: GridMetadata | null = null;
   snapshotSince = '1970-01-01T00:00:00+00:00';
   allRecords: Record<string, unknown>[] = [];
@@ -211,13 +68,16 @@ export class EntityComponent implements OnInit, OnDestroy {
   exportCsv = false;
   exportExcel = false;
   exportPdf = false;
-  notes: { body: string }[] = [];
-  documents: { id: string; filename: string; version: string; virus_scan_status: string }[] = [];
-  auditEntries: { action: string; payloadJson: string }[] = [];
+  notes: RecordNote[] = [];
+  documents: RecordDocument[] = [];
+  auditEntries: RecordAuditEntry[] = [];
   detailError = '';
   workflowStarted = false;
   uploadFilename = 'spec.txt';
   uploadContent = 'uploaded from web';
+  creatingNew = false;
+  mobileDetailOpen = false;
+  isMobile = false;
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private streamCleanup: (() => void) | null = null;
 
@@ -225,8 +85,22 @@ export class EntityComponent implements OnInit, OnDestroy {
   visibleFields: FormFieldMetadata[] = [];
   displayGroups: Array<{ key: string; records: Record<string, unknown>[] }> = [];
 
+  constructor() {
+    effect(() => {
+      this.i18n.locale();
+      this.applyRenderers();
+    });
+  }
+
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
+    this.layout.isMobile$.pipe(takeUntil(this.destroy$)).subscribe((mobile) => {
+      this.isMobile = mobile;
+      if (!mobile) {
+        this.mobileDetailOpen = false;
+      }
+    });
+
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const code = params.get('code') ?? '';
       if (code !== this.entityCode) {
         this.stopStream();
@@ -240,6 +114,8 @@ export class EntityComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopStream();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private stopStream(): void {
@@ -259,12 +135,30 @@ export class EntityComponent implements OnInit, OnDestroy {
     }
   }
 
+  private applyRenderers(): void {
+    if (!this.formMeta || !this.gridMeta) {
+      return;
+    }
+    const locale = this.i18n.locale();
+    this.formRenderer = new DynamicFormRenderer(this.formMeta, locale);
+    this.gridRenderer = new DynamicGridRenderer(this.gridMeta, locale);
+    this.columnFields = this.gridRenderer.columnFields();
+    if (Object.keys(this.formValues).length > 0) {
+      this.rebuildForm(this.formValues);
+    }
+    if (this.allRecords.length > 0) {
+      this.refreshGrid();
+    }
+  }
+
   async loadEntity(): Promise<void> {
     this.loadError = '';
     this.formRenderer = null;
     this.gridRenderer = null;
     this.selectedRecordId = null;
     this.editingId = null;
+    this.creatingNew = false;
+    this.mobileDetailOpen = false;
     try {
       const [loadedFormMeta, loadedGridMeta, recordsPayload, snapshot] = await Promise.all([
         this.api.client.getFormMetadata(this.entityCode),
@@ -273,18 +167,17 @@ export class EntityComponent implements OnInit, OnDestroy {
         this.api.client.syncSnapshot(this.entityCode),
       ]);
       if (!validateFormMetadata(loadedFormMeta) || !validateGridMetadata(loadedGridMeta)) {
-        this.loadError = 'Invalid metadata contract';
+        this.loadError = this.i18n.t('entity.invalidMetadata');
         return;
       }
+      this.formMeta = loadedFormMeta;
       this.gridMeta = loadedGridMeta;
-      this.formRenderer = new DynamicFormRenderer(loadedFormMeta);
-      this.gridRenderer = new DynamicGridRenderer(loadedGridMeta);
       this.snapshotSince = String(snapshot.sync_version ?? this.snapshotSince);
       this.allRecords = recordsPayload.records;
       this.exportCsv = loadedGridMeta.export.csv;
       this.exportExcel = loadedGridMeta.export.excel;
       this.exportPdf = loadedGridMeta.export.pdf;
-      this.columnFields = this.gridRenderer.columnFields();
+      this.applyRenderers();
       this.rebuildForm();
       this.refreshGrid();
       if (loadedGridMeta.realtime) {
@@ -293,7 +186,7 @@ export class EntityComponent implements OnInit, OnDestroy {
         });
       }
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load entity';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('entity.loadFailed');
     }
   }
 
@@ -317,26 +210,18 @@ export class EntityComponent implements OnInit, OnDestroy {
       : [];
   }
 
-  inputType(field: FormFieldMetadata): string {
-    const type = field.field_type ?? 'text';
-    if (type === 'number') return 'number';
-    if (type === 'date') return 'date';
-    if (type === 'email') return 'email';
-    return 'text';
-  }
-
   refreshGrid(): void {
     if (!this.gridRenderer) return;
     let rows = this.gridRenderer.filterRecords(this.allRecords, this.filters);
     rows = this.gridRenderer.sortRecords(rows, this.sortField, this.sortDir);
     const total = rows.length;
-    this.totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const paginated = this.gridRenderer.paginate(rows, this.page, PAGE_SIZE);
+    this.totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
+    const paginated = this.gridRenderer.paginate(rows, this.page, DEFAULT_PAGE_SIZE);
     this.displayGroups = this.gridRenderer.groupRecords(paginated, this.groupBy);
-    this.pageLabel = `Page ${this.page} / ${this.totalPages} (${total} records)`;
+    this.pageLabel = `${this.i18n.t('grid.page')} ${this.page} / ${this.totalPages} (${total} ${this.i18n.t('grid.records')})`;
     if (this.gridMeta?.offline) {
       void this.api.client.syncChanges(this.entityCode, this.snapshotSince).then((changes) => {
-        this.statusLine = `Offline · ${changes.count} change(s) · snapshot ${this.snapshotSince}`;
+        this.statusLine = `${this.i18n.t('grid.offlinePrefix')} · ${changes.count} ${this.i18n.t('grid.changes')} · ${this.i18n.t('grid.snapshot')} ${this.snapshotSince}`;
       });
     }
   }
@@ -350,13 +235,18 @@ export class EntityComponent implements OnInit, OnDestroy {
     this.refreshGrid();
   }
 
+  onSearchInputChange(value: string): void {
+    this.searchInput = value;
+    this.onSearchChange();
+  }
+
   onSearchChange(): void {
     if (this.searchTimer) clearTimeout(this.searchTimer);
     this.searchTimer = setTimeout(() => {
       this.searchQuery = this.searchInput.trim();
       this.page = 1;
       void this.reloadAll();
-    }, 300);
+    }, SEARCH_DEBOUNCE_MS);
   }
 
   prevPage(): void {
@@ -397,28 +287,51 @@ export class EntityComponent implements OnInit, OnDestroy {
     this.refreshGrid();
   }
 
-  recordId(record: Record<string, unknown>): string {
-    return String(record.id ?? '');
-  }
-
   selectRecord(record: Record<string, unknown>): void {
-    const id = this.recordId(record);
+    const id = recordId(record);
     if (!id) return;
     this.selectedRecordId = id;
+    this.creatingNew = false;
     this.workflowStarted = false;
+    if (this.isMobile) {
+      this.mobileDetailOpen = true;
+    }
     void this.loadRecordDetail(id);
+    void this.api.client.getRecord(this.entityCode, id).then((loaded) => {
+      this.editingId = id;
+      this.rebuildForm(loaded);
+    });
     this.refreshGrid();
   }
 
-  async loadRecordDetail(recordId: string): Promise<void> {
+  startCreate(): void {
+    this.selectedRecordId = null;
+    this.editingId = null;
+    this.creatingNew = true;
+    this.workflowStarted = false;
+    this.notes = [];
+    this.documents = [];
+    this.auditEntries = [];
+    this.detailError = '';
+    this.rebuildForm();
+    if (this.isMobile) {
+      this.mobileDetailOpen = true;
+    }
+  }
+
+  closeMobileDetail(): void {
+    this.mobileDetailOpen = false;
+  }
+
+  async loadRecordDetail(recordIdValue: string): Promise<void> {
     this.detailError = '';
     this.notes = [];
     this.documents = [];
     this.auditEntries = [];
     try {
       const [notesPayload, documentsPayload, auditPayload] = await Promise.all([
-        this.api.client.listNotes(this.entityCode, recordId),
-        this.api.client.listDocuments(this.entityCode, recordId),
+        this.api.client.listNotes(this.entityCode, recordIdValue),
+        this.api.client.listDocuments(this.entityCode, recordIdValue),
         this.api.client.listAudit(this.entityCode),
       ]);
       this.notes = notesPayload.notes.map((n) => ({ body: String(n.body ?? '') }));
@@ -429,7 +342,7 @@ export class EntityComponent implements OnInit, OnDestroy {
         virus_scan_status: String(doc.virus_scan_status ?? ''),
       }));
       this.auditEntries = auditPayload.audit
-        .filter((e) => String(e.record_id) === recordId)
+        .filter((e) => String(e.record_id) === recordIdValue)
         .map((e) => ({
           action: String(e.action ?? ''),
           payloadJson: JSON.stringify(e.payload ?? {}),
@@ -437,14 +350,6 @@ export class EntityComponent implements OnInit, OnDestroy {
     } catch (err) {
       this.detailError = err instanceof Error ? err.message : 'Failed to load record';
     }
-  }
-
-  startEdit(): void {
-    if (!this.selectedRecordId) return;
-    void this.api.client.getRecord(this.entityCode, this.selectedRecordId).then((record) => {
-      this.editingId = this.selectedRecordId;
-      this.rebuildForm(record);
-    });
   }
 
   deleteRecord(): void {
@@ -466,7 +371,7 @@ export class EntityComponent implements OnInit, OnDestroy {
     });
   }
 
-  previewDocument(doc: { id: string }): void {
+  previewDocument(doc: RecordDocument): void {
     void this.api.client.getDocument(doc.id).then((full) => {
       window.alert(`Document ${full.filename}\nOCR: ${String(full.ocr_text ?? '').slice(0, 200)}`);
     });
@@ -483,6 +388,8 @@ export class EntityComponent implements OnInit, OnDestroy {
   cancelEdit(): void {
     this.editingId = null;
     this.selectedRecordId = null;
+    this.creatingNew = false;
+    this.mobileDetailOpen = false;
     this.rebuildForm();
     this.refreshGrid();
     this.notes = [];
@@ -502,12 +409,15 @@ export class EntityComponent implements OnInit, OnDestroy {
       if (this.editingId) {
         await this.api.client.updateRecord(this.entityCode, this.editingId, payload);
         this.editingId = null;
+        this.creatingNew = false;
       } else {
         const created = await this.api.client.createRecord(this.entityCode, payload);
         if (this.noteInput.trim()) {
           await this.api.client.addNote(this.entityCode, String(created.id), this.noteInput.trim());
         }
         this.noteInput = '';
+        this.creatingNew = false;
+        this.mobileDetailOpen = false;
       }
       this.formValues = {};
       this.rebuildForm();

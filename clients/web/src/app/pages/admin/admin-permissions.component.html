@@ -1,0 +1,44 @@
+<app-page-header
+  [title]="i18n.t('admin.permissions.title')"
+  [subtitle]="i18n.t('admin.permissions.subtitle')"
+>
+  <a mat-button routerLink="/app/admin/users">Users</a>
+  <a mat-button routerLink="/app/admin/roles">Roles</a>
+  <a mat-button routerLink="/app/admin/security">Security</a>
+</app-page-header>
+
+@if (loadError) {
+  <p class="error">{{ loadError }}</p>
+}
+
+@for (group of groups; track group.module) {
+  <section class="permission-matrix">
+    <h3>{{ group.label }}</h3>
+    <div class="permission-matrix__scroll">
+      <table class="permission-matrix__table">
+        <thead>
+          <tr>
+            <th>Permission</th>
+            @for (role of roles; track role.id) {
+              <th>{{ role.code }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (permission of group.permissions; track permission) {
+            <tr>
+              <td>{{ permission }}</td>
+              @for (role of roles; track role.id) {
+                <td class="permission-matrix__cell">
+                  @if (roleHas(role, permission)) {
+                    <mat-icon aria-label="allowed">check</mat-icon>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

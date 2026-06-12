@@ -43,4 +43,20 @@ Defined in `platform/api/src/emcap/config/models.py`. Add new config sections th
 
 `GET /api/v1/config/platform` returns loaded config (non-secret fields only).
 
-Client shells call this at login to gate optional UI (payments, AI, notification channels). See `clients/web/src/app/main.ts` and `clients/mobile/lib/app/shell.dart`.
+Client shells call this at login to gate optional UI (payments, AI, notification channels). See `shell.component.ts` and `clients/mobile/lib/app/shell.dart`.
+
+## Phase 12 settings UI
+
+Admin write API will expose a **whitelist subset** of keys above — never full raw YAML in browser.
+
+| Settings section | Config keys |
+|------------------|-------------|
+| Modules | `modules.*.enabled` |
+| Notifications | `notifications.email`, `sms`, `push`, … |
+| Payments | `payments.enabled`, provider list |
+| Grid | `grid.export_*`, `grouping`, `realtime`, `offline` |
+| Workflow / rules | `workflow.*`, `rules.*` |
+| Auth providers | `authentication.*` (booleans) |
+| Audit | `audit.enabled`, `audit.immutable` |
+
+Recipe: `docs/dev/recipes/add-admin-api-and-ui.md`

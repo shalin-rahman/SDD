@@ -1,0 +1,31 @@
+<mat-nav-list>
+  <div matSubheader>Platform</div>
+  @for (link of platformLinks; track link.route) {
+    @if (link.visible) {
+      <a
+        mat-list-item
+        [routerLink]="link.route"
+        routerLinkActive="sidenav-nav-active"
+        (click)="onClick()"
+      >
+        {{ link.label }}
+      </a>
+    }
+  }
+</mat-nav-list>
+
+@for (group of navGroups; track group.moduleCode) {
+  <mat-nav-list>
+    <div matSubheader>{{ group.moduleLabel }}</div>
+    @for (item of group.items; track item.code) {
+      <a
+        mat-list-item
+        [routerLink]="entityRoute(item.entity_code)"
+        routerLinkActive="sidenav-nav-active"
+        (click)="onClick()"
+      >
+        {{ item.label }}
+      </a>
+    }
+  </mat-nav-list>
+}

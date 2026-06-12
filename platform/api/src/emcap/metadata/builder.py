@@ -24,6 +24,32 @@ def _label(field: FieldDefinition) -> str:
     return field.name.replace("_", " ").title()
 
 
+FIELD_BN_LABELS: dict[str, str] = {
+    "sku": "এসকেইউ",
+    "name": "নাম",
+    "unit_price": "একক মূল্য",
+    "quantity_on_hand": "হাতে পরিমাণ",
+    "reorder_level": "পুনঃঅর্ডার স্তর",
+    "active": "সক্রিয়",
+    "code": "কোড",
+    "location": "অবস্থান",
+}
+
+
+def _field_i18n(field: FieldDefinition) -> dict[str, str]:
+    label = _label(field)
+    return {"en": label, "bn": FIELD_BN_LABELS.get(field.name, label)}
+
+
+def _grid_i18n(entity: EntityDefinition) -> dict[str, dict[str, str]]:
+    en: dict[str, str] = {}
+    bn: dict[str, str] = {}
+    for field in entity.fields:
+        en[field.name] = _label(field)
+        bn[field.name] = FIELD_BN_LABELS.get(field.name, _label(field))
+    return {"en": en, "bn": bn}
+
+
 def _validation(field: FieldDefinition) -> list[ValidationRule]:
     rules: list[ValidationRule] = []
     if field.required:
@@ -50,7 +76,7 @@ def build_form_metadata(entity: EntityDefinition) -> FormMetadata:
                 col=(index % 2) * 6,
                 span=6,
                 validation=_validation(field),
-                i18n={"en": _label(field), "bn": _label(field)},
+                i18n=_field_i18n(field),
             )
         )
 
@@ -74,7 +100,10 @@ def build_form_metadata(entity: EntityDefinition) -> FormMetadata:
             )
         ],
         conditions=conditions,
-        i18n={"en": {"title": entity.code.title()}, "bn": {"title": entity.code.title()}},
+        i18n={
+            "en": {"title": entity.code.title()},
+            "bn": {"title": FIELD_BN_LABELS.get(entity.code.lower(), entity.code.title())},
+        },
     )
 
 
@@ -91,5 +120,5 @@ def build_grid_metadata(entity: EntityDefinition, config: PlatformConfig) -> Gri
         grouping=grid.grouping,
         realtime=grid.realtime,
         offline=grid.offline,
-        i18n={"en": {"title": entity.code.title()}, "bn": {"title": entity.code.title()}},
+        i18n=_grid_i18n(entity),
     )

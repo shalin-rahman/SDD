@@ -3,24 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../../shared/services/i18n.service';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <h2>Notifications</h2>
+    <h2>{{ i18n.t('platform.notifications.title') }}</h2>
     <form class="record-form" (ngSubmit)="send()">
       <select [(ngModel)]="channel" name="channel">
         <option *ngFor="let ch of channels" [value]="ch">{{ ch }}</option>
       </select>
-      <input [(ngModel)]="recipient" name="recipient" placeholder="Recipient" />
-      <input [(ngModel)]="subject" name="subject" placeholder="Subject" />
-      <textarea [(ngModel)]="body" name="body" placeholder="Body"></textarea>
-      <button type="submit">Send</button>
+      <input [(ngModel)]="recipient" name="recipient" [placeholder]="i18n.t('platform.notifications.recipient')" />
+      <input [(ngModel)]="subject" name="subject" [placeholder]="i18n.t('platform.notifications.subject')" />
+      <textarea [(ngModel)]="body" name="body" [placeholder]="i18n.t('platform.notifications.body')"></textarea>
+      <button type="submit">{{ i18n.t('platform.notifications.send') }}</button>
       <p *ngIf="formError" class="error">{{ formError }}</p>
     </form>
-    <h3>Sent ({{ notifications.length }})</h3>
+    <h3>{{ i18n.t('platform.notifications.sent') }} ({{ notifications.length }})</h3>
     <p *ngIf="listError" class="error">{{ listError }}</p>
     <ul>
       <li *ngFor="let note of notifications">
@@ -31,6 +32,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
 })
 export class NotificationsComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
+  readonly i18n = inject(I18nService);
 
   channels: string[] = ['email'];
   channel = 'email';
@@ -66,7 +68,7 @@ export class NotificationsComponent implements OnInit {
         channel: String(n.channel ?? ''),
       }));
     } catch (err) {
-      this.listError = err instanceof Error ? err.message : 'Failed to list notifications';
+      this.listError = err instanceof Error ? err.message : this.i18n.t('platform.notifications.listFailed');
     }
   }
 
@@ -81,7 +83,7 @@ export class NotificationsComponent implements OnInit {
       });
       await this.load();
     } catch (err) {
-      this.formError = err instanceof Error ? err.message : 'Send failed';
+      this.formError = err instanceof Error ? err.message : this.i18n.t('platform.notifications.sendFailed');
     }
   }
 }

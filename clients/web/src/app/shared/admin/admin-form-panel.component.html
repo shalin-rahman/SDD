@@ -1,0 +1,14 @@
+<header class="admin-form-panel__header">
+  <div>
+    <h3>{{ title }}</h3>
+    @if (subtitle) {
+      <p class="admin-form-panel__subtitle">{{ subtitle }}</p>
+    }
+  </div>
+  <div class="admin-form-panel__actions">
+    <ng-content select="[actions]" />
+  </div>
+</header>
+<div class="admin-form-panel__body">
+  <ng-content />
+</div>

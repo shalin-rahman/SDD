@@ -1,0 +1,290 @@
+<app-page-header
+  [title]="i18n.t('settings.title')"
+  [subtitle]="i18n.t('settings.subtitle')"
+/>
+
+@if (loadError) {
+  <p class="error">{{ loadError }}</p>
+}
+@if (status) {
+  <p class="status">{{ status }}</p>
+}
+
+<mat-accordion multi>
+  <mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.modules') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="moduleItems()" (itemChange)="onModuleChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.auth') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="authItems()" (itemChange)="onAuthChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.notifications') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="notificationItems()" (itemChange)="onNotificationChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.grid') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="gridItems()" (itemChange)="onGridChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.workflow') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="workflowItems()" (itemChange)="onWorkflowChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.rules') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="rulesItems()" (itemChange)="onRulesChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.payments') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="paymentItems()" (itemChange)="onPaymentChange($event)" />
+    @if (!paymentsModuleEnabled()) {
+      <p class="settings-hint">{{ i18n.t('settings.payments.moduleRequired') }}</p>
+    } @else {
+      <div class="settings-form-grid" [class.settings-form-grid--disabled]="!paymentCredentialsEnabled()">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ i18n.t('settings.payments.provider') }}</mat-label>
+          <mat-select [(ngModel)]="paymentProvider" [disabled]="!paymentCredentialsEnabled()">
+            @for (provider of paymentProviders; track provider) {
+              <mat-option [value]="provider">{{ provider }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ i18n.t('settings.payments.publishableKey') }}</mat-label>
+          <input
+            matInput
+            [(ngModel)]="paymentPublishableKey"
+            [disabled]="!paymentCredentialsEnabled()"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ i18n.t('settings.payments.secret') }}</mat-label>
+          <input
+            matInput
+            type="password"
+            [(ngModel)]="paymentSecretDraft"
+            [placeholder]="paymentSecretConfigured ? i18n.t('settings.payments.replaceSecret') : ''"
+            [disabled]="!paymentCredentialsEnabled()"
+          />
+        </mat-form-field>
+      </div>
+      @if (paymentSecretConfigured) {
+        <p class="settings-hint">{{ i18n.t('settings.payments.configured') }}</p>
+      }
+    }
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.integrations') }}</mat-panel-title>
+      <mat-panel-description>{{ i18n.t('settings.integrations.subtitle') }}</mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="settings-form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('settings.integrations.restBaseUrl') }}</mat-label>
+        <input matInput [(ngModel)]="restBaseUrl" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('settings.integrations.kafkaBootstrap') }}</mat-label>
+        <input matInput [(ngModel)]="kafkaBootstrap" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('settings.integrations.kafkaTopicPrefix') }}</mat-label>
+        <input matInput [(ngModel)]="kafkaTopicPrefix" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('settings.integrations.soapEndpoint') }}</mat-label>
+        <input matInput [(ngModel)]="soapEndpoint" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('settings.integrations.webhookSecret') }}</mat-label>
+        <input
+          matInput
+          type="password"
+          [(ngModel)]="webhookSecretDraft"
+          [placeholder]="webhookSecretConfigured ? i18n.t('settings.integrations.replaceSecret') : ''"
+        />
+      </mat-form-field>
+    </div>
+    @if (webhookSecretConfigured) {
+      <p class="settings-hint">{{ i18n.t('settings.integrations.configured') }}</p>
+    }
+    <div class="settings-actions">
+      <button mat-stroked-button type="button" (click)="testRestIntegration()">
+        {{ i18n.t('settings.integrations.testRest') }}
+      </button>
+    </div>
+    @if (integrationTestStatus) {
+      <p class="status">{{ integrationTestStatus }}</p>
+    }
+    <p class="settings-hint">{{ i18n.t('settings.integrations.accountHint') }}</p>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.ai') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="aiItems()" (itemChange)="onAiChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.branding') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="settings-form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Default theme key</mat-label>
+        <input matInput [(ngModel)]="tenantTheme" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Default domain hint</mat-label>
+        <input matInput [(ngModel)]="tenantDomain" />
+      </mat-form-field>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.isolation') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <p class="settings-readonly">Strategy: <strong>{{ tenantStrategy }}</strong></p>
+    <p class="settings-readonly">Multi-tenant mode: <strong>{{ multiTenant ? 'enabled' : 'disabled' }}</strong></p>
+    <p class="settings-hint">Changing isolation strategy requires ops deployment (Phase 13).</p>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.security') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <p class="settings-readonly">MFA enrollment: Account page</p>
+    <p class="settings-readonly">Rate limiting & security headers: enabled via platform middleware</p>
+    <p class="settings-hint">Global MFA-required policy UI planned for Phase 13.</p>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.observability') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <p class="settings-readonly">Metrics: GET /api/v1/metrics (Prometheus format)</p>
+    <p class="settings-hint">Grafana dashboards are external ops tooling (see infra/ansible).</p>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.audit') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-settings-toggle-group [items]="auditItems()" (itemChange)="onAuditChange($event)" />
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.templates') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-master-detail-layout>
+      <div listPane class="settings-template-list">
+        <button mat-button type="button" (click)="startCreateTemplate()">New template</button>
+        <div class="admin-table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Channel</th>
+                <th>Subject</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (template of templates; track template.id) {
+                <tr
+                  class="admin-table__row"
+                  [class.admin-table__row--selected]="selectedTemplateId === template.id"
+                  (click)="selectTemplate(template)"
+                >
+                  <td>{{ template.code }}</td>
+                  <td>{{ template.channel }}</td>
+                  <td>{{ template.subject }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div detailPane>
+        @if (!selectedTemplate && !creatingTemplate) {
+          <app-detail-placeholder message="Select a template or click New template." />
+        } @else {
+          <app-admin-form-panel
+            [title]="selectedTemplate ? 'Edit template' : 'Create template'"
+            [subtitle]="selectedTemplate?.code ?? 'New email template'"
+          >
+            <div actions>
+              @if (selectedTemplate) {
+                <button mat-button type="button" (click)="deleteTemplate()">Delete</button>
+              }
+              <button mat-flat-button color="primary" type="button" (click)="saveTemplate()">Save template</button>
+            </div>
+            <div class="admin-form-grid">
+              @if (!selectedTemplate) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Template code</mat-label>
+                  <input matInput [(ngModel)]="templateCode" />
+                </mat-form-field>
+              }
+              <mat-form-field appearance="outline">
+                <mat-label>Channel</mat-label>
+                <mat-select [(ngModel)]="templateChannel">
+                  <mat-option value="email">Email</mat-option>
+                  <mat-option value="sms">SMS</mat-option>
+                  <mat-option value="push">Push</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Subject</mat-label>
+                <input matInput [(ngModel)]="templateSubject" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Body template</mat-label>
+                <textarea matInput rows="6" [(ngModel)]="templateBody"></textarea>
+              </mat-form-field>
+            </div>
+          </app-admin-form-panel>
+        }
+      </div>
+    </app-master-detail-layout>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ i18n.t('settings.sections.adminAudit') }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    @for (entry of audit; track entry['id']) {
+      <p class="settings-audit-line">{{ entry['created_at'] }} · {{ entry['action'] }} · {{ entry['target'] }}</p>
+    }
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div class="settings-actions">
+  <button mat-flat-button color="primary" type="button" (click)="saveSettings()">
+    {{ i18n.t('settings.save') }}
+  </button>
+</div>

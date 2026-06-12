@@ -1,0 +1,710 @@
+import 'package:flutter/material.dart';
+
+import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
+import '../widgets/detail_placeholder.dart';
+import '../widgets/master_detail_layout.dart';
+import '../widgets/settings_toggle_group.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key, required this.client, this.onNavRefresh});
+
+  final EmcapClient client;
+  final VoidCallback? onNavRefresh;
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  Map<String, dynamic> _settings = {};
+  Map<String, dynamic> _integrations = {};
+  List<Map<String, dynamic>> _templates = [];
+  List<Map<String, dynamic>> _audit = [];
+  bool _loading = true;
+  String? _error;
+  String _status = '';
+  String _tenantStrategy = '';
+  bool _multiTenant = false;
+
+  String? _selectedTemplateId;
+  bool _creatingTemplate = false;
+  bool _templateDetailOpen = false;
+  final _templateCodeController = TextEditingController();
+  final _templateChannelController = TextEditingController(text: 'email');
+  final _templateSubjectController = TextEditingController();
+  final _templateBodyController = TextEditingController();
+  final _tenantThemeController = TextEditingController(text: 'default');
+  final _tenantDomainController = TextEditingController(text: 'localhost');
+  final _paymentPublishableController = TextEditingController();
+  final _paymentSecretController = TextEditingController();
+  final _restBaseUrlController = TextEditingController();
+  final _kafkaBootstrapController = TextEditingController();
+  final _kafkaTopicPrefixController = TextEditingController();
+  final _soapEndpointController = TextEditingController();
+  final _webhookSecretController = TextEditingController();
+  String _paymentProvider = 'stripe';
+  bool _paymentSecretConfigured = false;
+  bool _webhookSecretConfigured = false;
+  String _integrationTestStatus = '';
+  static const _paymentProviders = ['stripe', 'paypal', 'manual'];
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  @override
+  void dispose() {
+    _templateCodeController.dispose();
+    _templateChannelController.dispose();
+    _templateSubjectController.dispose();
+    _templateBodyController.dispose();
+    _tenantThemeController.dispose();
+    _tenantDomainController.dispose();
+    _paymentPublishableController.dispose();
+    _paymentSecretController.dispose();
+    _restBaseUrlController.dispose();
+    _kafkaBootstrapController.dispose();
+    _kafkaTopicPrefixController.dispose();
+    _soapEndpointController.dispose();
+    _webhookSecretController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reload() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final settingsPayload = await widget.client.getAdminSettings();
+      final integrationsPayload = await widget.client.getAdminIntegrations();
+      final templates = await widget.client.listAdminTemplates();
+      final audit = await widget.client.getAdminAudit();
+      final health = await widget.client.getHealth();
+      if (!mounted) return;
+      final settings = Map<String, dynamic>.from(settingsPayload['settings'] as Map? ?? {});
+      final tenants = settings['tenants'] as Map? ?? {};
+      final defaultTenant = tenants['default'] as Map? ?? {};
+      setState(() {
+        _settings = settings;
+        _integrations = Map<String, dynamic>.from(integrationsPayload['integrations'] as Map? ?? {});
+        _templates = templates;
+        _audit = audit;
+        _tenantStrategy = '${health['tenant_strategy']}';
+        _multiTenant = health['multi_tenant'] == true;
+        _tenantThemeController.text = '${defaultTenant['theme'] ?? 'default'}';
+        _tenantDomainController.text = '${defaultTenant['domain'] ?? 'localhost'}';
+        _syncPaymentFields(settings);
+        _syncIntegrationFields(_integrations);
+        _loading = false;
+      });
+    } catch (err) {
+      if (!mounted) return;
+      setState(() {
+        _error = err.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  bool _bool(String section, String key) {
+    final map = _settings[section];
+    if (map is Map && map[key] is bool) {
+      return map[key] as bool;
+    }
+    return false;
+  }
+
+  bool _flag(String section, String module, String key) {
+    final map = _settings[section];
+    if (map is! Map) return false;
+    final moduleMap = map[module];
+    if (moduleMap is Map && moduleMap[key] is bool) {
+      return moduleMap[key] as bool;
+    }
+    return false;
+  }
+
+  void _setBool(String section, String key, bool value) {
+    final map = Map<String, dynamic>.from(_settings[section] as Map? ?? {});
+    map[key] = value;
+    _settings = {..._settings, section: map};
+    setState(() {});
+  }
+
+  void _setFlag(String section, String module, String key, bool value) {
+    final sectionMap = Map<String, dynamic>.from(_settings[section] as Map? ?? {});
+    final moduleMap = Map<String, dynamic>.from(sectionMap[module] as Map? ?? {});
+    moduleMap[key] = value;
+    sectionMap[module] = moduleMap;
+    _settings = {..._settings, section: sectionMap};
+    setState(() {});
+  }
+
+  void _applyBranding() {
+    final tenants = Map<String, dynamic>.from(_settings['tenants'] as Map? ?? {});
+    final defaultTenant = Map<String, dynamic>.from(tenants['default'] as Map? ?? {});
+    defaultTenant['theme'] = _tenantThemeController.text.trim();
+    defaultTenant['domain'] = _tenantDomainController.text.trim();
+    tenants['default'] = defaultTenant;
+    _settings = {..._settings, 'tenants': tenants};
+  }
+
+  void _syncPaymentFields(Map<String, dynamic> settings) {
+    final payments = settings['payments'];
+    if (payments is! Map) return;
+    _paymentProvider = '${payments['provider'] ?? 'stripe'}';
+    final stripe = payments['stripe'];
+    if (stripe is Map) {
+      _paymentPublishableController.text = '${stripe['publishable_key'] ?? ''}';
+      final secretView = stripe['secret_key'];
+      _paymentSecretConfigured =
+          secretView is Map && secretView['configured'] == true;
+    }
+    _paymentSecretController.clear();
+  }
+
+  void _applyPaymentCredentials() {
+    final payments = Map<String, dynamic>.from(_settings['payments'] as Map? ?? {});
+    final stripe = Map<String, dynamic>.from(payments['stripe'] as Map? ?? {});
+    payments['provider'] = _paymentProvider;
+    stripe['publishable_key'] = _paymentPublishableController.text.trim();
+    final secretDraft = _paymentSecretController.text.trim();
+    if (secretDraft.isNotEmpty) {
+      stripe['secret_key'] = secretDraft;
+    } else {
+      stripe.remove('secret_key');
+    }
+    payments['stripe'] = stripe;
+    _settings = {..._settings, 'payments': payments};
+  }
+
+  void _applyIntegrationFields() {
+    final rest = Map<String, dynamic>.from(_integrations['rest'] as Map? ?? {});
+    final kafka = Map<String, dynamic>.from(_integrations['kafka'] as Map? ?? {});
+    final soap = Map<String, dynamic>.from(_integrations['soap'] as Map? ?? {});
+    final webhook = Map<String, dynamic>.from(_integrations['webhook'] as Map? ?? {});
+    rest['base_url'] = _restBaseUrlController.text.trim();
+    kafka['bootstrap'] = _kafkaBootstrapController.text.trim();
+    kafka['topic_prefix'] = _kafkaTopicPrefixController.text.trim();
+    soap['endpoint'] = _soapEndpointController.text.trim();
+    final secretDraft = _webhookSecretController.text.trim();
+    if (secretDraft.isNotEmpty) {
+      webhook['signing_secret'] = secretDraft;
+    } else {
+      webhook.remove('signing_secret');
+    }
+    _integrations = {..._integrations, 'rest': rest, 'kafka': kafka, 'soap': soap, 'webhook': webhook};
+  }
+
+  void _syncIntegrationFields(Map<String, dynamic> integrations) {
+    final rest = integrations['rest'];
+    if (rest is Map) {
+      _restBaseUrlController.text = '${rest['base_url'] ?? ''}';
+    }
+    final kafka = integrations['kafka'];
+    if (kafka is Map) {
+      _kafkaBootstrapController.text = '${kafka['bootstrap'] ?? ''}';
+      _kafkaTopicPrefixController.text = '${kafka['topic_prefix'] ?? ''}';
+    }
+    final soap = integrations['soap'];
+    if (soap is Map) {
+      _soapEndpointController.text = '${soap['endpoint'] ?? ''}';
+    }
+    final webhook = integrations['webhook'];
+    _webhookSecretConfigured =
+        webhook is Map && webhook['signing_secret'] is Map && webhook['signing_secret']['configured'] == true;
+    _webhookSecretController.clear();
+    _integrationTestStatus = '';
+  }
+
+  Future<void> _testRestIntegration() async {
+    setState(() => _integrationTestStatus = '');
+    try {
+      final result = await widget.client.testAdminRestIntegration();
+      if (!mounted) return;
+      setState(() {
+        _integrationTestStatus = '${EmcapLocale.t('settings.integrations.testOk')} (${result['job_id']})';
+      });
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _integrationTestStatus = EmcapLocale.t('settings.integrations.testFailed'));
+    }
+  }
+
+  bool get _paymentsModuleEnabled => _flag('modules', 'payments', 'enabled');
+
+  bool get _paymentCredentialsEnabled =>
+      _paymentsModuleEnabled && _bool('payments', 'enabled');
+
+  Future<void> _saveSettings() async {
+    _applyBranding();
+    _applyPaymentCredentials();
+    _applyIntegrationFields();
+    setState(() {
+      _status = '';
+      _error = null;
+    });
+    try {
+      final settingsPayload = await widget.client.updateAdminSettings(_settings);
+      final integrationsPayload = await widget.client.updateAdminIntegrations(_integrations);
+      if (!mounted) return;
+      final settings = Map<String, dynamic>.from(settingsPayload['settings'] as Map? ?? _settings);
+      final integrations = Map<String, dynamic>.from(integrationsPayload['integrations'] as Map? ?? _integrations);
+      setState(() {
+        _settings = settings;
+        _integrations = integrations;
+        _syncPaymentFields(settings);
+        _syncIntegrationFields(integrations);
+        _status = EmcapLocale.t('settings.saved');
+      });
+      widget.onNavRefresh?.call();
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _error = err.toString());
+    }
+  }
+
+  Map<String, dynamic>? get _selectedTemplate {
+    if (_selectedTemplateId == null) return null;
+    for (final template in _templates) {
+      if ('${template['id']}' == _selectedTemplateId) return template;
+    }
+    return null;
+  }
+
+  void _selectTemplate(Map<String, dynamic> template) {
+    setState(() {
+      _creatingTemplate = false;
+      _selectedTemplateId = '${template['id']}';
+      _templateCodeController.text = '${template['code']}';
+      _templateChannelController.text = '${template['channel'] ?? 'email'}';
+      _templateSubjectController.text = '${template['subject'] ?? ''}';
+      _templateBodyController.text = '${template['body'] ?? ''}';
+      _templateDetailOpen = true;
+    });
+  }
+
+  void _startCreateTemplate() {
+    setState(() {
+      _creatingTemplate = true;
+      _selectedTemplateId = null;
+      _templateCodeController.clear();
+      _templateChannelController.text = 'email';
+      _templateSubjectController.clear();
+      _templateBodyController.clear();
+      _templateDetailOpen = true;
+    });
+  }
+
+  Future<void> _saveTemplate() async {
+    try {
+      final selected = _selectedTemplate;
+      if (selected != null) {
+        await widget.client.updateAdminTemplate(
+          '${selected['id']}',
+          channel: _templateChannelController.text.trim(),
+          subject: _templateSubjectController.text.trim(),
+          body: _templateBodyController.text,
+        );
+      } else {
+        await widget.client.createAdminTemplate(
+          code: _templateCodeController.text.trim(),
+          channel: _templateChannelController.text.trim(),
+          subject: _templateSubjectController.text.trim(),
+          body: _templateBodyController.text,
+        );
+      }
+      await _reload();
+      if (!mounted) return;
+      setState(() => _templateDetailOpen = false);
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _error = err.toString());
+    }
+  }
+
+  Future<void> _deleteTemplate() async {
+    final selected = _selectedTemplate;
+    if (selected == null) return;
+    await widget.client.deleteAdminTemplate('${selected['id']}');
+    await _reload();
+    if (!mounted) return;
+    setState(() {
+      _selectedTemplateId = null;
+      _templateDetailOpen = false;
+    });
+  }
+
+  List<SettingsToggleItem> _moduleItems() => [
+        SettingsToggleItem(key: 'workflow', label: 'Workflow module', checked: _flag('modules', 'workflow', 'enabled')),
+        SettingsToggleItem(key: 'payments', label: 'Payments module', checked: _flag('modules', 'payments', 'enabled')),
+        SettingsToggleItem(
+          key: 'notifications',
+          label: 'Notifications module',
+          checked: _flag('modules', 'notifications', 'enabled'),
+        ),
+        SettingsToggleItem(key: 'ai', label: 'AI module', checked: _flag('modules', 'ai', 'enabled')),
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final templateListPane = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: _startCreateTemplate,
+            icon: const Icon(Icons.add),
+            label: const Text('New template'),
+          ),
+        ),
+        Expanded(
+          child: Card(
+            margin: EdgeInsets.zero,
+            child: ListView.separated(
+              itemCount: _templates.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final template = _templates[index];
+                return ListTile(
+                  selected: _selectedTemplateId == '${template['id']}',
+                  title: Text('${template['code']}'),
+                  subtitle: Text('${template['channel']} · ${template['subject']}'),
+                  onTap: () => _selectTemplate(template),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+
+    final templateDetailPane = (!_creatingTemplate && _selectedTemplate == null)
+        ? const DetailPlaceholder(message: 'Select an email template or create a new one.')
+        : ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedTemplate != null ? 'Edit template' : 'Create template',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  if (_selectedTemplate != null)
+                    TextButton(onPressed: _deleteTemplate, child: const Text('Delete')),
+                  FilledButton(onPressed: _saveTemplate, child: const Text('Save template')),
+                ],
+              ),
+              if (_selectedTemplate == null)
+                TextField(
+                  controller: _templateCodeController,
+                  decoration: const InputDecoration(labelText: 'Template code', border: OutlineInputBorder()),
+                ),
+              TextField(
+                controller: _templateChannelController,
+                decoration: const InputDecoration(labelText: 'Channel', border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _templateSubjectController,
+                decoration: const InputDecoration(labelText: 'Subject', border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _templateBodyController,
+                decoration: const InputDecoration(labelText: 'Body', border: OutlineInputBorder()),
+                maxLines: 6,
+              ),
+            ],
+          );
+
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
+      children: [
+        Text(EmcapLocale.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
+        Text('Tenant strategy: $_tenantStrategy · multi-tenant: $_multiTenant'),
+        if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+        if (_status.isNotEmpty) Text(_status, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton(onPressed: _saveSettings, child: const Text('Save settings')),
+        ),
+        const SizedBox(height: 8),
+        SettingsToggleGroup(
+          title: 'Modules',
+          items: _moduleItems(),
+          onChanged: (key, checked) => _setFlag('modules', key, 'enabled', checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Authentication',
+          items: [
+            SettingsToggleItem(key: 'username_password', label: 'Username / password', checked: _bool('authentication', 'username_password')),
+            SettingsToggleItem(key: 'oauth', label: 'OAuth', checked: _bool('authentication', 'oauth')),
+            SettingsToggleItem(key: 'ldap', label: 'LDAP', checked: _bool('authentication', 'ldap')),
+            SettingsToggleItem(key: 'sso', label: 'SSO', checked: _bool('authentication', 'sso')),
+          ],
+          onChanged: (key, checked) => _setBool('authentication', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Notifications',
+          items: [
+            SettingsToggleItem(key: 'email', label: 'Email channel', checked: _bool('notifications', 'email')),
+            SettingsToggleItem(key: 'sms', label: 'SMS channel', checked: _bool('notifications', 'sms')),
+            SettingsToggleItem(key: 'push', label: 'Push channel', checked: _bool('notifications', 'push')),
+            SettingsToggleItem(key: 'whatsapp', label: 'WhatsApp channel', checked: _bool('notifications', 'whatsapp')),
+          ],
+          onChanged: (key, checked) => _setBool('notifications', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Grid defaults',
+          items: [
+            SettingsToggleItem(key: 'export_csv', label: 'CSV export', checked: _bool('grid', 'export_csv')),
+            SettingsToggleItem(key: 'export_excel', label: 'Excel export', checked: _bool('grid', 'export_excel')),
+            SettingsToggleItem(key: 'export_pdf', label: 'PDF export', checked: _bool('grid', 'export_pdf')),
+            SettingsToggleItem(key: 'grouping', label: 'Row grouping', checked: _bool('grid', 'grouping')),
+            SettingsToggleItem(key: 'realtime', label: 'Realtime refresh', checked: _bool('grid', 'realtime')),
+            SettingsToggleItem(key: 'offline', label: 'Offline sync', checked: _bool('grid', 'offline')),
+          ],
+          onChanged: (key, checked) => _setBool('grid', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Workflow',
+          items: [
+            SettingsToggleItem(key: 'enabled', label: 'Workflow engine', checked: _bool('workflow', 'enabled')),
+            SettingsToggleItem(key: 'escalation', label: 'Escalation', checked: _bool('workflow', 'escalation')),
+            SettingsToggleItem(key: 'delegation', label: 'Delegation', checked: _bool('workflow', 'delegation')),
+            SettingsToggleItem(key: 'sla_tracking', label: 'SLA tracking', checked: _bool('workflow', 'sla_tracking')),
+          ],
+          onChanged: (key, checked) => _setBool('workflow', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Rules',
+          items: [
+            SettingsToggleItem(key: 'formula_enabled', label: 'Formula rules', checked: _bool('rules', 'formula_enabled')),
+            SettingsToggleItem(key: 'scripting_enabled', label: 'Scripting rules', checked: _bool('rules', 'scripting_enabled')),
+          ],
+          onChanged: (key, checked) => _setBool('rules', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Payments',
+          items: [SettingsToggleItem(key: 'enabled', label: 'Payments enabled', checked: _bool('payments', 'enabled'))],
+          onChanged: (key, checked) => _setBool('payments', key, checked),
+        ),
+        if (!_paymentsModuleEnabled)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              EmcapLocale.t('settings.payments.moduleRequired'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          )
+        else
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: _paymentProviders.contains(_paymentProvider) ? _paymentProvider : 'stripe',
+                    decoration: InputDecoration(
+                      labelText: EmcapLocale.t('settings.payments.provider'),
+                      border: const OutlineInputBorder(),
+                    ),
+                    items: _paymentProviders
+                        .map((provider) => DropdownMenuItem(value: provider, child: Text(provider)))
+                        .toList(),
+                    onChanged: _paymentCredentialsEnabled
+                        ? (value) {
+                            if (value == null) return;
+                            setState(() => _paymentProvider = value);
+                          }
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _paymentPublishableController,
+                    enabled: _paymentCredentialsEnabled,
+                    decoration: InputDecoration(
+                      labelText: EmcapLocale.t('settings.payments.publishableKey'),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _paymentSecretController,
+                    enabled: _paymentCredentialsEnabled,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: EmcapLocale.t('settings.payments.secret'),
+                      hintText: _paymentSecretConfigured
+                          ? EmcapLocale.t('settings.payments.replaceSecret')
+                          : null,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  if (_paymentSecretConfigured) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      EmcapLocale.t('settings.payments.configured'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.integrations')),
+            subtitle: Text(EmcapLocale.t('settings.integrations.subtitle')),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: _restBaseUrlController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.integrations.restBaseUrl'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _kafkaBootstrapController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.integrations.kafkaBootstrap'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _kafkaTopicPrefixController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.integrations.kafkaTopicPrefix'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _soapEndpointController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.integrations.soapEndpoint'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _webhookSecretController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.integrations.webhookSecret'),
+                        hintText: _webhookSecretConfigured
+                            ? EmcapLocale.t('settings.integrations.replaceSecret')
+                            : null,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    if (_webhookSecretConfigured) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        EmcapLocale.t('settings.integrations.configured'),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _testRestIntegration,
+                      child: Text(EmcapLocale.t('settings.integrations.testRest')),
+                    ),
+                    if (_integrationTestStatus.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(_integrationTestStatus, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                    const SizedBox(height: 8),
+                    Text(
+                      EmcapLocale.t('settings.integrations.accountHint'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SettingsToggleGroup(
+          title: 'AI',
+          items: [SettingsToggleItem(key: 'enabled', label: 'AI assistant enabled', checked: _bool('ai', 'enabled'))],
+          onChanged: (key, checked) => _setBool('ai', key, checked),
+        ),
+        SettingsToggleGroup(
+          title: 'Audit',
+          items: [
+            SettingsToggleItem(key: 'enabled', label: 'Audit logging', checked: _bool('audit', 'enabled')),
+            SettingsToggleItem(key: 'immutable', label: 'Immutable audit trail', checked: _bool('audit', 'immutable')),
+          ],
+          onChanged: (key, checked) => _setBool('audit', key, checked),
+        ),
+        Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ExpansionTile(
+            title: const Text('Branding'),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _tenantThemeController,
+                      decoration: const InputDecoration(labelText: 'Theme', border: OutlineInputBorder()),
+                    ),
+                    TextField(
+                      controller: _tenantDomainController,
+                      decoration: const InputDecoration(labelText: 'Domain', border: OutlineInputBorder()),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text('Email templates', style: Theme.of(context).textTheme.titleMedium),
+        SizedBox(
+          height: 360,
+          child: MasterDetailLayout(
+            listPane: templateListPane,
+            detailPane: templateDetailPane,
+            detailOpen: _templateDetailOpen,
+            onBack: () => setState(() {
+              _templateDetailOpen = false;
+              _creatingTemplate = false;
+              _selectedTemplateId = null;
+            }),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text('Admin audit (${_audit.length})', style: Theme.of(context).textTheme.titleMedium),
+        ..._audit.take(20).map(
+              (entry) => ListTile(
+                dense: true,
+                title: Text('${entry['action'] ?? entry['event']}'),
+                subtitle: Text('${entry['actor'] ?? ''} · ${entry['timestamp'] ?? entry['created_at'] ?? ''}'),
+              ),
+            ),
+      ],
+    );
+  }
+}

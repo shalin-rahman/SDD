@@ -1,0 +1,43 @@
+.admin-form-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.5rem;
+  border-bottom: 1px solid var(--emcap-border);
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+}
+
+.admin-form-panel__subtitle {
+  margin: 0.25rem 0 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.admin-form-panel__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-form-panel__body {
+  padding: 1rem;
+}
+
+:host ::ng-deep .admin-form-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+:host ::ng-deep .admin-form-grid mat-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .admin-form-grid .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}

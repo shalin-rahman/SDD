@@ -9,33 +9,54 @@ description: >-
 
 ## Read first (in order)
 
-1. `docs/dev/codebase-index.md` — zones, scripts, tests
-2. `docs/dev/known-pitfalls.md` — Phase 11 batch/CI/seed regressions
-3. `docs/dev/recipes/` — task-specific how-tos
+1. `docs/dev/codebase-index.md` — zones, scripts, tests, **shared UI map**
+2. **`docs/dev/recipes/sync-docs-after-change.md`** — **mandatory after any code change**
+3. `.cursor/rules/emcap-doc-sync.mdc` — doc sync rule (always apply)
+4. `docs/dev/windows-local-dev.md` — Windows batch/PowerShell pitfalls
+5. `docs/dev/known-pitfalls.md` — regressions by phase
+6. `docs/dev/recipes/` — task-specific how-tos
 
-## Local dev (Phase 11)
+## Current focus — Phase 12
 
 | Doc | When |
 |-----|------|
-| `plan/11-local-dev-tooling.md` | run-emcap, seed, lint gates |
-| `docs/dev/recipes/run-emcap-local-stack.md` | Start stack on Windows |
-| `data/seed/README.md` | JSON seed format |
+| **`clients/web/src/app/shared/README.md`** | Reusable components — use before new UI |
+| **`plan/12-enterprise-product-ui.md`** | Shell, admin, settings, i18n, theme |
+| **`plan/12-phase12-dod-checklist.md`** | Before marking P12 task Done |
+| **`spec/sdd/06-admin-product-ui-matrix.md`** | UX gap (not 04/05 alone) |
+| **Skill `emcap-enterprise-ui`** | FR-008d patterns |
+| `docs/dev/recipes/enterprise-ui-shell.md` | P12A — compose shared components |
+| `docs/dev/recipes/add-admin-api-and-ui.md` | P12B–C — reuse master–detail |
 
-**Run from repo root:** `scripts\run-emcap.bat`
+## Local dev (Phase 11)
+
+```bat
+cd repo-root
+scripts\run-emcap.bat --stack-only --local   rem no Docker
+scripts\run-emcap.bat --stack-only           rem Docker
+```
 
 ## Phase highlights
 
 | Phase | Playbook |
 |-------|----------|
-| 10 | `plan/10-angular-cli-web.md` — Angular CLI web |
-| 9 | `plan/08-sdd-100-closure.md` |
-| 8 | `plan/07-phase8-end-user-product.md` |
-| Backlog | `plan/03-task-backlog.md` (143 tasks) |
+| **12** | `plan/12-enterprise-product-ui.md` |
+| 11 | `plan/11-local-dev-tooling.md` |
+| Backlog | `plan/03-task-backlog.md` (204 tasks) |
 
-## Canonical web paths
+## Canonical paths
 
-Edit `clients/web/src/app/` only — not `clients/web-legacy/`.
+| Area | Path |
+|------|------|
+| **Shared web UI** | `clients/web/src/app/shared/` |
+| Web pages (thin) | `clients/web/src/app/pages/` |
+| Shell wrapper | `pages/shell/` → `AppLayoutComponent` |
+| Entity page | `pages/entity/` → master–detail shared components |
+| Nav utils | `services/shell-nav.util.ts` |
+| Shell state | `shared/services/shell-context.service.ts` |
+| Menus API | `platform/api/.../routes/menus.py` |
+| Pytest config | `config/platform-test.yaml` (demo seed **off**) |
 
-## Test config
+## After every change
 
-Pytest uses `config/platform-test.yaml` (demo seed disabled). Production/local stack uses `config/platform.yaml`.
+Run **`docs/dev/recipes/sync-docs-after-change.md`** — backlog, matrix, index, recipes, skills.

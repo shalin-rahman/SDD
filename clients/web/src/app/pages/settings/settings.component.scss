@@ -1,0 +1,59 @@
+.settings-actions {
+  margin-top: 1rem;
+}
+
+.status {
+  color: #1b5e20;
+}
+
+.settings-form-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.settings-form-grid mat-form-field {
+  width: 100%;
+}
+
+.settings-form-grid--disabled {
+  opacity: 0.55;
+}
+
+.settings-hint,
+.settings-template-line,
+.settings-audit-line,
+.settings-readonly {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.settings-template-list {
+  min-width: 0;
+}
+
+.settings-template-list .admin-table {
+  width: 100%;
+  min-width: 420px;
+}
+
+.settings-template-list .admin-table__row {
+  cursor: pointer;
+}
+
+.settings-template-list .admin-table__row--selected {
+  background: #e8eaf6;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--emcap-border);
+  border-radius: 4px;
+  background: #fff;
+  margin-top: 0.5rem;
+}
+
+.settings-template-line,
+.settings-audit-line {
+  margin: 0.25rem 0;
+}

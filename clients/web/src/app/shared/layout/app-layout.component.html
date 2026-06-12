@@ -1,0 +1,54 @@
+<mat-sidenav-container class="app-layout">
+  <mat-sidenav
+    #drawer
+    class="app-layout__sidenav"
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="sidenavOpened"
+  >
+    <div class="app-layout__brand">
+      <strong>EMCAP</strong>
+      <p class="app-layout__tenant-line">{{ tenantLine }}</p>
+    </div>
+    <app-sidenav-nav
+      [platformLinks]="platformLinks"
+      [navGroups]="navGroups"
+      (navClick)="onNavClick()"
+    />
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="app-layout__toolbar">
+      @if (isMobile) {
+        <button mat-icon-button type="button" aria-label="Menu" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <span class="app-layout__title">{{ pageTitle }}</span>
+      <span class="app-layout__spacer"></span>
+      <mat-select
+        class="app-layout__locale"
+        [value]="i18n.locale()"
+        (valueChange)="onLocaleChange($event)"
+        aria-label="Language"
+      >
+        <mat-option value="en">EN</mat-option>
+        <mat-option value="fr">FR</mat-option>
+        <mat-option value="bn">BN</mat-option>
+      </mat-select>
+      <button mat-icon-button type="button" [attr.aria-label]="i18n.t('toolbar.theme')" (click)="theme.toggle()">
+        <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      @if (multiTenant) {
+        <app-tenant-select
+          [tenants]="tenants"
+          [selectedTenant]="selectedTenant"
+          (tenantChange)="tenantChange.emit($event)"
+        />
+      }
+      <button mat-button type="button" (click)="signOut.emit()">{{ i18n.t('nav.signOut') }}</button>
+    </mat-toolbar>
+    <main class="app-layout__content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

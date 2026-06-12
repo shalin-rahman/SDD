@@ -6,7 +6,10 @@ if errorlevel 1 call "%~dp0_resolve-scripts.bat"
 if errorlevel 1 exit /b 1
 
 echo [stop-emcap] Stopping Docker stack...
-if exist "%EMCAP_DOCKER_DIR%\docker-compose.yml" (
+where docker >nul 2>&1
+if errorlevel 1 (
+  echo [stop-emcap] Docker not installed - skipping compose down.
+) else if exist "%EMCAP_DOCKER_DIR%\docker-compose.yml" (
   pushd "%EMCAP_DOCKER_DIR%"
   docker compose down
   popd

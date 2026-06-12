@@ -1,0 +1,24 @@
+.settings-toggle-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.settings-toggle-group__row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--emcap-border);
+}
+
+.settings-toggle-group__label {
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 640px) {
+  .settings-toggle-group__row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

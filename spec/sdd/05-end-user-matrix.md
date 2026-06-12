@@ -4,7 +4,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 **Legend:** Done · Partial · No · N/A (admin/ops only)
 
-**Last updated:** 2026-06-11 · **100% complete** (Phase 9).
+**Last updated:** 2026-06-12 · **CRUD/metadata depth** (Phase 8–9). **Product shell, admin, settings:** see `spec/sdd/06-admin-product-ui-matrix.md` (Phase 12).
 
 **Companion:** `spec/sdd/04-capability-matrix.md`
 

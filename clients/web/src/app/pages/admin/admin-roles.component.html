@@ -1,0 +1,79 @@
+<app-page-header
+  [title]="i18n.t('admin.roles.title')"
+  [subtitle]="i18n.t('admin.roles.subtitle')"
+  [showBack]="isMobile && detailOpen"
+  (back)="closeDetail()"
+>
+  <a mat-button routerLink="/app/admin/users">Users</a>
+  <a mat-button routerLink="/app/admin/permissions">Permissions</a>
+  <a mat-button routerLink="/app/admin/security">Security</a>
+</app-page-header>
+
+@if (loadError) {
+  <p class="error">{{ loadError }}</p>
+}
+
+<app-master-detail-layout [detailOpen]="detailOpen">
+  <div listPane class="admin-list-pane">
+    <app-admin-list-toolbar newLabel="New role" (create)="startCreate()" />
+    <div class="admin-table-scroll">
+      <table mat-table [dataSource]="roles" class="admin-table">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let row">{{ row.code }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="permissions">
+          <th mat-header-cell *matHeaderCellDef>Permissions</th>
+          <td mat-cell *matCellDef="let row">{{ permissionSummary(row) }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="admin-table__row"
+          [class.admin-table__row--selected]="selectedId === row.id"
+          (click)="selectRole(row)"
+        ></tr>
+      </table>
+    </div>
+  </div>
+
+  <div detailPane>
+    @if (!selected && !creating) {
+      <app-detail-placeholder message="Select a role from the list or click New role to assign permissions." />
+    } @else {
+      <app-admin-form-panel
+        [title]="selected ? 'Edit role' : 'Create role'"
+        [subtitle]="selected ? selected.code : 'Define role permissions'"
+      >
+        <div actions>
+          <button mat-flat-button color="primary" type="button" (click)="save()">Save role</button>
+        </div>
+
+        <div class="admin-form-grid">
+          @if (!selected) {
+            <mat-form-field appearance="outline">
+              <mat-label>Role code</mat-label>
+              <input matInput [(ngModel)]="draftCode" autocomplete="off" />
+            </mat-form-field>
+          }
+          <mat-form-field appearance="outline">
+            <mat-label>Display name</mat-label>
+            <input matInput [(ngModel)]="draftName" />
+          </mat-form-field>
+        </div>
+
+        <h4 class="admin-section-title">Permissions</h4>
+        <app-permission-picker
+          [permissions]="allPermissions"
+          [selected]="draftPermissions"
+          (selectedChange)="onPermissionsChange($event)"
+        />
+      </app-admin-form-panel>
+    }
+  </div>
+</app-master-detail-layout>

@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from emcap import __version__
+from emcap.admin.security_service import load_abac_policies
 from emcap.api.routes import (
+    admin,
     ai,
     auth,
     config,
@@ -82,15 +84,16 @@ def create_app() -> FastAPI:
     dashboard_definitions = _collect_dashboards(modules)
 
     init_db()
-    seed_session = get_session_factory()()
+    session_factory = get_session_factory()
+    seed_session = session_factory()
     try:
         apply_configured_seeds(seed_session, platform_config)
         seed_default_auth(seed_session)
+        abac_policies = load_abac_policies(seed_session, platform_config)
     finally:
         seed_session.close()
 
     auth_registry = AuthProviderRegistry()
-    session_factory = get_session_factory()
     auth_registry.register(PasswordAuthProvider(session_factory))
     auth_registry.register(OAuthAuthProvider())
 
@@ -108,6 +111,7 @@ def create_app() -> FastAPI:
     app.state.workflow_definitions = workflow_definitions
     app.state.report_definitions = report_definitions
     app.state.dashboard_definitions = dashboard_definitions
+    app.state.abac_policies = abac_policies
 
     app.add_middleware(
         CORSMiddleware,
@@ -144,6 +148,7 @@ def create_app() -> FastAPI:
     app.include_router(observability.router, prefix="/api/v1")
     app.include_router(notes.router, prefix="/api/v1")
     app.include_router(sync.router, prefix="/api/v1")
+    app.include_router(admin.router, prefix="/api/v1")
 
     return app
 

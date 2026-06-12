@@ -1,0 +1,45 @@
+.permission-matrix {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+  }
+}
+
+.permission-matrix__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--emcap-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.permission-matrix__table {
+  width: 100%;
+  min-width: 640px;
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--emcap-border);
+    text-align: left;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f5f5f5;
+    z-index: 1;
+  }
+}
+
+.permission-matrix__cell {
+  text-align: center;
+  color: #1b5e20;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}

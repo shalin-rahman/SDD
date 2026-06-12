@@ -4,62 +4,64 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../../shared/services/i18n.service';
 
 @Component({
   selector: 'app-account',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <h2>Account</h2>
+    <h2>{{ i18n.t('platform.account.title') }}</h2>
     <p *ngIf="error" class="error">{{ error }}</p>
     <ng-container *ngIf="!error">
       <p>{{ healthLine }}</p>
-      <h3>Permissions ({{ permissions.length }})</h3>
+      <h3>{{ i18n.t('platform.account.permissions') }} ({{ permissions.length }})</h3>
       <ul>
         <li *ngFor="let perm of permissions.slice(0, 30)">{{ perm }}</li>
       </ul>
-      <h3>Roles ({{ roles.length }})</h3>
+      <h3>{{ i18n.t('platform.account.roles') }} ({{ roles.length }})</h3>
       <ul>
         <li *ngFor="let role of roles">{{ roleLabel(role) }}</li>
       </ul>
-      <h3>MFA</h3>
-      <button type="button" (click)="enrollMfa()">Enroll MFA</button>
-      <button type="button" (click)="verifyMfa()">Verify MFA</button>
-      <input [(ngModel)]="mfaCode" name="mfaCode" placeholder="TOTP code" />
+      <h3>{{ i18n.t('platform.account.mfa') }}</h3>
+      <button type="button" (click)="enrollMfa()">{{ i18n.t('platform.account.enrollMfa') }}</button>
+      <button type="button" (click)="verifyMfa()">{{ i18n.t('platform.account.verifyMfa') }}</button>
+      <input [(ngModel)]="mfaCode" name="mfaCode" [placeholder]="i18n.t('platform.account.totpCode')" />
       <p>{{ mfaSecret }}</p>
-      <p *ngIf="mfaVerified">MFA verified — token refreshed</p>
-      <h3>Integrations</h3>
+      <p *ngIf="mfaVerified">{{ i18n.t('platform.account.mfaVerified') }}</p>
+      <h3>{{ i18n.t('account.integrations.title') }}</h3>
+      <p class="settings-hint">{{ i18n.t('account.integrations.hint') }}</p>
       <input [(ngModel)]="dispatchUrl" name="dispatchUrl" />
       <textarea [(ngModel)]="dispatchPayload" name="dispatchPayload"></textarea>
-      <button type="button" (click)="dispatchRest()">REST dispatch</button>
+      <button type="button" (click)="dispatchRest()">{{ i18n.t('platform.account.restDispatch') }}</button>
       <input [(ngModel)]="kafkaTopic" name="kafkaTopic" />
-      <button type="button" (click)="publishKafka()">Kafka publish</button>
+      <button type="button" (click)="publishKafka()">{{ i18n.t('platform.account.kafkaPublish') }}</button>
       <input [(ngModel)]="soapEndpoint" name="soapEndpoint" />
       <input [(ngModel)]="soapAction" name="soapAction" />
-      <button type="button" (click)="invokeSoap()">SOAP invoke</button>
+      <button type="button" (click)="invokeSoap()">{{ i18n.t('platform.account.soapInvoke') }}</button>
       <input [(ngModel)]="sftpHost" name="sftpHost" />
       <input [(ngModel)]="sftpPath" name="sftpPath" />
-      <button type="button" (click)="uploadSftp()">SFTP upload</button>
-      <button type="button" (click)="graphqlHealth()">GraphQL health</button>
+      <button type="button" (click)="uploadSftp()">{{ i18n.t('platform.account.sftpUpload') }}</button>
+      <button type="button" (click)="graphqlHealth()">{{ i18n.t('platform.account.graphqlHealth') }}</button>
       <p>{{ graphqlResult }}</p>
-      <h3>Admin</h3>
+      <h3>{{ i18n.t('platform.account.admin') }}</h3>
       <p>{{ meLine }}</p>
       <input [(ngModel)]="roleUser" name="roleUser" />
       <input [(ngModel)]="roleCode" name="roleCode" />
-      <button type="button" (click)="assignRole()">Assign role</button>
+      <button type="button" (click)="assignRole()">{{ i18n.t('platform.account.assignRole') }}</button>
       <input [(ngModel)]="permCheck" name="permCheck" />
-      <button type="button" (click)="checkPermission()">Check permission</button>
+      <button type="button" (click)="checkPermission()">{{ i18n.t('platform.account.checkPermission') }}</button>
       <p>{{ permResult }}</p>
       <input [(ngModel)]="ruleExpr" name="ruleExpr" />
-      <button type="button" (click)="evaluateRule()">Evaluate rule</button>
+      <button type="button" (click)="evaluateRule()">{{ i18n.t('platform.account.evaluateRule') }}</button>
       <p>{{ ruleResult }}</p>
-      <button type="button" (click)="fetchMetrics()">Fetch metrics</button>
+      <button type="button" (click)="fetchMetrics()">{{ i18n.t('platform.account.fetchMetrics') }}</button>
       <pre>{{ metricsPreview }}</pre>
       <p>{{ entitiesLine }}</p>
       <button *ngIf="paymentsEnabled" type="button" (click)="createPayment()">
-        Create payment intent (demo)
+        {{ i18n.t('platform.account.createPayment') }}
       </button>
-      <p *ngIf="!paymentsEnabled">Payments disabled in platform config.</p>
+      <p *ngIf="!paymentsEnabled">{{ i18n.t('platform.account.paymentsDisabled') }}</p>
       <p>{{ paymentResult }}</p>
       <p>{{ paymentConfirmed }}</p>
     </ng-container>
@@ -68,6 +70,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
 export class AccountComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
   private readonly auth = inject(AuthService);
+  readonly i18n = inject(I18nService);
 
   error = '';
   healthLine = '';
@@ -111,19 +114,19 @@ export class AccountComponent implements OnInit {
         this.api.client.getRoles(),
         this.api.client.getPlatformConfig(),
       ]);
-      this.healthLine = `Multi-tenant: ${String(health.multi_tenant)} · White-label: ${String(tenants.white_label)}`;
+      this.healthLine = `${this.i18n.t('platform.account.multiTenant')}: ${String(health.multi_tenant)} · ${this.i18n.t('platform.account.whiteLabel')}: ${String(tenants.white_label)}`;
       this.permissions = permissionsPayload.permissions;
       this.roles = rolesPayload.roles;
       const modules = config.modules as Record<string, { enabled?: boolean }> | undefined;
       this.paymentsEnabled = modules?.payments?.enabled === true;
       void this.api.client.getMe().then((me) => {
-        this.meLine = `User: ${String(me.user_id ?? me)}`;
+        this.meLine = `${this.i18n.t('platform.account.user')}: ${String(me.user_id ?? me)}`;
       });
       void this.api.client.listEntities().then((r) => {
-        this.entitiesLine = `Entities: ${r.entities.join(', ')}`;
+        this.entitiesLine = `${this.i18n.t('platform.account.entities')}: ${r.entities.join(', ')}`;
       });
     } catch (err) {
-      this.error = err instanceof Error ? err.message : 'Failed to load account';
+      this.error = err instanceof Error ? err.message : this.i18n.t('platform.account.loadFailed');
     }
   }
 
@@ -133,7 +136,7 @@ export class AccountComponent implements OnInit {
 
   enrollMfa(): void {
     void this.api.client.enrollMfa().then((r) => {
-      this.mfaSecret = `Secret: ${r.secret}`;
+      this.mfaSecret = `${this.i18n.t('platform.account.mfaSecret')}: ${r.secret}`;
     });
   }
 
@@ -175,13 +178,13 @@ export class AccountComponent implements OnInit {
 
   checkPermission(): void {
     void this.api.client.checkAuth(this.permCheck).then((r) => {
-      this.permResult = `Allowed: ${String(r.allowed)}`;
+      this.permResult = `${this.i18n.t('platform.account.allowed')}: ${String(r.allowed)}`;
     });
   }
 
   evaluateRule(): void {
     void this.api.client.evaluateWorkflowRule(this.ruleExpr, { amount: 150 }).then((r) => {
-      this.ruleResult = `Rule result: ${String(r.result)}`;
+      this.ruleResult = `${this.i18n.t('platform.account.ruleResult')}: ${String(r.result)}`;
     });
   }
 
@@ -197,7 +200,7 @@ export class AccountComponent implements OnInit {
       const txnId = String(result.transaction_id ?? '');
       if (txnId) {
         void this.api.client.confirmPaymentIntent(txnId).then((confirmed) => {
-          this.paymentConfirmed = `Confirmed: ${JSON.stringify(confirmed)}`;
+          this.paymentConfirmed = `${this.i18n.t('platform.account.paymentConfirmed')}: ${JSON.stringify(confirmed)}`;
         });
       }
     });

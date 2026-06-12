@@ -5,7 +5,16 @@
     {
       "code": "admin",
       "name": "Administrator",
-      "permissions": ["*.*", "demo.access", "customer.*", "crm.access", "inventory.*"]
+      "permissions": [
+        "*.*",
+        "admin.*",
+        "admin.security.read",
+        "admin.security.write",
+        "demo.access",
+        "customer.*",
+        "crm.access",
+        "inventory.*"
+      ]
     },
     {
       "code": "viewer",

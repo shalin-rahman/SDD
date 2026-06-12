@@ -1,0 +1,54 @@
+---
+description: Mandatory documentation sync after any implementation — matrices, backlog, index, recipes, skills
+alwaysApply: true
+---
+
+# EMCAP — Documentation sync (mandatory)
+
+**Every implementation PR or task completion MUST update docs in the same change.**  
+Code without doc updates is **not Done**.
+
+Recipe: `docs/dev/recipes/sync-docs-after-change.md`
+
+## Minimum checklist (always)
+
+| # | Document | When |
+|---|----------|------|
+| 1 | `plan/03-task-backlog.md` | Task status changed |
+| 2 | Relevant matrix row | See matrix map below |
+| 3 | `docs/dev/codebase-index.md` | New paths, zones, tests, scripts |
+| 4 | `docs/dev/known-pitfalls.md` | New regression or fix worth remembering |
+| 5 | Matching recipe in `docs/dev/recipes/` | Steps or paths changed |
+| 6 | `.cursor/skills/` if agent guidance changed | New patterns, wrong paths removed |
+
+## Matrix map (use the right one)
+
+| Change type | Update |
+|-------------|--------|
+| Platform API / service wired | `spec/sdd/04-capability-matrix.md` |
+| CRUD / renderer / entity UX | `spec/sdd/05-end-user-matrix.md` |
+| Shell, admin UI, settings, themes, i18n | `spec/sdd/06-admin-product-ui-matrix.md` |
+| New FR / requirement coverage | `spec/sdd/03-traceability-matrix.md` + `01-requirements.md` if new ID |
+| Phase playbook scope | `plan/12-enterprise-product-ui.md` or phase playbook |
+| Major milestone | `spec/sdd/00-document-control.md` revision row |
+
+**Never** mark UX/admin Done using only matrix 04 or 05.
+
+## Web UI changes — also update
+
+- `clients/web/src/app/shared/README.md` — new or changed reusable component
+- `plan/12-phase12-dod-checklist.md` — if DoD gates change
+- `README.md` — if entry points or key docs change
+
+## Phase 12 UI — also update
+
+- `spec/sdd/06-admin-product-ui-matrix.md` (required)
+- Skill `emcap-enterprise-ui` — paths and shared component list
+- `docs/dev/recipes/enterprise-ui-shell.md` or `add-admin-api-and-ui.md`
+
+## Anti-patterns (block merge / Done)
+
+- Task marked Done; backlog still Pending
+- New component under `shared/`; `codebase-index.md` unchanged
+- Recipe still references deleted paths (e.g. flat `shell.component` nav)
+- Skills say "TBD" or stale task counts

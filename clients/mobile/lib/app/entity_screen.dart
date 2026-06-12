@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 
 import '../api/emcap_client.dart';
 import '../metadata_contract.dart';
+import '../services/i18n_service.dart';
+import '../widgets/detail_placeholder.dart';
+import '../widgets/master_detail_layout.dart';
 
 class EntityScreen extends StatefulWidget {
   const EntityScreen({super.key, required this.client, required this.entityCode, required this.title});
@@ -20,6 +23,8 @@ class _EntityScreenState extends State<EntityScreen> {
   final Map<String, TextEditingController> _controllers = {};
   final _noteController = TextEditingController();
   bool _creating = false;
+  bool _creatingNew = false;
+  bool _detailOpen = false;
   String? _createError;
   String? _selectedRecordId;
   List<Map<String, dynamic>> _selectedNotes = [];
@@ -42,11 +47,17 @@ class _EntityScreenState extends State<EntityScreen> {
   @override
   void initState() {
     super.initState();
+    EmcapLocale.locale.addListener(_onLocaleChanged);
     _future = _load();
+  }
+
+  void _onLocaleChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    EmcapLocale.locale.removeListener(_onLocaleChanged);
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -77,7 +88,7 @@ class _EntityScreenState extends State<EntityScreen> {
       final changes = await widget.client.syncChanges(widget.entityCode, syncVersion);
       changeCount = changes['count'] as int? ?? 0;
     }
-    _syncControllers(DynamicFormRenderer(form).fieldNames());
+    _syncControllers(DynamicFormRenderer(form, locale: EmcapLocale.locale.value.languageCode).fieldNames());
     if (grid.realtime && !_realtimeStarted) {
       _realtimeStarted = true;
       widget.client.subscribeRecordsStream(widget.entityCode, () {
@@ -127,7 +138,7 @@ class _EntityScreenState extends State<EntityScreen> {
     try {
       final draft = _collectDraft();
       final formJson = await widget.client.getFormMetadata(widget.entityCode);
-      final formRenderer = DynamicFormRenderer(FormMetadata.fromJson(formJson));
+      final formRenderer = DynamicFormRenderer(FormMetadata.fromJson(formJson), locale: EmcapLocale.locale.value.languageCode);
       for (final name in formRenderer.fieldNames()) {
         if (!formRenderer.isVisible(name, draft)) continue;
         final meta = fieldMetadata(formRenderer.metadata, name);
@@ -150,8 +161,16 @@ class _EntityScreenState extends State<EntityScreen> {
           );
         }
         _noteController.clear();
+        setState(() {
+          _selectedRecordId = '${created['id']}';
+          _detailOpen = true;
+        });
       }
       _clearControllers();
+      setState(() {
+        _creatingNew = false;
+        _editingId = null;
+      });
       await _reload();
     } catch (err) {
       if (!mounted) return;
@@ -211,17 +230,21 @@ class _EntityScreenState extends State<EntityScreen> {
     for (final entry in _controllers.entries) {
       entry.value.text = '${record[entry.key] ?? ''}';
     }
-    setState(() => _editingId = recordId);
+    setState(() {
+      _editingId = recordId;
+      _creatingNew = false;
+      _detailOpen = true;
+    });
   }
 
   Future<void> _deleteRecord(String recordId) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete record?'),
+        title: Text(EmcapLocale.t('record.deleteConfirm')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(EmcapLocale.t('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(EmcapLocale.t('common.delete'))),
         ],
       ),
     );
@@ -230,6 +253,7 @@ class _EntityScreenState extends State<EntityScreen> {
     setState(() {
       _selectedRecordId = null;
       _editingId = null;
+      _detailOpen = false;
     });
     await _reload();
   }
@@ -237,10 +261,13 @@ class _EntityScreenState extends State<EntityScreen> {
   Future<void> _selectRecord(String recordId) async {
     setState(() {
       _selectedRecordId = recordId;
+      _creatingNew = false;
+      _detailOpen = true;
       _loadingDetail = true;
       _selectedNotes = [];
       _selectedDocuments = [];
       _selectedAudit = [];
+      _editingId = null;
     });
     try {
       final notes = await widget.client.listNotes(widget.entityCode, recordId);
@@ -263,298 +290,369 @@ class _EntityScreenState extends State<EntityScreen> {
     }
   }
 
+  void _startCreate() {
+    setState(() {
+      _creatingNew = true;
+      _selectedRecordId = null;
+      _editingId = null;
+      _detailOpen = true;
+      _clearControllers();
+      _noteController.clear();
+    });
+  }
+
+  void _closeDetail() {
+    setState(() {
+      _detailOpen = false;
+      _creatingNew = false;
+      _editingId = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: FutureBuilder<_EntityViewModel>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Failed to load: ${snapshot.error}'));
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final model = snapshot.data!;
-          if (!model.form.isValid || !model.grid.isValid) {
-            return const Center(child: Text('Invalid metadata contract'));
-          }
-          final formRenderer = DynamicFormRenderer(model.form);
-          final gridRenderer = DynamicGridRenderer(model.grid);
-          final fieldNames = formRenderer.fieldNames();
-          final draft = _collectDraft();
-          final visibleFields = fieldNames.where((n) => formRenderer.isVisible(n, draft)).toList();
-          var working = gridRenderer.filterRecords(model.records, _filters);
-          working = gridRenderer.sortRecords(working, _sortField, _sortAsc);
-          final totalPages = (working.length / _pageSize).ceil().clamp(1, 9999);
-          final pageRecords = working.skip((_page - 1) * _pageSize).take(_pageSize).toList();
-          final groups = gridRenderer.groupRecords(pageRecords, _groupField);
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(labelText: 'Search'),
-                onSubmitted: (_) => _reload(),
-              ),
-              Row(
-                children: [
-                  TextButton(onPressed: _page > 1 ? () => setState(() => _page--) : null, child: const Text('Prev')),
-                  Text('Page $_page / $totalPages'),
-                  TextButton(
-                    onPressed: _page < totalPages ? () => setState(() => _page++) : null,
-                    child: const Text('Next'),
+    return FutureBuilder<_EntityViewModel>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Failed to load: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final model = snapshot.data!;
+        if (!model.form.isValid || !model.grid.isValid) {
+          return Center(child: Text(EmcapLocale.t('entity.invalidMetadata')));
+        }
+        final formRenderer = DynamicFormRenderer(model.form, locale: EmcapLocale.locale.value.languageCode);
+        final gridRenderer = DynamicGridRenderer(model.grid, locale: EmcapLocale.locale.value.languageCode);
+        final fieldNames = formRenderer.fieldNames();
+        final draft = _collectDraft();
+        final visibleFields = fieldNames.where((n) => formRenderer.isVisible(n, draft)).toList();
+        var working = gridRenderer.filterRecords(model.records, _filters);
+        working = gridRenderer.sortRecords(working, _sortField, _sortAsc);
+        final totalPages = (working.length / _pageSize).ceil().clamp(1, 9999);
+        final pageRecords = working.skip((_page - 1) * _pageSize).take(_pageSize).toList();
+        final groups = gridRenderer.groupRecords(pageRecords, _groupField);
+
+        final listPane = _buildListPane(
+          model: model,
+          gridRenderer: gridRenderer,
+          groups: groups,
+          totalPages: totalPages,
+          working: working,
+        );
+
+        final detailPane = (_selectedRecordId == null && !_creatingNew)
+            ? DetailPlaceholder(message: EmcapLocale.t('entity.selectPlaceholder'))
+            : _buildDetailPane(formRenderer: formRenderer, visibleFields: visibleFields);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                if (_detailOpen)
+                  TextButton.icon(
+                    onPressed: _closeDetail,
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Back'),
                   ),
-                ],
+                Expanded(
+                  child: Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+                ),
+                FilledButton(onPressed: _startCreate, child: Text(EmcapLocale.t('entity.new'))),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: MasterDetailLayout(
+                listPane: listPane,
+                detailPane: detailPane,
+                detailOpen: _detailOpen,
+                onBack: _closeDetail,
               ),
-              Text(
-                model.changeCount > 0
-                    ? 'Offline snapshot: ${model.syncVersion} · ${model.changeCount} change(s)'
-                    : 'Offline snapshot: ${model.syncVersion}',
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildListPane({
+    required _EntityViewModel model,
+    required DynamicGridRenderer gridRenderer,
+    required List<MapEntry<String, List<Map<String, dynamic>>>> groups,
+    required int totalPages,
+    required List<Map<String, dynamic>> working,
+  }) {
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(labelText: EmcapLocale.t('entity.search'), border: const OutlineInputBorder()),
+          onSubmitted: (_) => _reload(),
+        ),
+        Row(
+          children: [
+            TextButton(onPressed: _page > 1 ? () => setState(() => _page--) : null, child: Text(EmcapLocale.t('grid.prev'))),
+            Text('${EmcapLocale.t('grid.page')} $_page / $totalPages'),
+            TextButton(
+              onPressed: _page < totalPages ? () => setState(() => _page++) : null,
+              child: Text(EmcapLocale.t('grid.next')),
+            ),
+          ],
+        ),
+        Text(
+          model.changeCount > 0
+              ? '${EmcapLocale.t('grid.offlinePrefix')} · ${model.changeCount} ${EmcapLocale.t('grid.changes')} · ${EmcapLocale.t('grid.snapshot')} ${model.syncVersion}'
+              : '${EmcapLocale.t('grid.offlineStatus')}: ${model.syncVersion}',
+        ),
+        Wrap(
+          spacing: 8,
+          children: [
+            if (model.exportCsv)
+              TextButton(
+                onPressed: () => _copyExport(_exportText(gridRenderer, working), 'CSV'),
+                child: const Text('Export CSV'),
               ),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (model.exportCsv)
-                    TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), 'CSV'),
-                      child: const Text('Export CSV'),
+            if (model.exportExcel)
+              TextButton(
+                onPressed: () => _copyExport(_exportText(gridRenderer, working), 'Excel (CSV)'),
+                child: const Text('Export Excel'),
+              ),
+            if (model.exportPdf)
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('PDF preview'),
+                      content: SingleChildScrollView(child: Text(_exportText(gridRenderer, working))),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            _copyExport(_exportText(gridRenderer, working), 'PDF text');
+                            Navigator.pop(ctx);
+                          },
+                          child: const Text('Copy'),
+                        ),
+                      ],
                     ),
-                  if (model.exportExcel)
-                    TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), 'Excel (CSV)'),
-                      child: const Text('Export Excel'),
-                    ),
-                  if (model.exportPdf)
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('PDF preview'),
-                            content: SingleChildScrollView(
-                              child: Text(_exportText(gridRenderer, working)),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  _copyExport(_exportText(gridRenderer, working), 'PDF text');
-                                  Navigator.pop(ctx);
-                                },
-                                child: const Text('Copy'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      child: const Text('Export PDF'),
-                    ),
-                  if (model.grid.grouping)
+                  );
+                },
+                child: const Text('Export PDF'),
+              ),
+            if (model.grid.grouping)
+              TextButton(
+                onPressed: () => setState(() {
+                  _groupField = _groupField == null
+                      ? (gridRenderer.columnFields().isEmpty ? null : gridRenderer.columnFields().first)
+                      : null;
+                }),
+                child: Text(_groupField == null ? EmcapLocale.t('grid.group') : EmcapLocale.t('grid.ungroup')),
+              ),
+          ],
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: gridRenderer.columnFields().map((field) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Column(
+                  children: [
                     TextButton(
                       onPressed: () => setState(() {
-                        _groupField = _groupField == null
-                            ? (gridRenderer.columnFields().isEmpty ? null : gridRenderer.columnFields().first)
-                            : null;
+                        if (_sortField == field) {
+                          _sortAsc = !_sortAsc;
+                        } else {
+                          _sortField = field;
+                          _sortAsc = true;
+                        }
                       }),
-                      child: Text(_groupField == null ? 'Group' : 'Ungroup'),
+                      child: Text('Sort $field'),
                     ),
-                ],
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        decoration: InputDecoration(labelText: 'Filter $field', isDense: true),
+                        onChanged: (v) => setState(() {
+                          if (v.isEmpty) {
+                            _filters.remove(field);
+                          } else {
+                            _filters[field] = v;
+                          }
+                          _page = 1;
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        ...groups.expand((group) {
+          final widgets = <Widget>[];
+          if (_groupField != null && group.key.isNotEmpty) {
+            widgets.add(Text('$_groupField: ${group.key}', style: Theme.of(context).textTheme.titleSmall));
+          }
+          widgets.add(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: gridRenderer.columnFields().map((field) => DataColumn(label: Text(gridRenderer.columnLabel(field)))).toList(),
+                rows: group.value.map((record) {
+                  final recordId = '${record['id'] ?? ''}';
+                  return DataRow(
+                    selected: _selectedRecordId == recordId,
+                    onSelectChanged: recordId.isEmpty ? null : (_) => _selectRecord(recordId),
+                    cells: gridRenderer
+                        .columnFields()
+                        .map((field) => DataCell(Text('${record[field] ?? ''}')))
+                        .toList(),
+                  );
+                }).toList(),
               ),
-              const SizedBox(height: 8),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: gridRenderer.columnFields().map((field) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Column(
-                        children: [
-                          TextButton(
-                            onPressed: () => setState(() {
-                              if (_sortField == field) {
-                                _sortAsc = !_sortAsc;
-                              } else {
-                                _sortField = field;
-                                _sortAsc = true;
-                              }
-                            }),
-                            child: Text('Sort $field'),
-                          ),
-                          SizedBox(
-                            width: 100,
-                            child: TextField(
-                              decoration: InputDecoration(labelText: 'Filter $field', isDense: true),
-                              onChanged: (v) => setState(() {
-                                if (v.isEmpty) {
-                                  _filters.remove(field);
-                                } else {
-                                  _filters[field] = v;
-                                }
-                                _page = 1;
-                              }),
-                            ),
-                          ),
-                        ],
+            ),
+          );
+          return widgets;
+        }),
+      ],
+    );
+  }
+
+  Widget _buildDetailPane({
+    required DynamicFormRenderer formRenderer,
+    required List<String> visibleFields,
+  }) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (_selectedRecordId != null && !_creatingNew) ...[
+          Text('${EmcapLocale.t('entity.record')} $_selectedRecordId', style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            children: [
+              TextButton(onPressed: () => _startEdit(_selectedRecordId!), child: Text(EmcapLocale.t('entity.edit'))),
+              TextButton(onPressed: () => _deleteRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.delete'))),
+              if (widget.entityCode == 'PRODUCT')
+                TextButton(
+                  onPressed: () async {
+                    await widget.client.startWorkflow('STOCK_ADJUSTMENT', _selectedRecordId!);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(EmcapLocale.t('entity.workflowStarted'))));
+                  },
+                  child: Text(EmcapLocale.t('entity.startWorkflow')),
+                ),
+            ],
+          ),
+          if (_loadingDetail)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: LinearProgressIndicator(),
+            )
+          else ...[
+            Text('${EmcapLocale.t('record.notes')} (${_selectedNotes.length})'),
+            ..._selectedNotes.map(
+              (note) => ListTile(dense: true, title: Text('${note['body'] ?? ''}')),
+            ),
+            Text('${EmcapLocale.t('record.documents')} (${_selectedDocuments.length})'),
+            ..._selectedDocuments.map(
+              (doc) => ListTile(
+                dense: true,
+                title: Text('${doc['filename'] ?? doc['id'] ?? ''} v${doc['version'] ?? 1}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.visibility),
+                  onPressed: () async {
+                    final full = await widget.client.getDocument('${doc['id']}');
+                    if (!context.mounted) return;
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text('${full['filename']}'),
+                        content: Text('${full['ocr_text'] ?? full['virus_scan_status'] ?? ''}'),
                       ),
                     );
-                  }).toList(),
+                  },
                 ),
               ),
-              const SizedBox(height: 12),
-              ...groups.expand((group) {
-                final widgets = <Widget>[];
-                if (_groupField != null && group.key.isNotEmpty) {
-                  widgets.add(Text('$_groupField: ${group.key}', style: Theme.of(context).textTheme.titleSmall));
-                }
-                widgets.add(
-                  DataTable(
-                    columns: gridRenderer.columnFields().map((field) => DataColumn(label: Text(field))).toList(),
-                    rows: group.records.map((record) {
-                      final recordId = '${record['id'] ?? ''}';
-                      return DataRow(
-                        selected: _selectedRecordId == recordId,
-                        onSelectChanged: recordId.isEmpty ? null : (_) => _selectRecord(recordId),
-                        cells: gridRenderer
-                            .columnFields()
-                            .map((field) => DataCell(Text('${record[field] ?? ''}')))
-                            .toList(),
-                      );
-                    }).toList(),
-                  ),
+            ),
+            Text('${EmcapLocale.t('record.audit')} (${_selectedAudit.length})'),
+            ..._selectedAudit.map(
+              (entry) => ListTile(
+                dense: true,
+                title: Text('${entry['action']}'),
+                subtitle: Text('${entry['payload'] ?? ''}'),
+              ),
+            ),
+            TextField(
+              controller: _docFilename,
+              decoration: const InputDecoration(labelText: 'Document filename'),
+            ),
+            TextField(
+              controller: _docContent,
+              decoration: const InputDecoration(labelText: 'Document content'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await widget.client.uploadDocument(
+                  widget.entityCode,
+                  _selectedRecordId!,
+                  _docFilename.text,
+                  _docContent.text,
                 );
-                return widgets;
+                await _selectRecord(_selectedRecordId!);
+              },
+              child: const Text('Upload document'),
+            ),
+            const Divider(),
+          ],
+        ] else if (_creatingNew)
+          Text(EmcapLocale.t('entity.newRecord'), style: Theme.of(context).textTheme.titleMedium),
+        if (_creatingNew || _editingId != null) ...[
+          ...formRenderer.layoutRows(visibleFields).map(
+            (rowNames) => Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final name in rowNames)
+                  Expanded(
+                    flex: formRenderer.layoutSpan(name),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8, bottom: 8),
+                      child: _fieldInput(formRenderer, name),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (_creatingNew)
+            TextField(
+              controller: _noteController,
+              decoration: const InputDecoration(labelText: 'Note (optional)'),
+              maxLines: 2,
+            ),
+          if (_createError != null) ...[
+            Text(_createError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            const SizedBox(height: 8),
+          ],
+          if (_editingId != null)
+            TextButton(
+              onPressed: () => setState(() {
+                _editingId = null;
+                _clearControllers();
               }),
-              if (_selectedRecordId != null) ...[
-                const SizedBox(height: 8),
-                Text('Record $_selectedRecordId'),
-                Row(
-                  children: [
-                    TextButton(onPressed: () => _startEdit(_selectedRecordId!), child: const Text('Edit')),
-                    TextButton(onPressed: () => _deleteRecord(_selectedRecordId!), child: const Text('Delete')),
-                    if (widget.entityCode == 'PRODUCT')
-                      TextButton(
-                        onPressed: () async {
-                          await widget.client.startWorkflow('STOCK_ADJUSTMENT', _selectedRecordId!);
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Workflow started')));
-                        },
-                        child: const Text('Start workflow'),
-                      ),
-                  ],
-                ),
-                if (_loadingDetail)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator(),
-                  )
-                else ...[
-                  Text('Notes (${_selectedNotes.length})'),
-                  ..._selectedNotes.map(
-                    (note) => ListTile(
-                      dense: true,
-                      title: Text('${note['body'] ?? ''}'),
-                    ),
-                  ),
-                  Text('Documents (${_selectedDocuments.length})'),
-                  ..._selectedDocuments.map(
-                    (doc) => ListTile(
-                      dense: true,
-                      title: Text('${doc['filename'] ?? doc['id'] ?? ''} v${doc['version'] ?? 1}'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () async {
-                          final full = await widget.client.getDocument('${doc['id']}');
-                          if (!context.mounted) return;
-                          showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: Text('${full['filename']}'),
-                              content: Text('${full['ocr_text'] ?? full['virus_scan_status'] ?? ''}'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Text('Audit (${_selectedAudit.length})'),
-                  ..._selectedAudit.map(
-                    (entry) => ListTile(
-                      dense: true,
-                      title: Text('${entry['action']}'),
-                      subtitle: Text('${entry['payload'] ?? ''}'),
-                    ),
-                  ),
-                  TextField(
-                    controller: _docFilename,
-                    decoration: const InputDecoration(labelText: 'Document filename'),
-                  ),
-                  TextField(
-                    controller: _docContent,
-                    decoration: const InputDecoration(labelText: 'Document content'),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await widget.client.uploadDocument(
-                        widget.entityCode,
-                        _selectedRecordId!,
-                        _docFilename.text,
-                        _docContent.text,
-                      );
-                      await _selectRecord(_selectedRecordId!);
-                    },
-                    child: const Text('Upload document'),
-                  ),
-                ],
-              ],
-              const SizedBox(height: 12),
-              ...formRenderer.layoutRows(visibleFields).map(
-                (rowNames) => Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final name in rowNames)
-                      Expanded(
-                        flex: formRenderer.layoutSpan(name),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8, bottom: 8),
-                          child: _fieldInput(formRenderer, name),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (_editingId == null)
-                TextField(
-                  controller: _noteController,
-                  decoration: const InputDecoration(labelText: 'Note (optional)'),
-                  maxLines: 2,
-                ),
-              if (_createError != null) ...[
-                Text(_createError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                const SizedBox(height: 8),
-              ],
-              if (_editingId != null)
-                TextButton(
-                  onPressed: () => setState(() {
-                    _editingId = null;
-                    _clearControllers();
-                  }),
-                  child: const Text('Cancel edit'),
-                ),
-              ElevatedButton(
-                onPressed: _creating ? null : _saveRecord,
-                child: _creating
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_editingId == null ? 'Create record' : 'Save changes'),
-              ),
-            ],
-          );
-        },
-      ),
+              child: const Text('Cancel edit'),
+            ),
+          ElevatedButton(
+            onPressed: _creating ? null : _saveRecord,
+            child: _creating
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(_editingId != null || _creatingNew ? 'Save' : 'Create record'),
+          ),
+        ],
+      ],
     );
   }
 }

@@ -1,0 +1,7 @@
+.dynamic-form {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.5rem;
+  max-width: none;
+  margin-bottom: 1rem;
+}

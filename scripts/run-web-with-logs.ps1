@@ -6,11 +6,12 @@ param(
 )
 
 Set-Location $WebDir
-Write-Host "EMCAP Web — logging to $LogFile"
-Write-Host "URL: http://localhost:4200"
+Write-Host "EMCAP Web - http://localhost:4200"
+Write-Host "Logging to $LogFile"
 Write-Host ""
 
-npm start 2>&1 | Tee-Object -FilePath $LogFile
+# Run via cmd so npm stderr is not shown as PowerShell NativeCommandError.
+cmd /c "npm start 2>&1" | Tee-Object -FilePath $LogFile
 
 Write-Host ""
 Write-Host "Web process ended. Log saved to $LogFile"

@@ -18,6 +18,7 @@
 | 1.2 | 2026-06-11 | Platform team | Phase 8: end-user matrix, FR-008c, ADR-004; 131/131 backlog Done |
 | 1.3 | 2026-06-11 | Platform team | Phase 10: Angular CLI web client, ADR-005; `clients/web-legacy` archived |
 | 1.4 | 2026-06-12 | Platform team | Phase 11: run-emcap scripts, JSON seed, lint gates; pitfalls + 143-task backlog |
+| 1.5 | 2026-06-12 | Platform team | Phase 12A: Material shell, shared UI (`clients/web/src/app/shared/`), doc-sync rule; FR-008d |
 
 ## Related documents
 
@@ -28,7 +29,10 @@
 | Traceability matrix | `spec/sdd/03-traceability-matrix.md` |
 | Capability matrix | `spec/sdd/04-capability-matrix.md` |
 | End-user UX matrix | `spec/sdd/05-end-user-matrix.md` |
-| Implementation plan | `plan/02-implementation-plan.md` |
+| **Admin/product UX matrix** | `spec/sdd/06-admin-product-ui-matrix.md` |
+| Phase 12 playbook | `plan/12-enterprise-product-ui.md` |
+| **Doc sync recipe** | `docs/dev/recipes/sync-docs-after-change.md` |
+| Shared web UI | `clients/web/src/app/shared/README.md` |
 | Task backlog | `plan/03-task-backlog.md` |
 | Phase 7 playbook | `plan/06-sdd-gap-closure.md` |
 | Phase 8 playbook | `plan/07-phase8-end-user-product.md` |

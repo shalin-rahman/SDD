@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 
 class WorkflowInboxScreen extends StatefulWidget {
   const WorkflowInboxScreen({super.key, required this.client});
@@ -50,11 +51,14 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
       builder: (context) {
         final controller = TextEditingController(text: 'inventory-manager');
         return AlertDialog(
-          title: const Text('Delegate to'),
-          content: TextField(controller: controller, decoration: const InputDecoration(labelText: 'Assignee')),
+          title: Text(EmcapLocale.t('platform.workflow.delegatePrompt')),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.colAssignee')),
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-            TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('OK')),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text(EmcapLocale.t('common.cancel'))),
+            TextButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(EmcapLocale.t('common.save'))),
           ],
         );
       },
@@ -78,14 +82,26 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
     final busy = _busyId == instanceId;
     if (state == 'draft') {
       return [
-        TextButton(onPressed: busy ? null : () => _transition(instanceId, 'submit'), child: const Text('Submit')),
+        TextButton(
+          onPressed: busy ? null : () => _transition(instanceId, 'submit'),
+          child: Text(EmcapLocale.t('platform.workflow.submit')),
+        ),
       ];
     }
     if (state == 'submitted') {
       return [
-        TextButton(onPressed: busy ? null : () => _transition(instanceId, 'approve'), child: const Text('Approve')),
-        TextButton(onPressed: busy ? null : () => _transition(instanceId, 'reject'), child: const Text('Reject')),
-        TextButton(onPressed: busy ? null : () => _delegate(instanceId), child: const Text('Delegate')),
+        TextButton(
+          onPressed: busy ? null : () => _transition(instanceId, 'approve'),
+          child: Text(EmcapLocale.t('platform.workflow.approve')),
+        ),
+        TextButton(
+          onPressed: busy ? null : () => _transition(instanceId, 'reject'),
+          child: Text(EmcapLocale.t('platform.workflow.reject')),
+        ),
+        TextButton(
+          onPressed: busy ? null : () => _delegate(instanceId),
+          child: Text(EmcapLocale.t('platform.workflow.delegate')),
+        ),
       ];
     }
     return [];
@@ -95,14 +111,16 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workflow tasks'),
+        title: Text(EmcapLocale.t('platform.workflow.title')),
         actions: [IconButton(onPressed: _reload, icon: const Icon(Icons.refresh))],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Failed to load: ${snapshot.error}'));
+            return Center(
+              child: Text('${EmcapLocale.t('platform.common.failed')}: ${snapshot.error}'),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -112,7 +130,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              if (instances.isEmpty) const Text('No open workflow instances.'),
+              if (instances.isEmpty) Text(EmcapLocale.t('platform.workflow.noInstances')),
               ...instances.map((item) {
                 final id = '${item['id']}';
                 final state = '${item['current_state']}';
@@ -124,8 +142,10 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                       children: [
                         Text('${item['workflow_code']} · $state', style: Theme.of(context).textTheme.titleMedium),
                         Text('${item['entity_code']} / ${item['record_id']}'),
-                        if (item['assignee'] != null) Text('Assignee: ${item['assignee']}'),
-                        if (item['due_at'] != null) Text('Due: ${item['due_at']}'),
+                        if (item['assignee'] != null)
+                          Text('${EmcapLocale.t('platform.workflow.colAssignee')}: ${item['assignee']}'),
+                        if (item['due_at'] != null)
+                          Text('${EmcapLocale.t('platform.workflow.colDueAt')}: ${item['due_at']}'),
                         Wrap(spacing: 4, children: _actionsFor(state, id)),
                       ],
                     ),

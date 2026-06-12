@@ -3,24 +3,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../../shared/services/i18n.service';
 
 @Component({
   selector: 'app-assistant',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <h2>Assistant</h2>
-    <p *ngIf="!aiEnabled">AI disabled in platform config.</p>
+    <h2>{{ i18n.t('platform.assistant.title') }}</h2>
+    <p *ngIf="!aiEnabled">{{ i18n.t('platform.assistant.disabled') }}</p>
     <ng-container *ngIf="aiEnabled">
       <textarea [(ngModel)]="input" name="input"></textarea>
-      <button type="button" (click)="chat()">Chat</button>
-      <button type="button" (click)="summarize()">Summarize</button>
+      <button type="button" (click)="chat()">{{ i18n.t('platform.assistant.chat') }}</button>
+      <button type="button" (click)="summarize()">{{ i18n.t('platform.assistant.summarize') }}</button>
       <pre>{{ output }}</pre>
     </ng-container>
   `,
 })
 export class AssistantComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
+  readonly i18n = inject(I18nService);
 
   aiEnabled = false;
   input = 'Summarize inventory status';

@@ -15,14 +15,15 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 6 — Knowledge + client completion | 7 | 0 | 0 | 7 |
 | 7 — SDD gap closure (§2 Partial/No) | 16 | 0 | 0 | 16 |
 | 8 — End-user product depth (§9 UX) | 23 | 0 | 0 | 23 |
-| 11 — Local dev tooling (scripts, seed, lint) | 12 | 0 | 0 | 12 |
-| **Total** | **143** | **0** | **0** | **143** |
+| 11 — Local dev tooling (scripts, seed, lint) | 16 | 0 | 0 | 16 |
+| 12 — Enterprise product UI & admin | 33 | 18 | 7 | 58 |
+| **Total** | **180** | **18** | **7** | **205** |
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-12 · Phases 0–8 + 11 complete · **71 pytest** · Angular Karma CI · **4 flutter** · backend **~90%** (CI gate 80%)
+**Last updated:** 2026-06-12 · Phase 12B/C core landed · **Doc sync mandatory** (`emcap-doc-sync.mdc`)
 
-**Current focus:** Phase 11 complete — review diff; commit when ready.
+**Current focus:** Phase **13** Slice 1 (ABAC admin) done. Next: field override editor (P13-T10) or layout designer plan.
 
 ---
 
@@ -257,17 +258,106 @@ Playbook: `plan/07-phase8-end-user-product.md` · Matrix: `spec/sdd/05-end-user-
 | EMCAP-P11-T10 | `test_seed_loader.py` + pytest regression for seed purge | T02–T03 | Done |
 | EMCAP-P11-T11 | Docker compose mount `data/`; Dockerfile COPY data | T01 | Done |
 | EMCAP-P11-T12 | Docs, pitfalls Phase 11, recipe, skills, backlog sync | T01–T11 | Done |
+| EMCAP-P11-T13 | `--local` mode + `start-emcap-local.bat` (no Docker) | T04 | Done |
+| EMCAP-P11-T14 | `_find-docker`, `_ensure-python-dev`, `_sleep` helpers | T04–T06 | Done |
+| EMCAP-P11-T15 | `windows-local-dev.md` + skills sync | T12 | Done |
+| EMCAP-P11-T16 | IDE Flake8 / PowerShell curl / pipe pitfalls documented | T15 | Done |
 
-Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-local-stack.md`
+Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-local-stack.md` · **Windows:** `docs/dev/windows-local-dev.md`
+
+---
+
+## Phase 12 — Enterprise product UI & admin (planned)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P12A-T01 | Angular Material shell (sidenav, toolbar) | — | Done |
+| EMCAP-P12A-T02 | Module-grouped navigation | T01 | Done |
+| EMCAP-P12A-T03 | Filter menus by module enabled + permission | T02 | Done |
+| EMCAP-P12A-T04 | Master–detail entity page (responsive) | T01 | Done |
+| EMCAP-P12A-T05 | Responsive grid layout fixes | T04 | Done |
+| EMCAP-P12A-T06 | Theme service (light/dark + tenant primary) | T01 | Done |
+| EMCAP-P12A-T07 | i18n locale switcher + app catalogs | T01 | Done |
+| EMCAP-P12A-T08 | Shell tests + matrix 06 update | T01–T07 | Done |
+| EMCAP-P12A-T09 | Breadcrumbs + page title from menu metadata | T01 | Done |
+| EMCAP-P12A-T10 | Permission-filtered nav from `/auth/me` | T02 | Done |
+| EMCAP-P12A-T11 | Platform nav gated (workflow, reports, AI, payments) | T02 | Done |
+| EMCAP-P12A-T12 | Entity tabs: form, notes, docs, audit, workflow | T04 | Done |
+| EMCAP-P12A-T13 | Grid grouping UI + export toolbar | T05 | Done |
+| EMCAP-P12A-T14 | Offline/sync status badge | T05 | Done |
+| EMCAP-P12B-T01 | Admin users API (CRUD) | — | Done |
+| EMCAP-P12B-T02 | Admin roles API (CRUD + permissions) | T01 | Done |
+| EMCAP-P12B-T03 | Admin Users UI (master–detail) | T01, T03 | Done |
+| EMCAP-P12B-T04 | Admin Roles + permission picker UI | T02, T03 | Done |
+| EMCAP-P12B-T05 | Permission matrix view | T04 | Done |
+| EMCAP-P12B-T06 | Admin route guards + audit | T03–T05 | Done |
+| EMCAP-P12B-T07 | Seed admin permissions | T02 | Done |
+| EMCAP-P12B-T08 | Row/field security policy viewer | T05 | Done |
+| EMCAP-P12B-T09 | Auth provider settings UI | T02 | Partial |
+| EMCAP-P12C-T01 | Admin settings read/write API | — | Done |
+| EMCAP-P12C-T02 | Settings hub + module toggles UI | T01 | Partial |
+| EMCAP-P12C-T03 | Notification template model + API | — | Done |
+| EMCAP-P12C-T04 | Email template editor UI | T03 | Done |
+| EMCAP-P12C-T05 | Payment provider config UI | T02 | Done |
+| EMCAP-P12C-T06 | Audit log for settings changes | T01 | Done |
+| EMCAP-P12C-T07 | Tenant branding admin | T02 | Partial |
+| EMCAP-P12C-T08 | Workflow subsystem toggles UI | T02 | Done |
+| EMCAP-P12C-T09 | Rule engine toggles UI | T02 | Done |
+| EMCAP-P12C-T10 | Grid platform flags UI | T02 | Done |
+| EMCAP-P12C-T11 | Integration registry UI | T02 | Done |
+| EMCAP-P12C-T12 | Document platform settings UI | T02 | Pending |
+| EMCAP-P12C-T13 | AI module config UI | T02 | Done |
+| EMCAP-P12C-T14 | Audit subsystem config UI | T02 | Done |
+| EMCAP-P12C-T15 | Report schedule admin UI (read-only list + run) | T02 | Done |
+| EMCAP-P12C-T16 | SMS/push channel + template stub | T03 | Partial |
+| EMCAP-P12C-T17 | Tenant isolation strategy read-only | T02 | Done |
+| EMCAP-P12C-T18 | Observability links in settings | T02 | Done |
+| EMCAP-P12C-T19 | Security settings section | T02 | Partial |
+| EMCAP-P12D-T01 | Mobile module-grouped nav | P12A-T02 | Done |
+| EMCAP-P12D-T02 | Mobile master–detail entity | P12A-T04 | Done |
+| EMCAP-P12D-T03 | Mobile theme + locale | P12A-T06–T07 | Done |
+| EMCAP-P12D-T04 | Mobile admin users/roles + permission picker | P12B | Done |
+| EMCAP-P12D-T05 | Mobile settings hub (toggles, templates, audit) | P12C | Partial |
+| EMCAP-P12D-T06 | Web/mobile admin client parity | P12B–C | Done |
+| EMCAP-P12D-T07 | Flutter Material 3 shell | T01 | Done |
+| EMCAP-P12F-T01 | Mobile theme/locale persistence (`shared_preferences`) | 12F-WS1 | Done |
+| EMCAP-P12F-T10 | i18n JSON bundles EN/FR/BN + loader (web + mobile) | 12F-WS2 | Done |
+| EMCAP-P12F-T12 | Migrate shell/admin/settings/entity strings to i18n | 12F-WS2 | Done |
+| EMCAP-P12F-T13 | Migrate platform page strings (account, workflow, reports, …) | 12F-WS2 | Done |
+| EMCAP-P12F-T20 | Payment secrets API (masked GET, write-only rotate) | 12F-WS3 | Done |
+| EMCAP-P12F-T25 | Payment secrets settings UI (web + mobile) | 12F-WS3 | Done |
+| EMCAP-P12F-T30 | Integrations registry admin API | 12F-WS4 | Done |
+| EMCAP-P12F-T34 | Integrations registry settings UI (web + mobile) | 12F-WS4 | Done |
+| EMCAP-P12F-T40 | Row/field security policies API (read-only) | 12F-WS5 | Done |
+| EMCAP-P12F-T44 | Security policy viewer UI (web + mobile) | 12F-WS5 | Done |
+| EMCAP-P12F-T50 | Mobile rail module group headers | 12F-WS6 | Done |
+| EMCAP-P12E-T01 | Split 05 matrix wired vs product UI | All | Done |
+| EMCAP-P12E-T02 | Traceability FR-008d rows | All | Done |
+| EMCAP-P12E-T03 | Recipe + skills (enterprise UI) | T01 | Done |
+| EMCAP-P12E-T04 | Enforce DoD checklist on PRs | T01 | Done |
+| EMCAP-P12E-T05 | known-pitfalls Phase 12 section | T01 | Done |
+| EMCAP-P12E-T06 | Update emcap-sdd-workflow rule | T01 | Done |
+| EMCAP-P12E-T07 | FR-008d in requirements catalogue | — | Done |
+| EMCAP-P13-T01 | ABAC policies YAML + loader | — | Done |
+| EMCAP-P13-T02 | `GET/PUT /admin/security/abac` | T01 | Done |
+| EMCAP-P13-T03 | Wire `/auth/check` to runtime policies | T02 | Done |
+| EMCAP-P13-T04 | Web ABAC editor | T02 | Done |
+| EMCAP-P13-T05 | Mobile ABAC editor | T02 | Done |
+| EMCAP-P13-T06 | pytest + matrix rev. 7 | T02–T05 | Done |
+| EMCAP-P13-T10 | Field `read_roles` override API | T06 | Pending |
+| EMCAP-P13-T20 | Tenant isolation write (ops) | — | Pending |
+| EMCAP-P13-T30 | Layout designer ADR | — | Pending |
+
+Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterprise-admin-depth.md` · **12F:** `plan/12f-ui-polish-admin-depth.md` · DoD: `plan/12-phase12-dod-checklist.md` · Gap: `spec/sdd/06-admin-product-ui-matrix.md`
 
 ---
 
 ## Immediate Next Steps
 
-**Phase 11 complete (143/143).** Review diff; commit when ready.
+**Phase 12 in progress — 12G platform i18n + report schedules done; ABAC editor deferred to Phase 13.**
 
-1. `scripts\run-emcap.bat --stack-only` — confirm Docker + web + logs.
-2. Manual smoke: Inventory Products — search, edit, delete, export, start workflow.
-3. Production cutover: `docs/ops/production-readiness.md` sign-off when deploying.
+1. **Always** run `docs/dev/recipes/sync-docs-after-change.md` with code changes
+2. Next: **P12C-T12** (document settings UI), **P12B-T09** (auth provider UI), or **Phase 13** ABAC editor plan
+3. Reuse `clients/web/src/app/shared/` — see `shared/README.md`
 
 **Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`

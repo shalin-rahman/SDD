@@ -2,26 +2,27 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../../shared/services/i18n.service';
 
 @Component({
   selector: 'app-workflow',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <h2>Workflow tasks</h2>
-    <button type="button" (click)="escalate()">Escalate overdue</button>
+    <h2>{{ i18n.t('platform.workflow.title') }}</h2>
+    <button type="button" (click)="escalate()">{{ i18n.t('platform.workflow.escalate') }}</button>
     <p *ngIf="escalateMsg">{{ escalateMsg }}</p>
     <p *ngIf="error" class="error">{{ error }}</p>
-    <p *ngIf="!error && instances.length === 0">No open workflow instances.</p>
+    <p *ngIf="!error && instances.length === 0">{{ i18n.t('platform.workflow.noInstances') }}</p>
     <table *ngIf="instances.length > 0" class="grid-table">
       <tr>
-        <th>workflow</th>
-        <th>entity</th>
-        <th>record</th>
-        <th>state</th>
-        <th>assignee</th>
-        <th>due_at</th>
-        <th>actions</th>
+        <th>{{ i18n.t('platform.workflow.colWorkflow') }}</th>
+        <th>{{ i18n.t('platform.workflow.colEntity') }}</th>
+        <th>{{ i18n.t('platform.workflow.colRecord') }}</th>
+        <th>{{ i18n.t('platform.workflow.colState') }}</th>
+        <th>{{ i18n.t('platform.workflow.colAssignee') }}</th>
+        <th>{{ i18n.t('platform.workflow.colDueAt') }}</th>
+        <th>{{ i18n.t('platform.workflow.colActions') }}</th>
       </tr>
       <tr *ngFor="let instance of instances">
         <td>{{ instance.workflow_code }}</td>
@@ -31,14 +32,16 @@ import { EmcapApiService } from '../../services/emcap-api.service';
         <td>{{ instance.assignee }}</td>
         <td>{{ instance.due_at ?? instance.sla_hours }}</td>
         <td>
-          <button type="button" class="nav-link" (click)="showDetail(instance)">Detail</button>
+          <button type="button" class="nav-link" (click)="showDetail(instance)">
+            {{ i18n.t('platform.workflow.detail') }}
+          </button>
           <button
             *ngIf="instance.current_state === 'draft'"
             type="button"
             class="nav-link"
             (click)="transition(instance, 'submit')"
           >
-            Submit
+            {{ i18n.t('platform.workflow.submit') }}
           </button>
           <button
             *ngIf="instance.current_state === 'submitted'"
@@ -46,7 +49,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
             class="nav-link"
             (click)="transition(instance, 'approve')"
           >
-            Approve
+            {{ i18n.t('platform.workflow.approve') }}
           </button>
           <button
             *ngIf="instance.current_state === 'submitted'"
@@ -54,7 +57,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
             class="nav-link"
             (click)="transition(instance, 'reject')"
           >
-            Reject
+            {{ i18n.t('platform.workflow.reject') }}
           </button>
           <button
             *ngIf="instance.current_state === 'submitted'"
@@ -62,7 +65,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
             class="nav-link"
             (click)="delegate(instance)"
           >
-            Delegate
+            {{ i18n.t('platform.workflow.delegate') }}
           </button>
         </td>
       </tr>
@@ -71,6 +74,7 @@ import { EmcapApiService } from '../../services/emcap-api.service';
 })
 export class WorkflowComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
+  readonly i18n = inject(I18nService);
 
   instances: Record<string, unknown>[] = [];
   error = '';
@@ -93,14 +97,14 @@ export class WorkflowComponent implements OnInit {
         assignee: String(i.assignee ?? ''),
       }));
     } catch (err) {
-      this.error = err instanceof Error ? err.message : 'Failed to load tasks';
+      this.error = err instanceof Error ? err.message : this.i18n.t('platform.workflow.loadFailed');
       this.instances = [];
     }
   }
 
   async escalate(): Promise<void> {
     const r = await this.api.client.escalateWorkflows();
-    this.escalateMsg = `Escalated: ${String(r.escalated)}`;
+    this.escalateMsg = `${this.i18n.t('platform.workflow.escalated')}: ${String(r.escalated)}`;
   }
 
   showDetail(instance: Record<string, unknown>): void {
@@ -117,7 +121,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   async delegate(instance: Record<string, unknown>): Promise<void> {
-    const delegateTo = window.prompt('Delegate to', 'inventory-manager');
+    const delegateTo = window.prompt(this.i18n.t('platform.workflow.delegatePrompt'), 'inventory-manager');
     if (!delegateTo) return;
     const id = String(instance.id ?? '');
     await this.api.client.delegateWorkflow(id, delegateTo);

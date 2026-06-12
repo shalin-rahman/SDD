@@ -1,0 +1,77 @@
+<div class="data-grid">
+  <div class="data-grid__toolbar">
+    <input
+      [placeholder]="i18n.t('grid.search')"
+      [ngModel]="searchInput"
+      (ngModelChange)="searchInputChange.emit($event)"
+    />
+    <button type="button" (click)="prevPage.emit()" [disabled]="page <= 1">{{ i18n.t('grid.prev') }}</button>
+    <span>{{ pageLabel }}</span>
+    <button type="button" (click)="nextPage.emit()" [disabled]="page >= totalPages">{{ i18n.t('grid.next') }}</button>
+    <button type="button" (click)="toggleGroup.emit()">{{ groupBy ? i18n.t('grid.ungroup') : i18n.t('grid.group') }}</button>
+  </div>
+
+  @if (exportCsv || exportExcel || exportPdf) {
+    <div class="data-grid__export">
+      @if (exportCsv) {
+        <button type="button" (click)="exportCsvClick.emit()">{{ i18n.t('grid.exportCsv') }}</button>
+      }
+      @if (exportExcel) {
+        <button type="button" (click)="exportExcelClick.emit()">{{ i18n.t('grid.exportExcel') }}</button>
+      }
+      @if (exportPdf) {
+        <button type="button" (click)="exportPdfClick.emit()">{{ i18n.t('grid.exportPdf') }}</button>
+      }
+    </div>
+  }
+
+  @if (statusLine) {
+    <p class="data-grid__status">{{ statusLine }}</p>
+  }
+
+  <div class="data-grid__scroll">
+    <table class="data-grid__table">
+      <tr>
+        @for (field of columnFields; track field) {
+          <th
+            [style.cursor]="gridRenderer.isSortable(field) ? 'pointer' : 'default'"
+            (click)="sort.emit(field)"
+          >
+            {{ gridRenderer.columnLabel(field) }}
+          </th>
+        }
+      </tr>
+      <tr>
+        @for (field of columnFields; track field) {
+          <th>
+            @if (gridRenderer.isFilterable(field)) {
+              <input
+                [placeholder]="i18n.t('grid.filter')"
+                [ngModel]="filters[field]"
+                (ngModelChange)="filterChange.emit({ field, value: $event })"
+              />
+            }
+          </th>
+        }
+      </tr>
+      @for (group of displayGroups; track group.key) {
+        @if (groupBy && group.key) {
+          <tr>
+            <td [attr.colspan]="columnFields.length">{{ groupBy }}: {{ group.key }}</td>
+          </tr>
+        }
+        @for (record of group.records; track recordId(record)) {
+          <tr
+            [class.row-selected]="selectedRecordId === recordId(record)"
+            [style.cursor]="recordId(record) ? 'pointer' : 'default'"
+            (click)="recordSelect.emit(record)"
+          >
+            @for (field of columnFields; track field) {
+              <td>{{ record[field] }}</td>
+            }
+          </tr>
+        }
+      }
+    </table>
+  </div>
+</div>

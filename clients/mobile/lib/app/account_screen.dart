@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key, required this.client});
@@ -54,12 +55,14 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Account')),
+      appBar: AppBar(title: Text(EmcapLocale.t('platform.account.title'))),
       body: FutureBuilder<_AccountData>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Failed: ${snapshot.error}'));
+            return Center(
+              child: Text('${EmcapLocale.t('platform.common.failed')}: ${snapshot.error}'),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -68,12 +71,19 @@ class _AccountScreenState extends State<AccountScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Tenant mode: ${data.health['multi_tenant']} · ${data.health['tenant_strategy']}'),
-              if (data.tenants['white_label'] == true) const Text('White-label enabled'),
+              Text(
+                '${EmcapLocale.t('platform.account.tenantMode')}: ${data.health['multi_tenant']} · ${data.health['tenant_strategy']}',
+              ),
+              if (data.tenants['white_label'] == true)
+                Text(EmcapLocale.t('platform.account.whiteLabelEnabled')),
               const SizedBox(height: 12),
-              Text('MFA', style: Theme.of(context).textTheme.titleMedium),
-              if (_mfaSecret != null) Text('Secret: $_mfaSecret'),
-              TextField(controller: _mfaCode, decoration: const InputDecoration(labelText: 'TOTP code')),
+              Text(EmcapLocale.t('platform.account.mfa'), style: Theme.of(context).textTheme.titleMedium),
+              if (_mfaSecret != null)
+                Text('${EmcapLocale.t('platform.account.mfaSecret')}: $_mfaSecret'),
+              TextField(
+                controller: _mfaCode,
+                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.totpCode')),
+              ),
               Row(
                 children: [
                   TextButton(
@@ -81,7 +91,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       final result = await widget.client.enrollMfa();
                       setState(() => _mfaSecret = '${result['secret']}');
                     },
-                    child: const Text('Enroll'),
+                    child: Text(EmcapLocale.t('platform.account.enrollMfa')),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -92,25 +102,35 @@ class _AccountScreenState extends State<AccountScreen> {
                       );
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('MFA verified — token refreshed')),
+                        SnackBar(content: Text(EmcapLocale.t('platform.account.mfaVerified'))),
                       );
                     },
-                    child: const Text('Verify'),
+                    child: Text(EmcapLocale.t('platform.account.verifyMfa')),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Text('Permissions (${data.permissions.length})', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                '${EmcapLocale.t('platform.account.permissions')} (${data.permissions.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               ...data.permissions.take(20).map((p) => ListTile(dense: true, title: Text(p))),
               const SizedBox(height: 12),
-              Text('Roles (${data.roles.length})', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                '${EmcapLocale.t('platform.account.roles')} (${data.roles.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               ...data.roles.map((r) => ListTile(dense: true, title: Text('${r['code'] ?? r['name'] ?? r}'))),
               const SizedBox(height: 12),
-              const Text('Integrations', style: TextStyle(fontWeight: FontWeight.bold)),
-              TextField(controller: _dispatchUrl, decoration: const InputDecoration(labelText: 'REST URL')),
+              Text(EmcapLocale.t('account.integrations.title'), style: Theme.of(context).textTheme.titleMedium),
+              Text(EmcapLocale.t('account.integrations.hint'), style: Theme.of(context).textTheme.bodySmall),
+              TextField(
+                controller: _dispatchUrl,
+                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.restUrl')),
+              ),
               TextField(
                 controller: _dispatchPayload,
-                decoration: const InputDecoration(labelText: 'JSON payload'),
+                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.jsonPayload')),
                 maxLines: 2,
               ),
               ElevatedButton(
@@ -127,7 +147,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$err')));
                   }
                 },
-                child: const Text('REST dispatch'),
+                child: Text(EmcapLocale.t('platform.account.restDispatch')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -135,7 +155,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
                 },
-                child: const Text('Kafka publish'),
+                child: Text(EmcapLocale.t('platform.account.kafkaPublish')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -147,7 +167,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
                 },
-                child: const Text('SOAP invoke'),
+                child: Text(EmcapLocale.t('platform.account.soapInvoke')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -159,7 +179,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
                 },
-                child: const Text('SFTP upload'),
+                child: Text(EmcapLocale.t('platform.account.sftpUpload')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -167,14 +187,16 @@ class _AccountScreenState extends State<AccountScreen> {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
                 },
-                child: const Text('GraphQL health'),
+                child: Text(EmcapLocale.t('platform.account.graphqlHealth')),
               ),
-              const Text('Admin', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(EmcapLocale.t('platform.account.admin'), style: const TextStyle(fontWeight: FontWeight.bold)),
               FutureBuilder<Map<String, dynamic>>(
                 future: widget.client.getMe(),
                 builder: (context, meSnap) {
                   if (!meSnap.hasData) return const SizedBox.shrink();
-                  return Text('User: ${meSnap.data!['user_id'] ?? meSnap.data}');
+                  return Text(
+                    '${EmcapLocale.t('platform.account.user')}: ${meSnap.data!['user_id'] ?? meSnap.data}',
+                  );
                 },
               ),
               ElevatedButton(
@@ -182,10 +204,12 @@ class _AccountScreenState extends State<AccountScreen> {
                   final result = await widget.client.checkAuth('inventory.access');
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Allowed: ${result['allowed']}')),
+                    SnackBar(
+                      content: Text('${EmcapLocale.t('platform.account.allowed')}: ${result['allowed']}'),
+                    ),
                   );
                 },
-                child: const Text('Check inventory.access'),
+                child: Text(EmcapLocale.t('platform.account.checkInventory')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -195,7 +219,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     SnackBar(content: Text(text.length > 80 ? text.substring(0, 80) : text)),
                   );
                 },
-                child: const Text('Fetch metrics'),
+                child: Text(EmcapLocale.t('platform.account.fetchMetrics')),
               ),
               if (data.paymentsEnabled) ...[
                 const SizedBox(height: 12),
@@ -209,24 +233,23 @@ class _AccountScreenState extends State<AccountScreen> {
                       }
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Payment: $txnId confirmed')),
+                        SnackBar(content: Text('${EmcapLocale.t('platform.account.paymentConfirmed')}: $txnId')),
                       );
                     } catch (err) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$err')));
                     }
                   },
-                  child: const Text('Create payment intent (demo)'),
+                  child: Text(EmcapLocale.t('platform.account.createPayment')),
                 ),
               ] else
-                const Text('Payments disabled in platform config'),
+                Text(EmcapLocale.t('platform.account.paymentsDisabled')),
             ],
           );
         },
       ),
     );
   }
-
 }
 
 class _AccountData {

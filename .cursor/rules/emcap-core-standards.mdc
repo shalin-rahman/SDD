@@ -11,4 +11,5 @@ alwaysApply: true
 4. Map changes to SDD requirement IDs in `spec/sdd/03-traceability-matrix.md`.
 5. New optional subsystems must default to disabled unless SDD specifies otherwise.
 6. Before coding: read `docs/dev/codebase-index.md` and `docs/dev/known-pitfalls.md`.
-7. Follow recipes in `docs/dev/recipes/`; update `spec/sdd/03-traceability-matrix.md` after changes.
+7. Follow recipes in `docs/dev/recipes/`; update docs in the **same change** — `docs/dev/recipes/sync-docs-after-change.md` (`.cursor/rules/emcap-doc-sync.mdc`).
+8. Reusable web UI lives in `clients/web/src/app/shared/`; pages compose shared components.

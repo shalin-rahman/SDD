@@ -1,5 +1,5 @@
 ---
-description: SDD workflow — read index/pitfalls/recipes before coding; update traceability after
+description: SDD workflow — read index/pitfalls/recipes before coding; sync all docs after
 alwaysApply: true
 ---
 
@@ -10,22 +10,30 @@ alwaysApply: true
 1. Read `docs/dev/codebase-index.md` for file locations (avoid broad search).
 2. Read `docs/dev/known-pitfalls.md` for regressions to avoid.
 3. Follow the matching recipe in `docs/dev/recipes/`.
-4. Check `spec/sdd/04-capability-matrix.md` (platform services) and `spec/sdd/05-end-user-matrix.md` (UX depth).
+4. Check `spec/sdd/04-capability-matrix.md` (platform services), `05-end-user-matrix.md` (CRUD depth), and `06-admin-product-ui-matrix.md` (product/admin UX).
 5. If Phase 7 work: follow `plan/06-sdd-gap-closure.md` task card exactly.
 6. If Phase 8 work: follow `plan/07-phase8-end-user-product.md` task card exactly.
-7. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.
+7. If Phase 12 work: follow `plan/12-enterprise-product-ui.md` and `plan/12-phase12-dod-checklist.md` before marking Done.
+8. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.
 
 ## While coding
 
 - Business features → `modules/` only; never `platform/` core for module logic.
 - Presentation → `clients/web`, `clients/mobile` only.
+- **Reusable web UI** → `clients/web/src/app/shared/` (see `shared/README.md`); pages stay thin.
 - Generic platform APIs → `platform/api/src/emcap/`.
 - Feature flags → `config/platform.yaml`.
 
-## After coding
+## After coding (mandatory — see `emcap-doc-sync.mdc`)
 
 1. Run verify commands from the recipe.
-2. Update `spec/sdd/03-traceability-matrix.md` if new FR coverage.
-3. Update `spec/sdd/04-capability-matrix.md` and/or `spec/sdd/05-end-user-matrix.md` status.
-4. Update `plan/03-task-backlog.md` task status if applicable.
-5. Add pitfall entry + test if you fixed a recurring error.
+2. **Run doc sync recipe:** `docs/dev/recipes/sync-docs-after-change.md`
+3. Update `spec/sdd/03-traceability-matrix.md` if new FR coverage.
+4. Update the **correct** matrix: `04`, `05`, and/or **`06`** (admin/product UX).
+5. Update `plan/03-task-backlog.md` task status.
+6. Update `docs/dev/codebase-index.md` if paths/tests/scripts changed.
+7. Update `clients/web/src/app/shared/README.md` if shared components changed.
+8. Update matching recipe + `.cursor/skills/` if steps or paths changed.
+9. Add pitfall entry + test if you fixed a recurring error.
+
+**Task is not Done until documentation is updated in the same change.**

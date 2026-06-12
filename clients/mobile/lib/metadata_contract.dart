@@ -35,6 +35,7 @@ class GridMetadata {
     this.offline = true,
     this.realtime = true,
     this.grouping = false,
+    this.i18n,
   });
 
   final String schemaVersion;
@@ -44,6 +45,7 @@ class GridMetadata {
   final bool offline;
   final bool realtime;
   final bool grouping;
+  final Map<String, dynamic>? i18n;
 
   factory GridMetadata.fromJson(Map<String, dynamic> json) {
     return GridMetadata(
@@ -54,6 +56,7 @@ class GridMetadata {
       offline: json['offline'] as bool? ?? true,
       realtime: json['realtime'] as bool? ?? true,
       grouping: json['grouping'] as bool? ?? false,
+      i18n: json['i18n'] as Map<String, dynamic>?,
     );
   }
 
@@ -153,12 +156,26 @@ class DynamicFormRenderer {
 }
 
 class DynamicGridRenderer {
-  DynamicGridRenderer(this.metadata);
+  DynamicGridRenderer(this.metadata, {this.locale = 'en'});
 
   final GridMetadata metadata;
+  final String locale;
 
   List<String> columnFields() {
     return metadata.columns.map((column) => column['field'] as String).toList();
+  }
+
+  String columnLabel(String field) {
+    final localeMap = metadata.i18n?[locale];
+    if (localeMap is Map && localeMap[field] != null) {
+      return '${localeMap[field]}';
+    }
+    for (final column in metadata.columns) {
+      if (column['field'] == field) {
+        return '${column['label'] ?? field}';
+      }
+    }
+    return field;
   }
 
   List<Map<String, dynamic>> sortRecords(

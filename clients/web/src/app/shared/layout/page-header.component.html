@@ -1,0 +1,16 @@
+<header class="page-header">
+  <div class="page-header__main">
+    @if (showBack) {
+      <button type="button" class="page-header__back" (click)="back.emit()">← List</button>
+    }
+    <div>
+      <h2>{{ title }}</h2>
+      @if (subtitle) {
+        <p class="page-header__subtitle">{{ subtitle }}</p>
+      }
+    </div>
+  </div>
+  <div class="page-header__actions">
+    <ng-content />
+  </div>
+</header>

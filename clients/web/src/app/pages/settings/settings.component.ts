@@ -1,0 +1,413 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+
+import { EmcapApiService } from '../../services/emcap-api.service';
+import {
+  SettingsToggleGroupComponent,
+  type SettingsToggleItem,
+} from '../../shared/admin/settings-toggle-group.component';
+import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
+import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
+import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
+import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { ShellContextService } from '../../shared/services/shell-context.service';
+import { I18nService } from '../../shared/services/i18n.service';
+
+interface EmailTemplate {
+  id: string;
+  code: string;
+  channel: string;
+  subject: string;
+  body: string;
+}
+
+@Component({
+  selector: 'app-settings',
+  standalone: true,
+  imports: [
+    FormsModule,
+    MatExpansionModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    PageHeaderComponent,
+    SettingsToggleGroupComponent,
+    MasterDetailLayoutComponent,
+    AdminFormPanelComponent,
+    DetailPlaceholderComponent,
+  ],
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.scss',
+})
+export class SettingsComponent implements OnInit {
+  private readonly api = inject(EmcapApiService);
+  private readonly shellContext = inject(ShellContextService);
+  readonly i18n = inject(I18nService);
+
+  settings: Record<string, unknown> = {};
+  templates: EmailTemplate[] = [];
+  audit: Record<string, unknown>[] = [];
+  loadError = '';
+  status = '';
+  tenantStrategy = '';
+  multiTenant = false;
+
+  selectedTemplateId: string | null = null;
+  creatingTemplate = false;
+  templateCode = '';
+  templateChannel = 'email';
+  templateSubject = '';
+  templateBody = '';
+  tenantTheme = 'default';
+  tenantDomain = 'localhost';
+  paymentProvider = 'stripe';
+  paymentPublishableKey = '';
+  paymentSecretDraft = '';
+  paymentSecretConfigured = false;
+  readonly paymentProviders = ['stripe', 'paypal', 'manual'] as const;
+  integrations: Record<string, unknown> = {};
+  restBaseUrl = '';
+  kafkaBootstrap = '';
+  kafkaTopicPrefix = '';
+  soapEndpoint = '';
+  webhookSecretDraft = '';
+  webhookSecretConfigured = false;
+  integrationTestStatus = '';
+
+  ngOnInit(): void {
+    void this.reload();
+  }
+
+  get selectedTemplate(): EmailTemplate | null {
+    return this.templates.find((template) => template.id === this.selectedTemplateId) ?? null;
+  }
+
+  async reload(): Promise<void> {
+    this.loadError = '';
+    try {
+      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health] =
+        await Promise.all([
+        this.api.client.getAdminSettings(),
+        this.api.client.getAdminIntegrations(),
+        this.api.client.listAdminTemplates(),
+        this.api.client.getAdminAudit(),
+        this.api.client.getHealth(),
+      ]);
+      this.settings = settingsPayload.settings;
+      this.integrations = integrationsPayload.integrations;
+      this.templates = templatesPayload.templates as unknown as EmailTemplate[];
+      this.audit = auditPayload.audit;
+      this.tenantStrategy = health.tenant_strategy;
+      this.multiTenant = health.multi_tenant;
+      const tenants = this.settings['tenants'] as Record<string, Record<string, string>> | undefined;
+      this.tenantTheme = tenants?.default?.theme ?? 'default';
+      this.tenantDomain = tenants?.default?.domain ?? 'localhost';
+      this.syncPaymentFields();
+      this.syncIntegrationFields();
+    } catch (err) {
+      this.loadError = err instanceof Error ? err.message : 'Failed to load settings';
+    }
+  }
+
+  moduleItems(): SettingsToggleItem[] {
+    return [
+      { key: 'workflow', label: 'Workflow module', checked: this.flag('modules', 'workflow', 'enabled') },
+      { key: 'payments', label: 'Payments module', checked: this.flag('modules', 'payments', 'enabled') },
+      {
+        key: 'notifications',
+        label: 'Notifications module',
+        checked: this.flag('modules', 'notifications', 'enabled'),
+      },
+      { key: 'ai', label: 'AI module', checked: this.flag('modules', 'ai', 'enabled') },
+    ];
+  }
+
+  authItems(): SettingsToggleItem[] {
+    return [
+      {
+        key: 'username_password',
+        label: 'Username / password login',
+        checked: this.bool('authentication', 'username_password'),
+      },
+      { key: 'oauth', label: 'OAuth', checked: this.bool('authentication', 'oauth') },
+      { key: 'ldap', label: 'LDAP', checked: this.bool('authentication', 'ldap') },
+      { key: 'sso', label: 'SSO', checked: this.bool('authentication', 'sso') },
+    ];
+  }
+
+  notificationItems(): SettingsToggleItem[] {
+    return [
+      { key: 'email', label: 'Email channel', checked: this.bool('notifications', 'email') },
+      { key: 'sms', label: 'SMS channel', checked: this.bool('notifications', 'sms') },
+      { key: 'push', label: 'Push channel', checked: this.bool('notifications', 'push') },
+      { key: 'whatsapp', label: 'WhatsApp channel', checked: this.bool('notifications', 'whatsapp') },
+    ];
+  }
+
+  gridItems(): SettingsToggleItem[] {
+    return [
+      { key: 'export_csv', label: 'CSV export', checked: this.bool('grid', 'export_csv') },
+      { key: 'export_excel', label: 'Excel export', checked: this.bool('grid', 'export_excel') },
+      { key: 'export_pdf', label: 'PDF export', checked: this.bool('grid', 'export_pdf') },
+      { key: 'grouping', label: 'Row grouping', checked: this.bool('grid', 'grouping') },
+      { key: 'realtime', label: 'Realtime refresh', checked: this.bool('grid', 'realtime') },
+      { key: 'offline', label: 'Offline sync', checked: this.bool('grid', 'offline') },
+    ];
+  }
+
+  workflowItems(): SettingsToggleItem[] {
+    return [
+      { key: 'enabled', label: 'Workflow engine', checked: this.bool('workflow', 'enabled') },
+      { key: 'escalation', label: 'Escalation', checked: this.bool('workflow', 'escalation') },
+      { key: 'delegation', label: 'Delegation', checked: this.bool('workflow', 'delegation') },
+      { key: 'sla_tracking', label: 'SLA tracking', checked: this.bool('workflow', 'sla_tracking') },
+    ];
+  }
+
+  rulesItems(): SettingsToggleItem[] {
+    return [
+      { key: 'formula_enabled', label: 'Formula rules', checked: this.bool('rules', 'formula_enabled') },
+      { key: 'scripting_enabled', label: 'Scripting rules', checked: this.bool('rules', 'scripting_enabled') },
+    ];
+  }
+
+  paymentItems(): SettingsToggleItem[] {
+    return [{ key: 'enabled', label: 'Payments enabled', checked: this.bool('payments', 'enabled') }];
+  }
+
+  paymentsModuleEnabled(): boolean {
+    return this.flag('modules', 'payments', 'enabled');
+  }
+
+  paymentCredentialsEnabled(): boolean {
+    return this.paymentsModuleEnabled() && this.bool('payments', 'enabled');
+  }
+
+  aiItems(): SettingsToggleItem[] {
+    return [{ key: 'enabled', label: 'AI assistant enabled', checked: this.bool('ai', 'enabled') }];
+  }
+
+  auditItems(): SettingsToggleItem[] {
+    return [
+      { key: 'enabled', label: 'Audit logging', checked: this.bool('audit', 'enabled') },
+      { key: 'immutable', label: 'Immutable audit trail', checked: this.bool('audit', 'immutable') },
+    ];
+  }
+
+  onModuleChange(event: { key: string; checked: boolean }): void {
+    this.setFlag('modules', event.key, 'enabled', event.checked);
+  }
+
+  onAuthChange(event: { key: string; checked: boolean }): void {
+    this.setBool('authentication', event.key, event.checked);
+  }
+
+  onNotificationChange(event: { key: string; checked: boolean }): void {
+    this.setBool('notifications', event.key, event.checked);
+  }
+
+  onGridChange(event: { key: string; checked: boolean }): void {
+    this.setBool('grid', event.key, event.checked);
+  }
+
+  onWorkflowChange(event: { key: string; checked: boolean }): void {
+    this.setBool('workflow', event.key, event.checked);
+  }
+
+  onRulesChange(event: { key: string; checked: boolean }): void {
+    this.setBool('rules', event.key, event.checked);
+  }
+
+  onPaymentChange(event: { key: string; checked: boolean }): void {
+    this.setBool('payments', event.key, event.checked);
+  }
+
+  onAiChange(event: { key: string; checked: boolean }): void {
+    this.setBool('ai', event.key, event.checked);
+  }
+
+  onAuditChange(event: { key: string; checked: boolean }): void {
+    this.setBool('audit', event.key, event.checked);
+  }
+
+  selectTemplate(template: EmailTemplate): void {
+    this.creatingTemplate = false;
+    this.selectedTemplateId = template.id;
+    this.templateCode = template.code;
+    this.templateChannel = template.channel;
+    this.templateSubject = template.subject;
+    this.templateBody = template.body;
+  }
+
+  startCreateTemplate(): void {
+    this.creatingTemplate = true;
+    this.selectedTemplateId = null;
+    this.templateCode = '';
+    this.templateChannel = 'email';
+    this.templateSubject = '';
+    this.templateBody = '';
+  }
+
+  applyBranding(): void {
+    const tenants = (this.settings['tenants'] as Record<string, Record<string, string>>) ?? {};
+    tenants.default = { ...(tenants.default ?? {}), theme: this.tenantTheme, domain: this.tenantDomain };
+    this.settings = { ...this.settings, tenants };
+  }
+
+  applyPaymentCredentials(): void {
+    const payments = (this.settings['payments'] as Record<string, unknown>) ?? {};
+    const stripe = (payments['stripe'] as Record<string, unknown>) ?? {};
+    payments['provider'] = this.paymentProvider;
+    stripe['publishable_key'] = this.paymentPublishableKey;
+    if (this.paymentSecretDraft.trim()) {
+      stripe['secret_key'] = this.paymentSecretDraft.trim();
+    } else {
+      delete stripe['secret_key'];
+    }
+    payments['stripe'] = stripe;
+    this.settings = { ...this.settings, payments };
+  }
+
+  private syncIntegrationFields(): void {
+    const rest = this.integrations['rest'] as Record<string, unknown> | undefined;
+    const kafka = this.integrations['kafka'] as Record<string, unknown> | undefined;
+    const soap = this.integrations['soap'] as Record<string, unknown> | undefined;
+    const webhook = this.integrations['webhook'] as Record<string, unknown> | undefined;
+    this.restBaseUrl = (rest?.['base_url'] as string) ?? '';
+    this.kafkaBootstrap = (kafka?.['bootstrap'] as string) ?? '';
+    this.kafkaTopicPrefix = (kafka?.['topic_prefix'] as string) ?? '';
+    this.soapEndpoint = (soap?.['endpoint'] as string) ?? '';
+    const secretView = webhook?.['signing_secret'] as { configured?: boolean } | string | undefined;
+    this.webhookSecretConfigured =
+      typeof secretView === 'object' && secretView !== null && secretView.configured === true;
+    this.webhookSecretDraft = '';
+    this.integrationTestStatus = '';
+  }
+
+  applyIntegrationFields(): void {
+    const rest = (this.integrations['rest'] as Record<string, unknown>) ?? {};
+    const kafka = (this.integrations['kafka'] as Record<string, unknown>) ?? {};
+    const soap = (this.integrations['soap'] as Record<string, unknown>) ?? {};
+    const webhook = (this.integrations['webhook'] as Record<string, unknown>) ?? {};
+    rest['base_url'] = this.restBaseUrl;
+    kafka['bootstrap'] = this.kafkaBootstrap;
+    kafka['topic_prefix'] = this.kafkaTopicPrefix;
+    soap['endpoint'] = this.soapEndpoint;
+    if (this.webhookSecretDraft.trim()) {
+      webhook['signing_secret'] = this.webhookSecretDraft.trim();
+    } else {
+      delete webhook['signing_secret'];
+    }
+    this.integrations = {
+      ...this.integrations,
+      rest,
+      kafka,
+      soap,
+      webhook,
+    };
+  }
+
+  async testRestIntegration(): Promise<void> {
+    this.integrationTestStatus = '';
+    try {
+      const result = await this.api.client.testAdminRestIntegration();
+      this.integrationTestStatus = `${this.i18n.t('settings.integrations.testOk')} (${result['job_id']})`;
+    } catch (err) {
+      this.integrationTestStatus =
+        err instanceof Error ? err.message : this.i18n.t('settings.integrations.testFailed');
+    }
+  }
+
+  private syncPaymentFields(): void {
+    const payments = this.settings['payments'] as Record<string, unknown> | undefined;
+    this.paymentProvider = (payments?.['provider'] as string) ?? 'stripe';
+    const stripe = payments?.['stripe'] as Record<string, unknown> | undefined;
+    this.paymentPublishableKey = (stripe?.['publishable_key'] as string) ?? '';
+    const secretView = stripe?.['secret_key'] as { configured?: boolean } | string | undefined;
+    this.paymentSecretConfigured =
+      typeof secretView === 'object' && secretView !== null && secretView.configured === true;
+    this.paymentSecretDraft = '';
+  }
+
+  async saveSettings(): Promise<void> {
+    this.applyBranding();
+    this.applyPaymentCredentials();
+    this.applyIntegrationFields();
+    this.status = '';
+    try {
+      const [settingsPayload, integrationsPayload] = await Promise.all([
+        this.api.client.updateAdminSettings(this.settings),
+        this.api.client.updateAdminIntegrations(this.integrations),
+      ]);
+      this.settings = settingsPayload.settings;
+      this.integrations = integrationsPayload.integrations;
+      this.syncPaymentFields();
+      this.syncIntegrationFields();
+      this.status = this.i18n.t('settings.saved');
+      await this.shellContext.load();
+    } catch (err) {
+      this.loadError = err instanceof Error ? err.message : 'Save failed';
+    }
+  }
+
+  async saveTemplate(): Promise<void> {
+    try {
+      if (this.selectedTemplate) {
+        await this.api.client.updateAdminTemplate(this.selectedTemplate.id, {
+          channel: this.templateChannel,
+          subject: this.templateSubject,
+          body: this.templateBody,
+        });
+      } else {
+        await this.api.client.createAdminTemplate({
+          code: this.templateCode,
+          channel: this.templateChannel,
+          subject: this.templateSubject,
+          body: this.templateBody,
+        });
+      }
+      await this.reload();
+      this.startCreateTemplate();
+    } catch (err) {
+      this.loadError = err instanceof Error ? err.message : 'Template save failed';
+    }
+  }
+
+  async deleteTemplate(): Promise<void> {
+    if (!this.selectedTemplate) {
+      return;
+    }
+    await this.api.client.deleteAdminTemplate(this.selectedTemplate.id);
+    await this.reload();
+    this.startCreateTemplate();
+  }
+
+  private bool(section: string, key: string): boolean {
+    const value = this.settings[section] as Record<string, boolean> | undefined;
+    return value?.[key] === true;
+  }
+
+  private flag(section: string, key: string, field: string): boolean {
+    const value = this.settings[section] as Record<string, Record<string, boolean>> | undefined;
+    return value?.[key]?.[field] === true;
+  }
+
+  private setBool(section: string, key: string, checked: boolean): void {
+    const current = (this.settings[section] as Record<string, boolean>) ?? {};
+    this.settings = { ...this.settings, [section]: { ...current, [key]: checked } };
+  }
+
+  private setFlag(section: string, key: string, field: string, checked: boolean): void {
+    const current = (this.settings[section] as Record<string, Record<string, boolean>>) ?? {};
+    this.settings = {
+      ...this.settings,
+      [section]: { ...current, [key]: { ...(current[key] ?? {}), [field]: checked } },
+    };
+  }
+}

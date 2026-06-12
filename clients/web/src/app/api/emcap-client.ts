@@ -15,6 +15,61 @@ export interface MenuItem {
   label: string;
   entity_code: string;
   module: string;
+  permission?: string;
+}
+
+export interface MaskedSecretView {
+  masked: string;
+  configured: boolean;
+}
+
+export interface AdminSettingsResponse {
+  settings: Record<string, unknown>;
+  editable_paths: string[];
+  write_only_paths?: string[];
+}
+
+export interface AdminIntegrationsResponse {
+  integrations: Record<string, unknown>;
+  editable_paths: string[];
+  write_only_paths?: string[];
+}
+
+export interface SecurityPolicyField {
+  name: string;
+  read_roles: string[];
+  access: string;
+}
+
+export interface SecurityPolicyEntity {
+  code: string;
+  read_permission: string;
+  row_access: string;
+  fields: SecurityPolicyField[];
+}
+
+export interface AdminSecurityPoliciesResponse {
+  entities: SecurityPolicyEntity[];
+  rules: Record<string, string>;
+}
+
+export interface AbacPolicyRow {
+  permission: string;
+  effect: string;
+  attribute: string;
+  operator: string;
+  value: string;
+}
+
+export interface AdminAbacPoliciesResponse {
+  policies: AbacPolicyRow[];
+}
+
+export interface ReportSummary {
+  code: string;
+  name: string;
+  entity_code: string;
+  schedule_cron: string | null;
 }
 
 export class EmcapClient {
@@ -391,7 +446,144 @@ export class EmcapClient {
     return this.request(`/api/v1/payments/intents/${transactionId}/confirm`, { method: 'POST' });
   }
 
-  listReports(): Promise<{ reports: string[] }> {
+  listAdminUsers(): Promise<{ users: Record<string, unknown>[] }> {
+    return this.request('/api/v1/admin/users');
+  }
+
+  getAdminUser(userId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/admin/users/${userId}`);
+  }
+
+  createAdminUser(payload: {
+    username: string;
+    password: string;
+    tenant_id?: string;
+    role_codes?: string[];
+    attributes?: Record<string, unknown>;
+  }): Promise<Record<string, unknown>> {
+    return this.request('/api/v1/admin/users', { method: 'POST', body: JSON.stringify(payload) });
+  }
+
+  updateAdminUser(
+    userId: string,
+    payload: {
+      tenant_id?: string;
+      active?: boolean;
+      attributes?: Record<string, unknown>;
+      role_codes?: string[];
+      password?: string;
+    },
+  ): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/admin/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  deactivateAdminUser(userId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/admin/users/${userId}/deactivate`, { method: 'PATCH' });
+  }
+
+  listAdminRoles(): Promise<{ roles: Record<string, unknown>[] }> {
+    return this.request('/api/v1/admin/roles');
+  }
+
+  createAdminRole(payload: {
+    code: string;
+    name: string;
+    permissions: string[];
+  }): Promise<Record<string, unknown>> {
+    return this.request('/api/v1/admin/roles', { method: 'POST', body: JSON.stringify(payload) });
+  }
+
+  updateAdminRole(
+    roleId: string,
+    payload: { name?: string; permissions?: string[] },
+  ): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/admin/roles/${roleId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  getAdminSettings(): Promise<AdminSettingsResponse> {
+    return this.request('/api/v1/admin/settings');
+  }
+
+  updateAdminSettings(settings: Record<string, unknown>): Promise<AdminSettingsResponse> {
+    return this.request('/api/v1/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ settings }),
+    });
+  }
+
+  getAdminIntegrations(): Promise<AdminIntegrationsResponse> {
+    return this.request('/api/v1/admin/integrations');
+  }
+
+  updateAdminIntegrations(
+    integrations: Record<string, unknown>,
+  ): Promise<AdminIntegrationsResponse> {
+    return this.request('/api/v1/admin/integrations', {
+      method: 'PUT',
+      body: JSON.stringify({ integrations }),
+    });
+  }
+
+  testAdminRestIntegration(): Promise<Record<string, unknown>> {
+    return this.request('/api/v1/admin/integrations/test-rest', { method: 'POST' });
+  }
+
+  getAdminSecurityPolicies(): Promise<AdminSecurityPoliciesResponse> {
+    return this.request('/api/v1/admin/security/policies');
+  }
+
+  getAdminAbacPolicies(): Promise<AdminAbacPoliciesResponse> {
+    return this.request('/api/v1/admin/security/abac');
+  }
+
+  updateAdminAbacPolicies(policies: AbacPolicyRow[]): Promise<AdminAbacPoliciesResponse> {
+    return this.request('/api/v1/admin/security/abac', {
+      method: 'PUT',
+      body: JSON.stringify({ policies }),
+    });
+  }
+
+  listAdminTemplates(): Promise<{ templates: Record<string, unknown>[] }> {
+    return this.request('/api/v1/admin/templates');
+  }
+
+  createAdminTemplate(payload: {
+    code: string;
+    channel?: string;
+    subject?: string;
+    body?: string;
+  }): Promise<Record<string, unknown>> {
+    return this.request('/api/v1/admin/templates', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  updateAdminTemplate(
+    templateId: string,
+    payload: { channel?: string; subject?: string; body?: string },
+  ): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/admin/templates/${templateId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  deleteAdminTemplate(templateId: string): Promise<void> {
+    return this.request(`/api/v1/admin/templates/${templateId}`, { method: 'DELETE' });
+  }
+
+  getAdminAudit(): Promise<{ audit: Record<string, unknown>[] }> {
+    return this.request('/api/v1/admin/audit');
+  }
+
+  listReports(): Promise<{ reports: ReportSummary[] }> {
     return this.request('/api/v1/reports');
   }
 

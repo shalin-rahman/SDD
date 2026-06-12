@@ -1,0 +1,6 @@
+<div class="admin-list-toolbar">
+  @if (showNew) {
+    <button mat-flat-button color="primary" type="button" (click)="create.emit()">{{ newLabel }}</button>
+  }
+  <ng-content />
+</div>

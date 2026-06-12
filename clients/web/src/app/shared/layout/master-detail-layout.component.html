@@ -1,0 +1,8 @@
+<div class="master-detail" [class.master-detail--detail-open]="detailOpen">
+  <section class="master-detail__list">
+    <ng-content select="[listPane]" />
+  </section>
+  <section class="master-detail__detail">
+    <ng-content select="[detailPane]" />
+  </section>
+</div>

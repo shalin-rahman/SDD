@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 
 class AssistantScreen extends StatefulWidget {
   const AssistantScreen({super.key, required this.client, required this.enabled});
@@ -26,7 +27,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Assistant')),
+      appBar: AppBar(title: Text(EmcapLocale.t('platform.assistant.title'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: widget.enabled
@@ -35,7 +36,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                 children: [
                   TextField(
                     controller: _message,
-                    decoration: const InputDecoration(labelText: 'Message'),
+                    decoration: InputDecoration(labelText: EmcapLocale.t('platform.assistant.message')),
                     maxLines: 3,
                   ),
                   if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -55,7 +56,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                               setState(() => _error = err.toString());
                             }
                           },
-                          child: const Text('Chat'),
+                          child: Text(EmcapLocale.t('platform.assistant.chat')),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -73,7 +74,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                               setState(() => _error = err.toString());
                             }
                           },
-                          child: const Text('Summarize'),
+                          child: Text(EmcapLocale.t('platform.assistant.summarize')),
                         ),
                       ),
                     ],
@@ -81,7 +82,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                   if (_response != null) Expanded(child: SingleChildScrollView(child: Text(_response!))),
                 ],
               )
-            : const Center(child: Text('AI disabled in platform config.')),
+            : Center(child: Text(EmcapLocale.t('platform.assistant.disabled'))),
       ),
     );
   }

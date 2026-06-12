@@ -4,7 +4,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 **Legend:** Done · Partial · Stub (API/route only) · No · N/A
 
-**Last updated:** 2026-06-11 · **100% complete** (Phase 9 SDD closure). **End-user UX:** `spec/sdd/05-end-user-matrix.md`.
+**Last updated:** 2026-06-12 · **Platform services wired** (Phase 9). **Product/admin UI gaps:** `spec/sdd/06-admin-product-ui-matrix.md`. **End-user CRUD:** `spec/sdd/05-end-user-matrix.md`.
 
 ---
 

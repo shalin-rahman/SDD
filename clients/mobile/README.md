@@ -1,35 +1,34 @@
 # Flutter mobile client
 
-Metadata-driven UI shell aligned with **SDD §9**. Parity with the web client for end-user flows (Phase 8).
+Metadata-driven UI shell aligned with **SDD §9**. Parity with the web client for end-user flows (Phase 8) and Phase 12D enterprise shell/admin.
 
 ## Structure
 
 | Path | Role |
 |------|------|
-| `lib/main.dart` | App entry; `EMCAP_API_URL` dart-define |
-| `lib/theme.dart` | White-label `ThemeData` seed (`EmcapTheme`) |
-| `lib/api/emcap_client.dart` | HTTP client (auth, CRUD, platform services) |
-| `lib/app/shell.dart` | Login (OAuth), tenant picker, navigation rail |
-| `lib/app/entity_screen.dart` | Full entity UX (edit/delete/search/grid/form) |
-| `lib/app/assistant_screen.dart` | AI chat (flag gated) |
-| `lib/app/account_screen.dart` | MFA, permissions, REST dispatch, payments |
-| `lib/app/notification_screen.dart` | Multi-channel notifications |
-| `lib/app/report_screen.dart` | Reports + run history |
+| `lib/main.dart` | App entry; theme/locale persisted; loads i18n bundles |
+| `lib/theme.dart` | `EmcapTheme` (seed color, dark/light/system) |
+| `lib/api/emcap_client.dart` | HTTP client (auth, CRUD, admin API, platform services) |
+| `lib/services/preferences_service.dart` | Persists `emcap-theme` / `emcap-locale` (web parity) |
+| `lib/services/i18n_service.dart` | JSON bundles (`assets/i18n/en|fr|bn.json`) + `EmcapLocale.t()` |
+| `lib/utils/shell_nav_util.dart` | Module-grouped nav, permission filter, admin links |
+| `lib/widgets/` | `master_detail_layout`, `permission_picker`, `settings_toggle_group`, `detail_placeholder` |
+| `lib/app/shell.dart` | Login, drawer/rail shell, theme/locale toolbar, tenant picker |
+| `lib/app/entity_screen.dart` | Master–detail entity UX (grid list + detail/edit panes) |
+| `lib/app/admin_*_screen.dart` | Users, roles, permissions admin (master–detail + checkbox permissions) |
+| `lib/app/settings_screen.dart` | Settings hub (module/auth/grid toggles, templates, audit) |
 | `lib/metadata_contract.dart` | Form/grid renderers + validators |
-| `test/metadata_contract_test.dart` | Renderer contract tests |
+| `test/` | Metadata contract, shell nav, permission util tests |
 
-## Capabilities (Phases 7–8)
+## Phase 12D capabilities
 
 | Area | Features |
 |------|----------|
-| Entity CRUD | Create, edit, delete, search, pagination |
-| Dynamic forms | Field types, validation, conditions, i18n |
-| Dynamic grids | Sort, filter, group, CSV/excel/PDF export (clipboard) |
-| Workflow | Inbox actions, start from record, due_at display |
-| Platform | Notifications, dashboards, reports + history |
-| Identity | MFA, OAuth, tenant picker, white-label theme |
-| Documents | Upload, preview, versions |
-| Integrations | REST dispatch, payments demo, AI assistant |
+| Shell | Module-grouped drawer (phone) / rail (tablet), permission-filtered menus, Admin/Settings routes |
+| Theme / i18n | Light/dark toggle, **EN/FR/BN** locale; persisted via `shared_preferences` |
+| Entity | Master–detail split; list vs record/edit panes; mobile back navigation |
+| Admin | User CRUD with role multi-select; role CRUD with checkbox permission picker |
+| Settings | Module/auth/notifications/grid/workflow/rules/payments/AI/audit toggles; email templates CRUD; admin audit list |
 
 ## Setup and quality
 
@@ -38,10 +37,9 @@ cd clients/mobile
 flutter pub get
 flutter analyze
 flutter test
-flutter test --coverage   # optional
 ```
 
-CI runs `flutter analyze` + `flutter test` on every PR.
+CI runs `flutter analyze` + `flutter test` on every PR (when Flutter SDK is available).
 
 ## Run
 
@@ -52,4 +50,4 @@ flutter run --dart-define=EMCAP_API_URL=http://localhost:8000
 
 Default credentials: `admin` / `admin123`.
 
-See `plan/04-client-api-completion.md` for API mapping and web parity notes.
+See `plan/12-enterprise-product-ui.md` (Phase 12D) and `plan/04-client-api-completion.md` for API mapping.

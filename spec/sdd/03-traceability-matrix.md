@@ -103,3 +103,22 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | Lint before test | `scripts/lint-format.bat`, CI format+lint | EMCAP-P11-T06–T07 | `.github/workflows/ci.yml` |
 | CI workflow validity | Quoted `DATABASE_URL` in YAML | EMCAP-P11-T08 | Workflow parse / green CI |
 | Dev ergonomics | `_resolve-scripts.bat`, session logs | EMCAP-P11-T05, T09 | `docs/dev/known-pitfalls.md` Phase 11 |
+
+## Phase 12 — Enterprise product UI & admin
+
+| Req / goal | Implementation | Task IDs | Evidence |
+|------------|----------------|----------|----------|
+| FR-008d Product shell | `shared/layout/app-layout`, `SidenavNavComponent`, `ShellContextService` | P12A-T01–T04, T10–T11 | `06` matrix Partial; `shell-nav.util.spec.ts` |
+| FR-008d Master–detail | `MasterDetailLayoutComponent`, `DynamicDataGridComponent`, entity page | P12A-T04–T05 | `entity.component.html`; mobile `detailOpen` |
+| FR-008d Page title | `page-title.util.ts` + toolbar | P12A-T09 | `page-title.util.spec.ts` |
+| FR-008d i18n / themes | `ThemeService`, `I18nService`, toolbar switcher | P12A-T06–T07 | `theme.service.spec.ts`, `i18n.service.spec.ts` |
+| FR-002 Admin identity | `/api/v1/admin/users|roles`, `pages/admin/*`, guards | P12B-T01–T07 | `test_admin_api.py` |
+| FR-002 Row/field security viewer | `GET /admin/security/policies`, admin security screens | P12F-T40–T46 | `test_admin_security_policies` |
+| FR-002 ABAC policy admin | `GET/PUT /admin/security/abac`, runtime `/auth/check` | P13-T01–T06 | `test_admin_abac_policies` |
+| FR-005 Settings hub | `/api/v1/admin/settings`, `pages/settings` | P12C-T01–T04, T06 | settings + template CRUD tests |
+| FR-007 App UI i18n | JSON bundles EN/FR/BN, locale switcher | P12F-T10–T12 | `i18n.service.spec.ts`, `i18n_keys_parity_test.dart` |
+| FR-014 Integrations registry | `/api/v1/admin/integrations`, settings panel | P12F-T30–T36 | `test_admin_integrations_registry` |
+| FR-015 Payment secrets UI | Masked GET, settings payments panel | P12F-T20–T27 | `test_admin_payment_secret_masked` |
+| FR-008d Mobile rail groups | `buildRailNavSlots`, tablet rail headers | P12F-T50–T53 | `shell_nav_util_test.dart` |
+| Doc sync gate | `emcap-doc-sync.mdc`, matrix rev. 6 | P12E-T01–T02 | `06-admin-product-ui-matrix.md` |
+| NFR-013 Shell tests | util + service specs | P12A-T08 | 20 Karma tests CI |

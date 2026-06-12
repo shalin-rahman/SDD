@@ -1,0 +1,104 @@
+<div class="entity-page">
+  <app-page-header
+    [title]="title"
+    [showBack]="mobileDetailOpen"
+    (back)="closeMobileDetail()"
+  >
+    <button type="button" (click)="startCreate()">{{ i18n.t('entity.new') }}</button>
+  </app-page-header>
+
+  @if (loadError) {
+    <p class="error">{{ loadError }}</p>
+  }
+
+  @if (gridRenderer) {
+    <app-master-detail-layout [detailOpen]="mobileDetailOpen">
+      <div listPane>
+        <app-dynamic-data-grid
+          [gridRenderer]="gridRenderer"
+          [columnFields]="columnFields"
+          [displayGroups]="displayGroups"
+          [groupBy]="groupBy"
+          [filters]="filters"
+          [selectedRecordId]="selectedRecordId"
+          [searchInput]="searchInput"
+          [pageLabel]="pageLabel"
+          [page]="page"
+          [totalPages]="totalPages"
+          [statusLine]="statusLine"
+          [exportCsv]="exportCsv"
+          [exportExcel]="exportExcel"
+          [exportPdf]="exportPdf"
+          (searchInputChange)="onSearchInputChange($event)"
+          (prevPage)="prevPage()"
+          (nextPage)="nextPage()"
+          (toggleGroup)="toggleGroup()"
+          (sort)="onSort($event)"
+          (filterChange)="onFilterChange($event.field, $event.value)"
+          (recordSelect)="selectRecord($event)"
+          (exportCsvClick)="exportCsvFile()"
+          (exportExcelClick)="exportExcelFile()"
+          (exportPdfClick)="exportPdfFile()"
+        />
+      </div>
+
+      <div detailPane>
+        @if (selectedRecordId || creatingNew) {
+          <div class="record-detail">
+            <div class="record-detail__header">
+              <h3>{{ creatingNew ? i18n.t('entity.newRecord') : i18n.t('entity.record') + ' ' + selectedRecordId }}</h3>
+              <div class="record-detail__actions">
+                @if (selectedRecordId && !creatingNew) {
+                  <button type="button" (click)="deleteRecord()">{{ i18n.t('entity.delete') }}</button>
+                  @if (entityCode === 'PRODUCT') {
+                    <button type="button" (click)="startWorkflow()">{{ i18n.t('entity.startWorkflow') }}</button>
+                  }
+                }
+                @if (editingId || creatingNew) {
+                  <button type="button" (click)="cancelEdit()">{{ i18n.t('entity.cancel') }}</button>
+                }
+              </div>
+            </div>
+            @if (workflowStarted) {
+              <p>{{ i18n.t('entity.workflowStarted') }}</p>
+            }
+            @if (detailError) {
+              <p class="error">{{ detailError }}</p>
+            }
+
+            @if (formRenderer) {
+              <app-dynamic-form-view
+                [formRenderer]="formRenderer"
+                [visibleFields]="visibleFields"
+                [formValues]="formValues"
+                [formError]="formError"
+                [noteInput]="noteInput"
+                [showNoteField]="creatingNew"
+                [submitLabel]="editingId || creatingNew ? i18n.t('entity.save') : i18n.t('entity.createRecord')"
+                (fieldChange)="onFormFieldChange($event.name, $event.value)"
+                (noteInputChange)="noteInput = $event"
+                (submit)="submitForm()"
+              />
+            }
+
+            @if (selectedRecordId && !creatingNew) {
+              <app-record-tabs
+                [notes]="notes"
+                [documents]="documents"
+                [auditEntries]="auditEntries"
+                [uploadFilename]="uploadFilename"
+                [uploadContent]="uploadContent"
+                (previewDocument)="previewDocument($event)"
+                (uploadDocument)="uploadDocument()"
+                (uploadFilenameChange)="uploadFilename = $event"
+                (uploadContentChange)="uploadContent = $event"
+              />
+            }
+          </div>
+        } @else {
+          <app-detail-placeholder />
+        }
+      </div>
+    </app-master-detail-layout>
+  }
+</div>

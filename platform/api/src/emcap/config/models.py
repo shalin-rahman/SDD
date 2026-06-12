@@ -70,12 +70,37 @@ class RulesSettings(BaseModel):
     formula_enabled: bool = True
 
 
+class StripePaymentSettings(BaseModel):
+    publishable_key: str = ""
+
+
 class PaymentsSettings(BaseModel):
     enabled: bool = False
+    provider: str = "stripe"
+    stripe: StripePaymentSettings = Field(default_factory=StripePaymentSettings)
 
 
 class AISettings(BaseModel):
     enabled: bool = False
+
+
+class RestIntegrationSettings(BaseModel):
+    base_url: str = ""
+
+
+class KafkaIntegrationSettings(BaseModel):
+    bootstrap: str = ""
+    topic_prefix: str = ""
+
+
+class SoapIntegrationSettings(BaseModel):
+    endpoint: str = ""
+
+
+class IntegrationsSettings(BaseModel):
+    rest: RestIntegrationSettings = Field(default_factory=RestIntegrationSettings)
+    kafka: KafkaIntegrationSettings = Field(default_factory=KafkaIntegrationSettings)
+    soap: SoapIntegrationSettings = Field(default_factory=SoapIntegrationSettings)
 
 
 class TenantBrandingSettings(BaseModel):
@@ -99,6 +124,18 @@ class SeedSettings(BaseModel):
     demo: SeedDemoSettings = Field(default_factory=SeedDemoSettings)
 
 
+class AbacPolicyConfig(BaseModel):
+    permission: str
+    effect: str = "allow"
+    attribute: str
+    operator: str = "equals"
+    value: str = ""
+
+
+class SecuritySettings(BaseModel):
+    abac_policies: list[AbacPolicyConfig] = Field(default_factory=list)
+
+
 class PlatformConfig(BaseModel):
     platform: PlatformSettings = Field(default_factory=PlatformSettings)
     tenant_strategy: TenantStrategySettings = Field(default_factory=TenantStrategySettings)
@@ -111,7 +148,9 @@ class PlatformConfig(BaseModel):
     rules: RulesSettings = Field(default_factory=RulesSettings)
     payments: PaymentsSettings = Field(default_factory=PaymentsSettings)
     ai: AISettings = Field(default_factory=AISettings)
+    integrations: IntegrationsSettings = Field(default_factory=IntegrationsSettings)
     tenants: dict[str, TenantBrandingSettings] = Field(
         default_factory=lambda: {"default": TenantBrandingSettings()}
     )
     seed: SeedSettings = Field(default_factory=SeedSettings)
+    security: SecuritySettings = Field(default_factory=SecuritySettings)

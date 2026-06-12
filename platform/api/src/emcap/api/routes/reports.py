@@ -23,8 +23,18 @@ def _session(request: Request) -> Session:
 
 @router.get("/reports")
 def list_reports(request: Request) -> dict[str, Any]:
-    reports = request.app.state.report_definitions
-    return {"reports": [code for code in reports.keys()]}
+    reports: dict[str, ReportDefinition] = request.app.state.report_definitions
+    return {
+        "reports": [
+            {
+                "code": definition.code,
+                "name": definition.name,
+                "entity_code": definition.entity_code,
+                "schedule_cron": definition.schedule_cron,
+            }
+            for definition in reports.values()
+        ]
+    }
 
 
 @router.post("/reports/{report_code}/run")

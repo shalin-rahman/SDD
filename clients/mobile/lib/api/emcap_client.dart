@@ -2,6 +2,20 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+class MaskedSecretView {
+  const MaskedSecretView({required this.masked, required this.configured});
+
+  final String masked;
+  final bool configured;
+
+  factory MaskedSecretView.fromJson(Map<String, dynamic> json) {
+    return MaskedSecretView(
+      masked: '${json['masked'] ?? ''}',
+      configured: json['configured'] == true,
+    );
+  }
+}
+
 class EmcapClient {
   EmcapClient(this.baseUrl);
 
@@ -212,9 +226,9 @@ class EmcapClient {
     return _request('GET', '/api/v1/sync/$entityCode/changes?$query');
   }
 
-  Future<List<String>> listReports() async {
+  Future<List<Map<String, dynamic>>> listReports() async {
     final body = await _request('GET', '/api/v1/reports');
-    return List<String>.from(body['reports'] as List);
+    return List<Map<String, dynamic>>.from(body['reports'] as List);
   }
 
   Future<Map<String, dynamic>> runReport(String reportCode) async {
@@ -401,6 +415,155 @@ class EmcapClient {
 
   Future<Map<String, dynamic>> confirmPaymentIntent(String transactionId) async {
     return _request('POST', '/api/v1/payments/intents/$transactionId/confirm');
+  }
+
+  Future<List<Map<String, dynamic>>> listAdminUsers() async {
+    final body = await _request('GET', '/api/v1/admin/users');
+    return List<Map<String, dynamic>>.from(body['users'] as List);
+  }
+
+  Future<Map<String, dynamic>> getAdminUser(String userId) async {
+    return _request('GET', '/api/v1/admin/users/$userId');
+  }
+
+  Future<Map<String, dynamic>> createAdminUser({
+    required String username,
+    required String password,
+    String tenantId = 'default',
+    List<String> roleCodes = const ['viewer'],
+  }) async {
+    return _request('POST', '/api/v1/admin/users', body: {
+      'username': username,
+      'password': password,
+      'tenant_id': tenantId,
+      'role_codes': roleCodes,
+    });
+  }
+
+  Future<Map<String, dynamic>> updateAdminUser(
+    String userId, {
+    String? tenantId,
+    bool? active,
+    List<String>? roleCodes,
+    String? password,
+  }) async {
+    return _request('PUT', '/api/v1/admin/users/$userId', body: {
+      if (tenantId != null) 'tenant_id': tenantId,
+      if (active != null) 'active': active,
+      if (roleCodes != null) 'role_codes': roleCodes,
+      if (password != null && password.isNotEmpty) 'password': password,
+    });
+  }
+
+  Future<Map<String, dynamic>> deactivateAdminUser(String userId) async {
+    return _request('PATCH', '/api/v1/admin/users/$userId/deactivate');
+  }
+
+  Future<List<Map<String, dynamic>>> listAdminRoles() async {
+    final body = await _request('GET', '/api/v1/admin/roles');
+    return List<Map<String, dynamic>>.from(body['roles'] as List);
+  }
+
+  Future<Map<String, dynamic>> createAdminRole({
+    required String code,
+    required String name,
+    required List<String> permissions,
+  }) async {
+    return _request('POST', '/api/v1/admin/roles', body: {
+      'code': code,
+      'name': name,
+      'permissions': permissions,
+    });
+  }
+
+  Future<Map<String, dynamic>> updateAdminRole(
+    String roleId, {
+    String? name,
+    List<String>? permissions,
+  }) async {
+    return _request('PUT', '/api/v1/admin/roles/$roleId', body: {
+      if (name != null) 'name': name,
+      if (permissions != null) 'permissions': permissions,
+    });
+  }
+
+  Future<Map<String, dynamic>> getAdminSettings() async {
+    return _request('GET', '/api/v1/admin/settings');
+  }
+
+  Future<Map<String, dynamic>> updateAdminSettings(Map<String, dynamic> settings) async {
+    return _request('PUT', '/api/v1/admin/settings', body: {'settings': settings});
+  }
+
+  Future<Map<String, dynamic>> getAdminIntegrations() async {
+    return _request('GET', '/api/v1/admin/integrations');
+  }
+
+  Future<Map<String, dynamic>> updateAdminIntegrations(
+    Map<String, dynamic> integrations,
+  ) async {
+    return _request('PUT', '/api/v1/admin/integrations', body: {'integrations': integrations});
+  }
+
+  Future<Map<String, dynamic>> testAdminRestIntegration() async {
+    return _request('POST', '/api/v1/admin/integrations/test-rest');
+  }
+
+  Future<Map<String, dynamic>> getAdminSecurityPolicies() async {
+    return _request('GET', '/api/v1/admin/security/policies');
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminAbacPolicies() async {
+    final body = await _request('GET', '/api/v1/admin/security/abac');
+    return List<Map<String, dynamic>>.from(body['policies'] as List);
+  }
+
+  Future<List<Map<String, dynamic>>> updateAdminAbacPolicies(
+    List<Map<String, dynamic>> policies,
+  ) async {
+    final body = await _request('PUT', '/api/v1/admin/security/abac', body: {'policies': policies});
+    return List<Map<String, dynamic>>.from(body['policies'] as List);
+  }
+
+  Future<List<Map<String, dynamic>>> listAdminTemplates() async {
+    final body = await _request('GET', '/api/v1/admin/templates');
+    return List<Map<String, dynamic>>.from(body['templates'] as List);
+  }
+
+  Future<Map<String, dynamic>> createAdminTemplate({
+    required String code,
+    String channel = 'email',
+    String subject = '',
+    String body = '',
+  }) async {
+    return _request('POST', '/api/v1/admin/templates', body: {
+      'code': code,
+      'channel': channel,
+      'subject': subject,
+      'body': body,
+    });
+  }
+
+  Future<Map<String, dynamic>> updateAdminTemplate(
+    String templateId, {
+    String? channel,
+    String? subject,
+    String? body,
+  }) async {
+    return _request('PUT', '/api/v1/admin/templates/$templateId', body: {
+      if (channel != null) 'channel': channel,
+      if (subject != null) 'subject': subject,
+      if (body != null) 'body': body,
+    });
+  }
+
+  Future<void> deleteAdminTemplate(String templateId) async {
+    await _request('DELETE', '/api/v1/admin/templates/$templateId');
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminAudit() async {
+    final body = await _request('GET', '/api/v1/admin/audit');
+    return List<Map<String, dynamic>>.from(body['audit'] as List);
   }
 
   void subscribeRecordsStream(String entityCode, void Function() onEvent) {

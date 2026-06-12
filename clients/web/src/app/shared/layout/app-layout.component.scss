@@ -1,0 +1,51 @@
+.app-layout {
+  height: 100vh;
+}
+
+.app-layout__sidenav {
+  width: 260px;
+  border-right: 1px solid var(--emcap-border, #e0e0e0);
+}
+
+.app-layout__brand {
+  padding: 1rem 1rem 0.5rem;
+
+  .app-layout__tenant-line {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    opacity: 0.75;
+  }
+}
+
+.app-layout__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.app-layout__title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.app-layout__spacer {
+  flex: 1 1 auto;
+}
+
+.app-layout__locale {
+  width: 72px;
+  margin-right: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.app-layout__content {
+  padding: 1rem;
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 1023px) {
+  .app-layout__content {
+    padding: 0.75rem;
+  }
+}

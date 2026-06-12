@@ -15,7 +15,8 @@ def test_report_list_and_run(client: TestClient) -> None:
 
     listed = client.get("/api/v1/reports")
     assert listed.status_code == 200
-    assert "CUSTOMER_LIST" in listed.json()["reports"]
+    report_codes = [r["code"] for r in listed.json()["reports"]]
+    assert "CUSTOMER_LIST" in report_codes
 
     run = client.post("/api/v1/reports/CUSTOMER_LIST/run")
     assert run.status_code == 200

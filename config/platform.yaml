@@ -51,9 +51,21 @@ rules:
 
 payments:
   enabled: false
+  provider: stripe
+  stripe:
+    publishable_key: ""
 
 ai:
   enabled: false
+
+integrations:
+  rest:
+    base_url: ""
+  kafka:
+    bootstrap: ""
+    topic_prefix: ""
+  soap:
+    endpoint: ""
 
 tenants:
   default:
@@ -73,3 +85,16 @@ seed:
     enabled: true
     path: data/seed/demo
     remove_when_disabled: true
+
+security:
+  abac_policies:
+    - permission: customer.read
+      effect: allow
+      attribute: tenant_id
+      operator: equals
+      value: "$user.tenant_id"
+    - permission: customer.write
+      effect: allow
+      attribute: tenant_id
+      operator: equals
+      value: "$user.tenant_id"

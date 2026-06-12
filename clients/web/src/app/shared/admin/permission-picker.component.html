@@ -1,0 +1,26 @@
+<mat-accordion multi>
+  @for (group of groups(); track group.module) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ group.label }}</mat-panel-title>
+        <mat-panel-description>{{ group.permissions.length }} permission(s)</mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="permission-picker__grid">
+        <mat-checkbox
+          [checked]="wildcardChecked(group.module)"
+          (change)="onWildcard(group.module, $event.checked)"
+        >
+          All {{ group.label }} ({{ group.module }}.*)
+        </mat-checkbox>
+        @for (permission of group.permissions; track permission) {
+          <mat-checkbox
+            [checked]="isChecked(permission)"
+            (change)="onToggle(permission, $event.checked)"
+          >
+            {{ permission }}
+          </mat-checkbox>
+        }
+      </div>
+    </mat-expansion-panel>
+  }
+</mat-accordion>

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "locales": ["en", "fr", "bn"],
+  "bundles": {
+    "web": "clients/web/src/assets/i18n",
+    "mobile": "clients/mobile/assets/i18n"
+  },
+  "requiredKeys": [
+    "nav.signOut",
+    "nav.admin",
+    "nav.settings",
+    "toolbar.theme",
+    "toolbar.locale",
+    "toolbar.language.en",
+    "toolbar.language.fr",
+    "toolbar.language.bn",
+    "admin.users.title",
+    "admin.roles.title",
+    "admin.permissions.title",
+    "settings.title",
+    "settings.save",
+    "settings.saved",
+    "common.loading",
+    "common.save",
+    "common.cancel"
+  ]
+}

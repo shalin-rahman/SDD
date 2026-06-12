@@ -1,0 +1,41 @@
+<div class="record-tabs">
+  <h4>{{ i18n.t('record.notes') }} ({{ notes.length }})</h4>
+  <ul>
+    @for (note of notes; track note.body) {
+      <li>{{ note.body }}</li>
+    }
+  </ul>
+
+  <h4>{{ i18n.t('record.documents') }} ({{ documents.length }})</h4>
+  <ul>
+    @for (doc of documents; track doc.id) {
+      <li>
+        {{ doc.filename }} v{{ doc.version }} · {{ doc.virus_scan_status }}
+        <button type="button" (click)="previewDocument.emit(doc)">Preview</button>
+      </li>
+    }
+  </ul>
+
+  <h4>{{ i18n.t('record.audit') }} ({{ auditEntries.length }})</h4>
+  <ul>
+    @for (entry of auditEntries; track entry.payloadJson) {
+      <li>{{ entry.action }} — {{ entry.payloadJson }}</li>
+    }
+  </ul>
+
+  <form class="record-tabs__upload" (ngSubmit)="uploadDocument.emit()">
+    <input
+      [placeholder]="i18n.t('record.docFilename')"
+      [ngModel]="uploadFilename"
+      (ngModelChange)="uploadFilenameChange.emit($event)"
+      name="uploadFilename"
+    />
+    <textarea
+      [placeholder]="i18n.t('record.docContent')"
+      [ngModel]="uploadContent"
+      (ngModelChange)="uploadContentChange.emit($event)"
+      name="uploadContent"
+    ></textarea>
+    <button type="submit">{{ i18n.t('record.uploadDocument') }}</button>
+  </form>
+</div>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, required this.client});
@@ -23,19 +24,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboards')),
+      appBar: AppBar(title: Text(EmcapLocale.t('platform.dashboards.title'))),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Failed: ${snapshot.error}'));
+            return Center(
+              child: Text('${EmcapLocale.t('platform.common.failed')}: ${snapshot.error}'),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
           final dashboards = snapshot.data!;
           if (dashboards.isEmpty) {
-            return const Center(child: Text('No dashboards.'));
+            return Center(child: Text(EmcapLocale.t('platform.dashboards.noDashboards')));
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -49,7 +52,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${dash['name'] ?? dash['code']}', style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                        '${dash['name'] ?? dash['code'] ?? EmcapLocale.t('platform.dashboards.defaultName')}',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                       const SizedBox(height: 8),
                       ...widgets.map(
                         (w) => ListTile(

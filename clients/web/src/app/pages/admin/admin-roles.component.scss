@@ -1,0 +1,29 @@
+.admin-list-pane {
+  min-width: 0;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--emcap-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 520px;
+}
+
+.admin-table__row {
+  cursor: pointer;
+}
+
+.admin-table__row--selected {
+  background: #e8eaf6;
+}
+
+.admin-section-title {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}

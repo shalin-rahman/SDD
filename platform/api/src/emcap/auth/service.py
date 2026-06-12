@@ -48,6 +48,9 @@ def authenticate_user(session: Session, username: str, password: str) -> UserRow
     if user is None or not verify_password(password, user.password_hash):
         msg = "Invalid username or password"
         raise AuthServiceError(msg)
+    if not user.active:
+        msg = "Account is deactivated"
+        raise AuthServiceError(msg)
     return user
 
 
@@ -58,7 +61,7 @@ def seed_default_auth(session: Session) -> None:
     admin_role = RoleRow(
         code="admin",
         name="Administrator",
-        permissions=["*.*", "demo.access", "customer.*"],
+        permissions=["*.*", "admin.*", "demo.access", "customer.*"],
     )
     session.add(admin_role)
     session.flush()

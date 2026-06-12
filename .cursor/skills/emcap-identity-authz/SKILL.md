@@ -55,9 +55,23 @@ Registry: `emcap.auth.providers.registry.AuthProviderRegistry`
 
 | Feature | Web | Mobile |
 |---------|-----|--------|
-| Login | `clients/web/src/app/main.ts` | `clients/mobile/lib/app/shell.dart` |
-| OAuth | `getAuthProviders()`, `loginOAuth()` | same |
-| MFA enroll/verify | `clients/web/src/app/main.ts` Account view | `clients/mobile/lib/app/account_screen.dart` |
-| Permissions viewer | Account view | `account_screen.dart` |
+| Login | `clients/web/src/app/pages/login/` | `clients/mobile/lib/app/shell.dart` |
+| OAuth / MFA | Account pages | `account_screen.dart` |
+| Permissions viewer | Account (demo) | Account |
 
-Tests: `tests/test_auth_security.py`
+## Admin UX (Phase 12 — planned)
+
+| Feature | API target | Web target |
+|---------|------------|------------|
+| User CRUD | `GET/POST/PUT /admin/users` | `pages/admin/users/` |
+| Role CRUD | `GET/POST/PUT /admin/roles` | `pages/admin/roles/` |
+| Permission matrix | read from roles + registry | `pages/admin/permissions/` |
+| Settings hub | `GET/PUT /admin/settings` | `pages/settings/` |
+
+Today: only `GET /auth/roles`, `POST /auth/roles/assign` — **not** admin CRUD.
+
+Seed admin permissions: `data/seed/core/roles.json` → `admin.users.*`, `admin.settings.*`.
+
+See skill **`emcap-enterprise-ui`** and recipe `docs/dev/recipes/add-admin-api-and-ui.md`.
+
+Tests: `tests/test_auth_security.py` today; add `tests/test_admin_*.py` in Phase 12B.

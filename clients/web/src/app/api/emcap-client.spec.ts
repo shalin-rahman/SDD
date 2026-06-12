@@ -57,6 +57,21 @@ const REQUIRED_METHODS = [
   'listEntities',
   'getMetrics',
   'confirmPaymentIntent',
+  'listAdminUsers',
+  'getAdminUser',
+  'createAdminUser',
+  'updateAdminUser',
+  'deactivateAdminUser',
+  'listAdminRoles',
+  'createAdminRole',
+  'updateAdminRole',
+  'getAdminSettings',
+  'updateAdminSettings',
+  'listAdminTemplates',
+  'createAdminTemplate',
+  'updateAdminTemplate',
+  'deleteAdminTemplate',
+  'getAdminAudit',
 ] as const;
 
 describe('EmcapClient contract', () => {

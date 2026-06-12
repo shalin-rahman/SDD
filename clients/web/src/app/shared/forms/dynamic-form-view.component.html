@@ -1,0 +1,35 @@
+<form class="dynamic-form" (ngSubmit)="submit.emit()">
+  @for (field of visibleFields; track field.name) {
+    <label [ngStyle]="formRenderer.layoutStyle(field)">
+      {{ formRenderer.label(field.name) }}
+      @if (field.field_type !== 'checkbox') {
+        <input
+          [type]="inputType(field)"
+          [name]="field.name"
+          [required]="formRenderer.isRequired(field.name)"
+          [ngModel]="formValues[field.name]"
+          (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+        />
+      } @else {
+        <input
+          type="checkbox"
+          [name]="field.name"
+          [ngModel]="formValues[field.name]"
+          (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+        />
+      }
+    </label>
+  }
+  @if (showNoteField) {
+    <textarea
+      placeholder="Note (optional)"
+      [ngModel]="noteInput"
+      (ngModelChange)="noteInputChange.emit($event)"
+      name="noteInput"
+    ></textarea>
+  }
+  <button type="submit">{{ submitLabel }}</button>
+  @if (formError) {
+    <p class="error">{{ formError }}</p>
+  }
+</form>

@@ -32,7 +32,12 @@ MODULE = ModuleDefinition(
             fields=[
                 FieldDefinition(name="sku", field_type=FieldType.STRING, required=True),
                 FieldDefinition(name="name", field_type=FieldType.STRING, required=True),
-                FieldDefinition(name="unit_price", field_type=FieldType.DECIMAL, required=False),
+                FieldDefinition(
+                    name="unit_price",
+                    field_type=FieldType.DECIMAL,
+                    required=False,
+                    read_roles=["inventory.access"],
+                ),
                 FieldDefinition(name="quantity_on_hand", field_type=FieldType.INTEGER, required=False),
                 FieldDefinition(name="reorder_level", field_type=FieldType.INTEGER, required=False),
                 FieldDefinition(name="active", field_type=FieldType.BOOLEAN, required=False),
