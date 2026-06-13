@@ -1,4 +1,5 @@
 from emcap.entity.models import EntityDefinition
+from emcap.metadata.validation import MetadataValidationError, validate_entity_for_metadata
 
 
 class EntityRegistryError(Exception):
@@ -38,6 +39,7 @@ class EntityRegistry:
             msg = "No entities registered"
             raise EntityRegistryError(msg)
 
+        entity_codes = set(self._entities.keys())
         field_names: set[str] = set()
         for definition in self._entities.values():
             field_names.clear()
@@ -46,3 +48,7 @@ class EntityRegistry:
                     msg = f"Duplicate field '{field.name}' on entity {definition.code}"
                     raise EntityRegistryError(msg)
                 field_names.add(field.name)
+            try:
+                validate_entity_for_metadata(definition, entity_codes)
+            except MetadataValidationError as exc:
+                raise EntityRegistryError(str(exc)) from exc

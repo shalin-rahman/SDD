@@ -59,9 +59,33 @@ class ReportingService:
                 "report_code": row.report_code,
                 "row_count": len(row.result.get("rows", [])),
                 "created_at": row.created_at.isoformat(),
+                "status": "completed",
             }
             for row in rows
         ]
+
+    def get_run(self, run_id: str) -> dict[str, Any]:
+        row = (
+            self._session.query(ReportRunRow)
+            .filter_by(id=run_id, tenant_id=self._tenant_id)
+            .one_or_none()
+        )
+        if row is None:
+            raise KeyError(run_id)
+        result = row.result or {}
+        rows = result.get("rows", [])
+        columns = [col["field"] for col in result.get("columns", []) if col.get("field")]
+        if not columns and rows:
+            columns = list(rows[0].keys())
+        return {
+            "run_id": row.id,
+            "report_code": row.report_code,
+            "row_count": len(rows),
+            "created_at": row.created_at.isoformat(),
+            "status": "completed",
+            "columns": columns,
+            "rows": rows,
+        }
 
     @staticmethod
     def _apply_report_filter(

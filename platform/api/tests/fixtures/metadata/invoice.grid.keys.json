@@ -1,0 +1,16 @@
+{
+  "column_fields": [
+    "invoice_number",
+    "sales_order_id",
+    "customer_id",
+    "amount",
+    "due_date",
+    "status",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

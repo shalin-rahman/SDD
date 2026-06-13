@@ -30,6 +30,7 @@ ALLOWED_MODULE_IMPORT_PREFIXES = (
     "emcap.reporting.",
     "emcap.workflow.",
 )
+ALLOWED_STDLIB_MODULE_IMPORTS = frozenset({"importlib", "pathlib", "typing"})
 
 
 def _git_has_committed_baseline() -> bool:
@@ -136,19 +137,26 @@ def test_inventory_module_file_exports_module_definition() -> None:
     definition = load_module_definition(INVENTORY_MODULE)
     assert isinstance(definition, ModuleDefinition)
     assert definition.code == "INVENTORY"
-    assert {entity.code for entity in definition.entities} == {"PRODUCT", "WAREHOUSE"}
+    assert {entity.code for entity in definition.entities} == {
+        "PRODUCT",
+        "WAREHOUSE",
+        "STOCK_MOVEMENT",
+        "STOCK_MOVEMENT_LINE",
+    }
     assert {workflow.code for workflow in definition.workflows} == {"STOCK_ADJUSTMENT"}
     assert {report.code for report in definition.reports} == {
         "INVENTORY_VALUATION",
         "LOW_STOCK",
     }
     assert {dashboard.code for dashboard in definition.dashboards} == {"INVENTORY_OVERVIEW"}
-    assert {menu.code for menu in definition.menus} == {"products", "warehouses"}
+    assert {menu.code for menu in definition.menus} == {"products", "warehouses", "stock_movements"}
 
 
 def test_inventory_module_uses_sdk_imports_only() -> None:
     """Business module must not import platform internals beyond the public SDK."""
     for module_name in _inventory_module_imports():
+        if module_name in ALLOWED_STDLIB_MODULE_IMPORTS:
+            continue
         assert module_name.startswith(
             ALLOWED_MODULE_IMPORT_PREFIXES
         ), f"Unexpected import in inventory module: {module_name}"

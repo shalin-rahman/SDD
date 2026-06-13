@@ -30,6 +30,10 @@ class EntityRecordRow(Base):
     entity_code: Mapped[str] = mapped_column(String(64), index=True)
     tenant_id: Mapped[str] = mapped_column(String(64), index=True, default="default")
     data: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    updated_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    record_version: Mapped[int] = mapped_column(default=1)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
@@ -284,6 +288,10 @@ def _apply_sqlite_schema_patches(engine: Engine) -> None:
         ("users", "active", "BOOLEAN NOT NULL DEFAULT 1"),
         ("users", "mfa_enabled", "BOOLEAN NOT NULL DEFAULT 0"),
         ("users", "mfa_secret", "VARCHAR(64)"),
+        ("entity_records", "created_by", "VARCHAR(128)"),
+        ("entity_records", "updated_by", "VARCHAR(128)"),
+        ("entity_records", "record_version", "INTEGER NOT NULL DEFAULT 1"),
+        ("entity_records", "deleted_at", "DATETIME"),
     ]
     with engine.begin() as conn:
         for table, column, ddl in patches:

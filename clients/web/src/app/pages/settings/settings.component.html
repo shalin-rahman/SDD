@@ -51,6 +51,9 @@
       <mat-panel-title>{{ i18n.t('settings.sections.rules') }}</mat-panel-title>
     </mat-expansion-panel-header>
     <app-settings-toggle-group [items]="rulesItems()" (itemChange)="onRulesChange($event)" />
+    <p class="settings-hint">
+      <a routerLink="/app/settings/rules">{{ i18n.t('settings.rules.evaluate.openPanel') }}</a>
+    </p>
   </mat-expansion-panel>
 
   <mat-expansion-panel>

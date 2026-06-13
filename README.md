@@ -38,7 +38,8 @@ npm ci && npm start
 SDD/
 ├── spec/sdd/              # Requirements, ADRs, traceability, UX matrices
 ├── plan/                  # Implementation playbooks (Phase 12 = enterprise UI)
-├── docs/dev/              # Index, pitfalls, recipes (incl. doc-sync)
+├── docs/                  # Product, dev guides, session memos, ops
+│   └── dev/session-memos/ # Agent handoff summaries (in-repo)
 ├── scripts/               # run-emcap, lint-format, seed apply
 ├── data/seed/             # JSON core + demo seed packs
 ├── platform/api/          # FastAPI platform core
@@ -55,8 +56,13 @@ SDD/
 
 | Document | Path |
 |----------|------|
+| **Documentation index** | `docs/README.md` |
 | **Doc sync (mandatory after changes)** | `docs/dev/recipes/sync-docs-after-change.md` |
 | Codebase index | `docs/dev/codebase-index.md` |
+| Session memos | `docs/dev/session-memos/` |
+| User feedback registry | `docs/product/user-feedback-registry.md` |
+| Viable product execution | `plan/17-viable-product-execution-playbook.md` |
+| Product readiness matrix | `spec/sdd/07-product-readiness-matrix.md` |
 | Shared web components | `clients/web/src/app/shared/README.md` |
 | Task backlog | `plan/03-task-backlog.md` |
 | Phase 12 playbook | `plan/12-enterprise-product-ui.md` |

@@ -1,0 +1,23 @@
+.lookup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lookup-field__value {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--emcap-border, #dadce0);
+  border-radius: 8px;
+  background: var(--emcap-surface, #fff);
+  min-height: 2.25rem;
+}
+
+.lookup-field__value--empty {
+  color: var(--emcap-text-muted, #5f6368);
+}
+
+.lookup-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

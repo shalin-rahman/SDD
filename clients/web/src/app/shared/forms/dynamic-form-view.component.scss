@@ -1,7 +1,62 @@
+.form-section {
+  margin-bottom: 0.75rem;
+
+  &--system {
+    background: color-mix(in srgb, var(--emcap-surface) 92%, #e8eaed);
+  }
+}
+
 .dynamic-form {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 0.5rem;
-  max-width: none;
-  margin-bottom: 1rem;
+  gap: 0.75rem 1rem;
+}
+
+.dynamic-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.dynamic-form__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--emcap-text-muted, #5f6368);
+  letter-spacing: 0.02em;
+}
+
+.dynamic-form__input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--emcap-border);
+  border-radius: 8px;
+  background: var(--emcap-surface);
+  font: inherit;
+}
+
+.dynamic-form__textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--emcap-border);
+  border-radius: 8px;
+  background: var(--emcap-surface);
+  font: inherit;
+  resize: vertical;
+}
+
+.dynamic-form__readonly {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--emcap-surface) 85%, #e8eaed);
+  font-size: 0.9375rem;
+}
+
+.dynamic-form__footer {
+  margin: 0.5rem 0 1rem;
+}
+
+.form-note {
+  width: 100%;
 }

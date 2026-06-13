@@ -1,0 +1,12 @@
+{
+  "field_names": [
+    "po_number",
+    "supplier_id",
+    "warehouse_id",
+    "status",
+    "total_amount",
+    "order_date",
+    "notes",
+    "active"
+  ]
+}

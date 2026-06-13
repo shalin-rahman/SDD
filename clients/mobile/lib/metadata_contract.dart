@@ -1,3 +1,113 @@
+class FormFieldMetadata {
+  FormFieldMetadata({
+    required this.name,
+    required this.label,
+    required this.fieldType,
+    this.required = false,
+    this.readOnly = false,
+    this.row = 0,
+    this.col = 0,
+    this.span = 12,
+    this.options = const [],
+    this.lookupEntity,
+    this.currencyCode,
+    this.i18n,
+    this.validation,
+  });
+
+  final String name;
+  final String label;
+  final String fieldType;
+  final bool required;
+  final bool readOnly;
+  final int row;
+  final int col;
+  final int span;
+  final List<String> options;
+  final String? lookupEntity;
+  final String? currencyCode;
+  final Map<String, dynamic>? i18n;
+  final List<Map<String, dynamic>>? validation;
+
+  factory FormFieldMetadata.fromMap(Map<String, dynamic> map) {
+    return FormFieldMetadata(
+      name: map['name'] as String,
+      label: map['label'] as String? ?? map['name'] as String,
+      fieldType: map['field_type'] as String? ?? 'text',
+      required: map['required'] == true,
+      readOnly: map['read_only'] == true,
+      row: map['row'] as int? ?? 0,
+      col: map['col'] as int? ?? 0,
+      span: map['span'] as int? ?? 12,
+      options: (map['options'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      lookupEntity: map['lookup_entity'] as String?,
+      currencyCode: map['currency_code'] as String?,
+      i18n: map['i18n'] as Map<String, dynamic>?,
+      validation: (map['validation'] as List?)
+          ?.map((e) => Map<String, dynamic>.from(e as Map))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'label': label,
+        'field_type': fieldType,
+        'required': required,
+        'read_only': readOnly,
+        'row': row,
+        'col': col,
+        'span': span,
+        if (options.isNotEmpty) 'options': options,
+        if (lookupEntity != null) 'lookup_entity': lookupEntity,
+        if (currencyCode != null) 'currency_code': currencyCode,
+        if (i18n != null) 'i18n': i18n,
+        if (validation != null) 'validation': validation,
+      };
+}
+
+class StatusFieldMetadata {
+  const StatusFieldMetadata({
+    required this.field,
+    required this.activeValues,
+    required this.labels,
+  });
+
+  final String field;
+  final List<dynamic> activeValues;
+  final Map<String, Map<String, String>> labels;
+
+  factory StatusFieldMetadata.fromMap(Map<String, dynamic> map) {
+    final rawLabels = map['labels'] as Map? ?? {};
+    final labels = <String, Map<String, String>>{};
+    for (final entry in rawLabels.entries) {
+      final localeMap = entry.value as Map? ?? {};
+      labels['${entry.key}'] = localeMap.map((k, v) => MapEntry('$k', '$v'));
+    }
+    return StatusFieldMetadata(
+      field: map['field'] as String,
+      activeValues: List<dynamic>.from(map['active_values'] as List? ?? []),
+      labels: labels,
+    );
+  }
+}
+
+class DisplayMetadata {
+  const DisplayMetadata({this.statusField});
+
+  final StatusFieldMetadata? statusField;
+
+  factory DisplayMetadata.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const DisplayMetadata();
+    }
+    final statusRaw = json['status_field'] as Map?;
+    return DisplayMetadata(
+      statusField: statusRaw == null ? null : StatusFieldMetadata.fromMap(Map<String, dynamic>.from(statusRaw)),
+    );
+  }
+}
+
 class FormMetadata {
   FormMetadata({
     required this.schemaVersion,
@@ -5,6 +115,7 @@ class FormMetadata {
     required this.sections,
     this.conditions = const [],
     this.i18n,
+    this.display,
   });
 
   final String schemaVersion;
@@ -12,6 +123,7 @@ class FormMetadata {
   final List<Map<String, dynamic>> sections;
   final List<Map<String, dynamic>> conditions;
   final Map<String, dynamic>? i18n;
+  final DisplayMetadata? display;
 
   factory FormMetadata.fromJson(Map<String, dynamic> json) {
     return FormMetadata(
@@ -20,6 +132,7 @@ class FormMetadata {
       sections: List<Map<String, dynamic>>.from(json['sections'] as List),
       conditions: List<Map<String, dynamic>>.from(json['conditions'] as List? ?? []),
       i18n: json['i18n'] as Map<String, dynamic>?,
+      display: DisplayMetadata.fromJson(json['display'] as Map<String, dynamic>?),
     );
   }
 
@@ -77,6 +190,36 @@ class DynamicFormRenderer {
       }
     }
     return names;
+  }
+
+  FormFieldMetadata? getField(String name) {
+    final map = fieldMetadata(metadata, name);
+    return map != null ? FormFieldMetadata.fromMap(map) : null;
+  }
+
+  bool isReadOnly(String name) => getField(name)?.readOnly ?? false;
+
+  String sectionLabel(String sectionCode) {
+    final key = 'section.$sectionCode';
+    final localized = metadata.i18n?[locale]?[key];
+    if (localized != null) {
+      return localized as String;
+    }
+    for (final section in metadata.sections) {
+      if (section['code'] == sectionCode) {
+        return section['label'] as String? ?? sectionCode;
+      }
+    }
+    return sectionCode;
+  }
+
+  List<String> sectionFieldNames(String sectionCode) {
+    for (final section in metadata.sections) {
+      if (section['code'] == sectionCode) {
+        return (section['fields'] as List).map((field) => (field as Map)['name'] as String).toList();
+      }
+    }
+    return [];
   }
 
   String label(String name) {
@@ -145,6 +288,13 @@ class DynamicFormRenderer {
       return '${field['label'] ?? field['name']} is required';
     }
     if (value == null || '$value'.isEmpty) return null;
+    final fieldType = field['field_type'] as String? ?? 'text';
+    if (fieldType == 'currency') {
+      final amount = double.tryParse('$value');
+      if (amount == null) {
+        return '${field['label'] ?? field['name']} must be a valid amount';
+      }
+    }
     final rules = field['validation'] as List? ?? [];
     for (final rule in rules) {
       if (rule['rule'] == 'email' && !'$value'.contains('@')) {
@@ -176,6 +326,36 @@ class DynamicGridRenderer {
       }
     }
     return field;
+  }
+
+  String? columnFieldType(String field) {
+    for (final column in metadata.columns) {
+      if (column['field'] == field) {
+        final type = column['field_type'];
+        return type == null ? null : '$type';
+      }
+    }
+    return null;
+  }
+
+  String? columnCurrencyCode(String field) {
+    for (final column in metadata.columns) {
+      if (column['field'] == field) {
+        final code = column['currency_code'];
+        return code == null ? null : '$code';
+      }
+    }
+    return null;
+  }
+
+  String? columnLookupEntity(String field) {
+    for (final column in metadata.columns) {
+      if (column['field'] == field) {
+        final entity = column['lookup_entity'];
+        return entity == null ? null : '$entity';
+      }
+    }
+    return null;
   }
 
   List<Map<String, dynamic>> sortRecords(

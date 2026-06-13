@@ -14,13 +14,13 @@ Agents re-explored the monorepo each session. Fixes (sync datetime, SSE auth, Da
    - `codebase-index.md` — file lookup
    - `known-pitfalls.md` — error registry with linked tests
    - `recipes/` — step-by-step implementation checklists
-   - `recall-index.md` — pointers from external summaries
+   - `recall-index.md` — session memo index (`docs/dev/session-memos/`)
 
 2. **Cursor integration** — `emcap-sdd-workflow.mdc` (always apply) and `emcap-codebase-map` skill direct agents to read index/pitfalls before searching.
 
 3. **Regression rule** — each pitfall entry must reference a pytest or vitest guard.
 
-4. **External summaries** (`~/.cursor/task-summaries/`) are thin indexes only; do not duplicate repo content.
+4. **Session memos** (`docs/dev/session-memos/`) — handoff summaries; link to canonical `plan/` / `spec/` docs. Index: `docs/dev/recall-index.md`.
 
 ## Consequences
 

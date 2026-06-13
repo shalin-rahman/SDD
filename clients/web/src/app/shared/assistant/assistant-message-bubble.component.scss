@@ -1,0 +1,41 @@
+.assistant-bubble {
+  max-width: min(36rem, 85%);
+  padding: var(--emcap-space-sm) var(--emcap-space-md);
+  border-radius: var(--emcap-radius-card);
+  border: 1px solid var(--emcap-border);
+  background: var(--emcap-surface);
+  box-shadow: var(--emcap-elevation-1);
+
+  &--user {
+    align-self: flex-end;
+    border-color: color-mix(in srgb, var(--emcap-primary) 35%, var(--emcap-border));
+    background: color-mix(in srgb, var(--emcap-primary) 8%, var(--emcap-surface));
+  }
+
+  &--assistant {
+    align-self: flex-start;
+  }
+}
+
+.assistant-bubble__role {
+  display: block;
+  margin-bottom: var(--emcap-space-xs);
+  font-size: var(--emcap-font-label-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--emcap-text-muted);
+}
+
+.assistant-bubble__text {
+  margin: 0;
+  font-size: var(--emcap-font-body-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .assistant-bubble {
+    max-width: 92%;
+  }
+}

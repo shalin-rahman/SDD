@@ -1,0 +1,45 @@
+.record-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--emcap-primary) 12%, var(--emcap-surface)),
+    var(--emcap-surface)
+  );
+  border: 1px solid var(--emcap-border);
+}
+
+.record-header__identity {
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.record-header__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.record-header__subtitle {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--emcap-text-muted, #5f6368);
+}
+
+.record-header__status {
+  margin-top: 0.25rem;
+}
+
+.record-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}

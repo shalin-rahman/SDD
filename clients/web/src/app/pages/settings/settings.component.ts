@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,6 +32,7 @@ interface EmailTemplate {
   standalone: true,
   imports: [
     FormsModule,
+    RouterLink,
     MatExpansionModule,
     MatButtonModule,
     MatFormFieldModule,

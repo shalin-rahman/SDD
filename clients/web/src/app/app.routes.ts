@@ -13,6 +13,7 @@ import { EntityComponent } from './pages/entity/entity.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { ReportsComponent } from './pages/reports/reports.component';
+import { RuleEvaluateComponent } from './pages/settings/rule-evaluate.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { ShellComponent } from './pages/shell/shell.component';
 import { WorkflowComponent } from './pages/workflow/workflow.component';
@@ -31,6 +32,11 @@ export const routes: Routes = [
       { path: 'account', component: AccountComponent },
       { path: 'assistant', component: AssistantComponent },
       { path: 'settings', component: SettingsComponent, canActivate: [settingsGuard] },
+      {
+        path: 'settings/rules',
+        component: RuleEvaluateComponent,
+        canActivate: [settingsGuard],
+      },
       {
         path: 'admin',
         canActivate: [adminGuard],

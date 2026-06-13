@@ -12,7 +12,9 @@
 
 
 
-**Last updated:** 2026-06-12 (rev. 7 — Phase 13 Slice 1 ABAC admin)
+**Last updated:** 2026-06-12 (rev. 8 — Phase 14/15 pivot; Phase 12/13 not product-complete)
+
+**Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
 
 
@@ -176,6 +178,7 @@
 | Workflow settings UI (escalation, SLA) | Partial | Partial | Partial | Settings workflow toggles |
 
 | Rule engine toggle UI | Partial | Partial | Partial | Settings rules toggles |
+| Rule evaluate panel | Done | Partial | No | Settings `/app/settings/rules`; P17-T11 web |
 
 
 
@@ -243,7 +246,7 @@
 
 | AI config UI | No | Partial | Partial | Settings AI toggle |
 
-| AI chat when enabled | Done | Done | Done | Phase 8 |
+| AI chat when enabled | Done | **Demo** | Done | P17-T09: `AssistantChatPanelComponent`; flag-gated; no `alert()` |
 
 
 

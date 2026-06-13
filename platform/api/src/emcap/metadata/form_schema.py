@@ -2,6 +2,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
+from emcap.metadata.display_schema import DisplayMetadata
+
 
 class LayoutFieldType(StrEnum):
     TEXT = "text"
@@ -10,6 +12,10 @@ class LayoutFieldType(StrEnum):
     CHECKBOX = "checkbox"
     DATE = "date"
     DATETIME = "datetime"
+    SELECT = "select"
+    LOOKUP = "lookup"
+    CURRENCY = "currency"
+    TEXTAREA = "textarea"
 
 
 class ValidationRule(BaseModel):
@@ -31,11 +37,15 @@ class FormFieldMetadata(BaseModel):
     label: str
     field_type: LayoutFieldType
     required: bool = False
+    read_only: bool = False
     row: int = 0
     col: int = 0
     span: int = 12
     validation: list[ValidationRule] = Field(default_factory=list)
     i18n: dict[str, str] = Field(default_factory=dict)
+    options: list[str] = Field(default_factory=list)
+    lookup_entity: str | None = None
+    currency_code: str | None = None
 
 
 class FormSectionMetadata(BaseModel):
@@ -50,3 +60,4 @@ class FormMetadata(BaseModel):
     sections: list[FormSectionMetadata] = Field(default_factory=list)
     conditions: list[ConditionalRule] = Field(default_factory=list)
     i18n: dict[str, dict[str, str]] = Field(default_factory=dict)
+    display: DisplayMetadata = Field(default_factory=DisplayMetadata)

@@ -3,8 +3,61 @@
   padding-top: 0.75rem;
 }
 
+.record-tabs__documents {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.record-tabs__document {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+}
+
+.record-tabs__document-name {
+  font-weight: 600;
+}
+
+.record-tabs__document-meta {
+  color: var(--emcap-text-muted);
+  font-size: var(--emcap-font-body-sm);
+}
+
 .record-tabs__upload {
   display: grid;
   gap: 0.5rem;
   margin-top: 0.75rem;
+}
+
+.virus-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--emcap-radius-full);
+  font-size: var(--emcap-font-label-sm);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.virus-badge--clean {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.virus-badge--pending {
+  background: #fef7e0;
+  color: #b06000;
+}
+
+.virus-badge--blocked {
+  background: #fce8e6;
+  color: var(--emcap-color-error);
+}
+
+.virus-badge--unknown {
+  background: var(--emcap-color-surface-container);
+  color: var(--emcap-text-muted);
 }

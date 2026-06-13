@@ -33,7 +33,7 @@ from emcap.auth.providers.registry import AuthProviderRegistry
 from emcap.auth.service import seed_default_auth
 from emcap.config.loader import load_platform_config
 from emcap.entity.registry import EntityRegistry
-from emcap.module.loader import load_modules
+from emcap.module.loader import load_entity_validators, load_modules
 from emcap.module.models import ModuleDefinition
 from emcap.observability.logging_middleware import JsonLoggingMiddleware
 from emcap.observability.metrics import MetricsMiddleware
@@ -79,6 +79,7 @@ def create_app() -> FastAPI:
     registry = EntityRegistry()
     modules = load_modules(registry)
     registry.validate()
+    entity_validators = load_entity_validators()
     workflow_definitions = _collect_workflows(modules)
     report_definitions = _collect_reports(modules)
     dashboard_definitions = _collect_dashboards(modules)
@@ -104,6 +105,7 @@ def create_app() -> FastAPI:
     )
     app.state.platform_config = platform_config
     app.state.entity_registry = registry
+    app.state.entity_validators = entity_validators
     app.state.modules = modules
     app.state.session_factory = session_factory
     app.state.auth_registry = auth_registry

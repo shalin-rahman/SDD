@@ -8,13 +8,14 @@ alwaysApply: true
 ## Before coding
 
 1. Read `docs/dev/codebase-index.md` for file locations (avoid broad search).
-2. Read `docs/dev/known-pitfalls.md` for regressions to avoid.
-3. Follow the matching recipe in `docs/dev/recipes/`.
-4. Check `spec/sdd/04-capability-matrix.md` (platform services), `05-end-user-matrix.md` (CRUD depth), and `06-admin-product-ui-matrix.md` (product/admin UX).
-5. If Phase 7 work: follow `plan/06-sdd-gap-closure.md` task card exactly.
-6. If Phase 8 work: follow `plan/07-phase8-end-user-product.md` task card exactly.
-7. If Phase 12 work: follow `plan/12-enterprise-product-ui.md` and `plan/12-phase12-dod-checklist.md` before marking Done.
-8. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.
+2. Read `docs/product/user-feedback-registry.md` for all user requirements and product pivot (memorized feedback).
+3. Read `docs/dev/known-pitfalls.md` for regressions to avoid.
+4. Follow the matching recipe in `docs/dev/recipes/`.
+5. Check matrices: `04` (API wired), `05` (CRUD depth), `06` (admin shell), **`07` (product-ready)** — never mark product UX Done from pytest alone.
+6. Viable product work: follow `plan/17-viable-product-execution-playbook.md` (Phases 14–21).
+7. Session handoffs: `docs/dev/session-memos/` + `docs/dev/recall-index.md`.
+8. If Phase 12 work: `plan/12-enterprise-product-ui.md` — treat backlog Done as Wired/Demo until `07` Product-ready.
+9. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.
 
 ## While coding
 
@@ -29,7 +30,7 @@ alwaysApply: true
 1. Run verify commands from the recipe.
 2. **Run doc sync recipe:** `docs/dev/recipes/sync-docs-after-change.md`
 3. Update `spec/sdd/03-traceability-matrix.md` if new FR coverage.
-4. Update the **correct** matrix: `04`, `05`, and/or **`06`** (admin/product UX).
+4. Update the **correct** matrix: `04`, `05`, `06`, and/or **`07`** (product-ready gate).
 5. Update `plan/03-task-backlog.md` task status.
 6. Update `docs/dev/codebase-index.md` if paths/tests/scripts changed.
 7. Update `clients/web/src/app/shared/README.md` if shared components changed.

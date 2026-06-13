@@ -1,0 +1,80 @@
+@if (open && document) {
+  <div class="doc-preview-backdrop" (click)="onBackdropClick($event)">
+    <aside
+      class="doc-preview-panel"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="i18n.t('document.preview.title')"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="doc-preview-panel__header">
+        <div class="doc-preview-panel__title-row">
+          <h3 class="doc-preview-panel__title">{{ filename || document.filename }}</h3>
+          @if (virusScanStatus || document.virus_scan_status) {
+            <span class="virus-badge" [ngClass]="virusBadgeClass()">{{ virusScanLabel() }}</span>
+          }
+        </div>
+
+        <div class="doc-preview-panel__controls">
+          @if (versions.length > 1) {
+            <label class="doc-preview-panel__version">
+              <span>{{ i18n.t('document.preview.version') }}</span>
+              <select [ngModel]="selectedVersionId" (ngModelChange)="onVersionChange($event)">
+                @for (entry of versions; track entry.id) {
+                  <option [value]="entry.id">{{ versionLabel(entry.version) }}</option>
+                }
+              </select>
+            </label>
+          } @else if (document.version) {
+            <span class="doc-preview-panel__version-static">
+              {{ versionLabel(document.version) }}
+            </span>
+          }
+
+          <button type="button" class="doc-preview-panel__close" mat-icon-button (click)="close()" [attr.aria-label]="i18n.t('common.cancel')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </header>
+
+      <div class="doc-preview-panel__body">
+        @if (loading) {
+          <app-loading-panel [message]="i18n.t('common.loading')" />
+        } @else if (loadError) {
+          <app-empty-state
+            [message]="loadError"
+            [actionLabel]="i18n.t('common.retry')"
+            (action)="retryLoad()"
+          />
+        } @else if (previewView) {
+          @switch (previewView.mode) {
+            @case ('image') {
+              <img class="doc-preview-panel__image" [src]="previewView.blobUrl" [alt]="filename" />
+            }
+            @case ('pdf') {
+              <iframe class="doc-preview-panel__frame" [src]="previewView.blobUrl" [title]="filename"></iframe>
+            }
+            @case ('text') {
+              <pre class="doc-preview-panel__text">{{ previewView.textContent }}</pre>
+            }
+            @default {
+              <app-empty-state
+                [message]="i18n.t('document.preview.downloadOnly')"
+                [actionLabel]="i18n.t('document.preview.download')"
+                (action)="download()"
+              />
+            }
+          }
+
+          @if (previewView.mode !== 'download') {
+            <div class="doc-preview-panel__actions">
+              <button type="button" mat-stroked-button (click)="download()">
+                {{ i18n.t('document.preview.download') }}
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </aside>
+  </div>
+}

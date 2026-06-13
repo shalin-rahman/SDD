@@ -7,6 +7,20 @@ export class DynamicFormRenderer {
     private readonly locale = 'en',
   ) {}
 
+  formMetadata(): FormMetadata {
+    return this.metadata;
+  }
+
+  sectionLabel(sectionCode: string): string {
+    const key = `section.${sectionCode}`;
+    const localized = this.metadata.i18n?.[this.locale]?.[key];
+    if (localized) {
+      return localized;
+    }
+    const section = this.metadata.sections.find((item) => item.code === sectionCode);
+    return section?.label ?? sectionCode;
+  }
+
   fieldNames(): string[] {
     return this.metadata.sections.flatMap((section) => section.fields.map((field) => field.name));
   }
@@ -28,6 +42,11 @@ export class DynamicFormRenderer {
     return this.metadata.sections.some((section) =>
       section.fields.some((field) => field.name === name && field.required),
     );
+  }
+
+  isReadOnly(name: string): boolean {
+    const field = this.getField(name);
+    return Boolean(field?.read_only);
   }
 
   isVisible(name: string, values: Record<string, unknown>): boolean {
@@ -54,6 +73,9 @@ export class DynamicFormRenderer {
   validate(values: Record<string, unknown>): Record<string, string> {
     const errors: Record<string, string> = {};
     for (const field of this.fields()) {
+      if (field.read_only) {
+        continue;
+      }
       if (!this.isVisible(field.name, values)) {
         continue;
       }
@@ -86,6 +108,21 @@ export class DynamicFormRenderer {
       input.checked = Boolean(value);
       return input;
     }
+    if (type === 'textarea') {
+      const textarea = document.createElement('textarea');
+      if (value !== undefined && value !== null) {
+        textarea.value = String(value);
+      }
+      return textarea as unknown as HTMLInputElement;
+    }
+    if (type === 'lookup' || type === 'currency') {
+      const input = document.createElement('input');
+      input.type = type === 'currency' ? 'number' : 'text';
+      if (value !== undefined && value !== null) {
+        input.value = String(value);
+      }
+      return input;
+    }
     const input = document.createElement('input');
     input.type =
       type === 'number' ? 'number' : type === 'date' ? 'date' : type === 'email' ? 'email' : 'text';
@@ -116,6 +153,12 @@ export function validateField(field: FormFieldMetadata, value: unknown): string 
   }
   if (value === undefined || value === null || value === '') {
     return null;
+  }
+  if (field.field_type === 'currency') {
+    const amount = Number(value);
+    if (Number.isNaN(amount)) {
+      return `${field.label} must be a valid amount`;
+    }
   }
   for (const rule of rules) {
     if (rule.rule === 'email' && typeof value === 'string' && !value.includes('@')) {

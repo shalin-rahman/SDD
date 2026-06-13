@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from emcap.metadata.display_schema import DisplayMetadata
+
 
 class GridColumnMetadata(BaseModel):
     field: str
@@ -7,6 +9,9 @@ class GridColumnMetadata(BaseModel):
     sortable: bool = True
     filterable: bool = True
     width: int | None = None
+    field_type: str | None = None
+    lookup_entity: str | None = None
+    currency_code: str | None = None
 
 
 class GridExportOptions(BaseModel):
@@ -24,3 +29,4 @@ class GridMetadata(BaseModel):
     realtime: bool = True
     offline: bool = True
     i18n: dict[str, dict[str, str]] = Field(default_factory=dict)
+    display: DisplayMetadata = Field(default_factory=DisplayMetadata)

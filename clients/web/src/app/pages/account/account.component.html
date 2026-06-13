@@ -1,0 +1,91 @@
+<div class="profile-page">
+  <app-page-header [title]="i18n.t('platform.account.title')" />
+
+  @if (error) {
+    <app-empty-state
+      [message]="error"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="load()"
+    />
+  } @else if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else {
+    <app-section-card [title]="i18n.t('platform.account.profile')">
+      <p><strong>{{ i18n.t('platform.account.user') }}</strong> {{ userId }}</p>
+      <p><strong>{{ i18n.t('platform.account.tenant') }}</strong> {{ tenantId }}</p>
+      @if (email) {
+        <p><strong>{{ i18n.t('platform.account.email') }}</strong> {{ email }}</p>
+      }
+    </app-section-card>
+
+    <app-section-card [title]="i18n.t('platform.account.preferences')">
+      <div class="section-card__row">
+        <label for="localeSelect">{{ i18n.t('platform.account.locale') }}</label>
+        <select id="localeSelect" [ngModel]="i18n.locale()" (ngModelChange)="onLocaleChange($event)">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="bn">বাংলা</option>
+        </select>
+        <button type="button" mat-stroked-button (click)="theme.toggle()">
+          {{ theme.mode() === 'dark' ? i18n.t('platform.account.themeLight') : i18n.t('platform.account.themeDark') }}
+        </button>
+      </div>
+    </app-section-card>
+
+    <app-section-card [title]="i18n.t('platform.account.roles')">
+      <p>{{ i18n.t('platform.account.rolesReadOnly') }}</p>
+      @if (roles.length === 0) {
+        <p>{{ i18n.t('platform.account.noRoles') }}</p>
+      } @else {
+        <ul>
+          @for (role of roles; track roleLabel(role)) {
+            <li>{{ roleLabel(role) }}</li>
+          }
+        </ul>
+      }
+    </app-section-card>
+
+    <app-section-card [title]="i18n.t('platform.account.permissions')">
+      <p>{{ permissions.length }} {{ i18n.t('platform.account.permissionsAssigned') }}</p>
+      @if (showPermissions) {
+        <ul>
+          @for (perm of permissions.slice(0, 40); track perm) {
+            <li>{{ perm }}</li>
+          }
+        </ul>
+      }
+      @if (permissions.length > 0) {
+        <button type="button" mat-button (click)="showPermissions = !showPermissions">
+          {{ showPermissions ? i18n.t('common.hide') : i18n.t('common.show') }}
+        </button>
+      }
+    </app-section-card>
+
+    <app-section-card [title]="i18n.t('platform.account.mfa')">
+      <div class="section-card__row">
+        <button type="button" mat-stroked-button (click)="enrollMfa()">
+          {{ i18n.t('platform.account.enrollMfa') }}
+        </button>
+        <input
+          [(ngModel)]="mfaCode"
+          name="mfaCode"
+          [placeholder]="i18n.t('platform.account.totpCode')"
+        />
+        <button type="button" mat-flat-button color="primary" (click)="verifyMfa()">
+          {{ i18n.t('platform.account.verifyMfa') }}
+        </button>
+      </div>
+      @if (mfaSecret) {
+        <p class="settings-hint">{{ mfaSecret }}</p>
+      }
+      @if (mfaVerified) {
+        <p>{{ i18n.t('platform.account.mfaVerified') }}</p>
+      }
+      @if (mfaError) {
+        <p class="error">{{ mfaError }}</p>
+      }
+    </app-section-card>
+
+    <p class="settings-hint">{{ i18n.t('platform.account.adminHint') }}</p>
+  }
+</div>

@@ -3,11 +3,32 @@ export interface FormFieldMetadata {
   label: string;
   field_type: string;
   required: boolean;
+  read_only?: boolean;
   row: number;
   col: number;
   span: number;
   validation?: Array<{ rule: string; message: string; value?: unknown }>;
   i18n?: Record<string, string>;
+  options?: string[];
+  lookup_entity?: string;
+  currency_code?: string;
+}
+
+export interface StatusFieldMetadata {
+  field: string;
+  active_values: Array<string | boolean | number>;
+  labels: Record<string, Record<string, string>>;
+}
+
+export interface HeadlineFieldMetadata {
+  code_field?: string;
+  name_field?: string;
+  subtitle_fields?: string[];
+}
+
+export interface DisplayMetadata {
+  status_field?: StatusFieldMetadata;
+  headline?: HeadlineFieldMetadata;
 }
 
 export interface ConditionalRule {
@@ -24,17 +45,27 @@ export interface FormMetadata {
   sections: Array<{ code: string; label: string; fields: FormFieldMetadata[] }>;
   conditions: ConditionalRule[];
   i18n?: Record<string, Record<string, string>>;
+  display?: DisplayMetadata;
 }
 
 export interface GridMetadata {
   schema_version: string;
   entity_code: string;
-  columns: Array<{ field: string; label: string; sortable: boolean; filterable: boolean }>;
+  columns: Array<{
+    field: string;
+    label: string;
+    sortable: boolean;
+    filterable: boolean;
+    field_type?: string;
+    lookup_entity?: string;
+    currency_code?: string;
+  }>;
   export: { excel: boolean; pdf: boolean; csv: boolean };
   grouping: boolean;
   realtime: boolean;
   offline: boolean;
   i18n?: Record<string, Record<string, string>>;
+  display?: DisplayMetadata;
 }
 
 export function validateFormMetadata(data: FormMetadata): boolean {

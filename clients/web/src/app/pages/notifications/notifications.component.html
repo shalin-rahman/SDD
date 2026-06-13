@@ -1,0 +1,113 @@
+<div class="notifications-page">
+  <app-page-header [title]="i18n.t('platform.notifications.title')" />
+
+  @if (loadError) {
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="load()"
+    />
+  } @else if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else if (notifications.length === 0) {
+    <app-empty-state [message]="i18n.t('platform.notifications.noSent')" />
+  } @else {
+    <div class="notifications-page__filters">
+      <label>
+        {{ i18n.t('platform.notifications.filterLabel') }}
+        <select [ngModel]="readFilter" (ngModelChange)="readFilter = $event">
+          <option value="all">{{ i18n.t('platform.notifications.filterAll') }}</option>
+          <option value="unread">{{ i18n.t('platform.notifications.filterUnread') }}</option>
+        </select>
+      </label>
+    </div>
+
+    @if (filteredNotifications.length === 0) {
+      <app-empty-state [message]="i18n.t('platform.notifications.noUnread')" />
+    } @else if (isMobile) {
+      <div class="notifications-cards">
+        @for (note of filteredNotifications; track itemKey(note)) {
+          <article
+            class="notification-card"
+            [class.notification-card--unread]="!isRead(note)"
+            (click)="openNotification(note)"
+            (keyup.enter)="openNotification(note)"
+            tabindex="0"
+            role="button"
+          >
+            <mat-icon class="notification-card__icon" aria-hidden="true">{{ channelIcon(note.channel) }}</mat-icon>
+            <div class="notification-card__body">
+              <strong>{{ note.subject }}</strong>
+              <p class="notification-card__meta">
+                {{ channelLabel(note.channel) }} · {{ note.recipient || '—' }}
+              </p>
+              <p class="notification-card__meta">{{ formatSentAt(note.created_at) }}</p>
+            </div>
+            @if (!isRead(note)) {
+              <span class="notification-card__dot" aria-hidden="true"></span>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="notifications-page__scroll">
+        <table class="notifications-table">
+          <thead>
+            <tr>
+              <th aria-hidden="true"></th>
+              <th>{{ i18n.t('platform.notifications.colSubject') }}</th>
+              <th>{{ i18n.t('platform.notifications.colChannel') }}</th>
+              <th>{{ i18n.t('platform.notifications.colRecipient') }}</th>
+              <th>{{ i18n.t('platform.notifications.colStatus') }}</th>
+              <th>{{ i18n.t('platform.notifications.colSentAt') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (note of filteredNotifications; track itemKey(note)) {
+              <tr
+                class="notifications-table__row"
+                [class.notifications-table__row--unread]="!isRead(note)"
+                (click)="openNotification(note)"
+                (keyup.enter)="openNotification(note)"
+                tabindex="0"
+                role="button"
+              >
+                <td>
+                  <mat-icon class="notifications-table__icon" aria-hidden="true">{{ channelIcon(note.channel) }}</mat-icon>
+                </td>
+                <td>
+                  {{ note.subject }}
+                  @if (!isRead(note)) {
+                    <span class="notifications-table__unread">{{ i18n.t('platform.notifications.unread') }}</span>
+                  }
+                </td>
+                <td>{{ channelLabel(note.channel) }}</td>
+                <td>{{ note.recipient || '—' }}</td>
+                <td><span class="status-chip">{{ statusLabel(note.status) }}</span></td>
+                <td>{{ formatSentAt(note.created_at) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  @if (selected) {
+    <app-section-card [title]="i18n.t('platform.notifications.detailTitle')">
+      <dl class="notification-detail">
+        <dt>{{ i18n.t('platform.notifications.colSubject') }}</dt>
+        <dd>{{ selected.subject }}</dd>
+        <dt>{{ i18n.t('platform.notifications.colChannel') }}</dt>
+        <dd>{{ channelLabel(selected.channel) }}</dd>
+        <dt>{{ i18n.t('platform.notifications.colRecipient') }}</dt>
+        <dd>{{ selected.recipient || '—' }}</dd>
+        <dt>{{ i18n.t('platform.notifications.colStatus') }}</dt>
+        <dd>{{ statusLabel(selected.status) }}</dd>
+        <dt>{{ i18n.t('platform.notifications.colSentAt') }}</dt>
+        <dd>{{ formatSentAt(selected.created_at) }}</dd>
+      </dl>
+      <button type="button" mat-button (click)="closeDetail()">{{ i18n.t('common.cancel') }}</button>
+    </app-section-card>
+  }
+</div>

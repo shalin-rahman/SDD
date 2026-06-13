@@ -41,6 +41,7 @@ class NotificationHub:
                 "recipient": row.recipient,
                 "subject": row.subject,
                 "status": row.status,
+                "created_at": row.created_at.isoformat() if row.created_at else None,
             }
             for row in rows
         ]

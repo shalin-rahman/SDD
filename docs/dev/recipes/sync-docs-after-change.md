@@ -50,11 +50,12 @@ Remove stale paths (e.g. `src/app/layout/` — use `src/app/shared/layout/`).
 
 ---
 
-## Step 5 — Pitfalls & traceability
+## Step 5 — Pitfalls, traceability, session memos
 
 - Recurring bug fixed → `docs/dev/known-pitfalls.md` + test reference
 - New FR coverage → `spec/sdd/03-traceability-matrix.md`
 - Milestone → `spec/sdd/00-document-control.md` revision row
+- Substantive multi-step task or handoff → add `docs/dev/session-memos/YYYY-MM-DD-<slug>.md` + row in `docs/dev/recall-index.md`
 
 ---
 

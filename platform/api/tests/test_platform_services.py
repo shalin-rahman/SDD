@@ -26,7 +26,16 @@ def test_report_list_and_run(client: TestClient) -> None:
 
     runs = client.get("/api/v1/reports/CUSTOMER_LIST/runs")
     assert runs.status_code == 200
-    assert len(runs.json()["runs"]) >= 1
+    run_list = runs.json()["runs"]
+    assert len(run_list) >= 1
+    assert run_list[0]["status"] == "completed"
+
+    detail = client.get(f"/api/v1/reports/runs/{run_list[0]['run_id']}")
+    assert detail.status_code == 200
+    payload = detail.json()
+    assert payload["report_code"] == "CUSTOMER_LIST"
+    assert payload["row_count"] >= 1
+    assert len(payload["rows"]) >= 1
 
 
 def test_dashboards_api(client: TestClient) -> None:

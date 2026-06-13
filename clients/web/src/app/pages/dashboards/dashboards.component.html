@@ -1,0 +1,37 @@
+<div class="dashboards-page">
+  <app-page-header [title]="i18n.t('platform.dashboards.title')" />
+
+  @if (loadError) {
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="load()"
+    />
+  } @else if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else if (dashboards.length === 0) {
+    <app-empty-state [message]="i18n.t('platform.dashboards.noDashboards')" />
+  } @else {
+    @for (dash of dashboards; track dashboardCode(dash)) {
+      <app-section-card [title]="dashboardName(dash)">
+        <div class="kpi-grid">
+          @for (widget of dashboardWidgets(dash); track widget['code']) {
+            <article class="kpi-card">
+              <div class="kpi-card__header">
+                <mat-icon class="kpi-card__icon" aria-hidden="true">{{ widgetIcon(widget) }}</mat-icon>
+                <h4 class="kpi-card__title">{{ widgetTitle(widget) }}</h4>
+              </div>
+              <p class="kpi-card__value">{{ widgetValue(widget) }}</p>
+              <p class="kpi-card__delta">{{ i18n.t('platform.dashboards.deltaPlaceholder') }}</p>
+              @if (widgetReportCode(widget); as reportCode) {
+                <a class="kpi-card__report-link" [routerLink]="['/reports']">
+                  {{ i18n.t('platform.dashboards.viewReport') }} ({{ reportCode }})
+                </a>
+              }
+            </article>
+          }
+        </div>
+      </app-section-card>
+    }
+  }
+</div>

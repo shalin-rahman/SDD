@@ -43,10 +43,15 @@ class EmcapClient {
     String method,
     String path, {
     Map<String, dynamic>? body,
+    Map<String, String>? extraHeaders,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
+    final headers = _headers();
+    if (extraHeaders != null) {
+      headers.addAll(extraHeaders);
+    }
     final response = await http.Request(method, uri)
-      ..headers.addAll(_headers())
+      ..headers.addAll(headers)
       ..body = body == null ? '' : jsonEncode(body);
     final streamed = await response.send();
     final text = await streamed.stream.bytesToString();
@@ -154,17 +159,23 @@ class EmcapClient {
   Future<Map<String, dynamic>> updateRecord(
     String entityCode,
     String recordId,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    int? ifMatch,
+  }) async {
     return _request(
       'PUT',
       '/api/v1/entities/$entityCode/records/$recordId',
       body: data,
+      extraHeaders: ifMatch != null ? {'If-Match': '$ifMatch'} : null,
     );
   }
 
-  Future<void> deleteRecord(String entityCode, String recordId) async {
-    await _request('DELETE', '/api/v1/entities/$entityCode/records/$recordId');
+  Future<Map<String, dynamic>> deleteRecord(String entityCode, String recordId) async {
+    return _request('DELETE', '/api/v1/entities/$entityCode/records/$recordId');
+  }
+
+  Future<Map<String, dynamic>> restoreRecord(String entityCode, String recordId) async {
+    return _request('POST', '/api/v1/entities/$entityCode/records/$recordId/restore');
   }
 
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async {

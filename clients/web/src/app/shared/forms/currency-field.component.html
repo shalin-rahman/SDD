@@ -1,0 +1,13 @@
+<mat-form-field appearance="outline" class="currency-field">
+  <mat-label>{{ currencyCode }}</mat-label>
+  <input
+    matInput
+    type="number"
+    step="0.01"
+    min="0"
+    [required]="required"
+    [disabled]="disabled"
+    [ngModel]="value"
+    (ngModelChange)="onInput($event)"
+  />
+</mat-form-field>

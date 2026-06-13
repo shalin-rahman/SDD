@@ -1,0 +1,33 @@
+.section-card {
+  background: var(--emcap-surface);
+  border: 1px solid var(--emcap-color-outline);
+  border-radius: var(--emcap-radius-card);
+  padding: var(--emcap-space-lg);
+  margin-bottom: var(--emcap-space-md);
+  box-shadow: var(--emcap-elevation-1);
+
+  h3 {
+    margin: 0 0 var(--emcap-space-sm);
+    font-size: var(--emcap-font-title-md);
+  }
+
+  p {
+    margin: 0 0 var(--emcap-space-sm);
+    color: var(--emcap-text-muted);
+    font-size: var(--emcap-font-body-sm);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--emcap-space-lg);
+    font-size: var(--emcap-font-body-sm);
+  }
+}
+
+.section-card__row {
+  display: flex;
+  gap: var(--emcap-space-sm);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--emcap-space-sm);
+}

@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'styles/tokens';
 
 html {
   color-scheme: light;
@@ -15,19 +16,8 @@ html {
   );
 }
 
-:root {
-  --emcap-primary: #005cbb;
-  --emcap-border: #e0e0e0;
-  --emcap-surface: #fafafa;
-  --emcap-text: #1a1a1a;
-}
-
 html[data-theme='dark'] {
   color-scheme: dark;
-
-  --emcap-border: #3a3a3a;
-  --emcap-surface: #121212;
-  --emcap-text: #f5f5f5;
 }
 
 html[data-theme='dark'] body {
@@ -40,7 +30,8 @@ html[data-theme='dark'] .admin-table,
 html[data-theme='dark'] .master-detail__detail,
 html[data-theme='dark'] .admin-table-scroll,
 html[data-theme='dark'] .permission-matrix__scroll,
-html[data-theme='dark'] .data-grid__scroll {
+html[data-theme='dark'] .data-grid__scroll,
+html[data-theme='dark'] .section-card {
   background: #1e1e1e;
 }
 
@@ -51,8 +42,10 @@ body {
 
 body {
   font-family: Roboto, system-ui, sans-serif;
+  font-size: var(--emcap-font-body-md);
   margin: 0;
   background: var(--emcap-surface);
+  color: var(--emcap-color-on-surface);
 }
 
 table {
@@ -63,20 +56,25 @@ table {
 th,
 td {
   border: 1px solid var(--emcap-border);
-  padding: 0.4rem;
+  padding: var(--emcap-space-sm);
   text-align: left;
 }
 
 tr.row-selected {
-  background: #e8eaf6;
+  background: color-mix(in srgb, var(--emcap-color-primary) 12%, var(--emcap-surface));
 }
 
 .error {
-  color: #b00020;
+  color: var(--emcap-color-error);
 }
 
 form.record-form,
 form.login-form {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--emcap-space-sm);
+}
+
+.profile-page {
+  padding: var(--emcap-space-md);
+  max-width: 720px;
 }

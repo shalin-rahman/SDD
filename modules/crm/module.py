@@ -1,6 +1,15 @@
-from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType
+from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType, StatusFieldDisplay
 from emcap.module.models import MenuDefinition, ModuleDefinition
 from emcap.reporting.models import ReportColumn, ReportDefinition
+
+_STATUS_FIELD = StatusFieldDisplay(
+    field="active",
+    active_values=[True],
+    labels={
+        "active": {"en": "Active", "bn": "সক্রিয়"},
+        "inactive": {"en": "Inactive", "bn": "নিষ্ক্রিয়"},
+    },
+)
 
 MODULE = ModuleDefinition(
     code="CRM",
@@ -12,7 +21,12 @@ MODULE = ModuleDefinition(
                 FieldDefinition(name="company", field_type=FieldType.STRING, required=True),
                 FieldDefinition(name="contact_name", field_type=FieldType.STRING, required=True),
                 FieldDefinition(name="email", field_type=FieldType.STRING, required=False),
-                FieldDefinition(name="status", field_type=FieldType.STRING, required=False),
+                FieldDefinition(
+                    name="status",
+                    field_type=FieldType.ENUM,
+                    options=["new", "qualified", "lost", "won"],
+                    required=False,
+                ),
                 FieldDefinition(name="active", field_type=FieldType.BOOLEAN, required=False),
             ],
             options=EntityOptions(
@@ -20,6 +34,7 @@ MODULE = ModuleDefinition(
                 workflow_enabled=False,
                 notes_enabled=True,
                 document_enabled=True,
+                status_field=_STATUS_FIELD,
             ),
         ),
         EntityDefinition(
@@ -28,6 +43,12 @@ MODULE = ModuleDefinition(
                 FieldDefinition(name="name", field_type=FieldType.STRING, required=True),
                 FieldDefinition(name="email", field_type=FieldType.STRING, required=True),
                 FieldDefinition(name="phone", field_type=FieldType.STRING, required=False),
+                FieldDefinition(
+                    name="lead_id",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="LEAD",
+                    required=False,
+                ),
                 FieldDefinition(name="active", field_type=FieldType.BOOLEAN, required=False),
             ],
             options=EntityOptions(
@@ -35,6 +56,7 @@ MODULE = ModuleDefinition(
                 workflow_enabled=False,
                 notes_enabled=True,
                 document_enabled=False,
+                status_field=_STATUS_FIELD,
             ),
         ),
     ],

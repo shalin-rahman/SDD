@@ -29,6 +29,13 @@
     <p class="data-grid__status">{{ statusLine }}</p>
   }
 
+  @if (isEmpty) {
+    <app-empty-state
+      [message]="i18n.t('grid.empty')"
+      [actionLabel]="i18n.t('entity.new')"
+      (action)="createRecord.emit()"
+    />
+  } @else {
   <div class="data-grid__scroll">
     <table class="data-grid__table">
       <tr>
@@ -67,11 +74,12 @@
             (click)="recordSelect.emit(record)"
           >
             @for (field of columnFields; track field) {
-              <td>{{ record[field] }}</td>
+              <td>{{ cellValue(field, record) }}</td>
             }
           </tr>
         }
       }
     </table>
   </div>
+  }
 </div>

@@ -80,6 +80,24 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Parse `offline` and `realtime` from JSON; mirror `contract.ts` defaults |
 | **Test** | Entity screen sync delta display; contract parity with API metadata |
 
+### M2 blocked — Flutter not installed locally
+
+| | |
+|--|--|
+| **Symptom** | `flutter` not recognized; cannot run `clients/mobile`, capture M2 screenshots, or P16-T03 tokens |
+| **Where** | S2 (P15-T13, P20-T03), S3 (P16-T03), P17-T02 mobile inbox |
+| **Workaround** | **Skip S2/S3** on this machine; continue **web-only** viable product (P17 reports/docs, P14 lookup, P19 admin). M1 web gate already signed. |
+| **To unblock M2** | Install Flutter SDK, add `flutter\bin` to PATH, then follow `scripts/capture-m2-mobile-screenshots.md` (`flutter pub get`, `flutter test`, run app, capture `phase15-mobile-product-detail.png`). Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. |
+| **CI** | Mobile lint/test still runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter optional until M2 sign-off. |
+
+### Lookup field — entity vs record validation
+
+| | |
+|--|--|
+| **Startup** | `registry.validate()` rejects unknown `lookup_entity` codes (module config typo) — see `test_registry_rejects_unknown_lookup_entity` |
+| **Save time** | `EntityRepository` rejects missing or soft-deleted target **record IDs** when `registry` is passed — see `test_create_record_rejects_unknown_lookup_reference` |
+| **Where** | `platform/api/src/emcap/persistence/repository.py`, `api/routes/entities.py` |
+
 ---
 
 ## Architecture
@@ -506,3 +524,53 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | Task Done; backlog Pending; index stale; recipes reference old paths |
 | **Fix** | Same change: `docs/dev/recipes/sync-docs-after-change.md` · rule `.cursor/rules/emcap-doc-sync.mdc` |
 | **Test** | PR checklist section 6 in `plan/12-phase12-dod-checklist.md` |
+
+---
+
+## Phase 16 — Viable product / entity platform (prevent reintroduction)
+
+### Stale local API after platform entity changes
+
+| | |
+|--|--|
+| **Symptom** | New routes 404 (`/restore`, soft delete); OpenAPI missing `If-Match`; web save always fails or ignores version |
+| **Cause** | Uvicorn still running an old build before `record_version` / `deleted_at` repository changes |
+| **Fix** | `scripts\stop-emcap.bat` then `scripts\run-emcap.bat --stack-only --local` (or kill port 8000 and rerun `run-api-with-logs.ps1`) |
+| **Test** | `curl.exe http://localhost:8000/openapi.json` lists entity restore route; `test_system_fields.py` green |
+
+### Version conflict 409 on Save
+
+| | |
+|--|--|
+| **Symptom** | Save shows error after editing a record left open; API returns **409** with version conflict detail |
+| **Cause** | Stale `record_version` in form — another session/tab incremented version, or grid reload did not refresh detail |
+| **Where** | `platform/api/src/emcap/persistence/repository.py` (PUT); web `entity.component.ts` sends `If-Match` from `formValues['record_version']` |
+| **Fix** | Re-select row or reload list to fetch current `record_version`; submit again with fresh version; do not strip `record_version` from loaded record |
+| **Test** | `test_system_fields.py::test_version_conflict_returns_409` |
+
+### Soft delete hides record from grid
+
+| | |
+|--|--|
+| **Symptom** | Row disappears after delete; search cannot find SKU; user thinks data was lost |
+| **Cause** | `deleted_at` set; list query filters `deleted_at IS NULL` by default (`repository.py`) |
+| **Fix** | Expected behavior — use `POST .../records/{id}/restore` or restore UI when wired (P14-T14); audit tab still shows history |
+| **Test** | `test_system_fields.py` soft delete + restore; `test_inventory_e2e.py` delete assertions on `deleted_at` |
+
+### Product grid still shows 2 rows after seed expansion
+
+| | |
+|--|--|
+| **Symptom** | Demo shows only `SKU-DEMO-001` / `002` despite `products.json` has 20 rows |
+| **Cause** | SQLite `emcap-local.db` or Postgres DB seeded before JSON update; seed IDs are upserted but old session never re-applied |
+| **Fix** | `python scripts\apply-seed.py` (Postgres) or delete `emcap-local.db` and restart API; verify `data/seed/demo/products.json` |
+| **Test** | Manual: Inventory → Products shows 20 rows; runbook `docs/dev/product-demo-runbook.md` |
+
+### Design tokens bypassed in new shared SCSS
+
+| | |
+|--|--|
+| **Symptom** | Inconsistent spacing/colors between entity and admin after Phase 16 polish |
+| **Cause** | Raw hex/pixel values in `shared/` instead of `--emcap-*` tokens (ADR-006) |
+| **Fix** | Use `styles/_tokens.scss` and catalog `docs/product/design-system.md`; reject ad hoc values in review |
+| **Test** | Visual screenshot pair at 1280px; dark mode contrast audit P16-T08 |

@@ -4,7 +4,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 **Legend:** Done · Partial · No · N/A (admin/ops only)
 
-**Last updated:** 2026-06-12 · **CRUD/metadata depth** (Phase 8–9). **Product shell, admin, settings:** see `spec/sdd/06-admin-product-ui-matrix.md` (Phase 12).
+**Last updated:** 2026-06-13 · P14-T24 web lookup/currency/textarea renderers
 
 **Companion:** `spec/sdd/04-capability-matrix.md`
 
@@ -33,6 +33,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 |------------|-----|--------|-------|
 | Metadata-driven fields | Done | Done | — |
 | Field types (date, number, checkbox) | Done | Done | — |
+| Field types (select, lookup, currency, textarea) | Done | Demo | P14-T24–T25 web + mobile |
 | Inline validation errors | Done | Done | — |
 | Conditional show/hide | Done | Done | — |
 | Localized labels (`i18n`) | Done | Done | — |
@@ -73,10 +74,10 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 | Capability | Web | Mobile | Notes |
 |------------|-----|--------|-------|
-| Workflow inbox actions | Done | Done | — |
+| Workflow inbox actions | Done | Done | P17-T02 mobile inbox + entity nav |
 | Workflow instance detail | Done | Done | Web inbox Detail button |
 | Workflow escalate | Done | Done | Web inbox + API |
-| Rule evaluate | Done | Done | Account |
+| Rule evaluate | Done | Done | Settings `/app/settings/rules` (P17-T11); not Account |
 | Start workflow from record | Done | Done | — |
 | SLA / due date display | Done | Done | — |
 | Reports run | Done | Done | — |
@@ -84,7 +85,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 | Dashboards | Done | Done | — |
 | Notifications (multi-channel) | Done | Done | — |
 | Document upload + list | Done | Done | — |
-| Document preview / versions | Done | Done | — |
+| Document preview / versions | Done | Done | P17-T07 mobile dialog + util |
 | REST dispatch | Done | Done | — |
 | Kafka publish | Done | Done | Account |
 | SOAP invoke | Done | Done | Account |

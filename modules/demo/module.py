@@ -1,4 +1,4 @@
-from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType
+from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType, StatusFieldDisplay
 from emcap.module.models import MenuDefinition, ModuleDefinition
 from emcap.reporting.models import DashboardDefinition, DashboardWidget, ReportColumn, ReportDefinition
 from emcap.workflow.models import WorkflowDefinition, WorkflowState, WorkflowTransition
@@ -39,6 +39,14 @@ MODULE = ModuleDefinition(
                 workflow_enabled=True,
                 notes_enabled=True,
                 document_enabled=False,
+                status_field=StatusFieldDisplay(
+                    field="active",
+                    active_values=[True],
+                    labels={
+                        "active": {"en": "Active", "bn": "সক্রিয়"},
+                        "inactive": {"en": "Inactive", "bn": "নিষ্ক্রিয়"},
+                    },
+                ),
             ),
         )
     ],

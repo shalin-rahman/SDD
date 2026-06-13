@@ -4,16 +4,26 @@
     [showBack]="mobileDetailOpen"
     (back)="closeMobileDetail()"
   >
-    <button type="button" (click)="startCreate()">{{ i18n.t('entity.new') }}</button>
+    <button type="button" class="entity-page__new" mat-flat-button color="primary" (click)="startCreate()">
+      {{ i18n.t('entity.new') }}
+    </button>
   </app-page-header>
 
   @if (loadError) {
-    <p class="error">{{ loadError }}</p>
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="loadEntity()"
+    />
+  }
+
+  @if (loadingEntity) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
   }
 
   @if (gridRenderer) {
     <app-master-detail-layout [detailOpen]="mobileDetailOpen">
-      <div listPane>
+      <div listPane class="entity-page__list">
         <app-dynamic-data-grid
           [gridRenderer]="gridRenderer"
           [columnFields]="columnFields"
@@ -39,28 +49,37 @@
           (exportCsvClick)="exportCsvFile()"
           (exportExcelClick)="exportExcelFile()"
           (exportPdfClick)="exportPdfFile()"
+          (createRecord)="startCreate()"
         />
       </div>
 
-      <div detailPane>
+      <div detailPane class="entity-page__detail">
         @if (selectedRecordId || creatingNew) {
           <div class="record-detail">
-            <div class="record-detail__header">
-              <h3>{{ creatingNew ? i18n.t('entity.newRecord') : i18n.t('entity.record') + ' ' + selectedRecordId }}</h3>
-              <div class="record-detail__actions">
-                @if (selectedRecordId && !creatingNew) {
-                  <button type="button" (click)="deleteRecord()">{{ i18n.t('entity.delete') }}</button>
-                  @if (entityCode === 'PRODUCT') {
-                    <button type="button" (click)="startWorkflow()">{{ i18n.t('entity.startWorkflow') }}</button>
-                  }
-                }
-                @if (editingId || creatingNew) {
-                  <button type="button" (click)="cancelEdit()">{{ i18n.t('entity.cancel') }}</button>
-                }
-              </div>
-            </div>
+            <app-record-detail-header
+              [headline]="recordHeadline()"
+              [subtitle]="recordSubtitle()"
+              [statusLabel]="statusChipLabel()"
+              [statusActive]="statusChipActive()"
+              [creatingNew]="creatingNew"
+              [canDelete]="canDeleteRecord()"
+              [canWorkflow]="canStartWorkflow()"
+              [canSave]="canSaveRecord()"
+              [canRestore]="canRestoreRecord()"
+              [deleteLabel]="i18n.t('entity.delete')"
+              [restoreLabel]="i18n.t('entity.restore')"
+              [workflowLabel]="i18n.t('entity.startWorkflow')"
+              [cancelLabel]="i18n.t('entity.cancel')"
+              [saveLabel]="editingId || creatingNew ? i18n.t('entity.save') : i18n.t('entity.createRecord')"
+              (delete)="deleteRecord()"
+              (workflow)="startWorkflow()"
+              (cancel)="cancelEdit()"
+              (save)="submitForm()"
+              (restore)="restoreRecord()"
+            />
+
             @if (workflowStarted) {
-              <p>{{ i18n.t('entity.workflowStarted') }}</p>
+              <p class="record-detail__notice">{{ i18n.t('entity.workflowStarted') }}</p>
             }
             @if (detailError) {
               <p class="error">{{ detailError }}</p>
@@ -74,10 +93,11 @@
                 [formError]="formError"
                 [noteInput]="noteInput"
                 [showNoteField]="creatingNew"
-                [submitLabel]="editingId || creatingNew ? i18n.t('entity.save') : i18n.t('entity.createRecord')"
+                [notePlaceholder]="i18n.t('entity.noteOptional')"
+                [hideSubmitButton]="true"
+                [showSystemSection]="showSystemFields()"
                 (fieldChange)="onFormFieldChange($event.name, $event.value)"
                 (noteInputChange)="noteInput = $event"
-                (submit)="submitForm()"
               />
             }
 
@@ -96,9 +116,15 @@
             }
           </div>
         } @else {
-          <app-detail-placeholder />
+          <app-detail-placeholder (createRecord)="startCreate()" />
         }
       </div>
     </app-master-detail-layout>
   }
+
+  <app-document-preview-panel
+    [open]="previewingDocument !== null"
+    [document]="previewingDocument"
+    (closed)="closeDocumentPreview()"
+  />
 </div>

@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Select {{ data.entityCode }}</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="lookup-picker__search">
+    <mat-label>Search</mat-label>
+    <input matInput [(ngModel)]="search" (keyup.enter)="loadRecords()" />
+  </mat-form-field>
+  <button mat-stroked-button type="button" (click)="loadRecords()">Search</button>
+
+  @if (loading) {
+    <p class="lookup-picker__status">Loading…</p>
+  } @else if (loadError) {
+    <p class="lookup-picker__error">{{ loadError }}</p>
+  } @else if (records.length === 0) {
+    <p class="lookup-picker__status">No records found</p>
+  } @else {
+    <ul class="lookup-picker__list">
+      @for (record of records; track record.id) {
+        <li>
+          <button
+            type="button"
+            class="lookup-picker__item"
+            [class.lookup-picker__item--selected]="isSelected(record)"
+            (click)="select(record)"
+          >
+            {{ recordLabel(record) }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="clear()">Clear</button>
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+</mat-dialog-actions>

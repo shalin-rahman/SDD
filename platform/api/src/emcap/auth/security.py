@@ -13,7 +13,17 @@ def apply_field_security(
         return record
 
     secured: dict[str, Any] = {
-        key: value for key, value in record.items() if key in {"id", "created_at", "updated_at"}
+        key: value
+        for key, value in record.items()
+        if key in {
+            "id",
+            "created_at",
+            "updated_at",
+            "created_by",
+            "updated_by",
+            "record_version",
+            "deleted_at",
+        }
     }
     for field in entity.fields:
         if not field.read_roles:

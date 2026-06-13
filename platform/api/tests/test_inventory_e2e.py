@@ -61,7 +61,8 @@ def test_product_crud(client: TestClient) -> None:
     assert updated.json()["quantity_on_hand"] == 95
 
     deleted = client.delete(f"/api/v1/entities/PRODUCT/records/{record_id}")
-    assert deleted.status_code == 204
+    assert deleted.status_code == 200
+    assert deleted.json()["deleted_at"] is not None
 
     missing = client.get(f"/api/v1/entities/PRODUCT/records/{record_id}")
     assert missing.status_code == 404
@@ -84,7 +85,8 @@ def test_warehouse_crud(client: TestClient) -> None:
     assert updated.json()["name"] == "Central Warehouse"
 
     deleted = client.delete(f"/api/v1/entities/WAREHOUSE/records/{record_id}")
-    assert deleted.status_code == 204
+    assert deleted.status_code == 200
+    assert deleted.json()["deleted_at"] is not None
 
     missing = client.get(f"/api/v1/entities/WAREHOUSE/records/{record_id}")
     assert missing.status_code == 404
@@ -112,7 +114,7 @@ def test_product_grid_metadata_api(client: TestClient) -> None:
     body = response.json()
     assert body["entity_code"] == "PRODUCT"
     assert body["export"]["excel"] is True
-    assert len(body["columns"]) == 6
+    assert len(body["columns"]) == 14
 
 
 def test_product_metadata_contract_keys(client: TestClient) -> None:
@@ -136,6 +138,7 @@ def test_product_metadata_contract_keys(client: TestClient) -> None:
     fixture_form = json.loads((FIXTURES / "product.form.keys.json").read_text(encoding="utf-8"))
     fixture_grid = json.loads((FIXTURES / "product.grid.keys.json").read_text(encoding="utf-8"))
     assert fixture_form["field_names"] == [field["name"] for field in form["sections"][0]["fields"]]
+    assert form["sections"][1]["code"] == "system"
     assert fixture_grid["column_fields"] == [column["field"] for column in grid["columns"]]
 
 
@@ -199,5 +202,6 @@ def test_inventory_menus(client: TestClient) -> None:
     menu_codes = {menu["code"] for menu in inventory_menus}
     assert "products" in menu_codes
     assert "warehouses" in menu_codes
+    assert "stock_movements" in menu_codes
     assert any(menu["entity_code"] == "PRODUCT" for menu in inventory_menus)
     assert any(menu["entity_code"] == "WAREHOUSE" for menu in inventory_menus)

@@ -1,0 +1,19 @@
+{
+  "column_fields": [
+    "movement_number",
+    "movement_type",
+    "movement_date",
+    "warehouse_id",
+    "source_warehouse_id",
+    "reference_type",
+    "reference_id",
+    "notes",
+    "status",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

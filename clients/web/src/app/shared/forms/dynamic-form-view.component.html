@@ -1,35 +1,100 @@
-<form class="dynamic-form" (ngSubmit)="submit.emit()">
-  @for (field of visibleFields; track field.name) {
-    <label [ngStyle]="formRenderer.layoutStyle(field)">
-      {{ formRenderer.label(field.name) }}
-      @if (field.field_type !== 'checkbox') {
-        <input
-          [type]="inputType(field)"
-          [name]="field.name"
-          [required]="formRenderer.isRequired(field.name)"
-          [ngModel]="formValues[field.name]"
-          (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
-        />
-      } @else {
-        <input
-          type="checkbox"
-          [name]="field.name"
-          [ngModel]="formValues[field.name]"
-          (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
-        />
-      }
-    </label>
-  }
-  @if (showNoteField) {
-    <textarea
-      placeholder="Note (optional)"
-      [ngModel]="noteInput"
-      (ngModelChange)="noteInputChange.emit($event)"
-      name="noteInput"
-    ></textarea>
-  }
-  <button type="submit">{{ submitLabel }}</button>
-  @if (formError) {
-    <p class="error">{{ formError }}</p>
-  }
-</form>
+@for (section of sections; track section.code) {
+  <mat-card class="form-section" [class.form-section--system]="section.code === 'system'">
+    <mat-card-header>
+      <mat-card-title>{{ sectionLabel(section.code) }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="dynamic-form">
+        @for (field of sectionFields(section.code); track field.name) {
+          @if (formRenderer.isVisible(field.name, formValues)) {
+            <div class="dynamic-form__field" [ngStyle]="formRenderer.layoutStyle(field)">
+              <label class="dynamic-form__label">{{ formRenderer.label(field.name) }}</label>
+              @if (formRenderer.isReadOnly(field.name)) {
+                <span class="dynamic-form__readonly">{{ displayValue(field, formValues[field.name]) }}</span>
+              } @else if (field.field_type === 'select') {
+                <select
+                  class="dynamic-form__input"
+                  [name]="field.name"
+                  [required]="formRenderer.isRequired(field.name)"
+                  [ngModel]="formValues[field.name]"
+                  (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+                >
+                  <option value=""></option>
+                  @for (opt of field.options ?? []; track opt) {
+                    <option [value]="opt">{{ opt }}</option>
+                  }
+                </select>
+              } @else if (field.field_type === 'lookup') {
+                <app-lookup-field
+                  [field]="field"
+                  [value]="formValues[field.name]"
+                  [required]="formRenderer.isRequired(field.name)"
+                  (valueChange)="fieldChange.emit({ name: field.name, value: $event })"
+                />
+              } @else if (field.field_type === 'currency') {
+                <app-currency-field
+                  [field]="field"
+                  [value]="formValues[field.name]"
+                  [required]="formRenderer.isRequired(field.name)"
+                  (valueChange)="fieldChange.emit({ name: field.name, value: $event })"
+                />
+              } @else if (field.field_type === 'textarea') {
+                <textarea
+                  class="dynamic-form__textarea"
+                  [name]="field.name"
+                  rows="4"
+                  [required]="formRenderer.isRequired(field.name)"
+                  [ngModel]="formValues[field.name]"
+                  (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+                ></textarea>
+              } @else if (field.field_type !== 'checkbox') {
+                <input
+                  class="dynamic-form__input"
+                  [type]="inputType(field)"
+                  [name]="field.name"
+                  [required]="formRenderer.isRequired(field.name)"
+                  [ngModel]="formValues[field.name]"
+                  (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+                />
+              } @else {
+                <input
+                  type="checkbox"
+                  [name]="field.name"
+                  [ngModel]="formValues[field.name]"
+                  (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
+                />
+              }
+            </div>
+          }
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (showNoteField) {
+  <mat-card class="form-section">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="form-note">
+        <mat-label>{{ notePlaceholder }}</mat-label>
+        <textarea
+          matInput
+          [ngModel]="noteInput"
+          (ngModelChange)="noteInputChange.emit($event)"
+          name="noteInput"
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (!hideSubmitButton) {
+  <div class="dynamic-form__footer">
+    <button mat-flat-button color="primary" type="button" (click)="submit.emit()">{{ submitLabel }}</button>
+  </div>
+}
+
+@if (formError) {
+  <p class="error">{{ formError }}</p>
+}

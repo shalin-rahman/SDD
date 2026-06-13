@@ -7,11 +7,15 @@
   </ul>
 
   <h4>{{ i18n.t('record.documents') }} ({{ documents.length }})</h4>
-  <ul>
+  <ul class="record-tabs__documents">
     @for (doc of documents; track doc.id) {
-      <li>
-        {{ doc.filename }} v{{ doc.version }} · {{ doc.virus_scan_status }}
-        <button type="button" (click)="previewDocument.emit(doc)">Preview</button>
+      <li class="record-tabs__document">
+        <span class="record-tabs__document-name">{{ doc.filename }}</span>
+        <span class="record-tabs__document-meta">{{ versionLabel(doc.version) }}</span>
+        @if (doc.virus_scan_status) {
+          <span class="virus-badge" [ngClass]="virusBadgeClass(doc.virus_scan_status)">{{ doc.virus_scan_status }}</span>
+        }
+        <button type="button" (click)="previewDocument.emit(doc)">{{ i18n.t('record.previewDocument') }}</button>
       </li>
     }
   </ul>

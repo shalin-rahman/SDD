@@ -189,6 +189,18 @@ export class EmcapClient {
     return this.request(`/api/v1/reports/${reportCode}/runs`);
   }
 
+  getReportRun(runId: string): Promise<{
+    run_id: string;
+    report_code: string;
+    row_count: number;
+    created_at: string;
+    status: string;
+    columns: string[];
+    rows: Record<string, unknown>[];
+  }> {
+    return this.request(`/api/v1/reports/runs/${runId}`);
+  }
+
   getDocument(documentId: string): Promise<Record<string, unknown>> {
     return this.request(`/api/v1/documents/${documentId}`);
   }
@@ -196,7 +208,7 @@ export class EmcapClient {
   aiChat(message: string): Promise<Record<string, unknown>> {
     return this.request('/api/v1/ai/chat', {
       method: 'POST',
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ prompt: message }),
     });
   }
 
@@ -225,16 +237,28 @@ export class EmcapClient {
     entityCode: string,
     recordId: string,
     data: Record<string, unknown>,
+    ifMatch?: number,
   ): Promise<Record<string, unknown>> {
+    const headers: Record<string, string> = {};
+    if (ifMatch !== undefined) {
+      headers['If-Match'] = String(ifMatch);
+    }
     return this.request(`/api/v1/entities/${entityCode}/records/${recordId}`, {
       method: 'PUT',
+      headers,
       body: JSON.stringify(data),
     });
   }
 
-  deleteRecord(entityCode: string, recordId: string): Promise<void> {
+  deleteRecord(entityCode: string, recordId: string): Promise<Record<string, unknown>> {
     return this.request(`/api/v1/entities/${entityCode}/records/${recordId}`, {
       method: 'DELETE',
+    });
+  }
+
+  restoreRecord(entityCode: string, recordId: string): Promise<Record<string, unknown>> {
+    return this.request(`/api/v1/entities/${entityCode}/records/${recordId}/restore`, {
+      method: 'POST',
     });
   }
 
@@ -587,7 +611,7 @@ export class EmcapClient {
     return this.request('/api/v1/reports');
   }
 
-  runReport(reportCode: string): Promise<{ report_code: string; rows: Record<string, unknown>[] }> {
+  runReport(reportCode: string): Promise<{ report_code: string; rows: Record<string, unknown>[]; run_id?: string; row_count?: number }> {
     return this.request(`/api/v1/reports/${reportCode}/run`, { method: 'POST' });
   }
 

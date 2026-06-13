@@ -1,5 +1,5 @@
 import { DynamicFormRenderer, validateField } from './dynamic-form.renderer';
-import type { FormMetadata } from './contract';
+import type { FormFieldMetadata, FormMetadata } from './contract';
 
 const sampleForm: FormMetadata = {
   schema_version: '1.0',
@@ -63,5 +63,20 @@ describe('DynamicFormRenderer', () => {
     expect(renderer.layoutStyle(sku!)).toEqual({ gridColumn: '1 / 7', gridRow: '1' });
     const email = renderer.getField('email');
     expect(renderer.layoutStyle(email!)).toEqual({ gridColumn: '7 / 13', gridRow: '1' });
+  });
+
+  it('validates currency amounts', () => {
+    const field: FormFieldMetadata = {
+      name: 'unit_price',
+      label: 'Unit Price',
+      field_type: 'currency',
+      required: false,
+      row: 0,
+      col: 0,
+      span: 6,
+      currency_code: 'USD',
+    };
+    expect(validateField(field, 'abc')).toBe('Unit Price must be a valid amount');
+    expect(validateField(field, 19.99)).toBeNull();
   });
 });

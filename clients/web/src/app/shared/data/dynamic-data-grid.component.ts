@@ -1,14 +1,17 @@
+import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { EmptyStateComponent } from '../layout/empty-state.component';
 import { DynamicGridRenderer } from '../../metadata/dynamic-grid.renderer';
 import { I18nService } from '../services/i18n.service';
+import { formatGridCellValue } from '../utils/field-display.util';
 
 @Component({
   selector: 'app-dynamic-data-grid',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, EmptyStateComponent],
   templateUrl: './dynamic-data-grid.component.html',
   styleUrl: './dynamic-data-grid.component.scss',
 })
@@ -40,8 +43,20 @@ export class DynamicDataGridComponent {
   @Output() exportCsvClick = new EventEmitter<void>();
   @Output() exportExcelClick = new EventEmitter<void>();
   @Output() exportPdfClick = new EventEmitter<void>();
+  @Output() createRecord = new EventEmitter<void>();
+
+  get isEmpty(): boolean {
+    return this.displayGroups.every((group) => group.records.length === 0);
+  }
 
   recordId(record: Record<string, unknown>): string {
     return String(record.id ?? '');
+  }
+
+  cellValue(field: string, record: Record<string, unknown>): string {
+    return formatGridCellValue(field, record[field], {
+      fieldType: this.gridRenderer.columnFieldType(field),
+      currencyCode: this.gridRenderer.columnCurrencyCode(field),
+    });
   }
 }

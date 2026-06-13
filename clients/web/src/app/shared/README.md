@@ -11,7 +11,10 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `AppLayoutComponent` | `app-app-layout` | Material sidenav shell + toolbar |
 | `MasterDetailLayoutComponent` | `app-master-detail-layout` | List/detail split; mobile toggle via `[detailOpen]` |
 | `PageHeaderComponent` | `app-page-header` | Title, optional back button, action slot (`ng-content`) |
-| `DetailPlaceholderComponent` | `app-detail-placeholder` | Empty detail pane message |
+| `DetailPlaceholderComponent` | `app-detail-placeholder` | Empty detail pane; optional New CTA |
+| `LoadingPanelComponent` | `app-loading-panel` | Centered loading message |
+| `EmptyStateComponent` | `app-empty-state` | Message + optional primary action |
+| `SectionCardComponent` | `app-section-card` | Titled card for profile/settings sections |
 
 ## Navigation
 
@@ -25,8 +28,19 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | Component | Selector | Use |
 |-----------|----------|-----|
 | `DynamicDataGridComponent` | `app-dynamic-data-grid` | Metadata-driven grid + toolbar |
-| `DynamicFormViewComponent` | `app-dynamic-form-view` | Metadata-driven form fields |
+| `DynamicFormViewComponent` | `app-dynamic-form-view` | Metadata-driven form fields (select, lookup, currency, textarea) |
+| `LookupFieldComponent` | `app-lookup-field` | Lookup picker trigger + selected label |
+| `LookupPickerDialogComponent` | (dialog) | Search/select target entity record |
+| `CurrencyFieldComponent` | `app-currency-field` | Currency input with `currency_code` label |
 | `RecordTabsComponent` | `app-record-tabs` | Notes, documents, audit on a record |
+| `DocumentPreviewPanelComponent` | `app-document-preview-panel` | Side panel: PDF/image inline, text snippet, download CTA, virus badge |
+
+## Assistant (P17-T09)
+
+| Component | Selector | Use |
+|-----------|----------|-----|
+| `AssistantChatPanelComponent` | `app-assistant-chat-panel` | Chat layout: message list, prompt suggestions, input bar, thinking/error states |
+| `AssistantMessageBubbleComponent` | `app-assistant-message-bubble` | User/assistant message bubble with role label |
 
 ## Admin & settings
 
@@ -48,6 +62,13 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `utils/export.util.ts` | CSV/PDF export |
 | `utils/page-title.util.ts` | Route → title |
 | `utils/record.util.ts` | `recordId`, `inputType` |
+| `utils/record-lifecycle.util.ts` | Soft delete: `canDeleteRecord`, `canRestoreRecord` |
+| `utils/record-headline.util.ts` | Entity hero headline/subtitle from main-section field hints (`sku`/`code` + `name`/`company`/`contact_name`); status chip from `display.status_field` |
+| `utils/workflow-sla.util.ts` | Workflow inbox SLA badge levels from `due_at` |
+| `utils/field-display.util.ts` | Grid/form datetime, currency, textarea cell formatters |
+| `utils/lookup-display.util.ts` | Resolve lookup record display label (name/code/sku) |
+| `utils/document-preview.util.ts` | Document mime, preview mode, version list, virus badge |
+| `utils/assistant-chat.util.ts` | AI chat response extract + message id helper |
 | `utils/tenant.util.ts` | Tenant labels, permissions extract |
 | `utils/permission.util.ts` | Permission grouping + wildcard helpers |
 | `constants/layout.constants.ts` | Breakpoint, debounce, page size |

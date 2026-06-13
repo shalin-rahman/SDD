@@ -1,0 +1,17 @@
+{
+  "column_fields": [
+    "po_number",
+    "supplier_id",
+    "warehouse_id",
+    "status",
+    "total_amount",
+    "order_date",
+    "notes",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

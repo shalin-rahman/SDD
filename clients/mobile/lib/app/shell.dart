@@ -162,7 +162,10 @@ class _EmcapShellState extends State<EmcapShell> {
   Widget _bodyForSelection() {
     switch (_selectedKey) {
       case 'workflow':
-        return WorkflowInboxScreen(client: widget.client);
+        return WorkflowInboxScreen(
+          client: widget.client,
+          onOpenEntity: (entityCode) => _selectKey('entity:$entityCode'),
+        );
       case 'reports':
         return ReportScreen(client: widget.client);
       case 'dashboards':

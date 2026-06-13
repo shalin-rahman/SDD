@@ -1,0 +1,9 @@
+.empty-state {
+  padding: var(--emcap-space-xl);
+  text-align: center;
+  color: var(--emcap-text-muted);
+
+  p {
+    margin: 0 0 var(--emcap-space-md);
+  }
+}

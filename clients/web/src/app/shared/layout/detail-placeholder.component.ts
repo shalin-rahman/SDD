@@ -1,30 +1,31 @@
-import { Component, effect, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 
 import { I18nService } from '../services/i18n.service';
+import { EmptyStateComponent } from './empty-state.component';
 
 @Component({
   selector: 'app-detail-placeholder',
   standalone: true,
+  imports: [MatButtonModule, EmptyStateComponent],
   template: `
+  @if (showCreateAction) {
+    <app-empty-state
+      [message]="message || i18n.t('entity.selectPlaceholder')"
+      [actionLabel]="i18n.t('entity.new')"
+      (action)="createRecord.emit()"
+    />
+  } @else {
     <div class="detail-placeholder">
       <p>{{ message || i18n.t('entity.selectPlaceholder') }}</p>
     </div>
+  }
   `,
-  styles: [
-    `
-      .detail-placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 320px;
-        color: #666;
-        padding: 1rem;
-        text-align: center;
-      }
-    `,
-  ],
+  styleUrl: './detail-placeholder.component.scss',
 })
 export class DetailPlaceholderComponent {
   readonly i18n = inject(I18nService);
   @Input() message = '';
+  @Input() showCreateAction = true;
+  @Output() createRecord = new EventEmitter<void>();
 }

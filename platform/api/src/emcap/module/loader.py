@@ -1,6 +1,8 @@
 import importlib.util
 import os
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from emcap.entity.registry import EntityRegistry
 from emcap.module.models import ModuleDefinition
@@ -52,3 +54,21 @@ def load_modules(
         registry.register_many(definition.entities)
         loaded.append(definition)
     return loaded
+
+
+EntityValidator = Callable[..., Any]
+
+
+def load_entity_validators(root: Path | None = None) -> dict[str, EntityValidator]:
+    """Collect optional ``ENTITY_VALIDATORS`` exports from business module files."""
+    validators: dict[str, EntityValidator] = {}
+    for path in discover_module_files(root):
+        spec = importlib.util.spec_from_file_location(path.parent.name, path)
+        if spec is None or spec.loader is None:
+            continue
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        exported = getattr(module, "ENTITY_VALIDATORS", None)
+        if isinstance(exported, dict):
+            validators.update(exported)
+    return validators

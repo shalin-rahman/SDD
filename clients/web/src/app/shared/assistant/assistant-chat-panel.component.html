@@ -1,0 +1,54 @@
+<section class="assistant-chat" aria-label="Assistant chat">
+  <div class="assistant-chat__messages">
+    @if (messages.length === 0) {
+      <div class="assistant-chat__empty">
+        <p class="assistant-chat__empty-hint">{{ i18n.t('platform.assistant.emptyHint') }}</p>
+        <div class="assistant-chat__suggestions">
+          @for (key of suggestionKeys; track key) {
+            <button type="button" mat-stroked-button (click)="sendSuggestion(key)">
+              {{ suggestionLabel(key) }}
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      @for (message of messages; track messageKey(message)) {
+        <app-assistant-message-bubble [role]="message.role" [content]="message.content" />
+      }
+    }
+
+    @if (sending) {
+      <app-loading-panel [message]="i18n.t('platform.assistant.thinking')" />
+    }
+
+    @if (chatError) {
+      <app-empty-state
+        [message]="chatError"
+        [actionLabel]="i18n.t('common.retry')"
+        (action)="dismissError.emit()"
+      />
+    }
+  </div>
+
+  <div class="assistant-chat__input">
+    <textarea
+      class="assistant-chat__textarea"
+      [(ngModel)]="draft"
+      name="draft"
+      rows="2"
+      [placeholder]="i18n.t('platform.assistant.inputPlaceholder')"
+      [disabled]="sending"
+      (keydown)="onInputKeydown($event)"
+    ></textarea>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      class="assistant-chat__send"
+      [disabled]="!draft.trim() || sending"
+      (click)="sendDraft()"
+    >
+      {{ i18n.t('platform.assistant.send') }}
+    </button>
+  </div>
+</section>

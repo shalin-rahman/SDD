@@ -3,6 +3,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { I18nService } from '../services/i18n.service';
+import { virusScanBadgeClass } from '../utils/document-preview.util';
 
 export interface RecordNote {
   body: string;
@@ -40,4 +41,12 @@ export class RecordTabsComponent {
   @Output() uploadDocument = new EventEmitter<void>();
   @Output() uploadFilenameChange = new EventEmitter<string>();
   @Output() uploadContentChange = new EventEmitter<string>();
+
+  versionLabel(version: string): string {
+    return `${this.i18n.t('document.preview.version')} ${version}`;
+  }
+
+  virusBadgeClass(status: string): string {
+    return virusScanBadgeClass(status);
+  }
 }

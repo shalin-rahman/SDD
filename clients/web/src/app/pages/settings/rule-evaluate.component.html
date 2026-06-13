@@ -1,0 +1,62 @@
+<div class="rule-evaluate-page">
+  <app-page-header
+    [title]="i18n.t('settings.rules.evaluate.title')"
+    [subtitle]="i18n.t('settings.rules.evaluate.subtitle')"
+  />
+
+  <p class="rule-evaluate-page__back">
+    <a routerLink="/app/settings">{{ i18n.t('settings.rules.evaluate.backToSettings') }}</a>
+  </p>
+
+  <app-section-card [title]="i18n.t('settings.rules.evaluate.panelTitle')">
+    <div class="rule-evaluate-page__form">
+      <mat-form-field appearance="outline" class="rule-evaluate-page__field">
+        <mat-label>{{ i18n.t('settings.rules.evaluate.expressionLabel') }}</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          [(ngModel)]="expression"
+          [disabled]="evaluating"
+          [placeholder]="i18n.t('settings.rules.evaluate.expressionHint')"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="rule-evaluate-page__field">
+        <mat-label>{{ i18n.t('settings.rules.evaluate.contextLabel') }}</mat-label>
+        <textarea
+          matInput
+          rows="6"
+          [(ngModel)]="contextJson"
+          [disabled]="evaluating"
+          [placeholder]="i18n.t('settings.rules.evaluate.contextHint')"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="rule-evaluate-page__actions">
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          (click)="evaluate()"
+          [disabled]="evaluating"
+        >
+          @if (evaluating) {
+            {{ i18n.t('common.loading') }}
+          } @else {
+            {{ i18n.t('settings.rules.evaluate.evaluateButton') }}
+          }
+        </button>
+      </div>
+
+      @if (evaluateError) {
+        <p class="error">{{ evaluateError }}</p>
+      }
+    </div>
+  </app-section-card>
+
+  @if (resultText) {
+    <app-section-card [title]="i18n.t('settings.rules.evaluate.resultTitle')">
+      <pre class="rule-evaluate-page__result">{{ resultText }}</pre>
+    </app-section-card>
+  }
+</div>

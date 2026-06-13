@@ -122,3 +122,27 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-008d Mobile rail groups | `buildRailNavSlots`, tablet rail headers | P12F-T50–T53 | `shell_nav_util_test.dart` |
 | Doc sync gate | `emcap-doc-sync.mdc`, matrix rev. 6 | P12E-T01–T02 | `06-admin-product-ui-matrix.md` |
 | NFR-013 Shell tests | util + service specs | P12A-T08 | 20 Karma tests CI |
+
+## Phase 14 — Entity platform baseline
+
+| Req / goal | Implementation | Task IDs | Evidence |
+|------------|----------------|----------|----------|
+| FR-006 System record fields | `entity/system_fields.py`, metadata builder injection | P14-T01–T04 | `test_system_fields.py` |
+| FR-006 `created_by` persistence | `entity_records.created_by`, create route | P14-T02 | `test_create_record_sets_created_by_when_authenticated` |
+| FR-007 System form section | read-only `system` section in form metadata | P14-T03, P14-T05 | `test_product_form_has_system_section` |
+| FR-008 System grid columns | appended columns + i18n | P14-T04, P14-T05 | `product.grid.keys.json` |
+| FR-007 Status chip contract | `display.status_field` in metadata; `StatusFieldDisplay` on entity | P14-T13 | `test_product_metadata_status_field_contract` |
+| FR-006 / FR-007 Lookup field metadata | `FieldType.LOOKUP`, `lookup_entity` on `FieldDefinition`; registry cross-entity validation; form/grid JSON; save-time record ID check | P14-T21 | `test_product_lookup_field_metadata`, `test_registry_rejects_unknown_lookup_entity`, `test_create_record_rejects_unknown_lookup_reference` |
+| FR-006 / FR-007 Currency + textarea metadata | `FieldType.CURRENCY` + `currency_code`; `FieldType.TEXTAREA`; form/grid JSON + coercion | P14-T22 | `test_product_currency_and_textarea_field_metadata`, `test_field_definition_currency_defaults_to_usd` |
+| FR-006 / FR-007 Field-type metadata validation | `metadata/validation.py`; registry startup + builder guard for LOOKUP/CURRENCY/ENUM | P14-T23 | `test_metadata_validation.py`, `test_registry_rejects_self_lookup_entity` |
+| FR-007 Web field renderers (lookup, currency, textarea) | `LookupFieldComponent`, `CurrencyFieldComponent`, textarea in `DynamicFormViewComponent` | P14-T24 | Karma: `lookup-field`, `currency-field`, `field-display.util` specs |
+| FR-007 Mobile field renderers (lookup, currency, textarea) | `LookupField`, `CurrencyField`, `TextareaField` in `entity_screen.dart` | P14-T25 | `field_display_test.dart`, `lookup_display_test.dart`, `metadata_contract_test.dart` |
+| Product gate | `07-product-readiness-matrix.md` | P14-T08 | Screenshot + UX checklist required for Product-ready |
+
+## Phase 15 — Entity page redesign (PRODUCT)
+
+| Req / goal | Implementation | Task IDs | Evidence |
+|------------|----------------|----------|----------|
+| FR-008d Record hero header | `record-detail-header.component` | P15-T01, P15-T03 | `07-product-readiness-matrix.md` §9 |
+| FR-008d Section cards | `dynamic-form-view` Material cards | P15-T02 | Demo until screenshots |
+| FR-008d Grid polish | `dynamic-data-grid` + `field-display.util` | P15-T04 | Demo until screenshots |

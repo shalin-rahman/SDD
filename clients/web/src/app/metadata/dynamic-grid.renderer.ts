@@ -26,6 +26,14 @@ export class DynamicGridRenderer {
     return this.metadata.columns.find((col) => col.field === field)?.filterable ?? false;
   }
 
+  columnFieldType(field: string): string | undefined {
+    return this.metadata.columns.find((col) => col.field === field)?.field_type;
+  }
+
+  columnCurrencyCode(field: string): string | undefined {
+    return this.metadata.columns.find((col) => col.field === field)?.currency_code;
+  }
+
   exportEnabled(): boolean {
     return this.metadata.export.excel || this.metadata.export.pdf || this.metadata.export.csv;
   }

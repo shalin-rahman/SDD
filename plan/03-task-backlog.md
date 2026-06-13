@@ -17,13 +17,21 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 8 — End-user product depth (§9 UX) | 23 | 0 | 0 | 23 |
 | 11 — Local dev tooling (scripts, seed, lint) | 16 | 0 | 0 | 16 |
 | 12 — Enterprise product UI & admin | 33 | 18 | 7 | 58 |
-| **Total** | **180** | **18** | **7** | **205** |
+| 14 — Entity platform baseline | 15 | 6 | 0 | 21 |
+| 15 — Entity page redesign | 10 | 8 | 1 | 19 |
+| 16 — Design system | 3 | 6 | 0 | 9 |
+| 17 — Platform services UX | 8 | 4 | 0 | 11 |
+| 18 — Reference modules product | 2 | 6 | 0 | 8 |
+| 19 — Admin product depth | 0 | 12 | 0 | 12 |
+| 20 — Quality gates | 3 | 14 | 1 | 19 |
+| 21 — Infra/docs (support) | 2 | 1 | 0 | 3 |
+| **Total** | **225** | **65** | **7** | **309** |
 
 **Status legend:** Done · Pending · Partial (started, not complete)
 
-**Last updated:** 2026-06-12 · Phase 12B/C core landed · **Doc sync mandatory** (`emcap-doc-sync.mdc`)
+**Last updated:** 2026-06-14 · **Master roadmap:** `plan/16-standard-viable-system.md` · **Execution:** `plan/17-viable-product-execution-playbook.md` · **Standard entities:** `plan/20-standard-entity-rollout.md`
 
-**Current focus:** Phase **13** Slice 1 (ABAC admin) done. Next: field override editor (P13-T10) or layout designer plan.
+**Current focus:** **W1 Done** → **W2–W3** module depth; **W4** procurement/sales profile; **W5** stock movement types (feedback C14). See `plan/20-standard-entity-rollout.md`.
 
 ---
 
@@ -348,16 +356,192 @@ Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-
 | EMCAP-P13-T20 | Tenant isolation write (ops) | — | Pending |
 | EMCAP-P13-T30 | Layout designer ADR | — | Pending |
 
-Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterprise-admin-depth.md` · **12F:** `plan/12f-ui-polish-admin-depth.md` · DoD: `plan/12-phase12-dod-checklist.md` · Gap: `spec/sdd/06-admin-product-ui-matrix.md`
+Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterprise-admin-depth.md` · **14:** `plan/14-entity-platform-baseline.md` · **15:** `plan/15-entity-page-redesign.md` · Product gate: `spec/sdd/07-product-readiness-matrix.md`
+
+---
+
+## Phase 14 — Entity platform baseline
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P14-T01 | Platform system field definitions | — | Done |
+| EMCAP-P14-T02 | `created_by` column + create wiring | T01 | Done |
+| EMCAP-P14-T03 | Form metadata system section (read-only) | T01 | Done |
+| EMCAP-P14-T04 | Grid metadata system columns + i18n | T01 | Done |
+| EMCAP-P14-T05 | Web system section + datetime display | T03–T04 | Done |
+| EMCAP-P14-T06 | `test_system_fields.py` + fixture updates | T02–T04 | Done |
+| EMCAP-P14-T07 | `product.grid.keys.json` fixture | T04 | Done |
+| EMCAP-P14-T08 | Traceability + `07-product-readiness-matrix` | T06 | Done |
+| EMCAP-P14-T10 | `updated_by` + version counter | T02 | Done |
+| EMCAP-P14-T11 | Soft delete (`deleted_at`) | T10 | Done |
+| EMCAP-P14-T12 | Mobile system fields parity | T05 | Done |
+| EMCAP-P14-T13 | Status chip metadata contract | T01 | Done |
+| EMCAP-P14-T14 | Web/mobile soft delete + restore UI | T11 | Done |
+| EMCAP-P14-T20 | Enum field type in SDK | T08 | Done |
+| EMCAP-P14-T21 | Lookup field type (`lookup_entity`) | T20 | Done |
+| EMCAP-P14-T22 | Currency + textarea field types | T20 | Done |
+| EMCAP-P14-T23 | Metadata builder validation for new types | T21–T22 | Done |
+| EMCAP-P14-T24 | Web renderers (lookup, currency, textarea) | T23 | Done |
+| EMCAP-P14-T25 | Mobile renderers (lookup, currency, textarea) | T23 | Done |
+| EMCAP-P14-T26 | Contract fixtures per field type | T23 | Done |
+| EMCAP-P14-T30 | Mobile system fields + datetime formatters | T05 | Done |
+| EMCAP-P14-T31 | Mobile metadata contract tests for system fields | T30 | Done |
+
+---
+
+## Phase 15 — Entity page redesign
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P15-T01 | Record detail hero header component | P14-T05 | Done |
+| EMCAP-P15-T02 | Section cards in dynamic form view | P14-T05 | Done |
+| EMCAP-P15-T03 | PRODUCT headline/subtitle rules | T01 | Done |
+| EMCAP-P15-T04 | Grid polish + cell formatters | P14-T04 | Done |
+| EMCAP-P15-T05 | i18n EN/FR/BN entity strings | T01–T04 | Done |
+| EMCAP-P15-T06 | UX screenshots → Product-ready gate | T01–T05 | Done |
+| EMCAP-P15-T10 | Mobile record detail header + section cards | P14-T12, T01 | Done |
+| EMCAP-P15-T11 | Mobile PRODUCT headline/subtitle util | T10 | Done |
+| EMCAP-P15-T12 | Mobile grid polish + datetime cells | T10 | Done |
+| EMCAP-P15-T13 | Mobile screenshots (M2) | T10–T12 | Partial |
+| EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Pending |
+| EMCAP-P15-T20 | Hero rules via metadata `display` hints | P14-T13, P16-T02 | Done |
+| EMCAP-P15-T21 | Redesign WAREHOUSE + CRM entities | T20 | Pending |
+| EMCAP-P15-T22 | Loading skeletons + error retry | T21 | Partial |
+| EMCAP-P15-T23 | Empty grid state + New CTA | T22 | Done |
+| EMCAP-P15-T30 | Keyboard nav grid (WCAG) | T21 | Pending |
+| EMCAP-P15-T31 | Screen reader labels on forms | T30 | Pending |
+| EMCAP-P15-T32 | axe-core a11y CI (web) | T30–T31 | Pending |
+
+Playbook: `plan/15-entity-page-redesign.md` · `plan/17-viable-product-execution-playbook.md` §7
+
+---
+
+## Phase 16 — Design system
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P16-T01 | ADR design tokens | — | Done |
+| EMCAP-P16-T02 | Web CSS variables + theme | T01 | Done |
+| EMCAP-P16-T03 | Flutter ThemeExtension tokens | T01 | Pending |
+| EMCAP-P16-T04 | `docs/product/design-system.md` catalog | T02–T03 | Done |
+| EMCAP-P16-T05 | Web component standardization | T02 | Pending |
+| EMCAP-P16-T06 | Mobile component standardization | T03 | Pending |
+| EMCAP-P16-T07 | Density comfortable/compact | T05–T06 | Pending |
+| EMCAP-P16-T08 | Dark mode contrast audit | T02–T03 | Pending |
+| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Pending |
+
+Playbook: `plan/16-standard-viable-system.md` § W3 · ADR-006
+
+---
+
+## Phase 17 — Platform services product UX
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P17-T01 | Workflow inbox UX | P16-T05 | Done |
+| EMCAP-P17-T02 | Workflow inbox mobile | P16-T06 | Done |
+| EMCAP-P17-T03 | Reports history + export UX | P16 | Done |
+| EMCAP-P17-T04 | Dashboard KPI cards | P16 | Done |
+| EMCAP-P17-T05 | Notification center | P16 | Done |
+| EMCAP-P17-T06 | Document preview web | P16 | Done |
+| EMCAP-P17-T07 | Document preview mobile | T06 | Done |
+| EMCAP-P17-T08 | Account → profile hub | P16 | Done |
+| EMCAP-P17-T09 | Assistant polish | P16 | Done |
+| EMCAP-P17-T10 | Service UX screenshots | T01–T09 | Pending |
+| EMCAP-P17-T11 | Rule evaluate product panel | P17-T08 | Done |
+
+Playbook: `plan/17-platform-services-product-ux.md`
+
+---
+
+## Phase 18 — Reference modules product
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P18-T01 | Inventory DoD v2 (product) | M1 | Done |
+| EMCAP-P18-T02 | Realistic PRODUCT seed | — | Done |
+| EMCAP-P18-T03 | WAREHOUSE Product-ready | P15-T21 | Pending |
+| EMCAP-P18-T04 | Workflow on PRODUCT detail | P17-T01 | Pending |
+| EMCAP-P18-T05 | Module report UX | P17-T03 | Pending |
+| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Pending |
+| EMCAP-P18-T07 | Menu icons in metadata | P16 | Pending |
+| EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Pending |
+
+Playbook: `plan/18-reference-modules-product.md`
+
+---
+
+## Phase 19 — Admin product depth (resumed Phase 13)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P19-T01 | Settings IA by domain | M1 | Pending |
+| EMCAP-P19-T02 | Admin users/roles UX | P16 | Pending |
+| EMCAP-P19-T03 | Field `read_roles` override UI | P19-T02 | Pending |
+| EMCAP-P19-T04 | ABAC editor polish | P19-T01 | Pending |
+| EMCAP-P19-T05 | Branding live preview | P16-T02 | Pending |
+| EMCAP-P19-T06 | Document settings UI | P19-T01 | Pending |
+| EMCAP-P19-T07 | Isolation write (ops) | P19-T01 | Pending |
+| EMCAP-P19-T08 | Layout designer ADR | M3 | Pending |
+| EMCAP-P19-T09 | Settings DB overrides + reload UX | P19-T01 | Pending |
+| EMCAP-P19-T10 | Integrations product UX | P19-T01 | Pending |
+| EMCAP-P19-T11 | Payments product UX | P19-T01 | Pending |
+| EMCAP-P19-T12 | SMS/push template product bar | P19-T01 | Pending |
+
+Playbook: `plan/19-admin-product-depth.md` · `plan/13-enterprise-admin-depth.md`
+
+---
+
+## Phase 20 — Quality gates
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P20-T01 | Screenshot convention | — | Done |
+| EMCAP-P20-T02 | M1 PRODUCT web screenshots | P15-T06 | Done |
+| EMCAP-P20-T03 | M2 PRODUCT mobile screenshots | P15-T13 | Partial |
+| EMCAP-P20-T04 | Client REQUIRED_METHODS sync | — | Pending |
+| EMCAP-P20-T05 | Metadata snapshot CI all entities | P14-T26 | Done |
+| EMCAP-P20-T06 | Web bundle / lazy routes plan | P16 | Pending |
+| EMCAP-P20-T07 | Entity list perf budget | P15-T22 | Pending |
+| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Ongoing |
+| EMCAP-P20-T09 | W1 standard module fields (WAREHOUSE, CRM) | P20-T05 | Done |
+| EMCAP-P20-T10 | W1 web fixtures + headline generalize | P20-T09 | Done |
+| EMCAP-P20-T11 | W1 mobile contracts + If-Match PUT | P20-T09 | Done |
+| EMCAP-P20-T12 | W2 module fields (JE, SALE, LEAVE) | W1 | Pending |
+| EMCAP-P20-T13 | W2 web/mobile fixture parity | P20-T12 | Pending |
+| EMCAP-P20-T14 | W3 remaining entities status + fixtures | W2 | Pending |
+| EMCAP-P20-T15 | W4 procurement/sales standard profile (API) | W3 | Pending |
+| EMCAP-P20-T16 | W4 web/mobile fixture parity | P20-T15 | Pending |
+| EMCAP-P20-T17 | W5 STOCK_MOVEMENT + LINE + movement_type enum | M4 / P18-T03 | Done |
+| EMCAP-P20-T18 | W5 stock movement product UX + screenshots | P20-T17 | Pending |
+| EMCAP-P20-T19 | W5 posted movement → qty_on_hand (`apply_posted_movement` in module) + seed + report | P20-T17 | Pending |
+
+Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests — W1–W5)
+
+---
+
+## Phase 21 — Infra/docs support
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P21-T01 | PG migrations system columns | P14-T12 | Pending |
+| EMCAP-P21-T02 | Product demo runbook | P18-T02 | Done |
+| EMCAP-P21-T03 | `known-pitfalls` Phase 16 | — | Done |
 
 ---
 
 ## Immediate Next Steps
 
-**Phase 12 in progress — 12G platform i18n + report schedules done; ABAC editor deferred to Phase 13.**
+See **critical path** in `plan/16-standard-viable-system.md` §3–§4.
 
-1. **Always** run `docs/dev/recipes/sync-docs-after-change.md` with code changes
-2. Next: **P12C-T12** (document settings UI), **P12B-T09** (auth provider UI), or **Phase 13** ABAC editor plan
-3. Reuse `clients/web/src/app/shared/` — see `shared/README.md`
+1. ~~**S1 / M1:** P15-T06 + P20-T02 (PRODUCT web screenshots)~~ **Done** 2026-06-13
+2. **S2 / M2:** P15-T13 + P20-T03 — **Partial** (runbook + integration_test skeleton; PNG capture blocked — no local Flutter SDK)
+3. **S3:** P16-T02–T03 — web tokens OK; Flutter tokens deferred
+4. **S7 web:** P17-T04+ dashboards, docs (P17-T01, T03 Done)
+5. **S4–S6:** P14 lookup/status, P15 depth, a11y
+6. **S9–S10:** P18 reference modules
+7. **S11–S13:** P19 admin (M1 unblocked)
+
+Full sprint table: `plan/17-viable-product-execution-playbook.md` §4
 
 **Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`

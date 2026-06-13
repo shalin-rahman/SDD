@@ -1,0 +1,25 @@
+{
+  "entity_code": "PRODUCT",
+  "field_types": [
+    {
+      "name": "primary_warehouse",
+      "field_type": "lookup",
+      "lookup_entity": "WAREHOUSE"
+    },
+    {
+      "name": "unit_price",
+      "field_type": "currency",
+      "currency_code": "USD"
+    },
+    {
+      "name": "description",
+      "field_type": "textarea",
+      "span": 12
+    },
+    {
+      "name": "stock_category",
+      "field_type": "select",
+      "options": ["standard", "premium"]
+    }
+  ]
+}

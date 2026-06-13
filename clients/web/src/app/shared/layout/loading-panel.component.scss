@@ -1,0 +1,14 @@
+.loading-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--emcap-space-sm);
+  min-height: 200px;
+  color: var(--emcap-text-muted);
+  font-size: var(--emcap-font-body-sm);
+}
+
+.loading-panel--inline {
+  min-height: auto;
+  padding: var(--emcap-space-md);
+}

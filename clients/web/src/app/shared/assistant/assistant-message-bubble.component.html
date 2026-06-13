@@ -1,0 +1,8 @@
+<article
+  class="assistant-bubble"
+  [class.assistant-bubble--user]="role === 'user'"
+  [class.assistant-bubble--assistant]="role === 'assistant'"
+>
+  <span class="assistant-bubble__role">{{ roleLabel() }}</span>
+  <p class="assistant-bubble__text">{{ content }}</p>
+</article>

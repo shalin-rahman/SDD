@@ -1,72 +1,70 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { Subject, takeUntil } from 'rxjs';
 
 import type { ReportSummary } from '../../api/emcap-client';
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
+import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
+import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { SectionCardComponent } from '../../shared/layout/section-card.component';
+import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
+import { formatRecordFieldValue } from '../../shared/utils/field-display.util';
+import { downloadCsv } from '../../shared/utils/export.util';
+
+export type ReportRunStatus = 'completed' | 'running' | 'failed';
+
+export interface ReportHistoryEntry {
+  run_id: string;
+  report_code: string;
+  report_name: string;
+  row_count: number;
+  created_at: string;
+  status: ReportRunStatus;
+  error?: string;
+}
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <h2>{{ i18n.t('platform.reports.title') }}</h2>
-    <p *ngIf="error" class="error">{{ error }}</p>
-    <p *ngIf="!error && reports.length === 0">{{ i18n.t('platform.reports.noReports') }}</p>
-    <table *ngIf="reports.length > 0" class="grid-table">
-      <tr>
-        <th>{{ i18n.t('platform.reports.colCode') }}</th>
-        <th>{{ i18n.t('platform.reports.colName') }}</th>
-        <th>{{ i18n.t('platform.reports.colEntity') }}</th>
-        <th>{{ i18n.t('platform.reports.colSchedule') }}</th>
-        <th>{{ i18n.t('platform.reports.colActions') }}</th>
-      </tr>
-      <tr *ngFor="let report of reports">
-        <td>{{ report.code }}</td>
-        <td>{{ report.name }}</td>
-        <td>{{ report.entity_code }}</td>
-        <td>{{ scheduleLabel(report) }}</td>
-        <td>
-          <button type="button" class="nav-link" (click)="runReport(report.code)">
-            {{ i18n.t('platform.reports.run') }}
-          </button>
-        </td>
-      </tr>
-    </table>
-    <div class="report-result">
-      <p *ngIf="running">{{ runningMsg }}</p>
-      <p *ngIf="runMeta">{{ runMeta }}</p>
-      <h3 *ngIf="resultTitle">{{ resultTitle }}</h3>
-      <p *ngIf="noRows">{{ i18n.t('platform.reports.noRows') }}</p>
-      <p *ngIf="runError" class="error">{{ runError }}</p>
-      <table *ngIf="resultColumns.length > 0" class="grid-table">
-        <tr>
-          <th *ngFor="let col of resultColumns">{{ col }}</th>
-        </tr>
-        <tr *ngFor="let row of resultRows">
-          <td *ngFor="let col of resultColumns">{{ row[col] }}</td>
-        </tr>
-      </table>
-    </div>
-  `,
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    PageHeaderComponent,
+    LoadingPanelComponent,
+    EmptyStateComponent,
+    SectionCardComponent,
+  ],
+  templateUrl: './reports.component.html',
+  styleUrl: './reports.component.scss',
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent implements OnInit, OnDestroy {
   private readonly api = inject(EmcapApiService);
+  private readonly layout = inject(LayoutService);
+  private readonly destroy$ = new Subject<void>();
   readonly i18n = inject(I18nService);
 
+  loading = true;
+  loadError = '';
+  historyError = '';
   reports: ReportSummary[] = [];
-  error = '';
-  running = false;
-  runningMsg = '';
-  runMeta = '';
-  resultTitle = '';
-  resultColumns: string[] = [];
-  resultRows: Record<string, unknown>[] = [];
-  noRows = false;
-  runError = '';
+  history: ReportHistoryEntry[] = [];
+  runningCode: string | null = null;
+  downloadingRunId: string | null = null;
+  isMobile = false;
 
   ngOnInit(): void {
+    this.layout.isMobile$.pipe(takeUntil(this.destroy$)).subscribe((mobile) => {
+      this.isMobile = mobile;
+    });
     void this.loadReports();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   scheduleLabel(report: ReportSummary): string {
@@ -74,46 +72,120 @@ export class ReportsComponent implements OnInit {
   }
 
   async loadReports(): Promise<void> {
-    this.error = '';
+    this.loading = true;
+    this.loadError = '';
     try {
       const { reports } = await this.api.client.listReports();
       this.reports = reports;
+      await this.loadHistory();
     } catch (err) {
-      this.error = err instanceof Error ? err.message : this.i18n.t('platform.reports.loadFailed');
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('platform.reports.loadFailed');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async loadHistory(): Promise<void> {
+    this.historyError = '';
+    try {
+      const batches = await Promise.all(
+        this.reports.map(async (report) => {
+          const { runs } = await this.api.client.listReportRuns(report.code);
+          return runs.map((run) => this.normalizeHistoryRun(run, report));
+        }),
+      );
+      this.history = batches
+        .flat()
+        .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+    } catch (err) {
+      this.historyError = err instanceof Error ? err.message : this.i18n.t('platform.reports.historyFailed');
+      this.history = [];
     }
   }
 
   async runReport(code: string): Promise<void> {
-    this.running = true;
-    this.runningMsg = `${this.i18n.t('platform.reports.running')} ${code}…`;
-    this.runMeta = '';
-    this.resultTitle = '';
-    this.resultColumns = [];
-    this.resultRows = [];
-    this.noRows = false;
-    this.runError = '';
+    const report = this.reports.find((entry) => entry.code === code);
+    const pendingId = `pending-${code}-${Date.now()}`;
+    const pending: ReportHistoryEntry = {
+      run_id: pendingId,
+      report_code: code,
+      report_name: report?.name ?? code,
+      row_count: 0,
+      created_at: new Date().toISOString(),
+      status: 'running',
+    };
+    this.runningCode = code;
+    this.history = [pending, ...this.history.filter((entry) => entry.run_id !== pendingId)];
+
     try {
-      const runs = await this.api.client.listReportRuns(code);
-      const result = await this.api.client.runReport(code);
-      this.running = false;
-      this.runningMsg = '';
-      this.runMeta = `${this.i18n.t('platform.reports.pastRuns')}: ${runs.runs.length} · ${this.i18n.t('platform.reports.schedule')}: ${this.scheduleLabelForCode(code)}`;
-      this.resultTitle = `${result.report_code} (${result.rows.length} rows)`;
-      if (result.rows.length === 0) {
-        this.noRows = true;
-        return;
-      }
-      this.resultColumns = Object.keys(result.rows[0] ?? {});
-      this.resultRows = result.rows;
+      await this.api.client.runReport(code);
+      this.history = this.history.filter((entry) => entry.run_id !== pendingId);
+      await this.loadHistory();
     } catch (err) {
-      this.running = false;
-      this.runningMsg = '';
-      this.runError = err instanceof Error ? err.message : this.i18n.t('platform.reports.runFailed');
+      this.history = this.history.map((entry) =>
+        entry.run_id === pendingId
+          ? {
+              ...entry,
+              status: 'failed',
+              error: err instanceof Error ? err.message : this.i18n.t('platform.reports.runFailed'),
+            }
+          : entry,
+      );
+    } finally {
+      this.runningCode = null;
     }
   }
 
-  private scheduleLabelForCode(code: string): string {
-    const report = this.reports.find((entry) => entry.code === code);
-    return report ? this.scheduleLabel(report) : this.i18n.t('platform.reports.noSchedule');
+  retryRun(reportCode: string): void {
+    void this.runReport(reportCode);
+  }
+
+  async downloadRunCsv(entry: ReportHistoryEntry): Promise<void> {
+    if (entry.status !== 'completed') {
+      return;
+    }
+    this.downloadingRunId = entry.run_id;
+    try {
+      const detail = await this.api.client.getReportRun(entry.run_id);
+      const columns = detail.columns.length > 0 ? detail.columns : Object.keys(detail.rows[0] ?? {});
+      downloadCsv(columns, detail.rows, `${entry.report_code}-${entry.run_id.slice(0, 8)}.csv`);
+    } catch (err) {
+      this.historyError = err instanceof Error ? err.message : this.i18n.t('platform.reports.downloadFailed');
+    } finally {
+      this.downloadingRunId = null;
+    }
+  }
+
+  formatRunAt(value: string): string {
+    return formatRecordFieldValue('created_at', 'datetime', value);
+  }
+
+  statusLabel(status: ReportRunStatus): string {
+    if (status === 'running') {
+      return this.i18n.t('platform.reports.statusRunning');
+    }
+    if (status === 'failed') {
+      return this.i18n.t('platform.reports.statusFailed');
+    }
+    return this.i18n.t('platform.reports.statusCompleted');
+  }
+
+  statusClass(status: ReportRunStatus): string {
+    return `status-chip--${status}`;
+  }
+
+  entryKey(entry: ReportHistoryEntry): string {
+    return entry.run_id;
+  }
+
+  private normalizeHistoryRun(run: Record<string, unknown>, report: ReportSummary): ReportHistoryEntry {
+    return {
+      run_id: String(run['run_id'] ?? ''),
+      report_code: String(run['report_code'] ?? report.code),
+      report_name: report.name,
+      row_count: Number(run['row_count'] ?? 0),
+      created_at: String(run['created_at'] ?? ''),
+      status: run['status'] === 'failed' ? 'failed' : 'completed',
+    };
   }
 }

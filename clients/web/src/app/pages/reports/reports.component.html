@@ -1,0 +1,176 @@
+<div class="reports-page">
+  <app-page-header [title]="i18n.t('platform.reports.title')" />
+
+  @if (loadError) {
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="loadReports()"
+    />
+  } @else if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else {
+    @if (reports.length === 0) {
+      <app-empty-state [message]="i18n.t('platform.reports.noReports')" />
+    } @else {
+      <app-section-card [title]="i18n.t('platform.reports.catalogTitle')">
+        @if (isMobile) {
+          <div class="reports-cards">
+            @for (report of reports; track report.code) {
+              <article class="reports-card">
+                <strong>{{ report.name }}</strong>
+                <p class="reports-card__meta">{{ report.code }} · {{ report.entity_code }}</p>
+                <p class="reports-card__meta">{{ scheduleLabel(report) }}</p>
+                <div class="reports-card__actions">
+                  <button
+                    type="button"
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="runningCode === report.code"
+                    (click)="runReport(report.code)"
+                  >
+                    @if (runningCode === report.code) {
+                      <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}…</span>
+                    } @else {
+                      {{ i18n.t('platform.reports.run') }}
+                    }
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="reports-page__scroll">
+            <table class="reports-table">
+              <thead>
+                <tr>
+                  <th>{{ i18n.t('platform.reports.colName') }}</th>
+                  <th>{{ i18n.t('platform.reports.colCode') }}</th>
+                  <th>{{ i18n.t('platform.reports.colEntity') }}</th>
+                  <th>{{ i18n.t('platform.reports.colSchedule') }}</th>
+                  <th>{{ i18n.t('platform.reports.colActions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (report of reports; track report.code) {
+                  <tr>
+                    <td>{{ report.name }}</td>
+                    <td>{{ report.code }}</td>
+                    <td>{{ report.entity_code }}</td>
+                    <td>{{ scheduleLabel(report) }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        mat-stroked-button
+                        [disabled]="runningCode === report.code"
+                        (click)="runReport(report.code)"
+                      >
+                        @if (runningCode === report.code) {
+                          <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}…</span>
+                        } @else {
+                          {{ i18n.t('platform.reports.run') }}
+                        }
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </app-section-card>
+
+      <app-section-card [title]="i18n.t('platform.reports.historyTitle')">
+        @if (historyError) {
+          <app-empty-state
+            [message]="historyError"
+            [actionLabel]="i18n.t('common.retry')"
+            (action)="loadHistory()"
+          />
+        } @else if (history.length === 0 && !runningCode) {
+          <p>{{ i18n.t('platform.reports.noHistory') }}</p>
+        } @else if (isMobile) {
+          <div class="reports-cards">
+            @for (entry of history; track entryKey(entry)) {
+              <article class="reports-card">
+                <strong>{{ entry.report_name }}</strong>
+                <p class="reports-card__meta">{{ formatRunAt(entry.created_at) }}</p>
+                <p class="reports-card__meta">
+                  {{ i18n.t('platform.reports.colRows') }}: {{ entry.row_count }}
+                  · <span class="status-chip" [class]="statusClass(entry.status)">{{ statusLabel(entry.status) }}</span>
+                </p>
+                @if (entry.error) {
+                  <p class="reports-page__error-row">{{ entry.error }}</p>
+                }
+                <div class="reports-card__actions">
+                  @if (entry.status === 'failed') {
+                    <button type="button" mat-stroked-button (click)="retryRun(entry.report_code)">
+                      {{ i18n.t('common.retry') }}
+                    </button>
+                  } @else if (entry.status === 'completed') {
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="downloadingRunId === entry.run_id"
+                      (click)="downloadRunCsv(entry)"
+                    >
+                      {{ i18n.t('platform.reports.downloadCsv') }}
+                    </button>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="reports-page__scroll">
+            <table class="reports-table">
+              <thead>
+                <tr>
+                  <th>{{ i18n.t('platform.reports.colName') }}</th>
+                  <th>{{ i18n.t('platform.reports.colRunAt') }}</th>
+                  <th>{{ i18n.t('platform.reports.colStatus') }}</th>
+                  <th>{{ i18n.t('platform.reports.colRows') }}</th>
+                  <th>{{ i18n.t('platform.reports.colActions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of history; track entryKey(entry)) {
+                  <tr>
+                    <td>{{ entry.report_name }}</td>
+                    <td>{{ formatRunAt(entry.created_at) }}</td>
+                    <td>
+                      <span class="status-chip" [class]="statusClass(entry.status)">{{ statusLabel(entry.status) }}</span>
+                      @if (entry.status === 'running') {
+                        <span class="reports-page__running">…</span>
+                      }
+                    </td>
+                    <td>{{ entry.row_count }}</td>
+                    <td>
+                      @if (entry.status === 'failed') {
+                        <button type="button" mat-stroked-button (click)="retryRun(entry.report_code)">
+                          {{ i18n.t('common.retry') }}
+                        </button>
+                        @if (entry.error) {
+                          <p class="reports-page__error-row">{{ entry.error }}</p>
+                        }
+                      } @else if (entry.status === 'completed') {
+                        <button
+                          type="button"
+                          mat-stroked-button
+                          [disabled]="downloadingRunId === entry.run_id"
+                          (click)="downloadRunCsv(entry)"
+                        >
+                          {{ i18n.t('platform.reports.downloadCsv') }}
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </app-section-card>
+    }
+  }
+</div>

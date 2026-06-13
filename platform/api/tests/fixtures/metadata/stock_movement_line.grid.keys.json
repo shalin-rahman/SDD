@@ -1,0 +1,13 @@
+{
+  "column_fields": [
+    "movement_id",
+    "product_id",
+    "quantity",
+    "unit_cost",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

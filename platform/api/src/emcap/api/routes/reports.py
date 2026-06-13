@@ -71,6 +71,24 @@ def list_report_runs(
         session.close()
 
 
+@router.get("/reports/runs/{run_id}")
+def get_report_run(
+    run_id: str,
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+) -> dict[str, Any]:
+    registry = cast(EntityRegistry, request.app.state.entity_registry)
+    session = _session(request)
+    try:
+        service = ReportingService(session, registry, tenant_id=tenant_id)
+        try:
+            return service.get_run(run_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=f"Unknown report run: {run_id}") from exc
+    finally:
+        session.close()
+
+
 @router.get("/dashboards")
 def list_dashboards(request: Request) -> dict[str, Any]:
     dashboards: dict[str, DashboardDefinition] = request.app.state.dashboard_definitions

@@ -1,0 +1,24 @@
+<div class="assistant-page">
+  <app-page-header [title]="i18n.t('platform.assistant.title')" />
+
+  @if (configError) {
+    <app-empty-state
+      [message]="configError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="loadConfig()"
+    />
+  } @else if (configLoading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else if (!aiEnabled) {
+    <app-empty-state [message]="i18n.t('platform.assistant.disabled')" />
+  } @else {
+    <app-assistant-chat-panel
+      [messages]="messages"
+      [sending]="sending"
+      [chatError]="chatError"
+      [suggestionKeys]="suggestionKeys"
+      (send)="onSend($event)"
+      (dismissError)="dismissChatError()"
+    />
+  }
+</div>

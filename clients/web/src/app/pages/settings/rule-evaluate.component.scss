@@ -1,0 +1,53 @@
+.rule-evaluate-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rule-evaluate-page__back {
+  margin: 0;
+  font-size: 0.875rem;
+
+  a {
+    color: var(--emcap-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.rule-evaluate-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rule-evaluate-page__field {
+  width: 100%;
+}
+
+.rule-evaluate-page__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.rule-evaluate-page__result {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--emcap-primary) 6%, var(--emcap-surface));
+  border: 1px solid var(--emcap-border);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.error {
+  color: var(--emcap-error, #b3261e);
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}

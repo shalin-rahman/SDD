@@ -1,0 +1,42 @@
+<header class="record-header">
+  <div class="record-header__identity">
+    <h2 class="record-header__title">{{ headline }}</h2>
+    @if (subtitle) {
+      <p class="record-header__subtitle">{{ subtitle }}</p>
+    }
+    @if (statusLabel) {
+      <mat-chip-set>
+        <mat-chip [highlighted]="statusActive" class="record-header__status">
+          {{ statusLabel }}
+        </mat-chip>
+      </mat-chip-set>
+    }
+  </div>
+  <div class="record-header__actions">
+    @if (canRestore) {
+      <button mat-stroked-button type="button" color="primary" (click)="restore.emit()">
+        <mat-icon>restore</mat-icon>
+        {{ restoreLabel }}
+      </button>
+    }
+    @if (canDelete) {
+      <button mat-stroked-button type="button" color="warn" (click)="delete.emit()">
+        <mat-icon>delete</mat-icon>
+        {{ deleteLabel }}
+      </button>
+    }
+    @if (canWorkflow) {
+      <button mat-stroked-button type="button" (click)="workflow.emit()">
+        <mat-icon>play_arrow</mat-icon>
+        {{ workflowLabel }}
+      </button>
+    }
+    @if (canSave) {
+      <button mat-stroked-button type="button" (click)="cancel.emit()">{{ cancelLabel }}</button>
+      <button mat-flat-button color="primary" type="button" (click)="save.emit()">
+        <mat-icon>save</mat-icon>
+        {{ saveLabel }}
+      </button>
+    }
+  </div>
+</header>

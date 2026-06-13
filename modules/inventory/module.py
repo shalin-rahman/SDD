@@ -1,7 +1,38 @@
-from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType
+import importlib.util
+from pathlib import Path
+from typing import Any, Callable
+
+from emcap.entity.models import EntityDefinition, EntityOptions, FieldDefinition, FieldType, StatusFieldDisplay
 from emcap.module.models import MenuDefinition, ModuleDefinition
 from emcap.reporting.models import DashboardDefinition, DashboardWidget, ReportColumn, ReportDefinition
 from emcap.workflow.models import WorkflowDefinition, WorkflowState, WorkflowTransition
+
+MOVEMENT_TYPES = [
+    "receive",
+    "return",
+    "bonus",
+    "gift",
+    "damage",
+    "lost",
+    "transfer",
+    "adjustment",
+    "issue",
+]
+REFERENCE_TYPES = ["manual", "purchase_order", "sales_order", "stock_adjustment"]
+MOVEMENT_OPEN_STATUSES = ["draft"]
+
+
+def _load_stock_movement_validators() -> dict[str, Callable[..., Any]]:
+    path = Path(__file__).resolve().parent / "stock_movement.py"
+    spec = importlib.util.spec_from_file_location("inventory_stock_movement", path)
+    if spec is None or spec.loader is None:
+        return {}
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return {"STOCK_MOVEMENT": module.validate_stock_movement_payload}
+
+
+ENTITY_VALIDATORS = _load_stock_movement_validators()
 
 STOCK_ADJUSTMENT = WorkflowDefinition(
     code="STOCK_ADJUSTMENT",
@@ -34,12 +65,31 @@ MODULE = ModuleDefinition(
                 FieldDefinition(name="name", field_type=FieldType.STRING, required=True),
                 FieldDefinition(
                     name="unit_price",
-                    field_type=FieldType.DECIMAL,
+                    field_type=FieldType.CURRENCY,
+                    currency_code="USD",
                     required=False,
                     read_roles=["inventory.access"],
                 ),
                 FieldDefinition(name="quantity_on_hand", field_type=FieldType.INTEGER, required=False),
                 FieldDefinition(name="reorder_level", field_type=FieldType.INTEGER, required=False),
+                FieldDefinition(
+                    name="primary_warehouse",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="WAREHOUSE",
+                    required=False,
+                ),
+                FieldDefinition(
+                    name="description",
+                    field_type=FieldType.TEXTAREA,
+                    required=False,
+                    searchable=True,
+                ),
+                FieldDefinition(
+                    name="stock_category",
+                    field_type=FieldType.ENUM,
+                    options=["standard", "premium"],
+                    required=False,
+                ),
                 FieldDefinition(name="active", field_type=FieldType.BOOLEAN, required=False),
             ],
             options=EntityOptions(
@@ -47,6 +97,14 @@ MODULE = ModuleDefinition(
                 workflow_enabled=True,
                 notes_enabled=True,
                 document_enabled=False,
+                status_field=StatusFieldDisplay(
+                    field="active",
+                    active_values=[True],
+                    labels={
+                        "active": {"en": "Active", "bn": "সক্রিয়"},
+                        "inactive": {"en": "Inactive", "bn": "নিষ্ক্রিয়"},
+                    },
+                ),
             ),
         ),
         EntityDefinition(
@@ -61,6 +119,103 @@ MODULE = ModuleDefinition(
                 audit_enabled=True,
                 workflow_enabled=False,
                 notes_enabled=True,
+                document_enabled=False,
+                status_field=StatusFieldDisplay(
+                    field="active",
+                    active_values=[True],
+                    labels={
+                        "active": {"en": "Active", "bn": "সক্রিয়"},
+                        "inactive": {"en": "Inactive", "bn": "নিষ্ক্রিয়"},
+                    },
+                ),
+            ),
+        ),
+        EntityDefinition(
+            code="STOCK_MOVEMENT",
+            fields=[
+                FieldDefinition(name="movement_number", field_type=FieldType.STRING, required=True),
+                FieldDefinition(
+                    name="movement_type",
+                    field_type=FieldType.ENUM,
+                    options=list(MOVEMENT_TYPES),
+                    required=True,
+                ),
+                FieldDefinition(name="movement_date", field_type=FieldType.DATE, required=True),
+                FieldDefinition(
+                    name="warehouse_id",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="WAREHOUSE",
+                    required=True,
+                ),
+                FieldDefinition(
+                    name="source_warehouse_id",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="WAREHOUSE",
+                    required=False,
+                ),
+                FieldDefinition(
+                    name="reference_type",
+                    field_type=FieldType.ENUM,
+                    options=list(REFERENCE_TYPES),
+                    required=False,
+                ),
+                FieldDefinition(name="reference_id", field_type=FieldType.STRING, required=False),
+                FieldDefinition(
+                    name="notes",
+                    field_type=FieldType.TEXTAREA,
+                    required=False,
+                    searchable=True,
+                ),
+                FieldDefinition(
+                    name="status",
+                    field_type=FieldType.ENUM,
+                    options=["draft", "posted", "cancelled"],
+                    required=True,
+                ),
+                FieldDefinition(name="active", field_type=FieldType.BOOLEAN, required=False),
+            ],
+            options=EntityOptions(
+                audit_enabled=True,
+                workflow_enabled=False,
+                notes_enabled=True,
+                document_enabled=True,
+                status_field=StatusFieldDisplay(
+                    field="status",
+                    active_values=MOVEMENT_OPEN_STATUSES,
+                    labels={
+                        "active": {"en": "Open", "bn": "খোলা"},
+                        "inactive": {"en": "Closed", "bn": "বন্ধ"},
+                    },
+                ),
+            ),
+        ),
+        EntityDefinition(
+            code="STOCK_MOVEMENT_LINE",
+            fields=[
+                FieldDefinition(
+                    name="movement_id",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="STOCK_MOVEMENT",
+                    required=True,
+                ),
+                FieldDefinition(
+                    name="product_id",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="PRODUCT",
+                    required=True,
+                ),
+                FieldDefinition(name="quantity", field_type=FieldType.DECIMAL, required=True),
+                FieldDefinition(
+                    name="unit_cost",
+                    field_type=FieldType.CURRENCY,
+                    currency_code="USD",
+                    required=False,
+                ),
+            ],
+            options=EntityOptions(
+                audit_enabled=True,
+                workflow_enabled=False,
+                notes_enabled=False,
                 document_enabled=False,
             ),
         ),
@@ -107,6 +262,7 @@ MODULE = ModuleDefinition(
     menus=[
         MenuDefinition(code="products", label="Products", entity_code="PRODUCT"),
         MenuDefinition(code="warehouses", label="Warehouses", entity_code="WAREHOUSE"),
+        MenuDefinition(code="stock_movements", label="Stock Movements", entity_code="STOCK_MOVEMENT"),
     ],
     permissions=["inventory.access"],
 )

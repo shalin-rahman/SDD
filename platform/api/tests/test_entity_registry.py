@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from emcap.entity.models import EntityDefinition, FieldDefinition, FieldType
 from emcap.entity.registry import EntityRegistry, EntityRegistryError
@@ -34,3 +35,31 @@ def test_load_demo_module_registers_customer() -> None:
     assert "INVENTORY" in module_codes
     assert registry.get("CUSTOMER").code == "CUSTOMER"
     assert registry.get("PRODUCT").code == "PRODUCT"
+
+
+def test_registry_rejects_unknown_lookup_entity() -> None:
+    registry = EntityRegistry()
+    registry.register(
+        EntityDefinition(
+            code="ITEM",
+            fields=[
+                FieldDefinition(
+                    name="parent",
+                    field_type=FieldType.LOOKUP,
+                    lookup_entity="MISSING",
+                )
+            ],
+        )
+    )
+    with pytest.raises(EntityRegistryError, match="references unknown entity"):
+        registry.validate()
+
+
+def test_field_definition_rejects_currency_code_on_non_currency() -> None:
+    with pytest.raises(ValidationError, match="currency_code is only valid"):
+        FieldDefinition(name="note", field_type=FieldType.STRING, currency_code="USD")
+
+
+def test_field_definition_currency_defaults_to_usd() -> None:
+    field = FieldDefinition(name="amount", field_type=FieldType.CURRENCY)
+    assert field.currency_code == "USD"

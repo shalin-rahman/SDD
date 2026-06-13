@@ -1,0 +1,196 @@
+<div class="workflow-page">
+  <app-page-header [title]="i18n.t('platform.workflow.title')">
+    <button type="button" mat-stroked-button (click)="escalate()" [disabled]="loading">
+      {{ i18n.t('platform.workflow.escalate') }}
+    </button>
+  </app-page-header>
+
+  @if (loadError) {
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="load()"
+    />
+  } @else if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else {
+    @if (escalateMsg) {
+      <p class="workflow-page__notice">{{ escalateMsg }}</p>
+    }
+
+    @if (instances.length === 0) {
+      <app-empty-state
+        [message]="i18n.t('platform.workflow.noInstances')"
+        [actionLabel]="i18n.t('platform.workflow.openProducts')"
+        (action)="openProducts()"
+      />
+    } @else {
+      <div class="workflow-page__filters">
+        <label>
+          {{ i18n.t('platform.workflow.filterState') }}
+          <select [ngModel]="stateFilter" (ngModelChange)="stateFilter = $event">
+            <option value="">{{ i18n.t('platform.workflow.filterAll') }}</option>
+            @for (state of stateOptions; track state) {
+              <option [value]="state">{{ state }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          {{ i18n.t('platform.workflow.filterAssignee') }}
+          <select [ngModel]="assigneeFilter" (ngModelChange)="assigneeFilter = $event">
+            <option value="">{{ i18n.t('platform.workflow.filterAll') }}</option>
+            @for (assignee of assigneeOptions; track assignee) {
+              <option [value]="assignee">{{ assignee }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      @if (filteredInstances.length === 0) {
+        <app-empty-state [message]="i18n.t('platform.workflow.noMatches')" />
+      } @else if (isMobile) {
+        <div class="workflow-cards">
+          @for (instance of filteredInstances; track instanceId(instance)) {
+            <article class="workflow-card">
+              <div class="workflow-card__header">
+                <div>
+                  <strong>{{ instance.workflow_code }}</strong>
+                  <p class="workflow-card__meta">
+                    {{ instance.entity_code }} ·
+                    <a
+                      class="record-link"
+                      [routerLink]="entityRoute(instance.entity_code)"
+                    >{{ instance.record_id }}</a>
+                  </p>
+                </div>
+                <span class="state-chip">{{ instance.current_state }}</span>
+              </div>
+              <p class="workflow-card__meta">
+                {{ i18n.t('platform.workflow.colAssignee') }}: {{ instance.assignee || '—' }}
+              </p>
+              <p class="workflow-card__meta">
+                {{ i18n.t('platform.workflow.colDueAt') }}:
+                {{ formatDue(instance) }}
+                @if (slaLevel(instance) !== 'none') {
+                  <span class="sla-badge" [class]="slaClass(instance)">{{ slaLabel(instance) }}</span>
+                }
+              </p>
+              <div class="workflow-card__actions">
+                <button type="button" mat-button (click)="openDetail(instance)">
+                  {{ i18n.t('platform.workflow.detail') }}
+                </button>
+                @for (action of rowActions(instance); track action) {
+                  <button type="button" mat-stroked-button (click)="confirmTransition(instance, action)">
+                    {{ actionLabel(action) }}
+                  </button>
+                }
+                @if (canDelegate(instance)) {
+                  <button type="button" mat-stroked-button (click)="openDelegate(instance)">
+                    {{ i18n.t('platform.workflow.delegate') }}
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="workflow-page__scroll">
+          <table class="workflow-table">
+            <thead>
+              <tr>
+                <th>{{ i18n.t('platform.workflow.colWorkflow') }}</th>
+                <th>{{ i18n.t('platform.workflow.colEntity') }}</th>
+                <th>{{ i18n.t('platform.workflow.colRecord') }}</th>
+                <th>{{ i18n.t('platform.workflow.colState') }}</th>
+                <th>{{ i18n.t('platform.workflow.colAssignee') }}</th>
+                <th>{{ i18n.t('platform.workflow.colDueAt') }}</th>
+                <th>{{ i18n.t('platform.workflow.colActions') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (instance of filteredInstances; track instanceId(instance)) {
+                <tr>
+                  <td>{{ instance.workflow_code }}</td>
+                  <td>{{ instance.entity_code }}</td>
+                  <td>
+                    <a class="record-link" [routerLink]="entityRoute(instance.entity_code)">
+                      {{ instance.record_id }}
+                    </a>
+                  </td>
+                  <td><span class="state-chip">{{ instance.current_state }}</span></td>
+                  <td>{{ instance.assignee || '—' }}</td>
+                  <td>
+                    {{ formatDue(instance) }}
+                    @if (slaLevel(instance) !== 'none') {
+                      <span class="sla-badge" [class]="slaClass(instance)">{{ slaLabel(instance) }}</span>
+                    }
+                  </td>
+                  <td>
+                    <button type="button" mat-button (click)="openDetail(instance)">
+                      {{ i18n.t('platform.workflow.detail') }}
+                    </button>
+                    @for (action of rowActions(instance); track action) {
+                      <button type="button" mat-stroked-button (click)="confirmTransition(instance, action)">
+                        {{ actionLabel(action) }}
+                      </button>
+                    }
+                    @if (canDelegate(instance)) {
+                      <button type="button" mat-stroked-button (click)="openDelegate(instance)">
+                        {{ i18n.t('platform.workflow.delegate') }}
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+
+  @if (detailPayload) {
+    <app-section-card [title]="i18n.t('platform.workflow.detailTitle')">
+      <dl class="workflow-detail">
+        @for (entry of detailEntries; track entry.key) {
+          <dt>{{ entry.label }}</dt>
+          <dd>{{ entry.value }}</dd>
+        }
+      </dl>
+      <button type="button" mat-button (click)="closeDetail()">{{ i18n.t('common.cancel') }}</button>
+    </app-section-card>
+  }
+</div>
+
+@if (pendingTransition) {
+  <div class="workflow-dialog" role="dialog" aria-modal="true">
+    <div class="workflow-dialog__panel">
+      <p>{{ i18n.t('platform.workflow.confirmTransition') }} <strong>{{ actionLabel(pendingTransition.action) }}</strong>?</p>
+      <div class="workflow-dialog__actions">
+        <button type="button" mat-button (click)="pendingTransition = null">{{ i18n.t('common.cancel') }}</button>
+        <button type="button" mat-flat-button color="primary" (click)="runTransition()">
+          {{ actionLabel(pendingTransition.action) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (delegateTarget) {
+  <div class="workflow-dialog" role="dialog" aria-modal="true">
+    <div class="workflow-dialog__panel">
+      <label for="delegateTo">{{ i18n.t('platform.workflow.delegatePrompt') }}</label>
+      <input
+        id="delegateTo"
+        [(ngModel)]="delegateTo"
+        name="delegateTo"
+      />
+      <div class="workflow-dialog__actions">
+        <button type="button" mat-button (click)="delegateTarget = null">{{ i18n.t('common.cancel') }}</button>
+        <button type="button" mat-flat-button color="primary" (click)="runDelegate()">
+          {{ i18n.t('platform.workflow.delegate') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

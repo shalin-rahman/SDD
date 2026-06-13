@@ -1,0 +1,48 @@
+// EMCAP design tokens — ADR-006. Components use semantic names, not raw px/hex.
+
+:root {
+  --emcap-primary: #005cbb;
+  --emcap-border: #e0e0e0;
+  --emcap-surface: #fafafa;
+  --emcap-text: #1a1a1a;
+  --emcap-text-muted: #5f6368;
+  --emcap-color-error: #b00020;
+  --emcap-color-on-primary: #ffffff;
+
+  --emcap-color-primary: var(--emcap-primary);
+  --emcap-color-on-surface: var(--emcap-text);
+  --emcap-color-surface-container: #f0f2f5;
+  --emcap-color-outline: var(--emcap-border);
+
+  --emcap-space-xs: 0.25rem;
+  --emcap-space-sm: 0.5rem;
+  --emcap-space-md: 1rem;
+  --emcap-space-lg: 1.5rem;
+  --emcap-space-xl: 2rem;
+
+  --emcap-radius-sm: 4px;
+  --emcap-radius-md: 8px;
+  --emcap-radius-card: 12px;
+  --emcap-radius-full: 9999px;
+
+  --emcap-font-title-lg: 1.25rem;
+  --emcap-font-title-md: 1.125rem;
+  --emcap-font-body-md: 1rem;
+  --emcap-font-body-sm: 0.875rem;
+  --emcap-font-label-sm: 0.75rem;
+
+  --emcap-elevation-0: none;
+  --emcap-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --emcap-elevation-2: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  --emcap-duration-short: 150ms;
+  --emcap-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html[data-theme='dark'] {
+  --emcap-border: #3a3a3a;
+  --emcap-surface: #121212;
+  --emcap-text: #f5f5f5;
+  --emcap-text-muted: #9aa0a6;
+  --emcap-color-surface-container: #2a2a2a;
+}
