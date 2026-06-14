@@ -14,6 +14,8 @@ def test_platform_config_endpoint(client: TestClient) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["modules"]["workflow"]["enabled"] is True
+    assert body["documents"]["storage_backend"] == "filesystem"
+    assert body["documents"]["virus_scan_enabled"] is True
 
 
 def test_customer_entity_registered(client: TestClient) -> None:

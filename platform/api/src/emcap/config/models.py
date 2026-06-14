@@ -106,6 +106,8 @@ class IntegrationsSettings(BaseModel):
 class TenantBrandingSettings(BaseModel):
     domain: str = "localhost"
     theme: str = "default"
+    primary_color: str = ""
+    logo_url: str = ""
 
 
 class SeedCoreSettings(BaseModel):
@@ -136,6 +138,13 @@ class SecuritySettings(BaseModel):
     abac_policies: list[AbacPolicyConfig] = Field(default_factory=list)
 
 
+class DocumentsSettings(BaseModel):
+    storage_backend: str = "filesystem"
+    max_upload_size_mb: int = 25
+    virus_scan_enabled: bool = True
+    retention_days: int = 365
+
+
 class PlatformConfig(BaseModel):
     platform: PlatformSettings = Field(default_factory=PlatformSettings)
     tenant_strategy: TenantStrategySettings = Field(default_factory=TenantStrategySettings)
@@ -154,3 +163,4 @@ class PlatformConfig(BaseModel):
     )
     seed: SeedSettings = Field(default_factory=SeedSettings)
     security: SecuritySettings = Field(default_factory=SecuritySettings)
+    documents: DocumentsSettings = Field(default_factory=DocumentsSettings)

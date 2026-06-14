@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-12 (rev. 8 — Phase 14/15 pivot; Phase 12/13 not product-complete)
+**Last updated:** 2026-06-14 (rev. 12 — P19-T03 Done; P19-T05/T06 Partial; entity routes not master–detail)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -32,7 +32,7 @@
 
 | Design system (Material / tokens) | Partial | Partial | Material shell + light/dark theme (P12A / P12D / P12F) |
 
-| Responsive app shell | Partial | Partial | Sidenav/drawer + rail ≥900px; entity master–detail |
+| Responsive app shell | Partial | Partial | Sidenav/drawer + rail ≥900px; **entity separate list/record routes** (not master–detail) |
 
 | Workflow / reports / AI nav when enabled | Partial | Partial | Platform links gated; Admin/Settings when permitted |
 
@@ -56,7 +56,7 @@
 
 | White-label theme from tenant | Partial | Partial | Partial | Seed color from tenant config |
 
-| **Tenant branding admin UI** | No | Partial | Partial | Settings branding fields (theme/domain) |
+| **Tenant branding admin UI** | No | Partial | Partial | Settings split-pane: primary/logo + live preview (P19-T05); theme/domain save via admin PUT |
 
 | Isolation strategy display | Done | Partial | Partial | Settings read-only line |
 
@@ -80,7 +80,7 @@
 
 | Hide disabled module menus | Partial | Partial | Shell filters menus + settings toggles |
 
-| **Module on/off settings UI** | Partial | Partial | Settings hub module section |
+| **Module on/off settings UI** | Partial | Partial | Settings hub module section; P19-T01 mat-tab IA (Modules \| Identity \| Platform \| Integrations) |
 
 | Per-page enable within module | No | No | Not in SDD v1 detail |
 
@@ -142,20 +142,20 @@
 
 | Login / MFA / OAuth | Done | Done | Done | — |
 
-| List roles | Done | Done | Done | Admin roles screen |
+| List roles | Done | Done | Done | Admin roles screen; P19-T02 search, empty state, module permission chips |
 
-| Create / edit roles | Done | Done | Done | Master–detail + permission picker |
+| Create / edit roles | Done | Done | Done | Master–detail + permission picker; inline save validation |
 
-| Permission assignment UI | Partial | Partial | Partial | Checkbox picker by module; matrix read-only |
+| Permission assignment UI | Partial | Partial | Partial | Checkbox picker by module; list shows grouped chips; matrix read-only |
 
-| List / CRUD users | Done | Done | Done | Admin users screen |
+| List / CRUD users | Done | Done | Done | Admin users screen; P19-T02 search, active chips, empty state |
 
 | Assign role to user | Done | Done | Done | Role multi-select checkboxes |
 
 | Permission-filtered menus | Partial | Partial | Partial | Shell filters via `/auth/me` |
 
-| Row/field security admin | Partial | Partial | Partial | Entity field viewer (P12F-T40–T46); ABAC editor (P13-T01–T06) |
-| ABAC policy admin | Done | Partial | Partial | `GET/PUT /admin/security/abac`; web table editor; mobile dialog edit |
+| Row/field security admin | Partial | Partial | Partial | P19-T03 web field matrix + permission picker; `PUT /admin/security/field-access` + merged policies GET (P13-T10/T11 Done) |
+| ABAC policy admin | Done | Partial | Partial | `GET/PUT /admin/security/abac`; web table editor; P19-T04 delete confirm + empty permission validation |
 
 | Auth provider config UI | Partial | Partial | Partial | Settings authentication toggles |
 
@@ -238,7 +238,7 @@
 
 | Document upload/list on record | Done | Done | Done | — |
 
-| Document platform settings UI | No | No | No | virus scan, storage flags |
+| Document platform settings UI | Partial | No | No | P19-T06: read-only cards in Settings → Platform from GET `/config/platform` |
 
 | Integration registry admin | Partial | Partial | Partial | Settings integrations panel + test REST (P12F-T30–T36) |
 
@@ -321,7 +321,7 @@
 | Admin & settings consoles | **Partial** (web + mobile parity on core flows) |
 
 | Phase 13 ABAC builder | **Partial** (Slice 1 done) |
-| Phase 13 (field override editor, layout designer, isolation write) | **Not started** |
+| Phase 13 (field override editor, layout designer, isolation write) | **Partial** (P13-T10/T11 API Done; P19-T03 web UI; P13-T20/T30 pending) |
 
 
 

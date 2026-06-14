@@ -13,6 +13,18 @@ import leadFormKeys from '../../assets/fixtures/metadata/lead.form.keys.json';
 import leadGridKeys from '../../assets/fixtures/metadata/lead.grid.keys.json';
 import contactFormKeys from '../../assets/fixtures/metadata/contact.form.keys.json';
 import contactGridKeys from '../../assets/fixtures/metadata/contact.grid.keys.json';
+import journalEntryFormKeys from '../../assets/fixtures/metadata/journal_entry.form.keys.json';
+import journalEntryGridKeys from '../../assets/fixtures/metadata/journal_entry.grid.keys.json';
+import saleFormKeys from '../../assets/fixtures/metadata/sale.form.keys.json';
+import saleGridKeys from '../../assets/fixtures/metadata/sale.grid.keys.json';
+import leaveRequestFormKeys from '../../assets/fixtures/metadata/leave_request.form.keys.json';
+import leaveRequestGridKeys from '../../assets/fixtures/metadata/leave_request.grid.keys.json';
+import accountFormKeys from '../../assets/fixtures/metadata/account.form.keys.json';
+import accountGridKeys from '../../assets/fixtures/metadata/account.grid.keys.json';
+import terminalFormKeys from '../../assets/fixtures/metadata/terminal.form.keys.json';
+import terminalGridKeys from '../../assets/fixtures/metadata/terminal.grid.keys.json';
+import employeeFormKeys from '../../assets/fixtures/metadata/employee.form.keys.json';
+import employeeGridKeys from '../../assets/fixtures/metadata/employee.grid.keys.json';
 import supplierFormKeys from '../../assets/fixtures/metadata/supplier.form.keys.json';
 import supplierGridKeys from '../../assets/fixtures/metadata/supplier.grid.keys.json';
 import purchaseOrderFormKeys from '../../assets/fixtures/metadata/purchase_order.form.keys.json';
@@ -21,6 +33,10 @@ import salesOrderFormKeys from '../../assets/fixtures/metadata/sales_order.form.
 import salesOrderGridKeys from '../../assets/fixtures/metadata/sales_order.grid.keys.json';
 import invoiceFormKeys from '../../assets/fixtures/metadata/invoice.form.keys.json';
 import invoiceGridKeys from '../../assets/fixtures/metadata/invoice.grid.keys.json';
+import stockMovementFormKeys from '../../assets/fixtures/metadata/stock_movement.form.keys.json';
+import stockMovementGridKeys from '../../assets/fixtures/metadata/stock_movement.grid.keys.json';
+import stockMovementLineFormKeys from '../../assets/fixtures/metadata/stock_movement_line.form.keys.json';
+import stockMovementLineGridKeys from '../../assets/fixtures/metadata/stock_movement_line.grid.keys.json';
 
 interface FormKeysFixture {
   field_names: string[];
@@ -79,6 +95,66 @@ const W1_ENTITIES: Array<{
   },
 ];
 
+const W2_ENTITIES: Array<{
+  code: string;
+  formKeys: FormKeysFixture;
+  gridKeys: GridKeysFixture;
+  headlineSample: Record<string, unknown>;
+  expectedHeadline: string;
+}> = [
+  {
+    code: 'JOURNAL_ENTRY',
+    formKeys: journalEntryFormKeys as FormKeysFixture,
+    gridKeys: journalEntryGridKeys as GridKeysFixture,
+    headlineSample: { reference: 'JE-001', amount: 100 },
+    expectedHeadline: 'JE-001',
+  },
+  {
+    code: 'SALE',
+    formKeys: saleFormKeys as FormKeysFixture,
+    gridKeys: saleGridKeys as GridKeysFixture,
+    headlineSample: { receipt_no: 'R-1001', total: 49.99 },
+    expectedHeadline: 'R-1001',
+  },
+  {
+    code: 'LEAVE_REQUEST',
+    formKeys: leaveRequestFormKeys as FormKeysFixture,
+    gridKeys: leaveRequestGridKeys as GridKeysFixture,
+    headlineSample: { employee_id: 'emp-1', leave_type: 'annual', days: 5 },
+    expectedHeadline: 'entity.record rec-1',
+  },
+];
+
+const W3_ENTITIES: Array<{
+  code: string;
+  formKeys: FormKeysFixture;
+  gridKeys: GridKeysFixture;
+  headlineSample: Record<string, unknown>;
+  expectedHeadline: string;
+}> = [
+  {
+    code: 'ACCOUNT',
+    formKeys: accountFormKeys as FormKeysFixture,
+    gridKeys: accountGridKeys as GridKeysFixture,
+    headlineSample: { code: '1000', name: 'Cash', balance: 50000.0 },
+    expectedHeadline: '1000 — Cash',
+  },
+  {
+    code: 'TERMINAL',
+    formKeys: terminalFormKeys as FormKeysFixture,
+    gridKeys: terminalGridKeys as GridKeysFixture,
+    headlineSample: { terminal_id: 'T-01', location: 'Front Desk' },
+    expectedHeadline: 'T-01 — Front Desk',
+  },
+  {
+    code: 'EMPLOYEE',
+    formKeys: employeeFormKeys as FormKeysFixture,
+    gridKeys: employeeGridKeys as GridKeysFixture,
+    headlineSample: { employee_no: 'EMP-001', full_name: 'Jane Doe', department: 'sales' },
+    expectedHeadline: 'EMP-001 — Jane Doe',
+  },
+];
+
 const W4_ENTITIES: Array<{
   code: string;
   formKeys: FormKeysFixture;
@@ -116,7 +192,30 @@ const W4_ENTITIES: Array<{
   },
 ];
 
-const FIXTURE_ENTITIES = [...W1_ENTITIES, ...W4_ENTITIES];
+const W5_ENTITIES: Array<{
+  code: string;
+  formKeys: FormKeysFixture;
+  gridKeys: GridKeysFixture;
+  headlineSample: Record<string, unknown>;
+  expectedHeadline: string;
+}> = [
+  {
+    code: 'STOCK_MOVEMENT',
+    formKeys: stockMovementFormKeys as FormKeysFixture,
+    gridKeys: stockMovementGridKeys as GridKeysFixture,
+    headlineSample: { movement_number: 'SM-0001', movement_type: 'receive', status: 'draft' },
+    expectedHeadline: 'SM-0001',
+  },
+  {
+    code: 'STOCK_MOVEMENT_LINE',
+    formKeys: stockMovementLineFormKeys as FormKeysFixture,
+    gridKeys: stockMovementLineGridKeys as GridKeysFixture,
+    headlineSample: { movement_id: 'mov-1', product_id: 'prod-1', quantity: 10 },
+    expectedHeadline: 'entity.record rec-1',
+  },
+];
+
+const FIXTURE_ENTITIES = [...W1_ENTITIES, ...W2_ENTITIES, ...W3_ENTITIES, ...W4_ENTITIES, ...W5_ENTITIES];
 
 function fieldFromName(name: string, readOnly = false): FormFieldMetadata {
   const isDatetime = name.endsWith('_at');
@@ -193,6 +292,28 @@ for (const entity of FIXTURE_ENTITIES) {
       if (entity.code === 'CONTACT') {
         expect(resolved.nameField).toBe('name');
       }
+      if (entity.code === 'JOURNAL_ENTRY') {
+        expect(resolved.codeField).toBe('reference');
+      }
+      if (entity.code === 'SALE') {
+        expect(resolved.codeField).toBe('receipt_no');
+      }
+      if (entity.code === 'LEAVE_REQUEST') {
+        expect(resolved.codeField).toBeUndefined();
+        expect(resolved.nameField).toBeUndefined();
+      }
+      if (entity.code === 'ACCOUNT') {
+        expect(resolved.codeField).toBe('code');
+        expect(resolved.nameField).toBe('name');
+      }
+      if (entity.code === 'TERMINAL') {
+        expect(resolved.codeField).toBe('terminal_id');
+        expect(resolved.nameField).toBe('location');
+      }
+      if (entity.code === 'EMPLOYEE') {
+        expect(resolved.codeField).toBe('employee_no');
+        expect(resolved.nameField).toBe('full_name');
+      }
       if (entity.code === 'PURCHASE_ORDER') {
         expect(resolved.codeField).toBe('po_number');
       }
@@ -201,6 +322,17 @@ for (const entity of FIXTURE_ENTITIES) {
       }
       if (entity.code === 'INVOICE') {
         expect(resolved.codeField).toBe('invoice_number');
+      }
+      if (entity.code === 'SUPPLIER') {
+        expect(resolved.codeField).toBe('code');
+        expect(resolved.nameField).toBe('name');
+      }
+      if (entity.code === 'STOCK_MOVEMENT') {
+        expect(resolved.codeField).toBe('movement_number');
+      }
+      if (entity.code === 'STOCK_MOVEMENT_LINE') {
+        expect(resolved.codeField).toBeUndefined();
+        expect(resolved.nameField).toBeUndefined();
       }
     });
 

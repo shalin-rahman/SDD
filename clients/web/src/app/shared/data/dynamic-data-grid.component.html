@@ -29,7 +29,9 @@
     <p class="data-grid__status">{{ statusLine }}</p>
   }
 
-  @if (isEmpty) {
+  @if (loading) {
+    <app-loading-panel [message]="i18n.t('common.loading')" [inline]="true" />
+  } @else if (isEmpty) {
     <app-empty-state
       [message]="i18n.t('grid.empty')"
       [actionLabel]="i18n.t('entity.new')"

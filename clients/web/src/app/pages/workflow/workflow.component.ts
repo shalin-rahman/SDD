@@ -99,7 +99,7 @@ export class WorkflowComponent implements OnInit, OnDestroy {
       return [];
     }
     const labels: Record<string, string> = {
-      id: 'ID',
+      id: this.i18n.t('platform.workflow.colId'),
       workflow_code: this.i18n.t('platform.workflow.colWorkflow'),
       entity_code: this.i18n.t('platform.workflow.colEntity'),
       record_id: this.i18n.t('platform.workflow.colRecord'),
@@ -135,7 +135,7 @@ export class WorkflowComponent implements OnInit, OnDestroy {
 
   async escalate(): Promise<void> {
     const result = await this.api.client.escalateWorkflows();
-    this.escalateMsg = `${this.i18n.t('platform.workflow.escalated')}: ${String(result.escalated)}`;
+    this.escalateMsg = this.i18n.t('platform.workflow.escalatedCount').replace('{count}', String(result.escalated));
     await this.load();
   }
 
@@ -156,9 +156,9 @@ export class WorkflowComponent implements OnInit, OnDestroy {
       return formatRecordFieldValue('due_at', 'datetime', instance.due_at);
     }
     if (instance.sla_hours != null) {
-      return `${instance.sla_hours}h SLA`;
+      return this.i18n.t('platform.workflow.slaHours').replace('{hours}', String(instance.sla_hours));
     }
-    return '—';
+    return this.i18n.t('common.emptyValue');
   }
 
   slaLevel(instance: WorkflowInstanceRow): WorkflowSlaLevel {

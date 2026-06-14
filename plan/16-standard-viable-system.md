@@ -18,7 +18,7 @@ A stakeholder can demo **Inventory → Products** (then Warehouses, CRM) on **we
 |-----------|------------|----------------------|
 | **Data model** | Platform system fields, soft delete, version, status lifecycle, enum/lookup fields | CRUD API with 6 primitive field types |
 | **Metadata** | One contract; system section injected; field types drive renderers | Metadata exists but UI ignores system attrs |
-| **Entity UX** | Master–detail at enterprise density; hero header; loading/error/empty states | Wired grid + raw HTML form |
+| **Entity UX** | **Separate list + record routes**; hero header on record page; loading/error/empty states on list | Wired grid + raw HTML form on one page |
 | **Design** | Material 3 tokens, spacing, typography, light/dark, WCAG 2.2 AA targets | Material shell with ad-hoc CSS |
 | **Platform services** | Workflow inbox, reports, docs, notifications at **Demo+** UX | Account-page demo buttons |
 | **Admin** | Users/roles usable; settings grouped by domain; security readable | Toggle-heavy settings hub |
@@ -239,7 +239,7 @@ Legend: **API** · **Web** · **Mobile** · **Doc/Test**
 | EMCAP-P19-T03 | P13-T10–T14 field `read_roles` override UI | API, Web, Mobile | P19-T02 | Pending |
 | EMCAP-P19-T04 | ABAC editor UX review + validation (P13 done → polish) | Web, Mobile | P19-T01 | Pending |
 | EMCAP-P19-T05 | Branding admin: live theme preview | Web | P16-T02 | Pending |
-| EMCAP-P19-T06 | Document platform settings UI (P12C-T12) | Web, Mobile | P19-T01 | Pending |
+| EMCAP-P19-T06 | Document platform settings UI (P12C-T12) | Web, Mobile | P19-T01 | Partial — web read-only Platform tab |
 | EMCAP-P19-T07 | P13-T20–T22 isolation write (ops only) | API, Doc | P19-T01 | Pending |
 | EMCAP-P19-T08 | Layout designer ADR (P13-T30) — no UI until entity viable | Doc | M3 | Pending |
 
@@ -334,10 +334,10 @@ Canonical list: **`docs/product/user-feedback-registry.md`** (memorize; update w
 |----------|--------|
 | **Whole system planned?** | **Yes** for viable product path: API · web · mobile · modules · docs · CI gates, via W1–W8 + milestones M1–M6. |
 | **Every SDD § at Product-ready?** | **No** — explicit §8 out-of-scope until post-M5; API “Done” in `04-capability-matrix` ≠ product bar. |
-| **All earlier feedback addressed?** | **Mapped** — see registry §A–D; **gap tasks** §F added below. |
+| **All earlier feedback addressed?** | **Mapped** — see registry §A–D; **gap tasks** §I. |
 | **Admin toggles deprioritized?** | **Yes** — P19 after M1; ABAC polish not new features. |
 
-### Feedback gap tasks (registry §F)
+### Feedback gap tasks (registry §I)
 
 | ID | Task | Layer | Depends |
 |----|------|-------|---------|

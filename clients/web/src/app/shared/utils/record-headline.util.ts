@@ -9,8 +9,19 @@ export interface RecordHeadlineView {
 
 type TranslateFn = (key: string) => string;
 
-const CODE_FIELD_CANDIDATES = ['sku', 'code', 'po_number', 'order_number', 'invoice_number'] as const;
-const NAME_FIELD_CANDIDATES = ['name', 'company', 'contact_name', 'title'] as const;
+const CODE_FIELD_CANDIDATES = [
+  'sku',
+  'code',
+  'reference',
+  'receipt_no',
+  'po_number',
+  'order_number',
+  'invoice_number',
+  'movement_number',
+  'terminal_id',
+  'employee_no',
+] as const;
+const NAME_FIELD_CANDIDATES = ['name', 'company', 'contact_name', 'title', 'location', 'full_name'] as const;
 const DEFAULT_SUBTITLE_FIELDS = ['quantity_on_hand', 'unit_price'] as const;
 
 export interface ResolvedHeadlineFields {

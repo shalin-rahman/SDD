@@ -73,6 +73,21 @@ RecordHeadlineView buildRecordHeadlineView(
     if (headline.isEmpty) {
       headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
     }
+  } else if (entityCode == 'JOURNAL_ENTRY') {
+    headline = _str(record['reference']);
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'SALE') {
+    headline = _str(record['receipt_no']);
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'LEAVE_REQUEST') {
+    headline = _dualHeadline(_str(record['leave_type']), _str(record['days']));
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
   } else if (entityCode == 'CONTACT') {
     headline = _str(record['name']);
     if (headline.isEmpty) {
@@ -99,6 +114,31 @@ RecordHeadlineView buildRecordHeadlineView(
     }
   } else if (entityCode == 'INVOICE') {
     headline = _str(record['invoice_number']);
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'STOCK_MOVEMENT') {
+    headline = _str(record['movement_number']);
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'STOCK_MOVEMENT_LINE') {
+    headline = _dualHeadline(_str(record['quantity']), _str(record['unit_cost']));
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'ACCOUNT') {
+    headline = _dualHeadline(_str(record['code']), _str(record['name']));
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'TERMINAL') {
+    headline = _dualHeadline(_str(record['terminal_id']), _str(record['location']));
+    if (headline.isEmpty) {
+      headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
+    }
+  } else if (entityCode == 'EMPLOYEE') {
+    headline = _dualHeadline(_str(record['employee_no']), _str(record['full_name']));
     if (headline.isEmpty) {
       headline = '${t('entity.record')} ${selectedRecordId ?? ''}'.trim();
     }

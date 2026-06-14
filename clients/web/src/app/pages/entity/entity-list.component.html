@@ -1,0 +1,47 @@
+<div class="entity-list-page">
+  <app-page-header [title]="title">
+    <button type="button" class="entity-list-page__new" mat-flat-button color="primary" (click)="startCreate()">
+      {{ i18n.t('entity.new') }}
+    </button>
+  </app-page-header>
+
+  @if (loadError) {
+    <app-empty-state
+      [message]="loadError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="loadEntity()"
+    />
+  } @else if (loadingEntity) {
+    <app-loading-panel [message]="i18n.t('common.loading')" />
+  } @else if (gridRenderer) {
+    <div class="entity-list-page__grid">
+      <app-dynamic-data-grid
+        [gridRenderer]="gridRenderer"
+        [loading]="loadingList"
+        [columnFields]="columnFields"
+        [displayGroups]="displayGroups"
+        [groupBy]="groupBy"
+        [filters]="filters"
+        [searchInput]="searchInput"
+        [pageLabel]="pageLabel"
+        [page]="page"
+        [totalPages]="totalPages"
+        [statusLine]="statusLine"
+        [exportCsv]="exportCsv"
+        [exportExcel]="exportExcel"
+        [exportPdf]="exportPdf"
+        (searchInputChange)="onSearchInputChange($event)"
+        (prevPage)="prevPage()"
+        (nextPage)="nextPage()"
+        (toggleGroup)="toggleGroup()"
+        (sort)="onSort($event)"
+        (filterChange)="onFilterChange($event.field, $event.value)"
+        (recordSelect)="selectRecord($event)"
+        (exportCsvClick)="exportCsvFile()"
+        (exportExcelClick)="exportExcelFile()"
+        (exportPdfClick)="exportPdfFile()"
+        (createRecord)="startCreate()"
+      />
+    </div>
+  }
+</div>

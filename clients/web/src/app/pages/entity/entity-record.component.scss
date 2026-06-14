@@ -1,0 +1,36 @@
+.entity-record-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.entity-record-page__breadcrumb {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--emcap-text-muted, #5f6368);
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-record-page__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.record-detail {
+  padding: 0.5rem 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 0;
+}
+
+.error {
+  color: var(--emcap-warn, #b3261e);
+  margin: 0 0.75rem;
+  font-size: 0.875rem;
+}

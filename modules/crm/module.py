@@ -78,6 +78,7 @@ MODULE = ModuleDefinition(
     menus=[
         MenuDefinition(code="leads", label="Leads", entity_code="LEAD"),
         MenuDefinition(code="contacts", label="Contacts", entity_code="CONTACT"),
+        MenuDefinition(code="open_leads", label="Open Leads Report", entity_code="LEAD", report_code="OPEN_LEADS"),
     ],
     permissions=["crm.access"],
 )

@@ -33,3 +33,23 @@
 .security-rules p {
   margin: 0.35rem 0;
 }
+
+.security-abac {
+  margin-top: 1.5rem;
+}
+
+.field-edit-panel {
+  display: block;
+  margin-top: 1rem;
+}
+
+.input-error {
+  border-color: #c62828;
+}
+
+.field-error {
+  display: block;
+  color: #c62828;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}

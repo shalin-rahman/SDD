@@ -2,6 +2,11 @@
   min-width: 0;
 }
 
+.admin-search-field {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
 .admin-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--emcap-border);
@@ -26,4 +31,28 @@
   margin: 1rem 0 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
+}
+
+.permission-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+:host ::ng-deep mat-chip.permission-chip {
+  --mdc-chip-elevated-container-color: #e8eaf6;
+  --mdc-chip-label-text-color: #3949ab;
+  font-size: 0.75rem;
+  min-height: 24px;
+}
+
+.permission-overflow {
+  font-size: 0.75rem;
+  color: var(--emcap-muted, #666);
+}
+
+.field-error {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
 }

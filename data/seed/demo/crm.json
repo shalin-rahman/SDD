@@ -10,18 +10,231 @@
         "company": "Acme Trading",
         "contact_name": "Jane Smith",
         "email": "jane@acme.example",
-        "status": "open",
+        "status": "qualified",
         "active": true
       }
     },
     {
       "id": "11111111-1111-4111-8111-111111111302",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Beta Corp",
+        "contact_name": "John Doe",
+        "email": "john@beta.example",
+        "status": "lost",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111303",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Gamma LLC",
+        "contact_name": "Priya Patel",
+        "email": "priya@gamma.example",
+        "status": "won",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111304",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Delta Inc",
+        "contact_name": "Carlos Ruiz",
+        "email": "carlos@delta.example",
+        "status": "new",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111305",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Epsilon Co",
+        "contact_name": "Anna Kowalski",
+        "email": "anna@epsilon.example",
+        "status": "qualified",
+        "active": false
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111306",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Zeta Partners",
+        "contact_name": "Li Wei",
+        "email": "li@zeta.example",
+        "status": "lost",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111307",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Eta Systems",
+        "contact_name": "Sarah Jones",
+        "email": "sarah@eta.example",
+        "status": "won",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111308",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Theta Group",
+        "contact_name": "Omar Hassan",
+        "email": "omar@theta.example",
+        "status": "new",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111309",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Iota Retail",
+        "contact_name": "Emma Wilson",
+        "email": "emma@iota.example",
+        "status": "qualified",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111310",
+      "entity_code": "LEAD",
+      "tenant_id": "default",
+      "data": {
+        "company": "Kappa Foods",
+        "contact_name": "Mike Brown",
+        "email": "mike@kappa.example",
+        "status": "lost",
+        "active": false
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222201",
       "entity_code": "CONTACT",
       "tenant_id": "default",
       "data": {
-        "name": "Robert Chen",
-        "email": "robert@example.com",
-        "phone": "+1-555-0100",
+        "name": "Contact Person 1",
+        "email": "contact1@example.com",
+        "phone": "+1-555-0101",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111301"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222202",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 2",
+        "email": "contact2@example.com",
+        "phone": "+1-555-0102",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111302"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222203",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 3",
+        "email": "contact3@example.com",
+        "phone": "+1-555-0103",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111303"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222204",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 4",
+        "email": "contact4@example.com",
+        "phone": "+1-555-0104",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111304"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222205",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 5",
+        "email": "contact5@example.com",
+        "phone": "+1-555-0105",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111305"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222206",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 6",
+        "email": "contact6@example.com",
+        "phone": "+1-555-0106",
+        "active": true,
+        "lead_id": "11111111-1111-4111-8111-111111111306"
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222207",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 7",
+        "email": "contact7@example.com",
+        "phone": "+1-555-0107",
+        "active": true
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222208",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 8",
+        "email": "contact8@example.com",
+        "phone": "+1-555-0108",
+        "active": true
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222209",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 9",
+        "email": "contact9@example.com",
+        "phone": "+1-555-0109",
+        "active": true
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222210",
+      "entity_code": "CONTACT",
+      "tenant_id": "default",
+      "data": {
+        "name": "Contact Person 10",
+        "email": "contact10@example.com",
+        "phone": "+1-555-0110",
         "active": true
       }
     }

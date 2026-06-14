@@ -1,0 +1,14 @@
+{
+  "column_fields": [
+    "reference",
+    "account_id",
+    "amount",
+    "posted_at",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

@@ -3,6 +3,51 @@
   padding-top: 0.75rem;
 }
 
+.record-tabs__group {
+  margin-top: 0.25rem;
+}
+
+.record-tabs__panel {
+  padding: 0.75rem 0;
+}
+
+.record-tabs__empty {
+  color: var(--emcap-text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.record-tabs__workflow-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.record-tabs__workflow-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+}
+
+.record-tabs__workflow-code {
+  font-weight: 600;
+}
+
+.record-tabs__workflow-state {
+  text-transform: capitalize;
+  color: var(--emcap-text-muted);
+}
+
+.record-tabs__workflow-assignee {
+  font-size: var(--emcap-font-body-sm);
+  color: var(--emcap-text-muted);
+}
+
+.record-tabs__inbox-link {
+  margin-top: 0.25rem;
+}
+
 .record-tabs__documents {
   list-style: none;
   padding: 0;

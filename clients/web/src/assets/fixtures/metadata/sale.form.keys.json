@@ -1,0 +1,9 @@
+{
+  "field_names": [
+    "receipt_no",
+    "total",
+    "terminal_id",
+    "payment_method",
+    "active"
+  ]
+}

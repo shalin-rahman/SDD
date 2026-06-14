@@ -3,9 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
 import {
@@ -13,11 +15,21 @@ import {
   type SettingsToggleItem,
 } from '../../shared/admin/settings-toggle-group.component';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
+import { BrandingPreviewPanelComponent } from '../../shared/admin/branding-preview-panel.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header.component';
 import { ShellContextService } from '../../shared/services/shell-context.service';
 import { I18nService } from '../../shared/services/i18n.service';
+import {
+  parseDocumentPlatformSettings,
+  type DocumentPlatformSettings,
+} from '../../shared/utils/document-platform-settings.util';
+import {
+  isBrandingPathEditable,
+  parseTenantBranding,
+  previewPrimaryColor,
+} from '../../shared/utils/branding.util';
 
 interface EmailTemplate {
   id: string;
@@ -34,15 +46,18 @@ interface EmailTemplate {
     FormsModule,
     RouterLink,
     MatExpansionModule,
+    MatTabsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatCardModule,
     PageHeaderComponent,
     SettingsToggleGroupComponent,
     MasterDetailLayoutComponent,
     AdminFormPanelComponent,
     DetailPlaceholderComponent,
+    BrandingPreviewPanelComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
@@ -53,6 +68,7 @@ export class SettingsComponent implements OnInit {
   readonly i18n = inject(I18nService);
 
   settings: Record<string, unknown> = {};
+  editablePaths: string[] = [];
   templates: EmailTemplate[] = [];
   audit: Record<string, unknown>[] = [];
   loadError = '';
@@ -68,6 +84,9 @@ export class SettingsComponent implements OnInit {
   templateBody = '';
   tenantTheme = 'default';
   tenantDomain = 'localhost';
+  tenantPrimaryColor = '';
+  tenantLogoUrl = '';
+  brandingPrimaryFallback = '';
   paymentProvider = 'stripe';
   paymentPublishableKey = '';
   paymentSecretDraft = '';
@@ -81,6 +100,7 @@ export class SettingsComponent implements OnInit {
   webhookSecretDraft = '';
   webhookSecretConfigured = false;
   integrationTestStatus = '';
+  documentSettings: DocumentPlatformSettings = parseDocumentPlatformSettings({});
 
   ngOnInit(): void {
     void this.reload();
@@ -93,23 +113,29 @@ export class SettingsComponent implements OnInit {
   async reload(): Promise<void> {
     this.loadError = '';
     try {
-      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health] =
+      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health, platformConfig] =
         await Promise.all([
         this.api.client.getAdminSettings(),
         this.api.client.getAdminIntegrations(),
         this.api.client.listAdminTemplates(),
         this.api.client.getAdminAudit(),
         this.api.client.getHealth(),
+        this.api.client.getPlatformConfig(),
       ]);
       this.settings = settingsPayload.settings;
+      this.editablePaths = settingsPayload.editable_paths ?? [];
       this.integrations = integrationsPayload.integrations;
       this.templates = templatesPayload.templates as unknown as EmailTemplate[];
       this.audit = auditPayload.audit;
       this.tenantStrategy = health.tenant_strategy;
       this.multiTenant = health.multi_tenant;
-      const tenants = this.settings['tenants'] as Record<string, Record<string, string>> | undefined;
-      this.tenantTheme = tenants?.default?.theme ?? 'default';
-      this.tenantDomain = tenants?.default?.domain ?? 'localhost';
+      this.documentSettings = parseDocumentPlatformSettings(platformConfig);
+      const branding = parseTenantBranding(this.settings, platformConfig);
+      this.tenantTheme = branding.theme;
+      this.tenantDomain = branding.domain;
+      this.tenantPrimaryColor = branding.primaryColor;
+      this.tenantLogoUrl = branding.logoUrl;
+      this.brandingPrimaryFallback = branding.primaryColor;
       this.syncPaymentFields();
       this.syncIntegrationFields();
     } catch (err) {
@@ -202,6 +228,28 @@ export class SettingsComponent implements OnInit {
     ];
   }
 
+  virusScanLabel(): string {
+    return this.documentSettings.virusScanEnabled
+      ? this.i18n.t('settings.documents.enabled')
+      : this.i18n.t('settings.documents.disabled');
+  }
+
+  brandingPrimaryEditable(): boolean {
+    return isBrandingPathEditable(this.editablePaths, 'tenants.default.primary_color');
+  }
+
+  brandingLogoEditable(): boolean {
+    return isBrandingPathEditable(this.editablePaths, 'tenants.default.logo_url');
+  }
+
+  brandingPreviewPrimary(): string {
+    return previewPrimaryColor(this.tenantPrimaryColor, this.brandingPrimaryFallback);
+  }
+
+  brandingReadOnly(): boolean {
+    return !this.brandingPrimaryEditable() && !this.brandingLogoEditable();
+  }
+
   onModuleChange(event: { key: string; checked: boolean }): void {
     this.setFlag('modules', event.key, 'enabled', event.checked);
   }
@@ -258,7 +306,18 @@ export class SettingsComponent implements OnInit {
 
   applyBranding(): void {
     const tenants = (this.settings['tenants'] as Record<string, Record<string, string>>) ?? {};
-    tenants.default = { ...(tenants.default ?? {}), theme: this.tenantTheme, domain: this.tenantDomain };
+    const next: Record<string, string> = {
+      ...(tenants.default ?? {}),
+      theme: this.tenantTheme,
+      domain: this.tenantDomain,
+    };
+    if (this.brandingPrimaryEditable()) {
+      next['primary_color'] = this.brandingPreviewPrimary();
+    }
+    if (this.brandingLogoEditable()) {
+      next['logo_url'] = this.tenantLogoUrl.trim();
+    }
+    tenants.default = next;
     this.settings = { ...this.settings, tenants };
   }
 

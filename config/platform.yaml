@@ -86,6 +86,12 @@ seed:
     path: data/seed/demo
     remove_when_disabled: true
 
+documents:
+  storage_backend: filesystem
+  max_upload_size_mb: 25
+  virus_scan_enabled: true
+  retention_days: 365
+
 security:
   abac_policies:
     - permission: customer.read

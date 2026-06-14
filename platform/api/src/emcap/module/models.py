@@ -9,6 +9,7 @@ class MenuDefinition(BaseModel):
     code: str
     label: str
     entity_code: str
+    report_code: str | None = None
     permission: str = "read"
 
     @field_validator("code")

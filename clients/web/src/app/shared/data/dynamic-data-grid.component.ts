@@ -4,6 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { EmptyStateComponent } from '../layout/empty-state.component';
+import { LoadingPanelComponent } from '../layout/loading-panel.component';
 import { DynamicGridRenderer } from '../../metadata/dynamic-grid.renderer';
 import { I18nService } from '../services/i18n.service';
 import { formatGridCellValue } from '../utils/field-display.util';
@@ -11,7 +12,7 @@ import { formatGridCellValue } from '../utils/field-display.util';
 @Component({
   selector: 'app-dynamic-data-grid',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, EmptyStateComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, EmptyStateComponent, LoadingPanelComponent],
   templateUrl: './dynamic-data-grid.component.html',
   styleUrl: './dynamic-data-grid.component.scss',
 })
@@ -19,6 +20,7 @@ export class DynamicDataGridComponent {
   readonly i18n = inject(I18nService);
 
   @Input({ required: true }) gridRenderer!: DynamicGridRenderer;
+  @Input() loading = false;
   @Input() columnFields: string[] = [];
   @Input() displayGroups: Array<{ key: string; records: Record<string, unknown>[] }> = [];
   @Input() groupBy: string | null = null;

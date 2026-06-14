@@ -2,6 +2,21 @@
   min-width: 0;
 }
 
+.admin-search-field {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep mat-chip.status-chip--active {
+  --mdc-chip-elevated-container-color: #e6f4ea;
+  --mdc-chip-label-text-color: #137333;
+}
+
+:host ::ng-deep mat-chip.status-chip--inactive {
+  --mdc-chip-elevated-container-color: #fce8e6;
+  --mdc-chip-label-text-color: #c5221f;
+}
+
 .admin-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--emcap-border);

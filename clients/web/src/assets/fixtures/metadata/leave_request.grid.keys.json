@@ -1,0 +1,13 @@
+{
+  "column_fields": [
+    "employee_id",
+    "leave_type",
+    "days",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

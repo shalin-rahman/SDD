@@ -52,25 +52,66 @@ void main() {
   test('buildRecordHeadlineView LEAD company and contact', () {
     final view = buildRecordHeadlineView(
       'LEAD',
-      {'company': 'Acme', 'contact_name': 'Jane', 'active': true},
+      {'company': 'Acme', 'contact_name': 'Jane', 'active': true, 'status': 'qualified'},
       false,
       'lead-1',
       _t,
       statusField: _statusField,
     );
     expect(view.headline, 'Acme — Jane');
+    expect(view.statusLabel, 'Active');
+    expect(view.statusActive, isTrue);
   });
 
   test('buildRecordHeadlineView CONTACT name and email subtitle', () {
     final view = buildRecordHeadlineView(
       'CONTACT',
-      {'name': 'Bob', 'email': 'bob@example.com'},
+      {'name': 'Bob', 'email': 'bob@example.com', 'active': true},
       false,
       'c-1',
       _t,
+      statusField: _statusField,
     );
     expect(view.headline, 'Bob');
     expect(view.subtitle, 'bob@example.com');
+    expect(view.statusLabel, 'Active');
+    expect(view.statusActive, isTrue);
+  });
+
+  test('buildRecordHeadlineView JOURNAL_ENTRY reference', () {
+    final view = buildRecordHeadlineView(
+      'JOURNAL_ENTRY',
+      {'reference': 'JE-001', 'amount': 100, 'active': true},
+      false,
+      'je-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'JE-001');
+  });
+
+  test('buildRecordHeadlineView SALE receipt_no', () {
+    final view = buildRecordHeadlineView(
+      'SALE',
+      {'receipt_no': 'R-1001', 'total': 49.99, 'active': true},
+      false,
+      'sale-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'R-1001');
+  });
+
+  test('buildRecordHeadlineView LEAVE_REQUEST leave_type and days', () {
+    final view = buildRecordHeadlineView(
+      'LEAVE_REQUEST',
+      {'employee_id': 'emp-1', 'leave_type': 'annual', 'days': 5, 'active': true},
+      false,
+      'lr-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'annual — 5');
   });
 
   test('buildRecordHeadlineView SUPPLIER code and name', () {
@@ -116,5 +157,64 @@ void main() {
       _t,
     );
     expect(view.headline, 'INV-3001');
+  });
+
+  test('buildRecordHeadlineView STOCK_MOVEMENT movement_number', () {
+    final view = buildRecordHeadlineView(
+      'STOCK_MOVEMENT',
+      {'movement_number': 'SM-1001', 'movement_type': 'receive', 'status': 'draft'},
+      false,
+      'sm-1',
+      _t,
+    );
+    expect(view.headline, 'SM-1001');
+  });
+
+  test('buildRecordHeadlineView STOCK_MOVEMENT_LINE quantity and unit_cost', () {
+    final view = buildRecordHeadlineView(
+      'STOCK_MOVEMENT_LINE',
+      {'movement_id': 'sm-1', 'product_id': 'prod-1', 'quantity': 10, 'unit_cost': 4.5},
+      false,
+      'sml-1',
+      _t,
+    );
+    expect(view.headline, '10 — 4.5');
+  });
+
+  test('buildRecordHeadlineView ACCOUNT code and name', () {
+    final view = buildRecordHeadlineView(
+      'ACCOUNT',
+      {'code': '1000', 'name': 'Cash', 'balance': 50000.0, 'active': true},
+      false,
+      'acc-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, '1000 — Cash');
+    expect(view.statusActive, isTrue);
+  });
+
+  test('buildRecordHeadlineView TERMINAL terminal_id and location', () {
+    final view = buildRecordHeadlineView(
+      'TERMINAL',
+      {'terminal_id': 'T-01', 'location': 'Front Desk', 'active': true},
+      false,
+      'term-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'T-01 — Front Desk');
+  });
+
+  test('buildRecordHeadlineView EMPLOYEE employee_no and full_name', () {
+    final view = buildRecordHeadlineView(
+      'EMPLOYEE',
+      {'employee_no': 'EMP-001', 'full_name': 'Jane Doe', 'department': 'sales', 'active': true},
+      false,
+      'emp-1',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'EMP-001 — Jane Doe');
   });
 }

@@ -28,6 +28,7 @@ Override path via `EMCAP_CONFIG_PATH` environment variable.
 | `rules.*` | Rule engine modes | 11 |
 | `payments.enabled` | Payment platform | 16 |
 | `ai.enabled` | AI platform | 17 |
+| `documents.*` | Document storage backend, upload limits, virus scan, retention (read-only in settings UI) | 14 |
 
 ## Pydantic models
 

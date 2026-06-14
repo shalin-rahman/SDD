@@ -13,4 +13,10 @@ void main() {
     final formatted = formatGridCellValue('description', longText, fieldType: 'textarea');
     expect(formatted.endsWith('…'), isTrue);
   });
+
+  test('formats LEAD status enum and active boolean in grid cells', () {
+    expect(formatGridCellValue('status', 'qualified', fieldType: 'select'), 'qualified');
+    expect(formatGridCellValue('active', true), 'Yes');
+    expect(formatGridCellValue('active', false), 'No');
+  });
 }

@@ -246,6 +246,18 @@ MODULE = ModuleDefinition(
             ],
             schedule_cron="0 7 * * *",
         ),
+        ReportDefinition(
+            code="STOCK_MOVEMENT_HISTORY",
+            name="Stock Movement History",
+            entity_code="STOCK_MOVEMENT",
+            columns=[
+                ReportColumn(field="movement_number", label="Movement"),
+                ReportColumn(field="movement_type", label="Type"),
+                ReportColumn(field="warehouse_id", label="Warehouse"),
+                ReportColumn(field="status", label="Status"),
+                ReportColumn(field="movement_date", label="Date"),
+            ],
+        ),
     ],
     dashboards=[
         DashboardDefinition(
@@ -263,6 +275,19 @@ MODULE = ModuleDefinition(
         MenuDefinition(code="products", label="Products", entity_code="PRODUCT"),
         MenuDefinition(code="warehouses", label="Warehouses", entity_code="WAREHOUSE"),
         MenuDefinition(code="stock_movements", label="Stock Movements", entity_code="STOCK_MOVEMENT"),
+        MenuDefinition(code="low_stock", label="Low Stock Report", entity_code="PRODUCT", report_code="LOW_STOCK"),
+        MenuDefinition(
+            code="inventory_valuation",
+            label="Inventory Valuation",
+            entity_code="PRODUCT",
+            report_code="INVENTORY_VALUATION",
+        ),
+        MenuDefinition(
+            code="stock_movement_history",
+            label="Movement History",
+            entity_code="STOCK_MOVEMENT",
+            report_code="STOCK_MOVEMENT_HISTORY",
+        ),
     ],
     permissions=["inventory.access"],
 )

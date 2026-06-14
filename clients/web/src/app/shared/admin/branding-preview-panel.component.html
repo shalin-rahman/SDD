@@ -1,0 +1,18 @@
+<div class="branding-preview" [style.--emcap-primary]="resolvedPrimary()">
+  <header class="branding-preview__toolbar">
+    <div class="branding-preview__brand">
+      @if (logoUrl) {
+        <img class="branding-preview__logo" [src]="logoUrl" alt="" />
+      } @else {
+        <strong>EMCAP</strong>
+      }
+    </div>
+    <span class="branding-preview__toolbar-title">{{ title }}</span>
+  </header>
+  <div class="branding-preview__body">
+    <app-page-header [title]="title" [subtitle]="subtitle" />
+    <button mat-flat-button type="button" class="branding-preview__action">
+      {{ sampleActionLabel }}
+    </button>
+  </div>
+</div>

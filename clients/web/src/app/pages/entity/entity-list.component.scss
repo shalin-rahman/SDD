@@ -1,0 +1,15 @@
+.entity-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.entity-list-page__new {
+  margin-left: auto;
+}
+
+.entity-list-page__grid {
+  flex: 1;
+  min-height: 0;
+}

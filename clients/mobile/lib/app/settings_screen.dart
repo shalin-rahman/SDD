@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
 import '../services/i18n_service.dart';
+import '../utils/document_platform_settings_util.dart';
 import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 import '../widgets/settings_toggle_group.dart';
@@ -26,6 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _status = '';
   String _tenantStrategy = '';
   bool _multiTenant = false;
+  DocumentPlatformSettings _documentSettings = parseDocumentPlatformSettings({});
 
   String? _selectedTemplateId;
   bool _creatingTemplate = false;
@@ -84,6 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final templates = await widget.client.listAdminTemplates();
       final audit = await widget.client.getAdminAudit();
       final health = await widget.client.getHealth();
+      final platformConfig = await widget.client.getPlatformConfig();
       if (!mounted) return;
       final settings = Map<String, dynamic>.from(settingsPayload['settings'] as Map? ?? {});
       final tenants = settings['tenants'] as Map? ?? {};
@@ -95,6 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _audit = audit;
         _tenantStrategy = '${health['tenant_strategy']}';
         _multiTenant = health['multi_tenant'] == true;
+        _documentSettings = parseDocumentPlatformSettings(platformConfig);
         _tenantThemeController.text = '${defaultTenant['theme'] ?? 'default'}';
         _tenantDomainController.text = '${defaultTenant['domain'] ?? 'localhost'}';
         _syncPaymentFields(settings);
@@ -337,6 +341,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _selectedTemplateId = null;
       _templateDetailOpen = false;
     });
+  }
+
+  Widget _documentSettingRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(value, style: Theme.of(context).textTheme.titleSmall),
+          ),
+        ],
+      ),
+    );
   }
 
   List<SettingsToggleItem> _moduleItems() => [
@@ -657,6 +680,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingsToggleItem(key: 'immutable', label: 'Immutable audit trail', checked: _bool('audit', 'immutable')),
           ],
           onChanged: (key, checked) => _setBool('audit', key, checked),
+        ),
+        Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.documents')),
+            subtitle: Text(EmcapLocale.t('settings.documents.subtitle')),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.documents.storageBackend'),
+                      _documentSettings.storageBackend,
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.documents.maxUploadSize'),
+                      '${_documentSettings.maxUploadSizeMb} ${EmcapLocale.t('settings.documents.megabytes')}',
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.documents.virusScan'),
+                      _documentSettings.virusScanEnabled
+                          ? EmcapLocale.t('settings.documents.enabled')
+                          : EmcapLocale.t('settings.documents.disabled'),
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.documents.retentionDays'),
+                      '${_documentSettings.retentionDays}',
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      EmcapLocale.t('settings.documents.readOnlyHint'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         Card(
           margin: const EdgeInsets.only(bottom: 8),

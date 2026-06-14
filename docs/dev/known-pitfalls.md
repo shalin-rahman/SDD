@@ -574,3 +574,13 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Cause** | Raw hex/pixel values in `shared/` instead of `--emcap-*` tokens (ADR-006) |
 | **Fix** | Use `styles/_tokens.scss` and catalog `docs/product/design-system.md`; reject ad hoc values in review |
 | **Test** | Visual screenshot pair at 1280px; dark mode contrast audit P16-T08 |
+
+### Playwright entity screenshots after list/record route split
+
+| | |
+|--|--|
+| **Symptom** | `capture-screenshot-sprint.mjs` or M1 script times out on Workflow tab or detail header — still on `/app/entity/PRODUCT` list URL |
+| **Cause** | Slice 15C split routes: grid is list-only; record actions/tabs live on `/app/entity/:code/:id` or `/new` |
+| **Where** | `scripts/capture-screenshot-sprint.mjs`, `scripts/capture-m1-screenshots.mjs` |
+| **Fix** | Click grid row → wait for record URL; use `.record-tabs__group [role="tab"]` last tab for Workflow; list PNGs from list route only |
+| **Test** | `node scripts/capture-m1-screenshots.mjs`; `node scripts/capture-screenshot-sprint.mjs --only=product-workflow` |

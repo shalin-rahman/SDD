@@ -49,11 +49,26 @@ List<String> loadEntityGridColumnFields(String entityCode) {
 /// Wave W1 entities from `plan/20-standard-entity-rollout.md`.
 const w1EntityCodes = ['PRODUCT', 'WAREHOUSE', 'CUSTOMER', 'LEAD', 'CONTACT'];
 
+/// Wave W2 accounting/POS/HRM entities.
+const w2EntityCodes = ['JOURNAL_ENTRY', 'SALE', 'LEAVE_REQUEST'];
+
+/// Wave W3 lookup-target entities (accounting/POS/HRM).
+const w3EntityCodes = ['ACCOUNT', 'TERMINAL', 'EMPLOYEE'];
+
 /// Wave W4 order-chain entities (procurement + sales).
 const w4EntityCodes = ['SUPPLIER', 'PURCHASE_ORDER', 'SALES_ORDER', 'INVOICE'];
 
-/// All entities with fixture coverage (W1 + W4).
-const fixtureEntityCodes = [...w1EntityCodes, ...w4EntityCodes];
+/// Wave W5 inventory movement entities.
+const w5EntityCodes = ['STOCK_MOVEMENT', 'STOCK_MOVEMENT_LINE'];
+
+/// All entities with fixture coverage (W1 + W2 + W3 + W4 + W5).
+const fixtureEntityCodes = [
+  ...w1EntityCodes,
+  ...w2EntityCodes,
+  ...w3EntityCodes,
+  ...w4EntityCodes,
+  ...w5EntityCodes,
+];
 
 /// Entities in [w1EntityCodes] that have both form and grid key fixtures on disk.
 List<String> w1EntitiesWithFixtures() {

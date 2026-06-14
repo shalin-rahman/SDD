@@ -71,6 +71,20 @@ FIELD_BN_LABELS: dict[str, str] = {
     "product_id": "পণ্য",
     "quantity": "পরিমাণ",
     "unit_cost": "একক খরচ",
+    "account_id": "হিসাব",
+    "reference": "রেফারেন্স",
+    "posted_at": "পোস্ট তারিখ",
+    "receipt_no": "রসিদ নম্বর",
+    "total": "মোট",
+    "terminal_id": "টার্মিনাল",
+    "payment_method": "পেমেন্ট পদ্ধতি",
+    "employee_id": "কর্মচারী",
+    "leave_type": "ছুটির ধরন",
+    "days": "দিন",
+    "employee_no": "কর্মচারী নম্বর",
+    "full_name": "পূর্ণ নাম",
+    "department": "বিভাগ",
+    "balance": "ব্যালেন্স",
 }
 
 

@@ -9,7 +9,8 @@ import { AdminUsersComponent } from './pages/admin/admin-users.component';
 import { AccountComponent } from './pages/account/account.component';
 import { AssistantComponent } from './pages/assistant/assistant.component';
 import { DashboardsComponent } from './pages/dashboards/dashboards.component';
-import { EntityComponent } from './pages/entity/entity.component';
+import { EntityListComponent } from './pages/entity/entity-list.component';
+import { EntityRecordComponent } from './pages/entity/entity-record.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { ReportsComponent } from './pages/reports/reports.component';
@@ -48,7 +49,9 @@ export const routes: Routes = [
           { path: '', redirectTo: 'users', pathMatch: 'full' },
         ],
       },
-      { path: 'entity/:code', component: EntityComponent },
+      { path: 'entity/:code/new', component: EntityRecordComponent },
+      { path: 'entity/:code/:recordId', component: EntityRecordComponent },
+      { path: 'entity/:code', component: EntityListComponent },
     ],
   },
 ];

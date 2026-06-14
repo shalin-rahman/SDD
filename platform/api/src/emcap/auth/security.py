@@ -8,6 +8,7 @@ def apply_field_security(
     entity: EntityDefinition,
     record: dict[str, Any],
     user: CurrentUser | None,
+    field_overrides: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     if user is None or user.has_permission("*.*"):
         return record
@@ -26,10 +27,15 @@ def apply_field_security(
         }
     }
     for field in entity.fields:
-        if not field.read_roles:
+        read_roles = field.read_roles
+        if field_overrides:
+            override_key = f"{entity.code}.{field.name}"
+            if override_key in field_overrides:
+                read_roles = field_overrides[override_key]
+        if not read_roles:
             secured[field.name] = record.get(field.name)
             continue
-        if any(user.has_permission(role) for role in field.read_roles):
+        if any(user.has_permission(role) for role in read_roles):
             secured[field.name] = record.get(field.name)
     return secured
 

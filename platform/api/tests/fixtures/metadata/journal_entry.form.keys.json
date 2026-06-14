@@ -1,0 +1,9 @@
+{
+  "field_names": [
+    "reference",
+    "account_id",
+    "amount",
+    "posted_at",
+    "active"
+  ]
+}

@@ -7,10 +7,11 @@ from sqlalchemy.orm import Session
 
 from emcap.auth.abac import DEFAULT_POLICIES, AbacPolicy
 from emcap.config.models import PlatformConfig
-from emcap.entity.registry import EntityRegistry
+from emcap.entity.registry import EntityRegistry, EntityRegistryError
 from emcap.persistence.database import AdminAuditRow, SettingOverrideRow
 
 ABAC_OVERRIDE_KEY = "security.abac_policies"
+FIELD_OVERRIDES_KEY = "security.field_overrides"
 
 ROW_ACCESS_RULE = (
     "can_access_record: granted when user has entity read permission "
@@ -110,18 +111,126 @@ def update_abac_policies(
     return get_abac_policies(session, config)
 
 
-def list_security_policies(registry: EntityRegistry) -> dict[str, Any]:
+def _field_override_key(entity_code: str, field_name: str) -> str:
+    return f"{entity_code}.{field_name}"
+
+
+def load_field_overrides(session: Session) -> dict[str, list[str]]:
+    row = (
+        session.query(SettingOverrideRow)
+        .filter_by(key=FIELD_OVERRIDES_KEY)
+        .one_or_none()
+    )
+    if row is None or not isinstance(row.value, dict):
+        return {}
+    overrides: dict[str, list[str]] = {}
+    for key, roles in row.value.items():
+        if isinstance(key, str) and isinstance(roles, list):
+            overrides[key] = [str(role) for role in roles]
+    return overrides
+
+
+def effective_read_roles(
+    entity_code: str,
+    field_name: str,
+    base_read_roles: list[str],
+    field_overrides: dict[str, list[str]] | None,
+) -> list[str]:
+    if not field_overrides:
+        return list(base_read_roles)
+    key = _field_override_key(entity_code, field_name)
+    if key in field_overrides:
+        return list(field_overrides[key])
+    return list(base_read_roles)
+
+
+def update_field_access(
+    session: Session,
+    registry: EntityRegistry,
+    *,
+    entity_code: str,
+    field_name: str,
+    read_roles: list[str],
+    actor: str,
+) -> dict[str, Any]:
+    code = entity_code.strip().upper()
+    name = field_name.strip()
+    if not code or not name:
+        msg = "entity_code and field_name are required"
+        raise SecurityValidationError(msg)
+    if not isinstance(read_roles, list):
+        msg = "read_roles must be a list"
+        raise SecurityValidationError(msg)
+
+    try:
+        entity = registry.get(code)
+    except EntityRegistryError as exc:
+        raise SecurityValidationError(str(exc)) from exc
+
+    if not any(field.name == name for field in entity.fields):
+        msg = f"unknown field: {name} on entity {code}"
+        raise SecurityValidationError(msg)
+
+    normalized_roles = [str(role).strip() for role in read_roles if str(role).strip()]
+    key = _field_override_key(code, name)
+    row = (
+        session.query(SettingOverrideRow)
+        .filter_by(key=FIELD_OVERRIDES_KEY)
+        .one_or_none()
+    )
+    payload: dict[str, list[str]] = {}
+    if row is not None and isinstance(row.value, dict):
+        payload = {
+            str(item_key): [str(role) for role in roles]
+            for item_key, roles in row.value.items()
+            if isinstance(item_key, str) and isinstance(roles, list)
+        }
+    payload[key] = normalized_roles
+    if row is None:
+        row = SettingOverrideRow(key=FIELD_OVERRIDES_KEY, value=payload, updated_by=actor)
+        session.add(row)
+    else:
+        row.value = payload
+        row.updated_by = actor
+        row.updated_at = datetime.now(UTC)
+    session.add(
+        AdminAuditRow(
+            actor=actor,
+            action="security.field_access.update",
+            target=key,
+            payload={"read_roles": normalized_roles},
+        )
+    )
+    session.commit()
+    return {
+        "entity_code": code,
+        "field_name": name,
+        "read_roles": normalized_roles,
+    }
+
+
+def list_security_policies(
+    registry: EntityRegistry,
+    field_overrides: dict[str, list[str]] | None = None,
+) -> dict[str, Any]:
     entities: list[dict[str, Any]] = []
     for entity in registry.all():
         read_permission = f"{entity.code.lower()}.read"
-        fields = [
-            {
-                "name": field.name,
-                "read_roles": list(field.read_roles),
-                "access": "restricted" if field.read_roles else "open",
-            }
-            for field in entity.fields
-        ]
+        fields = []
+        for field in entity.fields:
+            merged_roles = effective_read_roles(
+                entity.code,
+                field.name,
+                field.read_roles,
+                field_overrides,
+            )
+            fields.append(
+                {
+                    "name": field.name,
+                    "read_roles": merged_roles,
+                    "access": "restricted" if merged_roles else "open",
+                }
+            )
         entities.append(
             {
                 "code": entity.code,

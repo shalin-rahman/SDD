@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from emcap import __version__
-from emcap.admin.security_service import load_abac_policies
+from emcap.admin.security_service import load_abac_policies, load_field_overrides
 from emcap.api.routes import (
     admin,
     ai,
@@ -91,6 +91,7 @@ def create_app() -> FastAPI:
         apply_configured_seeds(seed_session, platform_config)
         seed_default_auth(seed_session)
         abac_policies = load_abac_policies(seed_session, platform_config)
+        field_overrides = load_field_overrides(seed_session)
     finally:
         seed_session.close()
 
@@ -114,6 +115,7 @@ def create_app() -> FastAPI:
     app.state.report_definitions = report_definitions
     app.state.dashboard_definitions = dashboard_definitions
     app.state.abac_policies = abac_policies
+    app.state.field_overrides = field_overrides
 
     app.add_middleware(
         CORSMiddleware,

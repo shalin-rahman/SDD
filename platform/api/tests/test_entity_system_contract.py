@@ -24,6 +24,7 @@ SYSTEM_FORM_FIELD_NAMES = [
 ]
 
 W1_FIXTURE_ENTITIES = frozenset({"PRODUCT", "WAREHOUSE", "CUSTOMER", "LEAD", "CONTACT"})
+W3_FIXTURE_ENTITIES = frozenset({"ACCOUNT", "TERMINAL", "EMPLOYEE"})
 W4_FIXTURE_ENTITIES = frozenset({"SUPPLIER", "PURCHASE_ORDER", "SALES_ORDER", "INVOICE"})
 W5_FIXTURE_ENTITIES = frozenset({"STOCK_MOVEMENT", "STOCK_MOVEMENT_LINE"})
 
@@ -119,6 +120,26 @@ def test_w1_grid_keys_match_fixture(client: TestClient, w1_entity_code: str) -> 
     grid = client.get(f"/api/v1/metadata/grids/{w1_entity_code}").json()
     column_fields = [column["field"] for column in grid["columns"]]
     assert column_fields == fixture["column_fields"], w1_entity_code
+
+
+@pytest.mark.parametrize("w3_entity_code", sorted(W3_FIXTURE_ENTITIES))
+def test_w3_form_keys_match_fixture(client: TestClient, w3_entity_code: str) -> None:
+    fixture_path = FIXTURES / f"{w3_entity_code.lower()}.form.keys.json"
+    assert fixture_path.is_file(), w3_entity_code
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    form = client.get(f"/api/v1/metadata/forms/{w3_entity_code}").json()
+    field_names = [field["name"] for field in _main_form_fields(form)]
+    assert field_names == fixture["field_names"], w3_entity_code
+
+
+@pytest.mark.parametrize("w3_entity_code", sorted(W3_FIXTURE_ENTITIES))
+def test_w3_grid_keys_match_fixture(client: TestClient, w3_entity_code: str) -> None:
+    fixture_path = FIXTURES / f"{w3_entity_code.lower()}.grid.keys.json"
+    assert fixture_path.is_file(), w3_entity_code
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    grid = client.get(f"/api/v1/metadata/grids/{w3_entity_code}").json()
+    column_fields = [column["field"] for column in grid["columns"]]
+    assert column_fields == fixture["column_fields"], w3_entity_code
 
 
 @pytest.mark.parametrize("w4_entity_code", sorted(W4_FIXTURE_ENTITIES))

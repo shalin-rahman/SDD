@@ -76,6 +76,7 @@ class EntityRepository:
         *,
         updated_by: str | None = None,
         expected_version: int | None = None,
+        commit: bool = True,
     ) -> dict[str, Any]:
         row = self._get_row(entity.code, record_id)
         if expected_version is not None and row.record_version != expected_version:
@@ -85,8 +86,9 @@ class EntityRepository:
         row.data = merged
         row.record_version = row.record_version + 1
         row.updated_by = updated_by
-        self._session.commit()
-        self._session.refresh(row)
+        if commit:
+            self._session.commit()
+            self._session.refresh(row)
         return self._to_dict(row)
 
     def delete_record(self, entity: EntityDefinition, record_id: str) -> dict[str, Any]:

@@ -47,6 +47,8 @@ ALLOWED_SETTING_PATHS: frozenset[str] = frozenset(
         "audit.immutable",
         "tenants.default.theme",
         "tenants.default.domain",
+        "tenants.default.primary_color",
+        "tenants.default.logo_url",
     }
 )
 

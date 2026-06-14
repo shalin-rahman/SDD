@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
+import { DEFAULT_EMCAP_PRIMARY, normalizePrimaryColor } from '../utils/branding.util';
+
 export type ThemeMode = 'light' | 'dark';
 
 const STORAGE_KEY = 'emcap-theme';
@@ -23,5 +25,10 @@ export class ThemeService {
     localStorage.setItem(STORAGE_KEY, mode);
     document.documentElement.dataset['theme'] = mode;
     document.documentElement.style.colorScheme = mode;
+  }
+
+  applyTenantPrimary(color: string | undefined | null): void {
+    const resolved = normalizePrimaryColor(color) ?? DEFAULT_EMCAP_PRIMARY;
+    document.documentElement.style.setProperty('--emcap-primary', resolved);
   }
 }

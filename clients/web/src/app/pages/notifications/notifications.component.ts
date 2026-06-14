@@ -132,7 +132,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   formatSentAt(value: string | null): string {
     if (!value) {
-      return '—';
+      return this.i18n.t('common.emptyValue');
     }
     return formatRecordFieldValue('created_at', 'datetime', value);
   }

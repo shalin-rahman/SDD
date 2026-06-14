@@ -1,9 +1,10 @@
 ---
 name: emcap-enterprise-ui
 description: >-
-  EMCAP Phase 12 enterprise product shell, module-grouped navigation, master-detail
-  entity UX, i18n/themes, admin users/roles, and platform settings hub. Use when
-  implementing admin consoles, settings UI, responsive shell, or FR-008d work.
+  EMCAP Phase 12 enterprise product shell, module-grouped navigation, separate
+  list/record entity routes (not master-detail), i18n/themes, admin users/roles,
+  and platform settings hub. Use when implementing admin consoles, settings UI,
+  responsive shell, or FR-008d work.
 ---
 
 # EMCAP Enterprise Product UI (Phase 12)
@@ -13,14 +14,17 @@ description: >-
 1. `plan/12-enterprise-product-ui.md` — full SDD crosswalk + task IDs
 2. `plan/12-phase12-dod-checklist.md` — **Do not mark Done without this**
 3. **`clients/web/src/app/shared/README.md`** — reusable components (use first)
-4. `spec/sdd/06-admin-product-ui-matrix.md` — honest UX gap (not 04/05 alone)
-5. **`docs/dev/recipes/sync-docs-after-change.md`** — update docs in same PR
-6. `docs/dev/known-pitfalls.md` — Phase 12 section
+4. **`docs/product/user-feedback-registry.md`** — §F entity UX pivot (C15 separate routes; C16 rejected)
+5. `spec/sdd/06-admin-product-ui-matrix.md` — honest UX gap (not 04/05 alone)
+6. **`docs/dev/recipes/sync-docs-after-change.md`** — update docs in same PR
+7. `docs/dev/known-pitfalls.md` — Phase 12 section
 
 ## Requirement ID
 
-**FR-008d** — module nav, master–detail, i18n/themes, admin users/roles, settings hub.  
+**FR-008d** — module nav, separate list/record entity pages, i18n/themes, admin users/roles, settings hub.  
 Maps to SDD §3, §5–§7, §9, §13–§16, §26, §30.
+
+**Entity UX pivot (2026-06-14):** User requires **separate list and record routes** — not master–detail on one URL. See `plan/15-entity-page-redesign.md` Slice 15C, **P15-T15–T17**, registry §F.
 
 ## What went wrong before (do not repeat)
 
@@ -48,7 +52,7 @@ Maps to SDD §3, §5–§7, §9, §13–§16, §26, §30.
 | Web shell | `pages/shell/` | Thin wrapper over `AppLayoutComponent` |
 | Web admin | `pages/admin/` (new) | Compose `MasterDetailLayout` + `PageHeader` |
 | Web settings | `pages/settings/` (new) | Settings sections |
-| Entity UX | `pages/entity/` | Composes shared master–detail + grid + form |
+| Entity UX | `pages/entity/` | **List route** (grid only) + **record route** (form + tabs) — separate pages |
 | Mobile | `clients/mobile/lib/app/` | Parity after web slice |
 
 ## Key API surfaces (today vs Phase 12)
@@ -76,12 +80,25 @@ Filter before group:
 1. `config.modules[moduleKey]?.enabled !== false`
 2. User permissions include `menu.permission` (from `/auth/me`)
 
-### Master–detail entity
+### Entity list + record (separate routes — not master–detail)
 
-- **Desktop:** `mat-sidenav-container` — list ~40% / form ~60%
-- **Mobile:** list full width; selecting row opens bottom sheet or full-width detail
-- **Same route:** `/app/entity/:code` — no separate edit route
-- Tabs in detail panel: Form | Notes | Documents | Audit | Workflow
+**Do not** use split-pane master–detail (`mat-sidenav` list + form on one route) for entity CRUD. Admin screens may still use `MasterDetailLayout` where appropriate.
+
+**Web routes:**
+
+| Route | Content |
+|-------|---------|
+| `/app/entity/:code` | Grid only — search, filters, New CTA, row click navigates away |
+| `/app/entity/:code/new` | Create form + header actions |
+| `/app/entity/:code/:id` | Edit/view form + tabs |
+
+**Mobile:** list screen → push record screen; back pops to list. No permanent split view.
+
+**Grid vs form (separate):** list route renders grid metadata columns; record route renders form metadata fields. Do **not** force grid columns onto the entry form (user rejected P15-T16 / C16). Slice 15A polish: grid on **list route**; hero header, section cards, header actions on **record route**.
+
+**Record tabs:** Notes | Documents | Audit | Workflow (when enabled) — on record route below form.
+
+**Legacy note:** remove any remaining master–detail entity shell; use `entity-list` + `entity-record` only.
 
 ### i18n
 
@@ -122,7 +139,8 @@ Guard: user has `admin.users.read` or `*.*` (seed in `data/seed/core/roles.json`
 |-------------|------|
 | Admin API | `tests/test_admin_users.py`, `test_admin_settings.py` |
 | Shell grouping | Component test: menus → module sections |
-| Master–detail | Component test: select row → form bound |
+| Master–detail (admin only) | Component test: select row → form bound |
+| Entity list → record nav | Route test: grid row click → `/app/entity/:code/:id` |
 | Client methods | `emcap-client.spec.ts` |
 | Auth denial | pytest 403 without permission |
 | Matrix | Same PR updates `06-admin-product-ui-matrix.md` |
@@ -136,7 +154,7 @@ cd clients\web && npm run build && npm run test:ci
 scripts\run-emcap.bat --stack-only --local --skip-tests --skip-lint
 ```
 
-Manual: module sidenav · Product master–detail edit · locale switch · admin user create.
+Manual: module sidenav · Product list route · Product record edit · locale switch · admin user create.
 
 ## Phase 13 (explicitly not Phase 12)
 

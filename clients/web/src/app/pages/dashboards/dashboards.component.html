@@ -14,6 +14,9 @@
   } @else {
     @for (dash of dashboards; track dashboardCode(dash)) {
       <app-section-card [title]="dashboardName(dash)">
+        @if (dashboardWidgets(dash).length === 0) {
+          <app-empty-state [message]="i18n.t('platform.dashboards.noWidgets')" />
+        } @else {
         <div class="kpi-grid">
           @for (widget of dashboardWidgets(dash); track widget['code']) {
             <article class="kpi-card">
@@ -24,13 +27,14 @@
               <p class="kpi-card__value">{{ widgetValue(widget) }}</p>
               <p class="kpi-card__delta">{{ i18n.t('platform.dashboards.deltaPlaceholder') }}</p>
               @if (widgetReportCode(widget); as reportCode) {
-                <a class="kpi-card__report-link" [routerLink]="['/reports']">
-                  {{ i18n.t('platform.dashboards.viewReport') }} ({{ reportCode }})
+                <a class="kpi-card__report-link" [routerLink]="['/reports']" [queryParams]="{ code: reportCode }">
+                  {{ i18n.t('platform.dashboards.viewReportCode').replace('{code}', reportCode) }}
                 </a>
               }
             </article>
           }
         </div>
+        }
       </app-section-card>
     }
   }

@@ -37,14 +37,14 @@
 
 - Web + mobile entity page matches PRODUCT UX bar
 - Grid + detail screenshots: `phase18-warehouse-grid-web.png`, `phase18-warehouse-detail-web.png`
-- `07` matrix rows updated
+- **Done (2026-06-14):** captured via `scripts/capture-screenshot-sprint.mjs`; M4 signed (web) in matrix 07
 - `test_inventory_e2e.py` WAREHOUSE CRUD green
 
 **Module work:** Ensure `modules/inventory/module.py` WAREHOUSE field defs include display hints when P15-T20 lands.
 
 ---
 
-## P18-T04 — STOCK_ADJUSTMENT on PRODUCT detail
+## P18-T04 — STOCK_ADJUSTMENT on PRODUCT detail — **Done**
 
 **Depends:** P17-T01 (workflow inbox credible).
 
@@ -54,6 +54,8 @@
 - After start: workflow tab shows instance; link to inbox
 - Mobile: same action in record header
 - Screenshot on PRODUCT detail with workflow tab active
+
+**Done (2026-06-14):** Web `RecordTabsComponent` workflow tab + platform-config gate; mobile workflow section + inbox link via shell nav.
 
 ---
 
@@ -71,6 +73,8 @@
 - Reachable from module-grouped nav (not buried)
 - Screenshot: `phase18-inventory-low-stock-report.png`
 
+**Progress (2026-06-14):** Reports reachable from module sidenav via `MenuDefinition.report_code` → `/app/reports?code=…`. Standard report menus on all business modules. Screenshot: `phase18-inventory-low-stock-report.png`.
+
 ---
 
 ## P18-T06 — CRM LEAD/CONTACT product
@@ -81,6 +85,8 @@
 - Seed data: 10+ leads, 10+ contacts in `data/seed/demo/`
 - Web + mobile Demo+ minimum; Product-ready if screenshots + checklist
 - New doc: `docs/modules/crm-definition-of-done.md` (mirror inventory v2)
+
+**Progress (2026-06-14):** Web LEAD/CONTACT Product-ready. Entity-pack screenshots refreshed on separate list/record routes (`--only=entity-packs`). Mobile: `entity_list_screen` + `entity_record_screen` with LEAD/CONTACT hero, status chip, read-only detail fields, grid formatters; unit tests in `record_headline_test.dart` / `field_display_test.dart`; device screenshot pending (Flutter SDK).
 
 ---
 

@@ -11,7 +11,7 @@ import 'admin_security_screen.dart';
 import 'admin_users_screen.dart';
 import 'assistant_screen.dart';
 import 'dashboard_screen.dart';
-import 'entity_screen.dart';
+import 'entity_list_screen.dart';
 import 'notification_screen.dart';
 import 'report_screen.dart';
 import 'settings_screen.dart';
@@ -192,10 +192,11 @@ class _EmcapShellState extends State<EmcapShell> {
     if (_selectedKey.startsWith('entity:')) {
       final entityCode = _selectedKey.substring('entity:'.length);
       final label = _selectedEntry?.label ?? entityCode;
-      return EntityScreen(
+      return EntityListScreen(
         client: widget.client,
         entityCode: entityCode,
         title: label,
+        onOpenWorkflowInbox: () => _selectKey('workflow'),
       );
     }
     return const Center(child: Text('Unknown destination'));

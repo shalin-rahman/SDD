@@ -15,4 +15,10 @@ describe('ThemeService', () => {
     service.toggle();
     expect(service.mode()).toBe('light');
   });
+
+  it('applies tenant primary CSS variable', () => {
+    const service = new ThemeService();
+    service.applyTenantPrimary('#aabbcc');
+    expect(document.documentElement.style.getPropertyValue('--emcap-primary')).toBe('#aabbcc');
+  });
 });

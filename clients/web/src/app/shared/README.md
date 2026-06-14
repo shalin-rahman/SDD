@@ -9,7 +9,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | Component | Selector | Use |
 |-----------|----------|-----|
 | `AppLayoutComponent` | `app-app-layout` | Material sidenav shell + toolbar |
-| `MasterDetailLayoutComponent` | `app-master-detail-layout` | List/detail split; mobile toggle via `[detailOpen]` |
+| `MasterDetailLayoutComponent` | `app-master-detail-layout` | List/detail split for **admin** screens; mobile toggle via `[detailOpen]` — **not** used on entity pages (separate routes per **A15**) |
 | `PageHeaderComponent` | `app-page-header` | Title, optional back button, action slot (`ng-content`) |
 | `DetailPlaceholderComponent` | `app-detail-placeholder` | Empty detail pane; optional New CTA |
 | `LoadingPanelComponent` | `app-loading-panel` | Centered loading message |
@@ -27,12 +27,12 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 
 | Component | Selector | Use |
 |-----------|----------|-----|
-| `DynamicDataGridComponent` | `app-dynamic-data-grid` | Metadata-driven grid + toolbar |
+| `DynamicDataGridComponent` | `app-dynamic-data-grid` | Metadata-driven grid + toolbar; `[loading]` inline panel; empty grid → `EmptyStateComponent` + New CTA |
 | `DynamicFormViewComponent` | `app-dynamic-form-view` | Metadata-driven form fields (select, lookup, currency, textarea) |
 | `LookupFieldComponent` | `app-lookup-field` | Lookup picker trigger + selected label |
 | `LookupPickerDialogComponent` | (dialog) | Search/select target entity record |
 | `CurrencyFieldComponent` | `app-currency-field` | Currency input with `currency_code` label |
-| `RecordTabsComponent` | `app-record-tabs` | Notes, documents, audit on a record |
+| `RecordTabsComponent` | `app-record-tabs` | Notes, documents, audit, workflow tabs on a record |
 | `DocumentPreviewPanelComponent` | `app-document-preview-panel` | Side panel: PDF/image inline, text snippet, download CTA, virus badge |
 
 ## Assistant (P17-T09)
@@ -50,6 +50,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `AdminListToolbarComponent` | `app-admin-list-toolbar` | List pane “New” action |
 | `PermissionPickerComponent` | `app-permission-picker` | Grouped checkbox permission assignment |
 | `SettingsToggleGroupComponent` | `app-settings-toggle-group` | Aligned label + toggle rows |
+| `BrandingPreviewPanelComponent` | `app-branding-preview-panel` | P19-T05 live shell snippet with scoped `--emcap-primary` |
 
 ## Services & utils
 
@@ -57,23 +58,27 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 |------|---------|
 | `services/layout.service.ts` | `isMobile$` breakpoint |
 | `services/shell-context.service.ts` | Nav, tenants, config (shell + page titles) |
-| `services/theme.service.ts` | Light/dark theme persisted in `localStorage` key `emcap-theme` |
+| `services/theme.service.ts` | Light/dark theme + tenant primary CSS var (`--emcap-primary`) |
 | `services/i18n.service.ts` | EN/FR/**BN** JSON bundles; locale key `emcap-locale` |
 | `utils/export.util.ts` | CSV/PDF export |
 | `utils/page-title.util.ts` | Route → title |
 | `utils/record.util.ts` | `recordId`, `inputType` |
 | `utils/record-lifecycle.util.ts` | Soft delete: `canDeleteRecord`, `canRestoreRecord` |
-| `utils/record-headline.util.ts` | Entity hero headline/subtitle from main-section field hints (`sku`/`code` + `name`/`company`/`contact_name`); status chip from `display.status_field` |
+| `utils/record-headline.util.ts` | Entity hero headline/subtitle from main-section field hints (`sku`/`code`/`terminal_id`/`employee_no`/`movement_number`/etc. + `name`/`location`/`full_name`/`company`/`contact_name`); status chip from `display.status_field` |
 | `utils/workflow-sla.util.ts` | Workflow inbox SLA badge levels from `due_at` |
+| `utils/workflow-enabled.util.ts` | Platform workflow gate + entity start-workflow codes (PRODUCT → STOCK_ADJUSTMENT) |
 | `utils/field-display.util.ts` | Grid/form datetime, currency, textarea cell formatters |
 | `utils/lookup-display.util.ts` | Resolve lookup record display label (name/code/sku) |
 | `utils/document-preview.util.ts` | Document mime, preview mode, version list, virus badge |
 | `utils/assistant-chat.util.ts` | AI chat response extract + message id helper |
+| `utils/branding.util.ts` | Tenant primary/logo parse, hex normalize, preview color |
 | `utils/tenant.util.ts` | Tenant labels, permissions extract |
 | `utils/permission.util.ts` | Permission grouping + wildcard helpers |
 | `constants/layout.constants.ts` | Breakpoint, debounce, page size |
 
 ## Usage pattern (admin list + edit)
+
+Entity pages use **separate routes** (`entity-list` / `entity-record`) — see `pages/entity/` and **A15** in `user-feedback-registry.md`.
 
 ```html
 <app-page-header [title]="'Users'" [showBack]="mobileDetailOpen" (back)="closeDetail()">

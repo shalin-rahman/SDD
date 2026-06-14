@@ -103,6 +103,12 @@ MODULE = ModuleDefinition(
     menus=[
         MenuDefinition(code="suppliers", label="Suppliers", entity_code="SUPPLIER"),
         MenuDefinition(code="purchase_orders", label="Purchase Orders", entity_code="PURCHASE_ORDER"),
+        MenuDefinition(
+            code="open_purchase_orders",
+            label="Open POs Report",
+            entity_code="PURCHASE_ORDER",
+            report_code="OPEN_PURCHASE_ORDERS",
+        ),
     ],
     permissions=["procurement.access"],
 )

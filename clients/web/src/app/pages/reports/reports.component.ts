@@ -1,5 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -43,12 +44,14 @@ export interface ReportHistoryEntry {
 export class ReportsComponent implements OnInit, OnDestroy {
   private readonly api = inject(EmcapApiService);
   private readonly layout = inject(LayoutService);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroy$ = new Subject<void>();
   readonly i18n = inject(I18nService);
 
   loading = true;
   loadError = '';
   historyError = '';
+  highlightCode: string | null = null;
   reports: ReportSummary[] = [];
   history: ReportHistoryEntry[] = [];
   runningCode: string | null = null;
@@ -58,6 +61,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.layout.isMobile$.pipe(takeUntil(this.destroy$)).subscribe((mobile) => {
       this.isMobile = mobile;
+    });
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      this.highlightCode = params.get('code');
     });
     void this.loadReports();
   }
@@ -147,6 +153,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.downloadingRunId = entry.run_id;
     try {
       const detail = await this.api.client.getReportRun(entry.run_id);
+      if (detail.rows.length === 0) {
+        this.historyError = this.i18n.t('platform.reports.noRows');
+        return;
+      }
       const columns = detail.columns.length > 0 ? detail.columns : Object.keys(detail.rows[0] ?? {});
       downloadCsv(columns, detail.rows, `${entry.report_code}-${entry.run_id.slice(0, 8)}.csv`);
     } catch (err) {
@@ -176,6 +186,14 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   entryKey(entry: ReportHistoryEntry): string {
     return entry.run_id;
+  }
+
+  isHighlighted(code: string): boolean {
+    return this.highlightCode != null && this.highlightCode === code;
+  }
+
+  isDownloading(entry: ReportHistoryEntry): boolean {
+    return this.downloadingRunId === entry.run_id;
   }
 
   private normalizeHistoryRun(run: Record<string, unknown>, report: ReportSummary): ReportHistoryEntry {

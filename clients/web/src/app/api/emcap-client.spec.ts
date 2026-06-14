@@ -74,6 +74,10 @@ const REQUIRED_METHODS = [
   'updateAdminTemplate',
   'deleteAdminTemplate',
   'getAdminAudit',
+  'getAdminSecurityPolicies',
+  'getAdminAbacPolicies',
+  'updateAdminAbacPolicies',
+  'updateAdminFieldAccess',
 ] as const;
 
 describe('EmcapClient contract', () => {

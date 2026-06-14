@@ -97,3 +97,12 @@ export function formatRoleSummary(roles: Array<{ code: string; name: string }>):
   }
   return roles.map((role) => role.name || role.code).join(', ');
 }
+
+export function permissionGroupSummary(permissions: string[]): string {
+  if (permissions.length === 0) {
+    return '—';
+  }
+  return groupPermissions(permissions)
+    .map((group) => `${group.label} (${group.permissions.length})`)
+    .join(', ');
+}

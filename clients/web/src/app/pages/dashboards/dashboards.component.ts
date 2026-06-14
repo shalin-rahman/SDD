@@ -91,7 +91,7 @@ export class DashboardsComponent implements OnInit {
     if (typeof metric === 'string' && metric.trim()) {
       return metric;
     }
-    return '—';
+    return this.i18n.t('common.emptyValue');
   }
 
   widgetIcon(widget: Record<string, unknown>): string {

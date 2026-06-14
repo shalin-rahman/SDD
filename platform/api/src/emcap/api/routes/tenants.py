@@ -9,7 +9,12 @@ router = APIRouter(prefix="/tenants", tags=["tenants"])
 def list_tenants(request: Request) -> dict[str, Any]:
     config = request.app.state.platform_config
     tenants = {
-        tenant_id: {"domain": settings.domain, "theme": settings.theme}
+        tenant_id: {
+            "domain": settings.domain,
+            "theme": settings.theme,
+            "primary_color": settings.primary_color,
+            "logo_url": settings.logo_url,
+        }
         for tenant_id, settings in config.tenants.items()
     }
     return {

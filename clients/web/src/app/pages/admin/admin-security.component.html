@@ -53,11 +53,14 @@
               <th>{{ i18n.t('admin.security.field') }}</th>
               <th>{{ i18n.t('admin.security.access') }}</th>
               <th>{{ i18n.t('admin.security.requiredPermissions') }}</th>
+              @if (canEditSecurity) {
+                <th>{{ i18n.t('admin.security.colActions') }}</th>
+              }
             </tr>
           </thead>
           <tbody>
             @for (field of entity.fields; track field.name) {
-              <tr>
+              <tr [class.admin-table__row--selected]="fieldEditOpen && editingFieldName === field.name">
                 <td>{{ field.name }}</td>
                 <td>{{ fieldAccessLabel(field.access) }}</td>
                 <td>
@@ -67,11 +70,52 @@
                     —
                   }
                 </td>
+                @if (canEditSecurity) {
+                  <td>
+                    <button
+                      type="button"
+                      mat-button
+                      (click)="openFieldEdit(field.name, field.read_roles); $event.stopPropagation()"
+                    >
+                      {{ i18n.t('admin.security.editField') }}
+                    </button>
+                  </td>
+                }
               </tr>
             }
           </tbody>
         </table>
       </div>
+
+      @if (fieldEditOpen && editingFieldName) {
+        <app-admin-form-panel
+          class="field-edit-panel"
+          [title]="i18n.t('admin.security.fieldEditTitle').replace('{field}', editingFieldName)"
+          [subtitle]="i18n.t('admin.security.fieldEditHint')"
+        >
+          <div actions>
+            <button type="button" mat-button (click)="closeFieldEdit()">
+              {{ i18n.t('common.cancel') }}
+            </button>
+            <button type="button" mat-flat-button color="primary" (click)="saveFieldAccess()">
+              {{ i18n.t('admin.security.saveFieldAccess') }}
+            </button>
+          </div>
+
+          @if (fieldSaveError) {
+            <p class="error">{{ fieldSaveError }}</p>
+          }
+          @if (fieldAccessSaved) {
+            <p>{{ i18n.t('admin.security.fieldAccessSaved') }}</p>
+          }
+
+          <app-permission-picker
+            [permissions]="allPermissions"
+            [selected]="draftReadRoles"
+            (selectedChange)="onFieldPermissionsChange($event)"
+          />
+        </app-admin-form-panel>
+      }
     </div>
   } @else {
     <app-detail-placeholder detailPane [message]="i18n.t('admin.security.selectPlaceholder')" />
@@ -104,7 +148,7 @@
           <th>{{ i18n.t('admin.security.colAttribute') }}</th>
           <th>{{ i18n.t('admin.security.colOperator') }}</th>
           <th>{{ i18n.t('admin.security.colValue') }}</th>
-          @if (canEditAbac) {
+          @if (canEditSecurity) {
             <th></th>
           }
         </tr>
@@ -113,41 +157,49 @@
         @for (policy of abacPolicies; track $index; let idx = $index) {
           <tr>
             <td>
-              @if (canEditAbac) {
-                <input [(ngModel)]="policy.permission" [name]="'perm' + idx" />
+              @if (canEditSecurity) {
+                <input
+                  [(ngModel)]="policy.permission"
+                  [name]="'perm' + idx"
+                  (ngModelChange)="onAbacPermissionChange(idx)"
+                  [class.input-error]="abacFieldErrors[idx]?.permission"
+                />
+                @if (abacFieldErrors[idx]?.permission) {
+                  <span class="field-error">{{ abacFieldErrors[idx]?.permission }}</span>
+                }
               } @else {
                 {{ policy.permission }}
               }
             </td>
             <td>
-              @if (canEditAbac) {
+              @if (canEditSecurity) {
                 <input [(ngModel)]="policy.effect" [name]="'effect' + idx" />
               } @else {
                 {{ policy.effect }}
               }
             </td>
             <td>
-              @if (canEditAbac) {
+              @if (canEditSecurity) {
                 <input [(ngModel)]="policy.attribute" [name]="'attr' + idx" />
               } @else {
                 {{ policy.attribute }}
               }
             </td>
             <td>
-              @if (canEditAbac) {
+              @if (canEditSecurity) {
                 <input [(ngModel)]="policy.operator" [name]="'op' + idx" />
               } @else {
                 {{ policy.operator }}
               }
             </td>
             <td>
-              @if (canEditAbac) {
+              @if (canEditSecurity) {
                 <input [(ngModel)]="policy.value" [name]="'val' + idx" />
               } @else {
                 {{ policy.value }}
               }
             </td>
-            @if (canEditAbac) {
+            @if (canEditSecurity) {
               <td>
                 <button type="button" mat-button (click)="removeAbacPolicy(idx)">
                   {{ i18n.t('common.delete') }}
@@ -159,7 +211,7 @@
       </tbody>
     </table>
   </div>
-  @if (canEditAbac) {
+  @if (canEditSecurity) {
     <button type="button" mat-button (click)="addAbacPolicy()">
       {{ i18n.t('admin.security.addPolicy') }}
     </button>

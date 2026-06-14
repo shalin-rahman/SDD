@@ -52,6 +52,7 @@ async function selectDemoProduct(page) {
   const dataRow = page.locator('.data-grid__table tr').filter({ has: page.locator('td') }).first();
   await dataRow.scrollIntoViewIfNeeded();
   await dataRow.click();
+  await page.waitForURL(/\/app\/entity\/PRODUCT\/[^/]+$/, { timeout: 30_000 });
   await page.waitForSelector('.record-header__title', { timeout: 30_000 });
   const title = await page.locator('.record-header__title').textContent();
   if (!title?.trim()) {
@@ -60,7 +61,7 @@ async function selectDemoProduct(page) {
 }
 
 async function captureGridSystemColumns(page) {
-  const scroll = page.locator('.entity-page__list .data-grid__scroll');
+  const scroll = page.locator('.entity-list-page__grid .data-grid__scroll');
   const createdHeader = page.locator('.data-grid__table th').filter({ hasText: /created/i }).first();
   if (await createdHeader.count()) {
     await createdHeader.scrollIntoViewIfNeeded();

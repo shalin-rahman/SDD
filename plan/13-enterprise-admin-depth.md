@@ -1,6 +1,6 @@
 # Phase 13 — Enterprise admin depth (deferred from Phase 12)
 
-**Status:** Slice 1 done (ABAC admin) — Slice 2 field overrides next  
+**Status:** Slice 1 Done · **Slice 2 API Done (P13-T10/T11)** · Web UI **P19-T03 Done** · mobile field edit **P13-T12 Pending**  
 **Driver:** Phase 12 shipped read-only security viewer; matrix marks ABAC builder, layout designer, isolation write as Phase 13.  
 **Depends on:** Phase 12F (`GET /admin/security/policies`) · `plan/12-enterprise-product-ui.md`  
 **Matrix:** `spec/sdd/06-admin-product-ui-matrix.md`  
@@ -52,10 +52,10 @@
 
 | ID | Task |
 |----|------|
-| P13-T10 | `PUT /admin/security/field-access` single-field override |
-| P13-T11 | Merge overrides in `apply_field_security` + policies GET |
-| P13-T12 | Web/mobile field row edit (permission multi-select) |
-| P13-T13 | Contract test: restricted field hidden for viewer |
+| P13-T10 | `PUT /admin/security/field-access` single-field override | **Done** |
+| P13-T11 | Merge overrides in `apply_field_security` + policies GET | **Done** |
+| P13-T12 | Web/mobile field row edit (permission multi-select) | Web **Done** (P19-T03); mobile Pending |
+| P13-T13 | Contract test: restricted field hidden for viewer | **Done** (`test_admin_field_access_override.py`) |
 
 ### Slice 3 — Tenant isolation write (P13-T20–T22)
 

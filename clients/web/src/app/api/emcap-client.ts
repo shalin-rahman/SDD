@@ -16,6 +16,7 @@ export interface MenuItem {
   entity_code: string;
   module: string;
   permission?: string;
+  report_code?: string;
 }
 
 export interface MaskedSecretView {
@@ -63,6 +64,19 @@ export interface AbacPolicyRow {
 
 export interface AdminAbacPoliciesResponse {
   policies: AbacPolicyRow[];
+}
+
+export interface FieldAccessUpdateRequest {
+  entity_code: string;
+  field_name: string;
+  read_roles: string[];
+}
+
+export interface FieldAccessUpdateResponse {
+  entity_code: string;
+  field_name: string;
+  read_roles: string[];
+  access: string;
 }
 
 export interface ReportSummary {
@@ -570,6 +584,16 @@ export class EmcapClient {
     return this.request('/api/v1/admin/security/abac', {
       method: 'PUT',
       body: JSON.stringify({ policies }),
+    });
+  }
+
+  /** P13-T10 — single-field read_roles override (blocked until API lands). */
+  updateAdminFieldAccess(
+    payload: FieldAccessUpdateRequest,
+  ): Promise<FieldAccessUpdateResponse> {
+    return this.request('/api/v1/admin/security/field-access', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
     });
   }
 

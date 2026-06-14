@@ -17,7 +17,7 @@
         @if (isMobile) {
           <div class="reports-cards">
             @for (report of reports; track report.code) {
-              <article class="reports-card">
+              <article class="reports-card" [class.reports-card--highlight]="isHighlighted(report.code)">
                 <strong>{{ report.name }}</strong>
                 <p class="reports-card__meta">{{ report.code }} · {{ report.entity_code }}</p>
                 <p class="reports-card__meta">{{ scheduleLabel(report) }}</p>
@@ -30,7 +30,7 @@
                     (click)="runReport(report.code)"
                   >
                     @if (runningCode === report.code) {
-                      <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}…</span>
+                      <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}</span>
                     } @else {
                       {{ i18n.t('platform.reports.run') }}
                     }
@@ -53,7 +53,7 @@
               </thead>
               <tbody>
                 @for (report of reports; track report.code) {
-                  <tr>
+                  <tr [class.reports-table__row--highlight]="isHighlighted(report.code)">
                     <td>{{ report.name }}</td>
                     <td>{{ report.code }}</td>
                     <td>{{ report.entity_code }}</td>
@@ -66,7 +66,7 @@
                         (click)="runReport(report.code)"
                       >
                         @if (runningCode === report.code) {
-                          <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}…</span>
+                          <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}</span>
                         } @else {
                           {{ i18n.t('platform.reports.run') }}
                         }
@@ -88,7 +88,7 @@
             (action)="loadHistory()"
           />
         } @else if (history.length === 0 && !runningCode) {
-          <p>{{ i18n.t('platform.reports.noHistory') }}</p>
+          <app-empty-state [message]="i18n.t('platform.reports.noHistory')" />
         } @else if (isMobile) {
           <div class="reports-cards">
             @for (entry of history; track entryKey(entry)) {
@@ -111,10 +111,14 @@
                     <button
                       type="button"
                       mat-stroked-button
-                      [disabled]="downloadingRunId === entry.run_id"
+                      [disabled]="isDownloading(entry)"
                       (click)="downloadRunCsv(entry)"
                     >
-                      {{ i18n.t('platform.reports.downloadCsv') }}
+                      @if (isDownloading(entry)) {
+                        {{ i18n.t('platform.reports.downloading') }}
+                      } @else {
+                        {{ i18n.t('platform.reports.downloadCsv') }}
+                      }
                     </button>
                   }
                 </div>
@@ -141,7 +145,7 @@
                     <td>
                       <span class="status-chip" [class]="statusClass(entry.status)">{{ statusLabel(entry.status) }}</span>
                       @if (entry.status === 'running') {
-                        <span class="reports-page__running">…</span>
+                        <span class="reports-page__running">{{ i18n.t('platform.reports.running') }}</span>
                       }
                     </td>
                     <td>{{ entry.row_count }}</td>
@@ -157,10 +161,14 @@
                         <button
                           type="button"
                           mat-stroked-button
-                          [disabled]="downloadingRunId === entry.run_id"
+                          [disabled]="isDownloading(entry)"
                           (click)="downloadRunCsv(entry)"
                         >
-                          {{ i18n.t('platform.reports.downloadCsv') }}
+                          @if (isDownloading(entry)) {
+                            {{ i18n.t('platform.reports.downloading') }}
+                          } @else {
+                            {{ i18n.t('platform.reports.downloadCsv') }}
+                          }
                         </button>
                       }
                     </td>

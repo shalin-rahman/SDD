@@ -35,6 +35,10 @@
   tbody tr:hover {
     background: color-mix(in srgb, var(--emcap-primary) 6%, var(--emcap-surface));
   }
+
+  tbody tr.reports-table__row--highlight {
+    background: color-mix(in srgb, var(--emcap-primary) 10%, var(--emcap-surface));
+  }
 }
 
 .status-chip {
@@ -78,6 +82,11 @@
   border-radius: 12px;
   padding: 1rem;
   background: var(--emcap-surface);
+
+  &--highlight {
+    border-color: var(--emcap-primary);
+    background: color-mix(in srgb, var(--emcap-primary) 8%, var(--emcap-surface));
+  }
 }
 
 .reports-card__meta {

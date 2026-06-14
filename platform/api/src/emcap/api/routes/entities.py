@@ -45,27 +45,36 @@ def _run_entity_validator(
     *,
     partial: bool = False,
     existing: dict[str, Any] | None = None,
+    context: dict[str, Any] | None = None,
 ) -> None:
     validators = _entity_validators(request)
     validator = validators.get(entity_code)
     if validator is None:
         return
     try:
-        validator(payload, partial=partial, existing=existing)
+        validator(payload, partial=partial, existing=existing, context=context)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def _field_overrides(request: Request) -> dict[str, list[str]]:
+    return cast(dict[str, list[str]], getattr(request.app.state, "field_overrides", {}))
 
 
 def _secure_records(
     entity: object,
     records: list[dict[str, Any]],
     user: CurrentUser | None,
+    field_overrides: dict[str, list[str]] | None = None,
 ) -> list[dict[str, Any]]:
     from emcap.entity.models import EntityDefinition
 
     if not isinstance(entity, EntityDefinition):
         return records
-    return [apply_field_security(entity, record, user) for record in records]
+    return [
+        apply_field_security(entity, record, user, field_overrides)
+        for record in records
+    ]
 
 
 @router.get("")
@@ -76,6 +85,7 @@ def list_entity_codes(registry: EntityRegistry = Depends(_registry)) -> dict[str
 @router.get("/{entity_code}/records")
 def list_records(
     entity_code: str,
+    request: Request,
     q: str | None = Query(default=None),
     include_deleted: bool = Query(default=False),
     registry: EntityRegistry = Depends(_registry),
@@ -90,7 +100,11 @@ def list_records(
             records = repo.search_records(entity, q, include_deleted=include_deleted)
         else:
             records = repo.list_records(entity, include_deleted=include_deleted)
-        return {"entity": entity.code, "records": _secure_records(entity, records, user)}
+        overrides = _field_overrides(request)
+        return {
+            "entity": entity.code,
+            "records": _secure_records(entity, records, user, overrides),
+        }
     except EntityRegistryError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -99,6 +113,7 @@ def list_records(
 def get_record(
     entity_code: str,
     record_id: str,
+    request: Request,
     registry: EntityRegistry = Depends(_registry),
     session: Session = Depends(_session),
     tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
@@ -108,7 +123,7 @@ def get_record(
         entity = registry.get(entity_code)
         repo = EntityRepository(session, tenant_id=tenant_id, registry=registry)
         record = repo.get_record(entity, record_id)
-        return apply_field_security(entity, record, user)
+        return apply_field_security(entity, record, user, _field_overrides(request))
     except EntityRegistryError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except EntityRepositoryError as exc:
@@ -167,6 +182,12 @@ def update_record(
             payload,
             partial=True,
             existing=existing,
+            context={
+                "repo": repo,
+                "registry": registry,
+                "record_id": record_id,
+                "commit": False,
+            },
         )
         updated_by = user.user_id if user is not None else None
         record = repo.update_record(

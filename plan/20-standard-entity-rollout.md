@@ -73,18 +73,18 @@ Apply **`StatusFieldDisplay`** on `EntityOptions` for every entity with `active`
 | **CUSTOMER** | ☐ optional `code` string | ✅ `active` | W1 Done (code deferred) |
 | **LEAD** | ✅ `status` → **ENUM** | ✅ `active` | W1 Done |
 | **CONTACT** | ✅ `lead_id` **LOOKUP** → LEAD | ✅ `active` | W1 Done |
-| **ACCOUNT** | ☐ `balance` → **CURRENCY** USD | ☐ add | W2 |
-| **JOURNAL_ENTRY** | ☐ `account_id` LOOKUP→ACCOUNT; `amount` CURRENCY | ☐ add | W2 |
-| **SALE** | ☐ `total` CURRENCY; `terminal_id` LOOKUP→TERMINAL | ☐ add | W2 |
-| **TERMINAL** | — | ☐ add | W3 |
-| **EMPLOYEE** | ☐ `department` ENUM | ☐ add | W3 |
-| **LEAVE_REQUEST** | ☐ `employee_id` LOOKUP→EMPLOYEE; `leave_type` ENUM | ☐ add | W2 |
-| **SUPPLIER** | ✅ `code`, `email`; ☐ verify standard profile | ✅ `active` | W4 |
-| **PURCHASE_ORDER** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 |
-| **SALES_ORDER** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 |
-| **INVOICE** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 |
-| **STOCK_MOVEMENT** | ✅ new entity — see §1.5 | ✅ `status` | **W5** P20-T17 |
-| **STOCK_MOVEMENT_LINE** | ✅ new child entity — see §1.5 | — | **W5** P20-T17 |
+| **ACCOUNT** | ✅ `balance` → **CURRENCY** USD | ✅ `active` | W3 Done |
+| **JOURNAL_ENTRY** | ✅ `account_id` LOOKUP→ACCOUNT; `amount` CURRENCY | ✅ `active` | W2 Done |
+| **SALE** | ✅ `total` CURRENCY; `terminal_id` LOOKUP→TERMINAL | ✅ `active` | W2 Done |
+| **TERMINAL** | — | ✅ `active` | W3 Done |
+| **EMPLOYEE** | ✅ `department` ENUM | ✅ `active` | W3 Done |
+| **LEAVE_REQUEST** | ✅ `employee_id` LOOKUP→EMPLOYEE; `leave_type` ENUM | ✅ `active` | W2 Done |
+| **SUPPLIER** | ✅ `code`, `email`; standard profile verified | ✅ `active` | W4 Done |
+| **PURCHASE_ORDER** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 Done |
+| **SALES_ORDER** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 Done |
+| **INVOICE** | ✅ lookups, status ENUM, currency | ✅ `status` | W4 Done |
+| **STOCK_MOVEMENT** | ✅ new entity — see §1.5 | ✅ `status` | **W5 Done** |
+| **STOCK_MOVEMENT_LINE** | ✅ new child entity — see §1.5 | — | **W5 Done** |
 
 **File:** always `modules/<module>/module.py` only — never `platform/` for business fields.
 
@@ -102,6 +102,8 @@ Apply **`StatusFieldDisplay`** on `EntityOptions` for every entity with `active`
 | `test_crm_entity_fields.py` (**new**, W1) | LEAD enum, CONTACT lookup, status metadata |
 | `test_stock_movement_entities.py` (**new**, W5) | CRUD, movement_type enum metadata, line validation, transfer rules |
 | `test_procurement_sales_entity_fields.py` (**new**, W4) | SUPPLIER/PO/SO/INVOICE standard profile |
+| `test_w2_entity_fields.py` (**new**, W2) | JOURNAL_ENTRY, SALE, LEAVE_REQUEST currency/lookup/enum |
+| `test_w3_entity_fields.py` (**new**, W3) | ACCOUNT, TERMINAL, EMPLOYEE currency/enum/status + CRUD smoke |
 
 ### 1.4 API wave execution order
 
@@ -114,7 +116,7 @@ W1-E  Fixtures for WAREHOUSE, LEAD, CONTACT, CUSTOMER
 W2    JOURNAL_ENTRY, SALE, LEAVE_REQUEST module fields + tests
 W3    ACCOUNT, TERMINAL, EMPLOYEE status + remaining
 W4    SUPPLIER, PURCHASE_ORDER, SALES_ORDER, INVOICE standard profile + fixtures (P20-T15/T16)
-W5    STOCK_MOVEMENT + STOCK_MOVEMENT_LINE entities, movement_type enum, tests (P20-T17–T19)
+W5    STOCK_MOVEMENT + STOCK_MOVEMENT_LINE entities, movement_type enum, tests, seed, report (P20-T17–T19 Done)
 ```
 
 ### 1.5 W5 — Stock movement entity design (API)
@@ -174,7 +176,9 @@ W5    STOCK_MOVEMENT + STOCK_MOVEMENT_LINE entities, movement_type enum, tests (
 
 **Menus:** Inventory → Stock Movements (header grid); lines via record tabs or inline child grid (metadata-driven — same pattern as future order lines).
 
-**Reports (W5 polish):** `STOCK_MOVEMENT_HISTORY` by product/warehouse/type; extend `INVENTORY_VALUATION` only if posted movements affect on-hand (see P20-T19).
+**Reports (W5 polish):** ✅ `STOCK_MOVEMENT_HISTORY` — movement_number, movement_type, warehouse_id, status, movement_date (`modules/inventory/module.py`). Demo seed: `data/seed/demo/stock_movements.json` (draft + posted receive/issue/transfer with lines; requires `warehouses.json` + `products.json`).
+
+**Demo seed (P20-T19):** `data/seed/demo/stock_movements.json` — 5 headers (2 draft, 3 posted) + 5 lines; second warehouse in `warehouses.json` for transfer examples. Loaded via existing demo seed loader (`apply_demo_seed` scans all `*.json` in `data/seed/demo/`).
 
 **i18n:** BN labels for all movement types in `metadata/builder.py` `FIELD_BN_LABELS`.
 
@@ -222,7 +226,8 @@ W1-A  record-headline.util generalize (code/name/company/sku rules from metadata
 W1-B  Copy API fixtures to web assets for W1 entities
 W1-C  Karma entity-system.fixture.spec.ts
 W1-D  Screenshots WAREHOUSE + CRM (stack + Playwright script)
-W2-W3  Repeat fixtures/screenshots when W2/W3 API lands
+W2     JE/SALE/LEAVE fixtures + Karma parity (**P20-T13 Done** — 130/130)
+W3     ACCOUNT/TERMINAL/EMPLOYEE fixtures + Karma parity (**P20-T14 Done** — 145/145)
 W4     Procurement/sales fixtures (P20-T16)
 W5     Stock movement grid + detail; movement_type enum labels in i18n; screenshot pack (P20-T18)
 ```
@@ -263,13 +268,13 @@ W5     Stock movement grid + detail; movement_type enum labels in i18n; screensh
 | Entity | API pytest | Web Karma | Mobile Dart |
 |--------|------------|-----------|-------------|
 | PRODUCT | ✅ | ✅ | ✅ |
-| WAREHOUSE | ✅ | ☐ | ☐ (test skip — fixture pending) |
-| CUSTOMER | ✅ | ☐ | ✅ |
-| LEAD | ✅ | ☐ | ☐ (test skip — fixture pending) |
-| CONTACT | ✅ | ☐ | ☐ (test skip — fixture pending) |
-| Others | ☐ | ☐ | ☐ |
-| **W4** (SUPPLIER, PO, SO, INVOICE) | ☐ | ☐ | ☐ |
-| **W5** (STOCK_MOVEMENT, lines) | ✅ | ☐ | ☐ |
+| WAREHOUSE | ✅ | ✅ | ☐ (test skip — fixture pending) |
+| CUSTOMER | ✅ | ✅ | ✅ |
+| LEAD | ✅ | ✅ | ☐ (test skip — fixture pending) |
+| CONTACT | ✅ | ✅ | ☐ (test skip — fixture pending) |
+| **W2** (JE, SALE, LEAVE) | ✅ | ☐ | ☐ |
+| **W4** (SUPPLIER, PO, SO, INVOICE) | ✅ | ✅ | ✅ (code; local Flutter skipped) |
+| **W5** (STOCK_MOVEMENT, lines) | ✅ | ✅ | ✅ (code; local Flutter skipped) |
 
 ### 3.4 Mobile wave order
 
@@ -292,8 +297,8 @@ W1-E  i18n keys for lookup/status if new strings added
 | **EMCAP-P20-T10** | W1 web entity fixtures + headline generalize | Web | W1 | P20-T09 |
 | **EMCAP-P20-T11** | W1 mobile entity contracts + If-Match | Mobile | W1 | P20-T09 |
 | **EMCAP-P20-T12** | W2 module fields (JE, SALE, LEAVE) | API | W2 | W1 |
-| **EMCAP-P20-T13** | W2 web/mobile fixture parity | Web+Mobile | W2 | P20-T12 |
-| **EMCAP-P20-T14** | W3 remaining entities status + fixtures | All | W3 | W2 |
+| **EMCAP-P20-T13** | W2 web/mobile fixture parity | Web+Mobile | W2 | P20-T12 | **Done** |
+| **EMCAP-P20-T14** | W3 remaining entities status + fixtures | All | W3 | W2 | **Done** |
 | **EMCAP-P20-T15** | W4 procurement/sales standard profile (API) | API | W4 | W3 |
 | **EMCAP-P20-T16** | W4 web/mobile fixture parity | Web+Mobile | W4 | P20-T15 |
 | **EMCAP-P20-T17** | W5 STOCK_MOVEMENT + LINE entities + movement_type enum | API | W5 | M4 (P18-T03) |

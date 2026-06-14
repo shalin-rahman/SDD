@@ -12,6 +12,7 @@ import {
   type PlatformNavLink,
 } from '../../services/shell-nav.util';
 import { extractModuleToggles, extractUserPermissions } from '../utils/tenant.util';
+import { ThemeService } from './theme.service';
 
 export interface ShellContextState {
   tenantLine: string;
@@ -28,6 +29,7 @@ export class ShellContextService {
   private readonly api = inject(EmcapApiService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly theme = inject(ThemeService);
 
   readonly tenantLine = signal('');
   readonly multiTenant = signal(false);
@@ -69,8 +71,12 @@ export class ShellContextService {
       const tenantsPayload = await this.api.client.listTenants();
       tenants = tenantsPayload.tenants;
       multiTenant = health.multi_tenant;
-      if (tenantsPayload.white_label) {
-        document.documentElement.style.setProperty('--emcap-primary', '#1a56db');
+      const tenantMap = tenantsPayload.tenants as unknown as Record<string, Record<string, unknown>>;
+      const activeTenantId = this.auth.getTenantId();
+      const activeTenant = tenantMap[activeTenantId] ?? tenantMap['default'];
+      const primaryColor = activeTenant?.['primary_color'] as string | undefined;
+      if (tenantsPayload.white_label || primaryColor) {
+        this.theme.applyTenantPrimary(primaryColor);
       }
       if (multiTenant && tenants.length > 0) {
         selectedTenant = this.auth.getTenantId();

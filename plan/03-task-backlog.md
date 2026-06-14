@@ -18,20 +18,20 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 11 — Local dev tooling (scripts, seed, lint) | 16 | 0 | 0 | 16 |
 | 12 — Enterprise product UI & admin | 33 | 18 | 7 | 58 |
 | 14 — Entity platform baseline | 15 | 6 | 0 | 21 |
-| 15 — Entity page redesign | 10 | 8 | 1 | 19 |
+| 15 — Entity page redesign | 13 | 5 | 2 | 20 |
 | 16 — Design system | 3 | 6 | 0 | 9 |
-| 17 — Platform services UX | 8 | 4 | 0 | 11 |
-| 18 — Reference modules product | 2 | 6 | 0 | 8 |
-| 19 — Admin product depth | 0 | 12 | 0 | 12 |
-| 20 — Quality gates | 3 | 14 | 1 | 19 |
+| 17 — Platform services UX | 11 | 0 | 0 | 11 |
+| 18 — Reference modules product | 5 | 2 | 1 | 8 |
+| 19 — Admin product depth | 3 | 6 | 3 | 12 |
+| 20 — Quality gates | 13 | 4 | 1 | 19 |
 | 21 — Infra/docs (support) | 2 | 1 | 0 | 3 |
-| **Total** | **225** | **65** | **7** | **309** |
+| **Total** | **246** | **47** | **14** | **307** |
 
-**Status legend:** Done · Pending · Partial (started, not complete)
+**Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-14 · **Master roadmap:** `plan/16-standard-viable-system.md` · **Execution:** `plan/17-viable-product-execution-playbook.md` · **Standard entities:** `plan/20-standard-entity-rollout.md`
+**Last updated:** 2026-06-14 · **Handoff:** `docs/dev/HANDOFF-continue-viable-product.md` · **Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
 
-**Current focus:** **W1 Done** → **W2–W3** module depth; **W4** procurement/sales profile; **W5** stock movement types (feedback C14). See `plan/20-standard-entity-rollout.md`.
+**Current focus:** **M5/M6 partial** · **P15-T13** M2 mobile (Flutter) · **P18-T06** CRM mobile · **P19-T04–T12** admin depth · **P15-T21** entity polish. See `07-product-readiness-matrix.md`.
 
 ---
 
@@ -313,7 +313,7 @@ Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-
 | EMCAP-P12C-T09 | Rule engine toggles UI | T02 | Done |
 | EMCAP-P12C-T10 | Grid platform flags UI | T02 | Done |
 | EMCAP-P12C-T11 | Integration registry UI | T02 | Done |
-| EMCAP-P12C-T12 | Document platform settings UI | T02 | Pending |
+| EMCAP-P12C-T12 | Document platform settings UI | T02 | Partial — web + mobile read-only Documents section in Settings; `documents` in `platform.yaml` + GET `/config/platform`; i18n EN/FR/BN; Karma + Flutter util tests |
 | EMCAP-P12C-T13 | AI module config UI | T02 | Done |
 | EMCAP-P12C-T14 | Audit subsystem config UI | T02 | Done |
 | EMCAP-P12C-T15 | Report schedule admin UI (read-only list + run) | T02 | Done |
@@ -352,7 +352,8 @@ Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-
 | EMCAP-P13-T04 | Web ABAC editor | T02 | Done |
 | EMCAP-P13-T05 | Mobile ABAC editor | T02 | Done |
 | EMCAP-P13-T06 | pytest + matrix rev. 7 | T02–T05 | Done |
-| EMCAP-P13-T10 | Field `read_roles` override API | T06 | Pending |
+| EMCAP-P13-T10 | Field `read_roles` override API | T06 | Done |
+| EMCAP-P13-T11 | Merge overrides in `apply_field_security` + policies GET | T10 | Done |
 | EMCAP-P13-T20 | Tenant isolation write (ops) | — | Pending |
 | EMCAP-P13-T30 | Layout designer ADR | — | Pending |
 
@@ -406,8 +407,11 @@ Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterpris
 | EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Pending |
 | EMCAP-P15-T20 | Hero rules via metadata `display` hints | P14-T13, P16-T02 | Done |
 | EMCAP-P15-T21 | Redesign WAREHOUSE + CRM entities | T20 | Pending |
-| EMCAP-P15-T22 | Loading skeletons + error retry | T21 | Partial |
-| EMCAP-P15-T23 | Empty grid state + New CTA | T22 | Done |
+| EMCAP-P15-T22 | Loading skeletons + error retry | T21 | Done — web entity initial load + list reload `[loading]` on grid; mobile `entity_list_screen` loading panel + inline list reload + error retry |
+| EMCAP-P15-T23 | Empty grid state + New CTA | T22 | Done — web `DynamicDataGridComponent` empty-state + `entity.new` action; mobile `entity_list_screen` empty grid + `entity.new` CTA |
+| EMCAP-P15-T15 | Web: separate list/record routes (no master–detail split) | T06, T23 | Done — `entity-list` + `entity-record`; M1 PNGs refreshed 2026-06-14 |
+| EMCAP-P15-T16 | ~~Grid–form field parity contract~~ | P14-T26 | **Cancelled** — user rejected 2026-06-14; grid and form are separate surfaces |
+| EMCAP-P15-T17 | Mobile: separate list → record navigation | T10–T12 | Done — `entity_list_screen` + `entity_record_screen`; push nav; form fields from metadata only |
 | EMCAP-P15-T30 | Keyboard nav grid (WCAG) | T21 | Pending |
 | EMCAP-P15-T31 | Screen reader labels on forms | T30 | Pending |
 | EMCAP-P15-T32 | axe-core a11y CI (web) | T30–T31 | Pending |
@@ -447,7 +451,7 @@ Playbook: `plan/16-standard-viable-system.md` § W3 · ADR-006
 | EMCAP-P17-T07 | Document preview mobile | T06 | Done |
 | EMCAP-P17-T08 | Account → profile hub | P16 | Done |
 | EMCAP-P17-T09 | Assistant polish | P16 | Done |
-| EMCAP-P17-T10 | Service UX screenshots | T01–T09 | Pending |
+| EMCAP-P17-T10 | Service UX screenshots | T01–T09 | Done — `scripts/capture-screenshot-sprint.mjs`; P17 pack + LOW_STOCK report 2026-06-14 |
 | EMCAP-P17-T11 | Rule evaluate product panel | P17-T08 | Done |
 
 Playbook: `plan/17-platform-services-product-ux.md`
@@ -460,10 +464,12 @@ Playbook: `plan/17-platform-services-product-ux.md`
 |----|------|---------|--------|
 | EMCAP-P18-T01 | Inventory DoD v2 (product) | M1 | Done |
 | EMCAP-P18-T02 | Realistic PRODUCT seed | — | Done |
-| EMCAP-P18-T03 | WAREHOUSE Product-ready | P15-T21 | Pending |
-| EMCAP-P18-T04 | Workflow on PRODUCT detail | P17-T01 | Pending |
-| EMCAP-P18-T05 | Module report UX | P17-T03 | Pending |
-| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Pending |
+| EMCAP-P18-T03 | WAREHOUSE Product-ready | P15-T21 | Done — `phase18-warehouse-grid-web.png`, `phase18-warehouse-detail-web.png` |
+| EMCAP-P18-T04 | Workflow on PRODUCT detail | P17-T01 | Done |
+| EMCAP-P18-T05 | Module report UX | P17-T03 | Done — report menus in module nav + `test_module_report_menus.py` |
+
+> **P18-T05:** Reports UX + `phase18-inventory-low-stock-report.png` + `phase18-inventory-low-stock-via-nav-web.png` Done 2026-06-14 (module report menus + sidenav reachability).
+| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots refreshed 2026-06-14; mobile Demo+ (hero, status chip, read-only fields, grid formatters); device PNG pending |
 | EMCAP-P18-T07 | Menu icons in metadata | P16 | Pending |
 | EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Pending |
 
@@ -475,12 +481,12 @@ Playbook: `plan/18-reference-modules-product.md`
 
 | ID | Task | Depends | Status |
 |----|------|---------|--------|
-| EMCAP-P19-T01 | Settings IA by domain | M1 | Pending |
-| EMCAP-P19-T02 | Admin users/roles UX | P16 | Pending |
-| EMCAP-P19-T03 | Field `read_roles` override UI | P19-T02 | Pending |
-| EMCAP-P19-T04 | ABAC editor polish | P19-T01 | Pending |
-| EMCAP-P19-T05 | Branding live preview | P16-T02 | Pending |
-| EMCAP-P19-T06 | Document settings UI | P19-T01 | Pending |
+| EMCAP-P19-T01 | Settings IA by domain | M1 | Done — mat-tab domains (Modules, Identity, Platform, Integrations); FR/BN `settings.domains.*` stubs; tab spacing |
+| EMCAP-P19-T02 | Admin users/roles UX | P16 | Done — users search, active chips, empty state; roles search + empty + module permission chips, save validation, i18n; `admin-users.component.spec.ts` + `admin-roles.component.spec.ts` smoke |
+| EMCAP-P19-T03 | Field `read_roles` override UI | P19-T02 | Done — web field matrix + picker; API P13-T10; screenshot `phase19-admin-security-field-access-web.png` |
+| EMCAP-P19-T04 | ABAC editor polish | P19-T03 | Partial — delete confirm + inline permission validation on save; test-policy preview pending |
+| EMCAP-P19-T05 | Branding live preview | P16-T02 | Partial — Integrations tab split-pane preview + tenant primary save when allowed |
+| EMCAP-P19-T06 | Document settings UI | P19-T01 | Partial — read-only storage backend, max upload, virus scan, retention in web Platform tab + mobile Settings Documents section |
 | EMCAP-P19-T07 | Isolation write (ops) | P19-T01 | Pending |
 | EMCAP-P19-T08 | Layout designer ADR | M3 | Pending |
 | EMCAP-P19-T09 | Settings DB overrides + reload UX | P19-T01 | Pending |
@@ -507,14 +513,14 @@ Playbook: `plan/19-admin-product-depth.md` · `plan/13-enterprise-admin-depth.md
 | EMCAP-P20-T09 | W1 standard module fields (WAREHOUSE, CRM) | P20-T05 | Done |
 | EMCAP-P20-T10 | W1 web fixtures + headline generalize | P20-T09 | Done |
 | EMCAP-P20-T11 | W1 mobile contracts + If-Match PUT | P20-T09 | Done |
-| EMCAP-P20-T12 | W2 module fields (JE, SALE, LEAVE) | W1 | Pending |
-| EMCAP-P20-T13 | W2 web/mobile fixture parity | P20-T12 | Pending |
-| EMCAP-P20-T14 | W3 remaining entities status + fixtures | W2 | Pending |
-| EMCAP-P20-T15 | W4 procurement/sales standard profile (API) | W3 | Pending |
-| EMCAP-P20-T16 | W4 web/mobile fixture parity | P20-T15 | Pending |
+| EMCAP-P20-T12 | W2 module fields (JE, SALE, LEAVE) | W1 | Done |
+| EMCAP-P20-T13 | W2 web/mobile fixture parity | P20-T12 | Done — JE/SALE/LEAVE fixtures; Karma 130/130; mobile contracts + headlines; local `flutter test` skipped |
+| EMCAP-P20-T14 | W3 remaining entities status + fixtures | W2 | Done — ACCOUNT balance CURRENCY + status; TERMINAL/EMPLOYEE status; EMPLOYEE department ENUM; fixtures API+web+mobile; Karma 145/145; pytest 94 (w2+w3+contract); local `flutter test` skipped |
+| EMCAP-P20-T15 | W4 procurement/sales standard profile (API) | W3 | Done |
+| EMCAP-P20-T16 | W4 web/mobile fixture parity | P20-T15 | Done — web Karma 115/115; mobile fixture loader W4; local `flutter test` skipped (no SDK) |
 | EMCAP-P20-T17 | W5 STOCK_MOVEMENT + LINE + movement_type enum | M4 / P18-T03 | Done |
-| EMCAP-P20-T18 | W5 stock movement product UX + screenshots | P20-T17 | Pending |
-| EMCAP-P20-T19 | W5 posted movement → qty_on_hand (`apply_posted_movement` in module) + seed + report | P20-T17 | Pending |
+| EMCAP-P20-T18 | W5 stock movement product UX + screenshots | P20-T17 | Done — web+mobile code; Karma 115/115; screenshot pack + local Flutter verify pending |
+| EMCAP-P20-T19 | W5 posted movement → qty_on_hand (`apply_posted_movement` in module) + seed + report | P20-T17 | Done |
 
 Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests — W1–W5)
 

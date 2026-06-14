@@ -59,6 +59,13 @@
 | `session-memos/2026-06-13-p17-assistant-web.md` | P17-T09 assistant chat web | P17-T09, `pages/assistant/` |
 | `session-memos/2026-06-14-p20-t11-mobile-w1-contracts.md` | P20-T11 mobile W1 contracts + If-Match | `entity_fixtures.dart`, `record_headline.dart`, `07` §8 |
 | `session-memos/2026-06-14-p20-w1-api-section1.md` | P20 W1 API Section 1 (T05/T09) | `test_entity_system_contract.py`, CRM module fields, W1 fixtures |
+| `session-memos/2026-06-13-p20-w5-parallel-completion.md` | P20 W5 parallel + T15/T12 sequential | W4/W5 fixtures, `test_procurement_sales_entity_fields.py`, `test_w2_entity_fields.py` |
+| `session-memos/2026-06-14-screenshot-sprint-m4-m5.md` | Screenshot sprint M4/M5 | P17-T10, P18-T03, `capture-screenshot-sprint.mjs`, matrix M4 signed |
+| `session-memos/2026-06-14-parallel-sprint-wave2.md` | Wave2 parallel + 16 PNG pack | P18-T04/T05, P19-T01/T02, P15-T22/T23 web, `07` M5/M6 partial |
+| `session-memos/2026-06-14-entity-ux-pivot-doc-correction.md` | C16 rejected — separate routes only | `plan/15-entity-page-redesign.md` Slice 15C, P15-T16 Cancelled |
+| `session-memos/2026-06-14-slice-15c-complete.md` | Slice 15C Done web+mobile | P15-T15/T17, M1 PNG refresh |
+| `session-memos/2026-06-14-parallel-p13-p19-p15-mobile.md` | P13 field access API + P19 admin + mobile loading | P13-T10/T11, P19-T03/T06, P15-T22/T23 mobile |
+| `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).
 

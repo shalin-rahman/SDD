@@ -14,7 +14,8 @@ Metadata-driven UI shell aligned with **SDD §9**. Parity with the web client fo
 | `lib/utils/shell_nav_util.dart` | Module-grouped nav, permission filter, admin links |
 | `lib/widgets/` | `master_detail_layout`, `permission_picker`, `settings_toggle_group`, `detail_placeholder` |
 | `lib/app/shell.dart` | Login, drawer/rail shell, theme/locale toolbar, tenant picker |
-| `lib/app/entity_screen.dart` | Master–detail entity UX (grid list + detail/edit panes) |
+| `lib/app/entity_list_screen.dart` | Entity grid list (full-screen); row tap / New → push record screen |
+| `lib/app/entity_record_screen.dart` | Entity record/create/edit (full-screen); back pops to list |
 | `lib/app/admin_*_screen.dart` | Users, roles, permissions admin (master–detail + checkbox permissions) |
 | `lib/app/settings_screen.dart` | Settings hub (module/auth/grid toggles, templates, audit) |
 | `lib/metadata_contract.dart` | Form/grid renderers + validators |
@@ -26,7 +27,7 @@ Metadata-driven UI shell aligned with **SDD §9**. Parity with the web client fo
 |------|----------|
 | Shell | Module-grouped drawer (phone) / rail (tablet), permission-filtered menus, Admin/Settings routes |
 | Theme / i18n | Light/dark toggle, **EN/FR/BN** locale; persisted via `shared_preferences` |
-| Entity | Master–detail split; list vs record/edit panes; mobile back navigation |
+| Entity | Separate list + record screens (P15-T17); push navigation; form fields from metadata only |
 | Admin | User CRUD with role multi-select; role CRUD with checkbox permission picker |
 | Settings | Module/auth/notifications/grid/workflow/rules/payments/AI/audit toggles; email templates CRUD; admin audit list |
 

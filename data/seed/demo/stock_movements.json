@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "seed_tag": "demo",
+  "entity_records": [
+    {
+      "id": "11111111-1111-4111-8111-111111111801",
+      "entity_code": "STOCK_MOVEMENT",
+      "tenant_id": "default",
+      "data": {
+        "movement_number": "SM-DEMO-DRF-R01",
+        "movement_type": "receive",
+        "movement_date": "2026-06-10",
+        "warehouse_id": "11111111-1111-4111-8111-111111111201",
+        "reference_type": "manual",
+        "status": "draft",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111802",
+      "entity_code": "STOCK_MOVEMENT",
+      "tenant_id": "default",
+      "data": {
+        "movement_number": "SM-DEMO-PST-R01",
+        "movement_type": "receive",
+        "movement_date": "2026-06-01",
+        "warehouse_id": "11111111-1111-4111-8111-111111111201",
+        "reference_type": "purchase_order",
+        "reference_id": "PO-DEMO-001",
+        "status": "posted",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111803",
+      "entity_code": "STOCK_MOVEMENT",
+      "tenant_id": "default",
+      "data": {
+        "movement_number": "SM-DEMO-PST-I01",
+        "movement_type": "issue",
+        "movement_date": "2026-06-05",
+        "warehouse_id": "11111111-1111-4111-8111-111111111201",
+        "reference_type": "sales_order",
+        "reference_id": "SO-DEMO-001",
+        "status": "posted",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111804",
+      "entity_code": "STOCK_MOVEMENT",
+      "tenant_id": "default",
+      "data": {
+        "movement_number": "SM-DEMO-DRF-T01",
+        "movement_type": "transfer",
+        "movement_date": "2026-06-12",
+        "warehouse_id": "11111111-1111-4111-8111-111111111201",
+        "source_warehouse_id": "11111111-1111-4111-8111-111111111202",
+        "reference_type": "manual",
+        "status": "draft",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111805",
+      "entity_code": "STOCK_MOVEMENT",
+      "tenant_id": "default",
+      "data": {
+        "movement_number": "SM-DEMO-PST-T01",
+        "movement_type": "transfer",
+        "movement_date": "2026-06-03",
+        "warehouse_id": "11111111-1111-4111-8111-111111111201",
+        "source_warehouse_id": "11111111-1111-4111-8111-111111111202",
+        "reference_type": "manual",
+        "status": "posted",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111901",
+      "entity_code": "STOCK_MOVEMENT_LINE",
+      "tenant_id": "default",
+      "data": {
+        "movement_id": "11111111-1111-4111-8111-111111111801",
+        "product_id": "11111111-1111-4111-8111-111111111101",
+        "quantity": 25,
+        "unit_cost": 9.99
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111902",
+      "entity_code": "STOCK_MOVEMENT_LINE",
+      "tenant_id": "default",
+      "data": {
+        "movement_id": "11111111-1111-4111-8111-111111111802",
+        "product_id": "11111111-1111-4111-8111-111111111101",
+        "quantity": 50,
+        "unit_cost": 9.99
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111903",
+      "entity_code": "STOCK_MOVEMENT_LINE",
+      "tenant_id": "default",
+      "data": {
+        "movement_id": "11111111-1111-4111-8111-111111111803",
+        "product_id": "11111111-1111-4111-8111-111111111102",
+        "quantity": 5
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111904",
+      "entity_code": "STOCK_MOVEMENT_LINE",
+      "tenant_id": "default",
+      "data": {
+        "movement_id": "11111111-1111-4111-8111-111111111804",
+        "product_id": "11111111-1111-4111-8111-111111111103",
+        "quantity": 10,
+        "unit_cost": 289.0
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111905",
+      "entity_code": "STOCK_MOVEMENT_LINE",
+      "tenant_id": "default",
+      "data": {
+        "movement_id": "11111111-1111-4111-8111-111111111805",
+        "product_id": "11111111-1111-4111-8111-111111111104",
+        "quantity": 8,
+        "unit_cost": 45.99
+      }
+    }
+  ]
+}

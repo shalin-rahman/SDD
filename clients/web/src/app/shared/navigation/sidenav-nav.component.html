@@ -20,7 +20,8 @@
     @for (item of group.items; track item.code) {
       <a
         mat-list-item
-        [routerLink]="entityRoute(item.entity_code)"
+        [routerLink]="menuRoute(item)"
+        [queryParams]="menuQueryParams(item)"
         routerLinkActive="sidenav-nav-active"
         (click)="onClick()"
       >

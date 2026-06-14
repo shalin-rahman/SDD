@@ -63,10 +63,10 @@ void main() {
     });
   }
 
-  test('W1 and W4 entities with fixtures are discoverable', () {
+  test('W1, W2, W3, W4, and W5 entities with fixtures are discoverable', () {
     final withFixtures = w1EntitiesWithFixtures();
     expect(withFixtures, containsAll(['PRODUCT', 'WAREHOUSE', 'CUSTOMER', 'LEAD', 'CONTACT']));
-    for (final code in w4EntityCodes) {
+    for (final code in [...w2EntityCodes, ...w3EntityCodes, ...w4EntityCodes, ...w5EntityCodes]) {
       expect(entityFixtureExists(code, 'form.keys'), isTrue, reason: code);
       expect(entityFixtureExists(code, 'grid.keys'), isTrue, reason: code);
     }

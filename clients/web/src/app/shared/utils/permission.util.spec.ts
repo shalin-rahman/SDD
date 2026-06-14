@@ -1,4 +1,4 @@
-import { PermissionGroup, groupPermissions, hasSelectedPermission } from '../utils/permission.util';
+import { PermissionGroup, groupPermissions, hasSelectedPermission, permissionGroupSummary } from '../utils/permission.util';
 
 describe('permission.util', () => {
   const sample = ['customer.read', 'customer.create', 'admin.users.read', 'admin.*'];
@@ -17,5 +17,10 @@ describe('permission.util', () => {
   it('formats module labels', () => {
     const groups: PermissionGroup[] = groupPermissions(['inventory.read']);
     expect(groups[0].label).toBe('Inventory');
+  });
+
+  it('summarizes permission groups for list display', () => {
+    expect(permissionGroupSummary([])).toBe('—');
+    expect(permissionGroupSummary(['customer.read', 'customer.create'])).toContain('Customer (2)');
   });
 });

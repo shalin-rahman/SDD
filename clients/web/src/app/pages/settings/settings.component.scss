@@ -1,3 +1,11 @@
+.settings-tabs {
+  margin-top: 0.5rem;
+
+  ::ng-deep .mat-mdc-tab-body-content {
+    padding: 1rem 0;
+  }
+}
+
 .settings-actions {
   margin-top: 1rem;
 }
@@ -56,4 +64,40 @@
 .settings-template-line,
 .settings-audit-line {
   margin: 0.25rem 0;
+}
+
+.settings-document-cards {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  margin-top: 0.5rem;
+}
+
+.settings-document-card mat-card-title {
+  font-size: 0.875rem;
+}
+
+.settings-document-value {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.settings-branding-split {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-top: 0.5rem;
+}
+
+.settings-branding-preview-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+@media (max-width: 960px) {
+  .settings-branding-split {
+    grid-template-columns: 1fr;
+  }
 }

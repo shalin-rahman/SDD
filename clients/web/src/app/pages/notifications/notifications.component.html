@@ -39,7 +39,7 @@
             <div class="notification-card__body">
               <strong>{{ note.subject }}</strong>
               <p class="notification-card__meta">
-                {{ channelLabel(note.channel) }} · {{ note.recipient || '—' }}
+                {{ channelLabel(note.channel) }} · {{ note.recipient || i18n.t('common.emptyValue') }}
               </p>
               <p class="notification-card__meta">{{ formatSentAt(note.created_at) }}</p>
             </div>
@@ -82,7 +82,7 @@
                   }
                 </td>
                 <td>{{ channelLabel(note.channel) }}</td>
-                <td>{{ note.recipient || '—' }}</td>
+                <td>{{ note.recipient || i18n.t('common.emptyValue') }}</td>
                 <td><span class="status-chip">{{ statusLabel(note.status) }}</span></td>
                 <td>{{ formatSentAt(note.created_at) }}</td>
               </tr>
@@ -101,7 +101,7 @@
         <dt>{{ i18n.t('platform.notifications.colChannel') }}</dt>
         <dd>{{ channelLabel(selected.channel) }}</dd>
         <dt>{{ i18n.t('platform.notifications.colRecipient') }}</dt>
-        <dd>{{ selected.recipient || '—' }}</dd>
+        <dd>{{ selected.recipient || i18n.t('common.emptyValue') }}</dd>
         <dt>{{ i18n.t('platform.notifications.colStatus') }}</dt>
         <dd>{{ statusLabel(selected.status) }}</dd>
         <dt>{{ i18n.t('platform.notifications.colSentAt') }}</dt>

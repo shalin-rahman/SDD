@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,6 +12,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
+import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { AdminListToolbarComponent } from '../../shared/admin/admin-list-toolbar.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
@@ -39,10 +41,12 @@ interface AdminUser {
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatChipsModule,
     PageHeaderComponent,
     MasterDetailLayoutComponent,
     AdminListToolbarComponent,
     AdminFormPanelComponent,
+    EmptyStateComponent,
     DetailPlaceholderComponent,
   ],
   templateUrl: './admin-users.component.html',
@@ -62,6 +66,8 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   mobileDetailOpen = false;
   isMobile = false;
 
+  searchTerm = '';
+
   draftUsername = '';
   draftPassword = '';
   draftTenantId = 'default';
@@ -70,6 +76,19 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   displayedColumns = ['username', 'tenant_id', 'roles', 'active'];
   readonly formatRoleSummary = formatRoleSummary;
+
+  get filteredUsers(): AdminUser[] {
+    const q = this.searchTerm.trim().toLowerCase();
+    if (!q) {
+      return this.users;
+    }
+    return this.users.filter(
+      (user) =>
+        user.username.toLowerCase().includes(q) ||
+        user.tenant_id.toLowerCase().includes(q) ||
+        formatRoleSummary(user.roles).toLowerCase().includes(q),
+    );
+  }
 
   ngOnInit(): void {
     this.layout.isMobile$.pipe(takeUntil(this.destroy$)).subscribe((mobile) => {

@@ -19,7 +19,9 @@ from emcap.admin.security_service import (
     get_abac_policies,
     list_security_policies,
     load_abac_policies,
+    load_field_overrides,
     update_abac_policies,
+    update_field_access,
 )
 from emcap.admin.settings_service import AdminValidationError as SettingsValidationError
 from emcap.admin.settings_service import get_settings, list_admin_audit, update_settings
@@ -416,7 +418,8 @@ def admin_list_security_policies(
 ) -> dict[str, Any]:
     require_permission(user, "admin.security.read")
     registry = request.app.state.entity_registry
-    return list_security_policies(registry)
+    field_overrides = getattr(request.app.state, "field_overrides", {})
+    return list_security_policies(registry, field_overrides)
 
 
 class AbacPoliciesRequest(BaseModel):
@@ -455,6 +458,37 @@ def admin_put_abac_policies(
             session,
             request.app.state.platform_config,
         )
+        return result
+    except SecurityValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+class FieldAccessRequest(BaseModel):
+    entity_code: str
+    field_name: str
+    read_roles: list[str] = Field(default_factory=list)
+
+
+@router.put("/security/field-access")
+def admin_put_field_access(
+    payload: FieldAccessRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.security.write")
+    session = _open_session(request)
+    try:
+        result = update_field_access(
+            session,
+            request.app.state.entity_registry,
+            entity_code=payload.entity_code,
+            field_name=payload.field_name,
+            read_roles=payload.read_roles,
+            actor=user.user_id,
+        )
+        request.app.state.field_overrides = load_field_overrides(session)
         return result
     except SecurityValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

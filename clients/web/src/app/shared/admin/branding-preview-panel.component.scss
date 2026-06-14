@@ -1,0 +1,40 @@
+.branding-preview {
+  border: 1px solid var(--emcap-border);
+  border-radius: var(--emcap-radius-md);
+  overflow: hidden;
+  background: var(--emcap-surface);
+}
+
+.branding-preview__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--emcap-primary);
+  color: var(--emcap-color-on-primary, #fff);
+}
+
+.branding-preview__brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.branding-preview__logo {
+  max-height: 1.75rem;
+  max-width: 6rem;
+  object-fit: contain;
+}
+
+.branding-preview__toolbar-title {
+  font-size: var(--emcap-font-body-sm);
+  opacity: 0.92;
+}
+
+.branding-preview__body {
+  padding: 0.75rem;
+}
+
+.branding-preview__action {
+  margin-top: 0.5rem;
+}
