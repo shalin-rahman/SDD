@@ -55,4 +55,13 @@ describe('AdminSecurityComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('unit_price');
     expect(fixture.nativeElement.textContent).toContain('inventory.access');
   });
+
+  it('renders admin breadcrumbs', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.page-header__breadcrumbs')?.textContent).toContain('Admin');
+  });
 });

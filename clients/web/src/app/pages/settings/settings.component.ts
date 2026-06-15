@@ -8,7 +8,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
 import {
@@ -71,7 +70,6 @@ const TEMPLATE_VARIABLES = ['{{name}}', '{{tenant}}', '{{code}}', '{{date}}'] as
     MatInputModule,
     MatSelectModule,
     MatCardModule,
-    MatChipsModule,
     PageHeaderComponent,
     SettingsToggleGroupComponent,
     MasterDetailLayoutComponent,

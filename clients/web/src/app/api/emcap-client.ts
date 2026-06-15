@@ -15,6 +15,7 @@ export interface MenuItem {
   label: string;
   entity_code: string;
   module: string;
+  icon?: string;
   permission?: string;
   report_code?: string;
 }

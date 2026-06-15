@@ -29,6 +29,13 @@
         <button type="button" mat-stroked-button (click)="theme.toggle()">
           {{ theme.mode() === 'dark' ? i18n.t('platform.account.themeLight') : i18n.t('platform.account.themeDark') }}
         </button>
+        <button type="button" mat-stroked-button (click)="theme.toggleDensity()">
+          {{
+            theme.density() === 'compact'
+              ? i18n.t('platform.account.densityComfortable')
+              : i18n.t('platform.account.densityCompact')
+          }}
+        </button>
       </div>
     </app-section-card>
 

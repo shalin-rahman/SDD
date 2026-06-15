@@ -49,6 +49,15 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 
 ## Web client
 
+### Grid spec fixtures — `GridMetadata` contract
+
+| | |
+|--|--|
+| **Error** | Karma compile: `schema_version: 1` not assignable to `string`; column missing `sortable` / `filterable` |
+| **Where** | `*.spec.ts` mocks for `getGridMetadata` or `GridMetadata` constants (e.g. `dynamic-data-grid.component.spec.ts`, `entity-list.component.spec.ts`) |
+| **Fix** | Use `schema_version: '1'` (string); every column needs `sortable: boolean` and `filterable: boolean`; include `grouping`, `realtime`, `offline` on grid fixtures |
+| **Test** | `npm run test:ci` — `dynamic-data-grid.component.spec.ts`, `entity-list.component.spec.ts` |
+
 ### SSE without auth headers
 
 | | |
@@ -84,11 +93,20 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 
 | | |
 |--|--|
-| **Symptom** | `flutter` not recognized; cannot run `clients/mobile`, capture M2 screenshots, or P16-T03 tokens |
-| **Where** | S2 (P15-T13, P20-T03), S3 (P16-T03), P17-T02 mobile inbox |
-| **Workaround** | **Skip S2/S3** on this machine; continue **web-only** standard product (P17 reports/docs, P14 lookup, P19 admin). M1 web gate already signed. |
-| **To unblock M2** | Install Flutter SDK, add `flutter\bin` to PATH, then follow `scripts/capture-m2-mobile-screenshots.md` (`flutter pub get`, `flutter test`, run app, capture `phase15-mobile-product-detail.png`). Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. |
+| **Symptom** | `flutter` not recognized; cannot run `clients/mobile`, capture M2 screenshots |
+| **Where** | S2 (P15-T13, P20-T03), P17-T02 mobile inbox |
+| **Workaround** | **Skip device/PNG S2** on this machine; mobile **code + Dart tests** can land without local SDK (P16-T03/T06 Done). Continue web/API lanes in parallel. |
+| **To unblock M2** | Install Flutter SDK, add `flutter\bin` to PATH, then follow `scripts/capture-m2-mobile-screenshots.md` (`flutter pub get`, `flutter test test/theme_tokens_test.dart test/entity_record_hero_test.dart`, run app, capture `phase15-mobile-product-detail.png`). Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. |
 | **CI** | Mobile lint/test still runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter optional until M2 sign-off. |
+
+### Mobile `context.emcapTokens` without Theme extension
+
+| | |
+|--|--|
+| **Error** | Falls back to `EmcapThemeTokens.light` in widget tests or screens without `EmcapTheme.buildThemeData` |
+| **Where** | `clients/mobile/lib/theme/app_tokens.dart` — `EmcapThemeTokensContext` |
+| **Fix** | Wrap test/widget in `MaterialApp(theme: EmcapTheme.buildThemeData(...))` or use `ThemeData(extensions: [EmcapThemeTokens.dark])` |
+| **Test** | `theme_tokens_test.dart` — extension registered on built theme |
 
 ### Lookup field — entity vs record validation
 
@@ -649,14 +667,50 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | `python scripts\apply-seed.py` (Postgres) or delete `emcap-local.db` and restart API; verify `data/seed/demo/products.json` |
 | **Test** | Manual: Inventory → Products shows 20 rows; runbook `docs/dev/product-demo-runbook.md` |
 
-### Design tokens bypassed in new shared SCSS
+### Entity routes eager-loaded inflate initial bundle
+
+| | |
+|--|--|
+| **Symptom** | `ng build` warns initial chunk >900 kB despite admin lazy routes |
+| **Cause** | `EntityListComponent` / `EntityRecordComponent` imported eagerly in `app.routes.ts` — pulls grid, form, tabs, document preview into main chunk |
+| **Fix** | Use `loadComponent` for `entity/:code`, `entity/:code/:recordId`, `entity/:code/new`, plus `notifications` and `account`; verify with `app.routes.spec.ts` |
+| **Test** | `npm run build` — initial total ≤900 kB; Karma `app.routes.spec.ts` |
+
+### STOCK_MOVEMENT create requires movement_number + reference_type
+
+| | |
+|--|--|
+| **Symptom** | Product smoke test gets 400 on `POST .../STOCK_MOVEMENT/records` |
+| **Cause** | Movement entity requires `movement_number`, `reference_type`, `active` in addition to type/date/warehouse |
+| **Fix** | Mirror payload from `test_stock_movement_entities.py::_create_draft_movement_with_line` |
+| **Test** | `test_inventory_product_smoke.py`
+
+### axe-core `label` rule on Material mat-checkbox (Karma)
+
+| | |
+|--|--|
+| **Symptom** | `settings.a11y.spec.ts` fails: `label` — hidden explicit `<label>` on `mat-mdc-checkbox` |
+| **Cause** | Angular Material associates checkbox via `aria-labelledby`; axe `label` rule false-positives in component isolation |
+| **Fix** | Disable `label` in `a11y.util.ts` `COMPONENT_SCOPE_DISABLED_RULES`; full-page Playwright axe can re-enable when stack is up |
+| **Test** | `entity-list.a11y.spec.ts`, `settings.a11y.spec.ts`; `npm run test:a11y` |
+
+---
 
 | | |
 |--|--|
 | **Symptom** | Inconsistent spacing/colors between entity and admin after Phase 16 polish |
 | **Cause** | Raw hex/pixel values in `shared/` instead of `--emcap-*` tokens (ADR-006) |
 | **Fix** | Use `styles/_tokens.scss` and catalog `docs/product/design-system.md`; reject ad hoc values in review |
-| **Test** | Visual screenshot pair at 1280px; dark mode contrast audit P16-T08 |
+| **Test** | Visual screenshot pair at 1280px; dark mode audit table in `design-system.md` (P16-T08 Done) |
+
+### Dark mode badge hex in component SCSS
+
+| | |
+|--|--|
+| **Symptom** | SLA/virus badges fail contrast on `html[data-theme=dark]` |
+| **Cause** | Hardcoded `#e6f4ea` / `#137333` light-only pairs in `record-tabs`, `workflow` SCSS |
+| **Fix** | Use `--emcap-badge-*` tokens from `_tokens.scss` (dark overrides included) |
+| **Test** | Toggle dark theme on workflow inbox + record Documents tab |
 
 ### Playwright Chromium not installed (screenshot scripts)
 

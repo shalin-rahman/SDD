@@ -37,7 +37,7 @@
 | Phase 7 playbook | `plan/06-sdd-gap-closure.md` |
 | Phase 8 playbook | `plan/07-phase8-end-user-product.md` |
 | Phase 10 Angular web | `plan/10-angular-cli-web.md` |
-| ADRs | `spec/sdd/adrs/` (incl. ADR-005 Angular CLI) |
+| ADRs | `spec/sdd/adrs/` (incl. ADR-005 Angular CLI, ADR-007 layout designer) |
 
 ## Scope
 

@@ -7,6 +7,7 @@ class PreferencesService {
 
   static const themeKey = 'emcap-theme';
   static const localeKey = 'emcap-locale';
+  static const densityKey = 'emcap-density';
 
   final SharedPreferences _prefs;
 
@@ -50,5 +51,15 @@ class PreferencesService {
 
   Future<void> saveLocale(Locale locale) async {
     await _prefs.setString(localeKey, locale.languageCode);
+  }
+
+  bool loadCompactDensity() => _prefs.getString(densityKey) == 'compact';
+
+  Future<void> saveCompactDensity(bool compact) async {
+    if (compact) {
+      await _prefs.setString(densityKey, 'compact');
+    } else {
+      await _prefs.remove(densityKey);
+    }
   }
 }

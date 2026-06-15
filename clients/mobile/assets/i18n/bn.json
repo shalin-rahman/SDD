@@ -243,6 +243,8 @@
   "platform.account.paymentsDisabled": "প্ল্যাটফর্ম কনফিগে পেমেন্ট নিষ্ক্রিয়।",
   "platform.account.checkInventory": "inventory.access পরীক্ষা",
   "platform.account.paymentConfirmed": "পেমেন্ট নিশ্চিত",
+  "platform.account.densityCompact": "কমপ্যাক্ট ঘনত্ব",
+  "platform.account.densityComfortable": "আরামদায়ক ঘনত্ব",
   "platform.reports.title": "রিপোর্ট",
   "platform.reports.noReports": "কোনো রিপোর্ট নিবন্ধিত নেই।",
   "platform.reports.loadFailed": "রিপোর্ট লোড ব্যর্থ",

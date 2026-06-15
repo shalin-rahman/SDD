@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
+import 'package:emcap_mobile/widgets/emcap_badge.dart';
+
 import 'package:emcap_mobile/main.dart' as app;
 
 /// M2 gate skeleton (P15-T13 / P20-T03).
@@ -37,8 +39,9 @@ void main() {
     await tester.tap(dataRows.first);
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
-    // Hero headline (SKU — Name) and status chip.
-    expect(find.byType(Chip), findsWidgets);
+    // Hero headline (SKU — Name) and status badge.
+    expect(find.textContaining('—'), findsWidgets);
+    expect(find.byType(EmcapStatusChip), findsWidgets);
 
     // TODO(P15-T13): bindIntegrationTestScreenshot and write to
     // docs/product/screenshots/phase15-mobile-product-detail.png

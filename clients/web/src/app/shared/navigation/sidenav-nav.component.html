@@ -25,7 +25,8 @@
         routerLinkActive="sidenav-nav-active"
         (click)="onClick()"
       >
-        {{ item.label }}
+        <mat-icon matListItemIcon>{{ item.icon || 'description' }}</mat-icon>
+        <span matListItemTitle>{{ item.label }}</span>
       </a>
     }
   </mat-nav-list>

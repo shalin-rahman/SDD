@@ -94,7 +94,7 @@ clients/web/src/app/pages/entity/entity-record.component.*
 - Web: PUT sends `If-Match`; restore button on deleted records
 - Tests: `test_system_fields.py`, inventory e2e updated
 
-**Next:** P14-T14 mobile restore; P21-T01 PG migrations.
+**Next:** P14-T14 mobile restore; ~~P21-T01 PG migrations~~ Done (`002_system_columns.sql`).
 
 ---
 

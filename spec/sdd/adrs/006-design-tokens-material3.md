@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-13 · Implementation pending (EMCAP-P16-T02–T08)
+Accepted — 2026-06-13 · Implemented (P16-T02–T08 Done 2026-06-15)
 
 ## Context
 

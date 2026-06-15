@@ -20,7 +20,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 
 | Component | Selector | Use |
 |-----------|----------|-----|
-| `SidenavNavComponent` | `app-sidenav-nav` | Platform links + module-grouped entity menus |
+| `SidenavNavComponent` | `app-sidenav-nav` | Platform links + module-grouped entity menus with Material icons (`MenuItem.icon`) |
 | `TenantSelectComponent` | `app-tenant-select` | SaaS tenant picker |
 
 ## Data & forms

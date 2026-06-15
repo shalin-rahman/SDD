@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-15 (rev. 16 — P16-T05 admin `.emcap-badge`; admin breadcrumbs; M6 screenshot script)
+**Last updated:** 2026-06-15 (rev. 18 — P15-T32 axe CI; P16-T06 mobile density parity)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -30,7 +30,7 @@
 
 |------------|-----|--------|-------|
 
-| Design system (Material / tokens) | Partial | Partial | Material shell + `--emcap-*` badges on admin/settings (P16-T05 partial) |
+| Design system (Material / tokens) | Partial | Partial | Material shell + `--emcap-*` badges on admin/settings (P16-T05 Done) |
 
 | Responsive app shell | Partial | Partial | Sidenav/drawer + rail ≥900px; **entity separate list/record routes** (not master–detail) |
 
@@ -122,9 +122,9 @@
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 
-| Layout designer | No | N/A | Phase 13 |
+| Layout designer | ADR Done | N/A | **ADR-007** — override API designed; UI P13-T31–T32 post-M3 |
 
-| Breadcrumbs / page titles | Partial | Partial | Entity list/record + admin users/roles/security/permissions (`P16-T09`) |
+| Breadcrumbs / page titles | Done | Partial | Entity list/record + admin users/roles/security/permissions; Karma specs on all admin pages (`P16-T09`) |
 
 
 
@@ -290,7 +290,7 @@
 
 |------------|--------|-------|
 
-| Menus from ModuleDefinition | API Done | UI module-grouped (web + mobile) |
+| Menus from ModuleDefinition | API Done | UI module-grouped with Material icons (web sidenav + mobile shell `iconFromMaterialName`, P18-T07) |
 
 | Permissions auto from modules | Done | Admin permission matrix (read-only) |
 

@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-15 (M6 branding/doc PNGs re-captured; P16-T05 `RecordDetailHeaderComponent` `.emcap-badge`; NG8107 admin-security fix)
+**Last updated:** 2026-06-16 (Sprint 5: P19-T08 ADR-007 layout designer; P18-T07 mobile menu icons; matrix 07 M5/M6 rev)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -26,11 +26,11 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | Milestone | Scope | Blocking | Status |
 |-----------|--------|----------|--------|
 | **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile open |
-| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo |
-| **M3** | Entity platform (lookup, status contract, UI complete) | Layout designer UI | **Partial** — 14A-S2 Done; P14-T21–T22 field-type API Done |
-| **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile open |
-| **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM + LOW_STOCK nav/report screenshots 2026-06-14 |
-| **M6** | Admin/settings product depth | — | **Partial** — P19-T01–T06 Demo+ with 5 admin/settings PNGs (IA, users, security, branding, documents); admin breadcrumbs + `.emcap-badge` on users/settings/entity record header |
+| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo+ (hero tests, `EmcapThemeTokens`, menu icons); PNG blocked (Flutter SDK) |
+| **M3** | Entity platform (lookup, status contract, UI complete) | Layout designer UI | **Partial** — 14A-S2 Done; P14-T21–T22 field-type API Done; **ADR-007** layout override API designed (P19-T08); editor UI post-M3 |
+| **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ (icons + tokens) |
+| **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM + LOW_STOCK nav/report screenshots 2026-06-14; sidenav menu icons (P18-T07 web + mobile) |
+| **M6** | Admin/settings product depth | — | **Partial** — P19-T01–T06 Demo+ with 5 admin/settings PNGs; P16-T06 mobile tokens Done; P15-T32 axe a11y gate; P21-T03 migration CI |
 
 ---
 
@@ -91,7 +91,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo |
 | Loading skeleton + error retry | Done | Partial | — | **Demo (web)** — P15-T22 Partial (entity load + grid reload panel); mobile pending |
 | Empty grid + New CTA | Done | Partial | — | **Product-ready (web)** — P15-T23 Done (`DynamicDataGridComponent` empty + New CTA); mobile pending |
-| Professional density at 1280px | Done | Partial | `phase15-product-detail-hero-dark.png` | **Product-ready (web)** · Mobile Demo |
+| Professional density at 1280px | Done | Partial | `phase15-product-detail-hero-dark.png` | **Product-ready (web)** — P16-T07 compact toggle on Account; Mobile Demo |
 
 **Product-ready** for entity page requires all Demo rows + M1/M2 screenshot pack + `16-product-ready-dod.md` §5.
 
@@ -118,7 +118,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Area | Backlog says | Product readiness | Plan |
 |------|--------------|-------------------|------|
-| Enterprise shell / nav | Many Done | **Demo** | P16-T09 — entity + **admin** breadcrumbs (`shell.breadcrumb.admin`) |
+| Enterprise shell / nav | Many Done | **Demo** | P16-T09 breadcrumbs; P18-T07 Material menu icons (web sidenav + mobile shell `material_icon_util.dart`) |
 | Admin users/roles | Done | **Demo** | `phase19-admin-users-web.png` — P19-T02; `.emcap-badge--on`/`--off` active chips |
 | Entity record header | Done | **Demo** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` status (ADR-006) |
 | Settings hub | Partial/Done | **Demo** | `phase19-settings-ia-web.png` — P19-T01 mat-tab IA |
@@ -152,7 +152,7 @@ Continue Phase 19 only after M1 PRODUCT web **Product-ready**.
 | Entity | Web | Mobile | Screenshot | Status |
 |--------|-----|--------|------------|--------|
 | WAREHOUSE grid + detail | Done | Demo | `phase18-warehouse-grid-web.png`, `phase18-warehouse-detail-web.png` | **Product-ready (web)** |
-| LEAD grid + detail | Done | Demo | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** |
-| CONTACT grid + detail | Done | Demo | `phase18-crm-contact-grid-web.png`, `phase18-crm-contact-detail-web.png` | **Product-ready (web)** |
+| LEAD grid + detail | Done | Demo | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (`crm_entity_contract_test.dart`) |
+| CONTACT grid + detail | Done | Demo | `phase18-crm-contact-grid-web.png`, `phase18-crm-contact-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (`crm_entity_contract_test.dart`) |
 
 **Related (P18-T04 Done):** `STOCK_ADJUSTMENT` workflow on PRODUCT detail — web + mobile submit/approve path; approval UX only; does not replace movement document (W5).

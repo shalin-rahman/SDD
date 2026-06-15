@@ -75,13 +75,14 @@ MODULE = ModuleDefinition(
     ],
     dashboards=[],
     menus=[
-        MenuDefinition(code="accounts", label="Accounts", entity_code="ACCOUNT"),
-        MenuDefinition(code="journal", label="Journal Entries", entity_code="JOURNAL_ENTRY"),
+        MenuDefinition(code="accounts", label="Accounts", entity_code="ACCOUNT", icon="account_balance"),
+        MenuDefinition(code="journal", label="Journal Entries", entity_code="JOURNAL_ENTRY", icon="menu_book"),
         MenuDefinition(
             code="account_balances",
             label="Account Balances",
             entity_code="ACCOUNT",
             report_code="ACCOUNT_BALANCES",
+            icon="pie_chart",
         ),
     ],
     permissions=["accounting.access"],

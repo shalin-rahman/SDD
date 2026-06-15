@@ -18,22 +18,22 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 11 — Local dev tooling (scripts, seed, lint) | 16 | 0 | 0 | 16 |
 | 12 — Enterprise product UI & admin | 67 | 0 | 0 | 67 |
 | 14 — Entity platform baseline | 21 | 0 | 0 | 21 |
-| 15 — Entity page redesign | 13 | 5 | 2 | 20 |
-| 16 — Design system | 4 | 4 | 1 | 9 |
+| 15 — Entity page redesign | 16 | 1 | 2 | 20 |
+| 16 — Design system | 9 | 0 | 0 | 9 |
 | 17 — Platform services UX | 11 | 0 | 0 | 11 |
-| 18 — Reference modules product | 5 | 2 | 1 | 8 |
-| 19 — Admin product depth | 10 | 2 | 0 | 12 |
-| 20 — Quality gates | 13 | 4 | 1 | 19 |
-| 21 — Infra/docs (support) | 5 | 1 | 0 | 6 |
+| 18 — Reference modules product | 6 | 1 | 1 | 8 |
+| 19 — Admin product depth | 12 | 0 | 0 | 12 |
+| 20 — Quality gates | 16 | 2 | 1 | 19 |
+| 21 — Infra/docs (support) | 6 | 0 | 0 | 6 |
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
-| **Total** | **270** | **47** | **4** | **326** |
+| **Total** | **291** | **28** | **4** | **326** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-15 · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md` · **Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
+**Last updated:** 2026-06-16 (Sprint 5: P19-T08/P13-T30 ADR-007 layout designer; P20-T08 matrix 07 M5/M6 rev; P18-T07 mobile menu icons) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md` · **Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
 
-**Current focus:** **CC-1 M2 mobile** (Flutter) · **P18-T06** CRM mobile sign-off · **P16-T05** component tokens · See `Crash course` section below + `07-product-readiness-matrix.md`.
+**Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · **P13-T31** layout editor MVP (post-M3) · See `Crash course` section below + `07-product-readiness-matrix.md`.
 
 ---
 
@@ -357,7 +357,7 @@ Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-
 | EMCAP-P13-T10 | Field `read_roles` override API | T06 | Done |
 | EMCAP-P13-T11 | Merge overrides in `apply_field_security` + policies GET | T10 | Done |
 | EMCAP-P13-T20 | Tenant isolation write (ops) | — | Pending |
-| EMCAP-P13-T30 | Layout designer ADR | — | Pending |
+| EMCAP-P13-T30 | Layout designer ADR | — | Done — `spec/sdd/adrs/007-layout-designer-metadata-editor.md` (override API + MVP scope; UI P13-T31–T32) |
 
 Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterprise-admin-depth.md` · **14:** `plan/14-entity-platform-baseline.md` · **15:** `plan/15-entity-page-redesign.md` · Product gate: `spec/sdd/07-product-readiness-matrix.md`
 
@@ -405,8 +405,8 @@ Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterpris
 | EMCAP-P15-T10 | Mobile record detail header + section cards | P14-T12, T01 | Done |
 | EMCAP-P15-T11 | Mobile PRODUCT headline/subtitle util | T10 | Done |
 | EMCAP-P15-T12 | Mobile grid polish + datetime cells | T10 | Done |
-| EMCAP-P15-T13 | Mobile screenshots (M2) | T10–T12 | Partial |
-| EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Pending |
+| EMCAP-P15-T13 | Mobile screenshots (M2) | T10–T12 | Partial — `entity_record_hero_test.dart` + integration_test; PNG capture blocked (no Flutter SDK) |
+| EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Done — `entity_list_screen` wires `subscribeRecordsStream`; `mobile_sse_grid_test.dart` (6 contract tests: realtime/offline/grouping) |
 | EMCAP-P15-T20 | Hero rules via metadata `display` hints | P14-T13, P16-T02 | Done |
 | EMCAP-P15-T21 | Redesign WAREHOUSE + CRM entities | T20 | **Cancelled** — superseded by generic `entity-list`/`entity-record` + P18-T03/T06 screenshots 2026-06-14; no entity-specific page code required |
 | EMCAP-P15-T22 | Loading skeletons + error retry | T21 | Done — web entity initial load + list reload `[loading]` on grid; mobile `entity_list_screen` loading panel + inline list reload + error retry |
@@ -414,9 +414,9 @@ Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterpris
 | EMCAP-P15-T15 | Web: separate list/record routes (no master–detail split) | T06, T23 | Done — `entity-list` + `entity-record`; M1 PNGs refreshed 2026-06-14 |
 | EMCAP-P15-T16 | ~~Grid–form field parity contract~~ | P14-T26 | **Cancelled** — user rejected 2026-06-14; grid and form are separate surfaces |
 | EMCAP-P15-T17 | Mobile: separate list → record navigation | T10–T12 | Done — `entity_list_screen` + `entity_record_screen`; push nav; form fields from metadata only |
-| EMCAP-P15-T30 | Keyboard nav grid (WCAG) | T21 | Pending |
-| EMCAP-P15-T31 | Screen reader labels on forms | T30 | Pending |
-| EMCAP-P15-T32 | axe-core a11y CI (web) | T30–T31 | Pending |
+| EMCAP-P15-T30 | Keyboard nav grid (WCAG) | T21 | Done — `DynamicDataGridComponent` row focus, ArrowUp/Down, Enter opens record; `dynamic-data-grid.component.spec.ts` |
+| EMCAP-P15-T31 | Screen reader labels on forms | T30 | Done — `aria-label` on dynamic form inputs/select/textarea/checkbox via `dynamic-form-view` |
+| EMCAP-P15-T32 | axe-core a11y CI (web) | T30–T31 | Done — `axe-core` + `*.a11y.spec.ts` (entity-list, settings); `npm run test:a11y`; Karma 202/202 |
 
 Playbook: `plan/15-entity-page-redesign.md` · `plan/17-standard-product-execution-playbook.md` §7
 
@@ -428,13 +428,13 @@ Playbook: `plan/15-entity-page-redesign.md` · `plan/17-standard-product-executi
 |----|------|---------|--------|
 | EMCAP-P16-T01 | ADR design tokens | — | Done |
 | EMCAP-P16-T02 | Web CSS variables + theme | T01 | Done |
-| EMCAP-P16-T03 | Flutter ThemeExtension tokens | T01 | Pending |
+| EMCAP-P16-T03 | Flutter ThemeExtension tokens | T01 | Done — `lib/theme/app_tokens.dart` + `theme_tokens_test.dart`; wired via `EmcapTheme.buildThemeData` |
 | EMCAP-P16-T04 | `docs/product/design-system.md` catalog | T02–T03 | Done |
-| EMCAP-P16-T05 | Web component standardization | T02 | Partial — `.emcap-badge` on admin users/roles, settings hub, `RecordDetailHeaderComponent` status; layout/navigation `--emcap-*` tokens; interactive `mat-chip` template vars in settings remain |
-| EMCAP-P16-T06 | Mobile component standardization | T03 | Pending |
-| EMCAP-P16-T07 | Density comfortable/compact | T05–T06 | Pending |
-| EMCAP-P16-T08 | Dark mode contrast audit | T02–T03 | Pending |
-| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — `PageHeaderComponent` breadcrumbs on entity-list/record + admin users/roles/security/permissions |
+| EMCAP-P16-T05 | Web component standardization | T02 | Done — `.emcap-badge` on admin/settings/record header; settings template vars use clickable badge buttons (no `mat-chip`); `--emcap-*` tokens in settings SCSS |
+| EMCAP-P16-T06 | Mobile component standardization | T03 | Done — settings `EmcapThemeTokens` padding + `EmcapBadge`; grid `DataTableTheme` density; shell density toggle |
+| EMCAP-P16-T07 | Density comfortable/compact | T05–T06 | Done — `ThemeService` + `data-density` tokens; Account toggle; EN/FR/BN |
+| EMCAP-P16-T08 | Dark mode contrast audit | T02–T03 | Done — audit table in `design-system.md`; dark token + badge fixes |
+| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — `PageHeaderComponent` breadcrumbs on entity-list/record + admin users/roles/security/permissions; Karma breadcrumb specs on all four admin pages |
 
 Playbook: `plan/16-standard-product-system.md` § W3 · ADR-006
 
@@ -471,9 +471,9 @@ Playbook: `plan/17-platform-services-product-ux.md`
 | EMCAP-P18-T05 | Module report UX | P17-T03 | Done — report menus in module nav + `test_module_report_menus.py` |
 
 > **P18-T05:** Reports UX + `phase18-inventory-low-stock-report.png` + `phase18-inventory-low-stock-via-nav-web.png` Done 2026-06-14 (module report menus + sidenav reachability).
-| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots; mobile Demo+ (`crm_entity_contract_test.dart` + headline edge cases); device PNG pending |
-| EMCAP-P18-T07 | Menu icons in metadata | P16 | Pending |
-| EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Pending |
+| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots; mobile Demo+ (`crm_entity_contract_test.dart`, `entity_system_contract_test.dart` LEAD/CONTACT, headline parity); device PNG pending |
+| EMCAP-P18-T07 | Menu icons in metadata | P16 | Done — `MenuDefinition.icon` + GET `/menus` + `SidenavNavComponent` mat-icon; all modules; `test_module_report_menus.py` + `sidenav-nav.component.spec.ts` |
+| EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Done — `test_inventory_product_smoke.py` WAREHOUSE + STOCK_MOVEMENT draft chain |
 
 Playbook: `plan/18-reference-modules-product.md`
 
@@ -489,8 +489,8 @@ Playbook: `plan/18-reference-modules-product.md`
 | EMCAP-P19-T04 | ABAC editor polish | P19-T03 | Done — delete confirm + inline validation + checkAuth test preview; deny-path pytest P23-T04 |
 | EMCAP-P19-T05 | Branding live preview | P16-T02 | Done — split-pane preview, tenant primary save + `ThemeService.applyTenantPrimary`, WCAG contrast hint, i18n EN/FR/BN; screenshot `phase19-settings-branding-web.png` |
 | EMCAP-P19-T06 | Document settings UI | P19-T01 | Done — read-only Platform tab + mobile Documents section with badge chips; `document-platform-settings.util` web + mobile tests; screenshot `phase19-settings-documents-web.png` |
-| EMCAP-P19-T07 | Isolation write (ops) | P19-T01 | Pending |
-| EMCAP-P19-T08 | Layout designer ADR | M3 | Pending |
+| EMCAP-P19-T07 | Isolation write (ops) | P19-T01 | Done — `docs/dev/recipes/tenant-isolation-write-test.md`; `test_auth_security.py` + `test_postgres_integration.py` paths documented |
+| EMCAP-P19-T08 | Layout designer ADR | M3 | Done — ADR-007; no UI until M3 entity platform Product-ready |
 | EMCAP-P19-T09 | Settings DB overrides + reload UX | P19-T01 | Done — Custom badge on override paths; reload hint + module effective summary after save; `settings.component.spec.ts` |
 | EMCAP-P19-T10 | Integrations product UX | P19-T01 | Done — Settings registry cards + labeled fields + test REST; Account has no integration buttons |
 | EMCAP-P19-T11 | Payments product UX | P19-T01 | Done — provider cards + secret rotate when module+payments enabled |
@@ -506,12 +506,12 @@ Playbook: `plan/19-admin-product-depth.md` · `plan/13-enterprise-admin-depth.md
 |----|------|---------|--------|
 | EMCAP-P20-T01 | Screenshot convention | — | Done |
 | EMCAP-P20-T02 | M1 PRODUCT web screenshots | P15-T06 | Done |
-| EMCAP-P20-T03 | M2 PRODUCT mobile screenshots | P15-T13 | Partial |
-| EMCAP-P20-T04 | Client REQUIRED_METHODS sync | — | Pending |
+| EMCAP-P20-T03 | M2 PRODUCT mobile screenshots | P15-T13 | Partial — runbook + `entity_record_hero_test.dart` + integration_test skeleton; PNG pending |
+| EMCAP-P20-T04 | Client REQUIRED_METHODS sync | — | Done — web `emcap-client.spec.ts` + mobile `emcap_client_contract_test.dart`; `getReportRun` parity 2026-06-15 |
 | EMCAP-P20-T05 | Metadata snapshot CI all entities | P14-T26 | Done |
-| EMCAP-P20-T06 | Web bundle / lazy routes plan | P16 | Pending |
-| EMCAP-P20-T07 | Entity list perf budget | P15-T22 | Pending |
-| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Ongoing |
+| EMCAP-P20-T06 | Web bundle / lazy routes plan | P16 | Done — entity list/record, notifications, account lazy-loaded; initial 818 kB (under 900 kB warning) |
+| EMCAP-P20-T07 | Entity list perf budget | P15-T22 | Done — lazy entity routes; `app.routes.spec.ts` smoke |
+| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Ongoing — Sprint 5 rev: M2/M3/M4/M5/M6 rows + §12 shell nav (2026-06-16) |
 | EMCAP-P20-T09 | W1 standard module fields (WAREHOUSE, CRM) | P20-T05 | Done |
 | EMCAP-P20-T10 | W1 web fixtures + headline generalize | P20-T09 | Done |
 | EMCAP-P20-T11 | W1 mobile contracts + If-Match PUT | P20-T09 | Done |
@@ -534,9 +534,9 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 | ID | Task | Depends | Status |
 |----|------|---------|--------|
-| EMCAP-P21-T01 | PG migrations system columns | P14-T12 | Pending |
+| EMCAP-P21-T01 | PG migrations system columns | P14-T12 | Done — `migrations/002_system_columns.sql`; `docs/dev/recipes/apply-pg-migrations.md`; `test_migrations.py` |
 | EMCAP-P21-T02 | Product demo runbook | P18-T02 | Done |
-| EMCAP-P21-T03 | `known-pitfalls` Phase 16 | — | Done |
+| EMCAP-P21-T03 | PG migration CI integration | P21-T01 | Done — CI integration job runs `migrate.py up`; `test_postgres_integration.py::test_system_columns_present_after_migrations` |
 | EMCAP-P21-T04 | Sync `plan/20` §2–3 paths (`entity-list`/`entity-record`, `entity_list_screen`/`entity_record_screen`) | P15-T15 | Done |
 | EMCAP-P21-T05 | Refresh `plan/17` §1 current-state snapshot (P17 Done, M1/M4 signed) | P17-T10 | Done |
 | EMCAP-P21-T06 | Mobile admin `updateAdminFieldAccess` client parity | P19-T03 | Done |
@@ -580,7 +580,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | **CC-4** | Admin depth | P19-T04, T09–T12, P21-T06, P23-T04 | Karma admin specs; `test_admin_api.py` | — |
 | **CC-5** | Security metadata filter | P23-T01–T02 | `test_admin_field_access_override.py` + new metadata deny test | — |
 | **CC-6** | Repo hygiene | P23-T03 | `git check-ignore emcap-local.db`; DB not in `git status` | — |
-| **CC-7** | Design + a11y | P16-T03, T05–T09, P15-T30–T32 | `npm run test:ci`; axe CI job | Flutter for T03 |
+| **CC-7** | Design + a11y | P16-T05, T09, P15-T30–T32 | `npm run test:ci`; axe CI job | — |
 | **CC-8** | Infra hardening | P21-T01, P20-T06–T07, P20-T04 | pytest; `ng build --stats-json` | — |
 
 **Parallel lanes after CC-0:** CC-3 + CC-4 + CC-5 (web-only) while CC-1 blocked.
@@ -592,8 +592,8 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 See **critical path** in `plan/16-standard-product-system.md` §3–§4.
 
 1. ~~**S1 / M1:** P15-T06 + P20-T02 (PRODUCT web screenshots)~~ **Done** 2026-06-13
-2. **S2 / M2:** P15-T13 + P20-T03 — **Partial** (runbook + integration_test skeleton; PNG capture blocked — no local Flutter SDK)
-3. **S3:** P16-T02–T03 — web tokens OK; Flutter tokens deferred
+2. **S2 / M2:** P15-T13 + P20-T03 — **Partial** (hero widget tests + integration_test; PNG capture blocked — no local Flutter SDK)
+3. **S3:** P16-T02–T03 — **Done** (web + Flutter `EmcapThemeTokens`)
 4. **S7 web:** P17-T04+ dashboards, docs (P17-T01, T03 Done)
 5. **S4–S6:** P14 lookup/status, P15 depth, a11y
 6. **S9–S10:** P18 reference modules

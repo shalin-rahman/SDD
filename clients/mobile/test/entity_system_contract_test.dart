@@ -77,4 +77,31 @@ void main() {
     expect(columns.first, 'sku');
     expect(columns, containsAll(['active', 'created_at', 'record_version']));
   });
+
+  group('LEAD CRM fixture contract', () {
+    test('form.keys lists CRM headline fields', () {
+      final names = loadEntityFormFieldNames('LEAD');
+      expect(names, containsAll(['company', 'contact_name', 'status', 'active']));
+    });
+
+    test('grid.keys leads with company and includes status columns', () {
+      final columns = loadEntityGridColumnFields('LEAD');
+      expect(columns.first, 'company');
+      expect(columns, containsAll(['contact_name', 'status', 'active', 'created_at']));
+    });
+  });
+
+  group('CONTACT CRM fixture contract', () {
+    test('form.keys lists name email and lead lookup', () {
+      final names = loadEntityFormFieldNames('CONTACT');
+      expect(names, containsAll(['name', 'email', 'lead_id', 'active']));
+    });
+
+    test('grid.keys leads with name and includes lead_id', () {
+      final columns = loadEntityGridColumnFields('CONTACT');
+      expect(columns.first, 'name');
+      expect(columns, contains('lead_id'));
+      expect(columns, contains('email'));
+    });
+  });
 }

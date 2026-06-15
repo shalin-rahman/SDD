@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
 import '../utils/document_platform_settings_util.dart';
 import '../utils/security_platform_settings_util.dart';
+import '../widgets/emcap_badge.dart';
 import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 import '../widgets/settings_toggle_group.dart';
@@ -368,16 +370,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       enabled ? EmcapLocale.t('settings.channels.enabled') : EmcapLocale.t('settings.channels.disabled');
 
   Widget _templateChannelBar() {
+    final tokens = context.emcapTokens;
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: tokens.spaceSm,
+      runSpacing: tokens.spaceSm,
       children: _templateChannelBarData()
           .map(
-            (chip) => Chip(
-              label: Text('${chip['label']} · ${_channelBarStateLabel(chip['enabled'] as bool)}'),
-              backgroundColor: (chip['enabled'] as bool)
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+            (chip) => EmcapStatusChip(
+              label: '${chip['label']} · ${_channelBarStateLabel(chip['enabled'] as bool)}',
+              active: chip['enabled'] as bool,
             ),
           )
           .toList(),
@@ -385,8 +386,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _documentSettingRow(String label, String value) {
+    final tokens = context.emcapTokens;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: tokens.spaceXs + 2),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -416,6 +418,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.emcapTokens;
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -455,7 +458,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final templateDetailPane = (!_creatingTemplate && _selectedTemplate == null)
         ? const DetailPlaceholder(message: 'Select an email template or create a new one.')
         : ListView(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(tokens.spaceSm + 4),
             children: [
               Row(
                 children: [
@@ -492,7 +495,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: tokens.spaceLg),
       children: [
         Text(EmcapLocale.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
         Text('Tenant strategy: $_tenantStrategy · multi-tenant: $_multiTenant'),
@@ -502,7 +505,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           alignment: Alignment.centerRight,
           child: FilledButton(onPressed: _saveSettings, child: const Text('Save settings')),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: tokens.spaceSm),
         SettingsToggleGroup(
           title: 'Modules',
           items: _moduleItems(),
@@ -565,7 +568,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         if (!_paymentsModuleEnabled)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: tokens.spaceSm),
             child: Text(
               EmcapLocale.t('settings.payments.moduleRequired'),
               style: Theme.of(context).textTheme.bodySmall,
@@ -573,9 +576,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           )
         else
           Card(
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: tokens.spaceSm),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(tokens.spaceSm + 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -618,7 +621,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   if (_paymentSecretConfigured) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: tokens.spaceSm),
                     Text(
                       EmcapLocale.t('settings.payments.configured'),
                       style: Theme.of(context).textTheme.bodySmall,
@@ -629,13 +632,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         Card(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
             title: Text(EmcapLocale.t('settings.sections.integrations')),
             subtitle: Text(EmcapLocale.t('settings.integrations.subtitle')),
             children: [
               Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -683,7 +686,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     if (_webhookSecretConfigured) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: tokens.spaceSm),
                       Text(
                         EmcapLocale.t('settings.integrations.configured'),
                         style: Theme.of(context).textTheme.bodySmall,
@@ -695,10 +698,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text(EmcapLocale.t('settings.integrations.testRest')),
                     ),
                     if (_integrationTestStatus.isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: tokens.spaceSm),
                       Text(_integrationTestStatus, style: Theme.of(context).textTheme.bodySmall),
                     ],
-                    const SizedBox(height: 8),
+                    SizedBox(height: tokens.spaceSm),
                     Text(
                       EmcapLocale.t('settings.integrations.accountHint'),
                       style: Theme.of(context).textTheme.bodySmall,
@@ -723,12 +726,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onChanged: (key, checked) => _setBool('audit', key, checked),
         ),
         Card(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
             title: Text(EmcapLocale.t('settings.sections.security')),
             children: [
               Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -750,7 +753,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       EmcapLocale.t('settings.security.abacPolicies'),
                       '${_securitySettings.abacPolicyCount}',
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: tokens.spaceSm),
                     Text(
                       EmcapLocale.t('settings.security.readOnlyHint'),
                       style: Theme.of(context).textTheme.bodySmall,
@@ -762,27 +765,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         Card(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
             title: Text(EmcapLocale.t('settings.sections.documents')),
             subtitle: Text(EmcapLocale.t('settings.documents.subtitle')),
             children: [
               Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Chip(
-                        label: Text(
-                          EmcapLocale.t('settings.documents.readOnlyBadge'),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                        visualDensity: VisualDensity.compact,
+                      child: EmcapBadge(
+                        label: EmcapLocale.t('settings.documents.readOnlyBadge'),
+                        variant: EmcapBadgeVariant.off,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: tokens.spaceSm),
                     _documentSettingRow(
                       EmcapLocale.t('settings.documents.storageBackend'),
                       _documentSettings.storageBackend,
@@ -801,7 +801,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       EmcapLocale.t('settings.documents.retentionDays'),
                       '${_documentSettings.retentionDays}',
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: tokens.spaceSm),
                     Text(
                       EmcapLocale.t('settings.documents.readOnlyHint'),
                       style: Theme.of(context).textTheme.bodySmall,
@@ -813,12 +813,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         Card(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
             title: const Text('Branding'),
             children: [
               Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
                 child: Column(
                   children: [
                     TextField(
@@ -836,9 +836,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         Text('Email templates', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        SizedBox(height: tokens.spaceSm),
         _templateChannelBar(),
-        const SizedBox(height: 8),
+        SizedBox(height: tokens.spaceSm),
         SizedBox(
           height: 360,
           child: MasterDetailLayout(

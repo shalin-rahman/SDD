@@ -35,7 +35,7 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--emcap-text-muted, #5f6368);
-    padding: 0.65rem 0.75rem;
+    padding: var(--emcap-density-header-padding-y) var(--emcap-density-row-padding-x);
     border-bottom: 1px solid var(--emcap-border);
   }
 
@@ -55,10 +55,20 @@
     background: color-mix(in srgb, var(--emcap-primary) 14%, var(--emcap-surface)) !important;
   }
 
+  .row-focused {
+    outline: 2px solid var(--emcap-primary);
+    outline-offset: -2px;
+  }
+
+  .data-grid__row:focus {
+    outline: 2px solid var(--emcap-primary);
+    outline-offset: -2px;
+  }
+
   th,
   td {
     white-space: nowrap;
-    padding: 0.55rem 0.75rem;
+    padding: var(--emcap-density-row-padding-y) var(--emcap-density-row-padding-x);
     border-bottom: 1px solid var(--emcap-border);
     font-size: 0.875rem;
   }

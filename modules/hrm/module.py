@@ -79,13 +79,14 @@ MODULE = ModuleDefinition(
     ],
     dashboards=[],
     menus=[
-        MenuDefinition(code="employees", label="Employees", entity_code="EMPLOYEE"),
-        MenuDefinition(code="leave", label="Leave Requests", entity_code="LEAVE_REQUEST"),
+        MenuDefinition(code="employees", label="Employees", entity_code="EMPLOYEE", icon="badge"),
+        MenuDefinition(code="leave", label="Leave Requests", entity_code="LEAVE_REQUEST", icon="event_busy"),
         MenuDefinition(
             code="active_employees",
             label="Active Employees",
             entity_code="EMPLOYEE",
             report_code="ACTIVE_EMPLOYEES",
+            icon="groups",
         ),
     ],
     permissions=["hrm.access"],

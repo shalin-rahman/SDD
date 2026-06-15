@@ -2,6 +2,17 @@ import 'package:emcap_mobile/utils/shell_nav_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('MenuItem.fromJson parses optional icon from menus API', () {
+    final menu = MenuItem.fromJson({
+      'code': 'products',
+      'label': 'Products',
+      'entity_code': 'PRODUCT',
+      'module': 'INVENTORY',
+      'icon': 'inventory_2',
+    });
+    expect(menu.icon, 'inventory_2');
+  });
+
   test('filterMenus hides disabled modules and checks permissions', () {
     final menus = [
       MenuItem(code: 'm1', label: 'Products', entityCode: 'PRODUCT', module: 'inventory', permission: 'product.read'),

@@ -32,7 +32,7 @@ html[data-theme='dark'] .admin-table-scroll,
 html[data-theme='dark'] .permission-matrix__scroll,
 html[data-theme='dark'] .data-grid__scroll,
 html[data-theme='dark'] .section-card {
-  background: #1e1e1e;
+  background: var(--emcap-panel-surface);
 }
 
 html,

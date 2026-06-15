@@ -75,7 +75,7 @@ MODULE = ModuleDefinition(
         )
     ],
     menus=[
-        MenuDefinition(code="customers", label="Customers", entity_code="CUSTOMER"),
+        MenuDefinition(code="customers", label="Customers", entity_code="CUSTOMER", icon="people"),
     ],
     permissions=["demo.access"],
 )

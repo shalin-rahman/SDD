@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../api/emcap_client.dart';
 import '../metadata_contract.dart';
 import '../services/i18n_service.dart';
+import '../theme/app_tokens.dart';
 import '../utils/field_display.dart';
 import '../utils/record_headline.dart';
 import '../utils/workflow_enabled_util.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/document_preview_dialog.dart';
+import '../widgets/emcap_badge.dart';
 import '../widgets/lookup_field.dart';
 
 /// System fields hidden on create — platform injects these on save.
@@ -535,7 +537,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
             title: Text(_appBarTitle(formMeta), overflow: TextOverflow.ellipsis),
           ),
           body: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(context.emcapTokens.spaceMd),
             children: [
               if (_selectedRecordId != null && !_creatingNew) ...[
                 Row(
@@ -545,15 +547,20 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(headlineView.headline, style: Theme.of(context).textTheme.titleMedium),
+                          Text(
+                            headlineView.headline,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: context.emcapTokens.fontTitleMd,
+                                ),
+                          ),
                           if (headlineView.subtitle.isNotEmpty &&
                               headlineView.subtitle != _selectedRecordId)
                             Padding(
-                              padding: const EdgeInsets.only(top: 4),
+                              padding: EdgeInsets.only(top: context.emcapTokens.spaceXs),
                               child: Text(
                                 headlineView.subtitle,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: context.emcapTokens.textMuted,
                                     ),
                               ),
                             ),
@@ -561,10 +568,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       ),
                     ),
                     if (statusLabel.isNotEmpty)
-                      Chip(
-                        label: Text(statusLabel),
-                        backgroundColor: statusActive ? Theme.of(context).colorScheme.primaryContainer : null,
-                      ),
+                      EmcapStatusChip(label: statusLabel, active: statusActive),
                   ],
                 ),
                 Row(

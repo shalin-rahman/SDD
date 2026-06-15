@@ -4,6 +4,7 @@ class MenuItem {
     required this.label,
     required this.entityCode,
     required this.module,
+    this.icon,
     this.permission,
   });
 
@@ -11,6 +12,7 @@ class MenuItem {
   final String label;
   final String entityCode;
   final String module;
+  final String? icon;
   final String? permission;
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class MenuItem {
       label: '${json['label']}',
       entityCode: '${json['entity_code']}',
       module: '${json['module'] ?? 'platform'}',
+      icon: json['icon'] as String?,
       permission: json['permission'] as String?,
     );
   }

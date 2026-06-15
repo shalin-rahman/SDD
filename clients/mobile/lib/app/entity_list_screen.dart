@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../api/emcap_client.dart';
 import '../metadata_contract.dart';
+import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
 import '../utils/field_display.dart';
 import 'entity_record_screen.dart';
@@ -276,6 +277,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
     }
 
     final gridRenderer = DynamicGridRenderer(grid, locale: EmcapLocale.locale.value.languageCode);
+    final tokens = context.emcapTokens;
     var working = gridRenderer.filterRecords(_records, _filters);
     working = gridRenderer.sortRecords(working, _sortField, _sortAsc);
     final totalRecords = working.length;
@@ -298,10 +300,10 @@ class _EntityListScreenState extends State<EntityListScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: tokens.spaceSm),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(tokens.spaceSm),
             children: [
               TextField(
                 controller: _searchController,
@@ -432,7 +434,16 @@ class _EntityListScreenState extends State<EntityListScreen> {
                   widgets.add(
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: DataTable(
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          dataTableTheme: DataTableThemeData(
+                            dataRowMinHeight: tokens.densityRowPaddingY * 2 + tokens.fontBodyMd,
+                            headingRowHeight: tokens.densityHeaderPaddingY * 2 + tokens.fontBodyMd,
+                            horizontalMargin: tokens.densityRowPaddingX,
+                            columnSpacing: tokens.densityRowPaddingX,
+                          ),
+                        ),
+                        child: DataTable(
                         columns: gridRenderer
                             .columnFields()
                             .map((field) => DataColumn(label: Text(gridRenderer.columnLabel(field))))
@@ -461,7 +472,8 @@ class _EntityListScreenState extends State<EntityListScreen> {
                         }).toList(),
                       ),
                     ),
-                  );
+                  ),
+                );
                   return widgets;
                 }),
               ],

@@ -45,3 +45,14 @@ def test_tenant_isolation_with_postgres(client: TestClient) -> None:
         headers={"X-Tenant-ID": "tenant-a"},
     )
     assert len(tenant_a_list.json()["records"]) == 1
+
+
+def test_system_columns_present_after_migrations(client: TestClient) -> None:
+    """P21-T03: CI applies migrate.py up before integration pytest."""
+    from sqlalchemy import inspect
+
+    from emcap.persistence.database import get_engine
+
+    columns = {col["name"] for col in inspect(get_engine()).get_columns("entity_records")}
+    for name in ("created_by", "updated_by", "record_version", "deleted_at"):
+        assert name in columns, f"missing system column {name} on entity_records"

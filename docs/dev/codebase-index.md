@@ -18,6 +18,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | PRODUCT demo runbook | `docs/dev/product-demo-runbook.md` |
 | Inventory product DoD v2 | `docs/modules/inventory-definition-of-done-v2.md` |
 | Design tokens ADR | `spec/sdd/adrs/006-design-tokens-material3.md` |
+| Layout designer ADR | `spec/sdd/adrs/007-layout-designer-metadata-editor.md` |
 | **Doc sync checklist** | `docs/dev/recipes/sync-docs-after-change.md` |
 | **Phase 12 enterprise UI** | `plan/12-enterprise-product-ui.md`, `plan/12-phase12-dod-checklist.md` |
 | **Shared web components** | `clients/web/src/app/shared/README.md` |
@@ -46,6 +47,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Metadata display | `platform/api/src/emcap/metadata/display_schema.py`, `metadata/validation.py`, `metadata/security.py`, `entity/models.py` `StatusFieldDisplay` | Status chip contract; field-level metadata filter (P23-T01) |
 | **Admin API** | `platform/api/src/emcap/admin/`, `api/routes/admin.py` | Users, roles, settings, templates, ABAC + field access overrides |
 | Seed loader | `platform/api/src/emcap/seed/` | JSON seed apply/purge |
+| SQL migrations | `platform/api/migrations/`, `platform/api/scripts/migrate.py` | `001_baseline.sql`, `002_system_columns.sql`; recipe `docs/dev/recipes/apply-pg-migrations.md` |
 | Business modules | `modules/*/module.py` | Features **only** under `modules/`; optional `ENTITY_VALIDATORS` export |
 | Inventory stock movement | `modules/inventory/stock_movement.py`, `modules/inventory/module.py` | W5 `STOCK_MOVEMENT` / `STOCK_MOVEMENT_LINE`; D1–D4 locked in `plan/20` §1.5; `apply_posted_movement()` on draft→posted |
 | Entity validators hook | `platform/api/src/emcap/module/loader.py` `load_entity_validators`, `api/routes/entities.py` | Dispatches module `ENTITY_VALIDATORS` on create/update; optional `context` (repo, registry, record_id) on update for side effects |
@@ -66,9 +68,9 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Web entity | `clients/web/src/app/pages/entity/` | **P15-T15 Done** — `entity-list` (grid) + `entity-record` (form/tabs); routes `/app/entity/:code`, `/new`, `/:recordId` |
 | Web admin (Phase 12+) | `clients/web/src/app/pages/admin/` | Users, roles, **security** (ABAC + field access); master–detail for admin only |
 | Web settings | `clients/web/src/app/pages/settings/` | 4-tab IA; Platform documents + Integrations branding preview (P19-T05/T06) |
-| Menus API | `platform/api/src/emcap/api/routes/menus.py` | Returns `module` per item |
+| Menus API | `platform/api/src/emcap/api/routes/menus.py` | Returns `module` + optional `icon` per item (`MenuDefinition.icon`) |
 | Web legacy (archive) | `clients/web-legacy/` | Read-only reference |
-| Mobile | `clients/mobile/lib/` | Flutter shell; field widgets in `lib/widgets/` (`lookup_field.dart`, `currency_field.dart`) |
+| Mobile | `clients/mobile/lib/` | Flutter shell; theme tokens `lib/theme/app_tokens.dart`; badges `lib/widgets/emcap_badge.dart` |
 | Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; form visible fields from metadata only |
 | Mobile document preview | `clients/mobile/lib/widgets/document_preview_dialog.dart` | P17-T07 load + versions + image/text preview |
 | Config | `config/platform.yaml`, `config/platform-test.yaml` | Feature flags, seed |
@@ -129,7 +131,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `platform/api/tests/test_procurement_sales_entity_fields.py` | P20-T15 W4 SUPPLIER/PO/SO/INVOICE standard profile + lookup CRUD |
 | `platform/api/tests/test_w2_entity_fields.py` | P20-T12 W2 JOURNAL_ENTRY/SALE/LEAVE_REQUEST currency/lookup/enum |
 | `platform/api/tests/test_w3_entity_fields.py` | P20-T14 W3 ACCOUNT/TERMINAL/EMPLOYEE currency/enum/status + CRUD smoke |
-| `platform/api/tests/test_module_report_menus.py` | P18-T05 module report menus in sidenav (`report_code`) |
+| `platform/api/tests/test_module_report_menus.py` | P18-T05 module report menus in sidenav (`report_code`); P18-T07 menu `icon` field contract |
 | `platform/api/tests/test_stock_movement_entities.py` | P20-T17–T19 W5 movement enum, line lookup chain, transfer rules, draft→posted qty_on_hand, `STOCK_MOVEMENT_HISTORY` report |
 | `platform/api/tests/test_seed_loader.py` | JSON seed + demo purge; W5 `stock_movements.json` smoke |
 | `platform/api/tests/fixtures/metadata/{journal_entry,sale,leave_request}.*.json` | W2 business field/column snapshots |
@@ -146,6 +148,9 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/utils/export.util.spec.ts` | CSV export |
 | `platform/api/tests/test_admin_api.py` | Admin users/roles/settings/templates + ABAC + security policies |
 | `platform/api/tests/test_admin_field_access_override.py` | P13-T10/T11 field `read_roles` override API + record/metadata enforcement |
+| `clients/web/src/app/app.routes.spec.ts` | P20-T07 lazy route smoke (entity, notifications, account) |
+| `clients/web/src/app/shared/data/dynamic-data-grid.component.spec.ts` | P15-T30 grid keyboard navigation |
+| `platform/api/tests/test_inventory_product_smoke.py` | P18-T08 WAREHOUSE + STOCK_MOVEMENT product smoke |
 | `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Toolbar title resolution |
 | `clients/web/src/app/shared/utils/document-preview.util.spec.ts` | Document preview mime/version helpers |
 | `clients/web/src/app/shared/documents/document-preview-panel.component.spec.ts` | Document preview panel |
@@ -158,9 +163,24 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/admin/branding-preview-panel.component.spec.ts` | P19-T05 branding preview panel + contrast warning |
 | `clients/web/src/app/shared/utils/document-platform-settings.util.spec.ts` | P19-T06 parse `documents.*` from platform config |
 | `clients/web/src/app/shared/utils/security-platform-settings.util.spec.ts` | P12C-T19 parse security posture from platform config |
-| `clients/web/src/app/pages/admin/admin-users.component.spec.ts` | P19-T02 admin users smoke (empty state, breadcrumbs, `.emcap-badge--on`) |
-| `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + headline/grid contract (no Flutter run) |
-| `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P19-T02 admin roles smoke (empty state + API load) |
+| `clients/web/src/app/testing/a11y.util.ts` | P15-T32 axe-core Karma helper (`runA11yAudit`, component-scope rule exclusions) |
+| `clients/web/src/app/pages/entity/entity-list.a11y.spec.ts` | P15-T32 entity-list axe gate |
+| `clients/web/src/app/pages/settings/settings.a11y.spec.ts` | P15-T32 settings axe gate |
+| `platform/api/tests/test_migrations.py` | P21-T01/P21-T02 migration SQL contract + `migrate.py` smoke |
+| `docs/dev/recipes/apply-pg-migrations.md` | PostgreSQL `migrate.py up` recipe (Docker + manual); CI integration job applies before `pytest -m integration` |
+| `docs/dev/recipes/tenant-isolation-write-test.md` | P19-T07 tenant write isolation runbook (unit + integration + manual steps) |
+| `clients/mobile/lib/theme/app_tokens.dart` | P16-T03 `EmcapThemeTokens` ThemeExtension (ADR-006 web parity) |
+| `clients/mobile/lib/widgets/emcap_badge.dart` | P16-T06 `.emcap-badge` mobile (`EmcapBadge`, `EmcapStatusChip`) |
+| `clients/mobile/test/theme_tokens_test.dart` | P16-T03/P16-T06 token key + density contract |
+| `clients/mobile/test/emcap_badge_test.dart` | P16-T06 badge/chip variant contract |
+| `clients/mobile/test/entity_record_hero_test.dart` | P15-T13/P20-T03 M2 PRODUCT detail hero widget contract |
+| `clients/mobile/test/emcap_client_contract_test.dart` | P20-T04 full `EmcapClient` method contract (mirrors web `REQUIRED_METHODS`) |
+| `clients/mobile/test/mobile_sse_grid_test.dart` | P15-T14 SSE grid realtime + `GridMetadata.realtime`/`offline`/`grouping` contract (6 tests) |
+| `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + hero/grid contract tests |
+| `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P19-T02 admin roles smoke (empty state + API load); P16-T09 breadcrumb spec |
+| `clients/web/src/app/pages/admin/admin-security.component.spec.ts` | P19-T03 admin security field matrix; P16-T09 breadcrumb spec |
+| `clients/web/src/app/pages/admin/admin-permissions.component.spec.ts` | P16-T09 admin permissions breadcrumb spec |
+| `clients/web/src/app/shared/navigation/sidenav-nav.component.spec.ts` | P18-T07 sidenav Material icon rendering + fallback |
 | `clients/web/src/app/shared/forms/lookup-field.component.spec.ts` | P14-T24 lookup picker |
 | `clients/web/src/app/shared/forms/currency-field.component.spec.ts` | P14-T24 currency input |
 | `clients/web/src/app/shared/utils/field-display.util.spec.ts` | Currency/textarea formatters |
@@ -184,8 +204,6 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/lib/utils/document_platform_settings_util.dart` | P19-T06 parse `documents.*` from GET `/config/platform` |
 | `clients/mobile/lib/utils/security_platform_settings_util.dart` | P12C-T19 parse security posture from GET `/config/platform` |
 | `clients/mobile/test/document_platform_settings_util_test.dart` | P19-T06 document platform settings defaults + config parse |
-| `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + hero/grid contract tests |
-| `clients/mobile/test/security_platform_settings_util_test.dart` | P12C-T19 security platform settings defaults + ABAC count |
 | `clients/web/src/app/shared/utils/field-security.util.spec.ts` | P23-T02 secured visible field names |
 | `clients/mobile/test/admin_field_access_client_test.dart` | P21-T06 mobile `updateAdminFieldAccess` contract |
 | `clients/web/src/app/pages/entity/entity-list.component.spec.ts` | P15-T15 list route loads grid |
@@ -196,7 +214,9 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/lib/utils/workflow_detail_util.dart` | P17-T02 labeled detail entries + action labels |
 | `clients/mobile/lib/widgets/document_preview_dialog.dart` | P17-T07 document preview dialog (load, versions, image/text) |
 | `clients/mobile/integration_test/m2_product_detail_test.dart` | M2 PRODUCT detail screenshot skeleton (P15-T13) |
-| `clients/mobile/test/shell_nav_util_test.dart` | Module nav filter/group + admin links |
+| `clients/mobile/lib/utils/material_icon_util.dart` | P18-T07 maps GET `/menus` icon ligatures to `IconData` |
+| `clients/mobile/test/material_icon_util_test.dart` | P18-T07 icon name resolution + fallback contract |
+| `clients/mobile/test/shell_nav_util_test.dart` | Module nav filter/group + admin links + `MenuItem.icon` parse |
 | `clients/mobile/test/preferences_service_test.dart` | Theme/locale persistence keys |
 
 ---

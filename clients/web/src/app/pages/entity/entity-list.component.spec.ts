@@ -30,15 +30,21 @@ describe('EntityListComponent', () => {
             client: {
               listRecords,
               getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
-                schema_version: 1,
+                schema_version: '1',
                 entity_code: 'PRODUCT',
-                sections: [{ code: 'main', fields: [] }],
+                sections: [{ code: 'main', label: 'Main', fields: [] }],
+                conditions: [],
               }),
               getGridMetadata: jasmine.createSpy('getGridMetadata').and.resolveTo({
-                schema_version: 1,
+                schema_version: '1',
                 entity_code: 'PRODUCT',
-                columns: [{ field: 'sku', label: 'SKU' }],
+                columns: [
+                  { field: 'sku', label: 'SKU', sortable: true, filterable: true },
+                ],
                 export: { csv: false, excel: false, pdf: false },
+                grouping: false,
+                realtime: false,
+                offline: false,
               }),
               syncSnapshot: jasmine.createSpy('syncSnapshot').and.resolveTo({ sync_version: '1' }),
               getMenus: jasmine.createSpy('getMenus').and.resolveTo({

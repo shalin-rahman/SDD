@@ -38,14 +38,45 @@
 
   --emcap-duration-short: 150ms;
   --emcap-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  --emcap-panel-surface: #ffffff;
+  --emcap-density-row-padding-y: 0.55rem;
+  --emcap-density-row-padding-x: 0.75rem;
+  --emcap-density-header-padding-y: 0.65rem;
+
+  --emcap-badge-success-bg: #e6f4ea;
+  --emcap-badge-success-fg: #137333;
+  --emcap-badge-warn-bg: #fef7e0;
+  --emcap-badge-warn-fg: #b06000;
+  --emcap-badge-error-bg: #fce8e6;
+  --emcap-badge-error-fg: #c5221f;
 }
 
 html[data-theme='dark'] {
+  --emcap-primary: #8ab4f8;
   --emcap-border: #3a3a3a;
   --emcap-surface: #121212;
   --emcap-text: #f5f5f5;
-  --emcap-text-muted: #9aa0a6;
+  --emcap-text-muted: #b0b6bc;
   --emcap-color-surface-container: #2a2a2a;
+  --emcap-panel-surface: #1e1e1e;
+  --emcap-color-success: #81c995;
+  --emcap-color-error: #f28b82;
+
+  --emcap-badge-success-bg: color-mix(in srgb, var(--emcap-color-success) 18%, var(--emcap-panel-surface));
+  --emcap-badge-success-fg: #b7e1c1;
+  --emcap-badge-warn-bg: color-mix(in srgb, #f9ab00 18%, var(--emcap-panel-surface));
+  --emcap-badge-warn-fg: #fdd663;
+  --emcap-badge-error-bg: color-mix(in srgb, var(--emcap-color-error) 18%, var(--emcap-panel-surface));
+  --emcap-badge-error-fg: #f9dedc;
+}
+
+html[data-density='compact'] {
+  --emcap-density-row-padding-y: 0.35rem;
+  --emcap-density-row-padding-x: 0.5rem;
+  --emcap-density-header-padding-y: 0.45rem;
+  --emcap-space-md: 0.75rem;
+  --emcap-space-lg: 1.125rem;
 }
 
 .emcap-badge {

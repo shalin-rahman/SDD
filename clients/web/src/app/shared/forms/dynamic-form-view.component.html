@@ -8,13 +8,14 @@
         @for (field of sectionFields(section.code); track field.name) {
           @if (formRenderer.isVisible(field.name, formValues)) {
             <div class="dynamic-form__field" [ngStyle]="formRenderer.layoutStyle(field)">
-              <label class="dynamic-form__label">{{ formRenderer.label(field.name) }}</label>
+              <label class="dynamic-form__label" [attr.id]="'label-' + field.name">{{ formRenderer.label(field.name) }}</label>
               @if (formRenderer.isReadOnly(field.name)) {
-                <span class="dynamic-form__readonly">{{ displayValue(field, formValues[field.name]) }}</span>
+                <span class="dynamic-form__readonly" [attr.aria-labelledby]="'label-' + field.name">{{ displayValue(field, formValues[field.name]) }}</span>
               } @else if (field.field_type === 'select') {
                 <select
                   class="dynamic-form__input"
                   [name]="field.name"
+                  [attr.aria-label]="formRenderer.label(field.name)"
                   [required]="formRenderer.isRequired(field.name)"
                   [ngModel]="formValues[field.name]"
                   (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
@@ -42,6 +43,7 @@
                 <textarea
                   class="dynamic-form__textarea"
                   [name]="field.name"
+                  [attr.aria-label]="formRenderer.label(field.name)"
                   rows="4"
                   [required]="formRenderer.isRequired(field.name)"
                   [ngModel]="formValues[field.name]"
@@ -52,6 +54,7 @@
                   class="dynamic-form__input"
                   [type]="inputType(field)"
                   [name]="field.name"
+                  [attr.aria-label]="formRenderer.label(field.name)"
                   [required]="formRenderer.isRequired(field.name)"
                   [ngModel]="formValues[field.name]"
                   (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
@@ -60,6 +63,7 @@
                 <input
                   type="checkbox"
                   [name]="field.name"
+                  [attr.aria-label]="formRenderer.label(field.name)"
                   [ngModel]="formValues[field.name]"
                   (ngModelChange)="fieldChange.emit({ name: field.name, value: $event })"
                 />

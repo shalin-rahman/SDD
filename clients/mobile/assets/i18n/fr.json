@@ -243,6 +243,8 @@
   "platform.account.paymentsDisabled": "Paiements désactivés dans la config plateforme.",
   "platform.account.checkInventory": "Vérifier inventory.access",
   "platform.account.paymentConfirmed": "Paiement confirmé",
+  "platform.account.densityCompact": "Densité compacte",
+  "platform.account.densityComfortable": "Densité confortable",
   "platform.reports.title": "Rapports",
   "platform.reports.noReports": "Aucun rapport enregistré.",
   "platform.reports.loadFailed": "Échec du chargement des rapports",

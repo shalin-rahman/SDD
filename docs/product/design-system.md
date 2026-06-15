@@ -24,11 +24,35 @@ Product-facing UI follows **Material Design 3** tokens (spacing, color roles, ty
 
 | Token group | Web | Mobile | Notes |
 |-------------|-----|--------|-------|
-| Color roles | `styles/_tokens.scss` (planned) | `theme_tokens.dart` (planned) | Light + dark |
+| Color roles | `styles/_tokens.scss` | `lib/theme/app_tokens.dart` (`EmcapThemeTokens`) | Light + dark via `html[data-theme]` / `ThemeMode` |
 | Spacing scale | 4px grid | Same scale names | Comfortable default |
+| Density | `html[data-density]` compact override | `EmcapThemeTokens.compact*` density row padding | Grid row padding tokens |
 | Typography | M3 type scale | M3 type scale | Hero = `title-lg` |
 | Shape / radius | Card, chip, button | Matching `BorderRadius` | |
 | Elevation | Cards, sidenav | `Material` elevation | |
+
+### Dark mode contrast audit (P16-T08)
+
+WCAG 2.2 AA target: **≥4.5:1** body text on surface; **≥3:1** large text / UI chrome.
+
+| Pair | Light | Dark (after audit) | Notes |
+|------|-------|-------------------|-------|
+| Body `--emcap-text` on `--emcap-surface` | Pass | Pass (`#f5f5f5` / `#121212`) | |
+| Muted `--emcap-text-muted` on surface | Pass | Pass (`#b0b6bc` / `#121212`) | Bumped from `#9aa0a6` |
+| Primary badge on surface | Pass | Pass | Dark uses `#8ab4f8` primary |
+| Success/warn/error badges | Pass | Pass | Tokenized `--emcap-badge-*` with dark overrides |
+| Panel cards on dark shell | — | Pass | `--emcap-panel-surface` replaces hardcoded `#1e1e1e` |
+
+Fix pattern: semantic tokens in `_tokens.scss`; components reference tokens only (no per-page hex in dark surfaces).
+
+### Density (P16-T07)
+
+| Mode | Attribute | Grid row padding |
+|------|-----------|------------------|
+| Comfortable (default) | — | `0.55rem` × `0.75rem` |
+| Compact | `html[data-density=compact]` | `0.35rem` × `0.5rem` |
+
+Toggle: Account → Preferences (`ThemeService.toggleDensity`). Persisted in `localStorage` key `emcap-density`.
 
 ---
 
@@ -57,12 +81,12 @@ Product-facing UI follows **Material Design 3** tokens (spacing, color roles, ty
 
 | Component | Web | Use |
 |-----------|-----|-----|
-| Dynamic data grid | `app-dynamic-data-grid` | Metadata columns, search, export |
+| Dynamic data grid | `app-dynamic-data-grid` | Metadata columns, search, export, **keyboard nav** (ArrowUp/Down, Enter) |
 | Record detail header | `app-record-detail-header` | SKU — Name hero, status chip, actions |
 | Record tabs | `app-record-tabs` | Notes, documents, audit |
-| Status chip | `.emcap-badge` (`--on` / `--off` / `--warn`) | `record-detail-header`, admin users, settings platform cards (P16-T05) |
+| Status chip | `.emcap-badge` (`--on` / `--off` / `--warn` / `--muted`) | `EmcapBadge` / `EmcapStatusChip` | record header, admin users, settings platform cards, **template variable buttons** (P16-T05) |
 
-**Grid behaviors:** zebra rows, sticky header, datetime formatting (`field-display.util.ts`).
+**Grid behaviors:** zebra rows, sticky header, datetime formatting, **WCAG keyboard row focus** (P15-T30).
 
 ---
 
@@ -70,7 +94,7 @@ Product-facing UI follows **Material Design 3** tokens (spacing, color roles, ty
 
 | Component | Web | Use |
 |-----------|-----|-----|
-| Dynamic form view | `app-dynamic-form-view` | Section cards, read-only system fields |
+| Dynamic form view | `app-dynamic-form-view` | Section cards, read-only system fields, **`aria-label` on inputs** (P15-T31) |
 | Field renderers | `dynamic-form.renderer.ts` | STRING, NUMBER, BOOLEAN, DATE, ENUM*, LOOKUP* |
 
 \* ENUM / LOOKUP renderers — Phase 14B (pending).
@@ -121,4 +145,7 @@ Product-ready checklist: `plan/16-product-ready-dod.md`
 
 | Date | Change |
 |------|--------|
+| 2026-06-15 | P16-T06 mobile density toggle (shell app bar); settings/entity-list `EmcapThemeTokens`; `DataTableTheme` row padding |
+| 2026-06-15 | P16-T03 Flutter `EmcapThemeTokens` ThemeExtension; P16-T06 `EmcapBadge`/`EmcapStatusChip` mobile parity |
+| 2026-06-15 | P16-T07 density toggle (Account + `data-density` tokens); P16-T08 dark contrast audit table + token fixes |
 | 2026-06-13 | Initial catalog stub (P16-T04) — maps existing shared components; tokens TBD |

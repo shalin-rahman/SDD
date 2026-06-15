@@ -68,9 +68,11 @@ MODULE = ModuleDefinition(
     ],
     dashboards=[],
     menus=[
-        MenuDefinition(code="sales", label="Sales", entity_code="SALE"),
-        MenuDefinition(code="terminals", label="Terminals", entity_code="TERMINAL"),
-        MenuDefinition(code="daily_sales", label="Daily Sales Report", entity_code="SALE", report_code="DAILY_SALES"),
+        MenuDefinition(code="sales", label="Sales", entity_code="SALE", icon="point_of_sale"),
+        MenuDefinition(code="terminals", label="Terminals", entity_code="TERMINAL", icon="devices"),
+        MenuDefinition(
+            code="daily_sales", label="Daily Sales Report", entity_code="SALE", report_code="DAILY_SALES", icon="today"
+        ),
     ],
     permissions=["pos.access"],
 )

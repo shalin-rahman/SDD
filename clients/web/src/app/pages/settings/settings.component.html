@@ -481,11 +481,15 @@
                   </button>
                 </div>
                 <p class="settings-hint">{{ i18n.t('settings.templates.variablesHint') }}</p>
-                <mat-chip-set class="settings-template-vars" aria-label="Template variables">
+                <div class="settings-template-vars" role="group" [attr.aria-label]="i18n.t('settings.templates.variablesAria')">
                   @for (variable of templateVariables; track variable) {
-                    <mat-chip (click)="insertTemplateVariable(variable)">{{ variable }}</mat-chip>
+                    <button
+                      type="button"
+                      class="emcap-badge emcap-badge--muted settings-template-var"
+                      (click)="insertTemplateVariable(variable)"
+                    >{{ variable }}</button>
                   }
-                </mat-chip-set>
+                </div>
                 <div class="admin-form-grid">
                   @if (!selectedTemplate) {
                     <mat-form-field appearance="outline">

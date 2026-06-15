@@ -39,7 +39,13 @@
     />
   } @else {
   <div class="data-grid__scroll">
-    <table class="data-grid__table">
+    <table
+      #dataTable
+      class="data-grid__table"
+      role="grid"
+      [attr.aria-label]="i18n.t('grid.tableLabel')"
+      (keydown)="handleGridKeydown($event)"
+    >
       <tr>
         @for (field of columnFields; track field) {
           <th
@@ -71,8 +77,13 @@
         }
         @for (record of group.records; track recordId(record)) {
           <tr
+            class="data-grid__row"
             [class.row-selected]="selectedRecordId === recordId(record)"
+            [class.row-focused]="focusedRowIndex === flatRowIndex(record)"
             [style.cursor]="recordId(record) ? 'pointer' : 'default'"
+            [attr.tabindex]="rowTabIndex(flatRowIndex(record))"
+            [attr.aria-label]="rowAriaLabel(record)"
+            (focus)="onRowFocus(flatRowIndex(record))"
             (click)="recordSelect.emit(record)"
           >
             @for (field of columnFields; track field) {

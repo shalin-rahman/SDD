@@ -2,22 +2,8 @@ import { Routes } from '@angular/router';
 
 import { adminGuard, settingsGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
-import { AdminPermissionsComponent } from './pages/admin/admin-permissions.component';
-import { AdminRolesComponent } from './pages/admin/admin-roles.component';
-import { AdminSecurityComponent } from './pages/admin/admin-security.component';
-import { AdminUsersComponent } from './pages/admin/admin-users.component';
-import { AccountComponent } from './pages/account/account.component';
-import { AssistantComponent } from './pages/assistant/assistant.component';
-import { DashboardsComponent } from './pages/dashboards/dashboards.component';
-import { EntityListComponent } from './pages/entity/entity-list.component';
-import { EntityRecordComponent } from './pages/entity/entity-record.component';
 import { LoginComponent } from './pages/login/login.component';
-import { NotificationsComponent } from './pages/notifications/notifications.component';
-import { ReportsComponent } from './pages/reports/reports.component';
-import { RuleEvaluateComponent } from './pages/settings/rule-evaluate.component';
-import { SettingsComponent } from './pages/settings/settings.component';
 import { ShellComponent } from './pages/shell/shell.component';
-import { WorkflowComponent } from './pages/workflow/workflow.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -26,32 +12,90 @@ export const routes: Routes = [
     component: ShellComponent,
     canActivate: [authGuard],
     children: [
-      { path: 'workflow', component: WorkflowComponent },
-      { path: 'reports', component: ReportsComponent },
-      { path: 'dashboards', component: DashboardsComponent },
-      { path: 'notifications', component: NotificationsComponent },
-      { path: 'account', component: AccountComponent },
-      { path: 'assistant', component: AssistantComponent },
-      { path: 'settings', component: SettingsComponent, canActivate: [settingsGuard] },
+      {
+        path: 'workflow',
+        loadComponent: () =>
+          import('./pages/workflow/workflow.component').then((m) => m.WorkflowComponent),
+      },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./pages/reports/reports.component').then((m) => m.ReportsComponent),
+      },
+      {
+        path: 'dashboards',
+        loadComponent: () =>
+          import('./pages/dashboards/dashboards.component').then((m) => m.DashboardsComponent),
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./pages/notifications/notifications.component').then((m) => m.NotificationsComponent),
+      },
+      {
+        path: 'account',
+        loadComponent: () =>
+          import('./pages/account/account.component').then((m) => m.AccountComponent),
+      },
+      {
+        path: 'assistant',
+        loadComponent: () =>
+          import('./pages/assistant/assistant.component').then((m) => m.AssistantComponent),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/settings/settings.component').then((m) => m.SettingsComponent),
+        canActivate: [settingsGuard],
+      },
       {
         path: 'settings/rules',
-        component: RuleEvaluateComponent,
+        loadComponent: () =>
+          import('./pages/settings/rule-evaluate.component').then((m) => m.RuleEvaluateComponent),
         canActivate: [settingsGuard],
       },
       {
         path: 'admin',
         canActivate: [adminGuard],
         children: [
-          { path: 'users', component: AdminUsersComponent },
-          { path: 'roles', component: AdminRolesComponent },
-          { path: 'permissions', component: AdminPermissionsComponent },
-          { path: 'security', component: AdminSecurityComponent },
+          {
+            path: 'users',
+            loadComponent: () =>
+              import('./pages/admin/admin-users.component').then((m) => m.AdminUsersComponent),
+          },
+          {
+            path: 'roles',
+            loadComponent: () =>
+              import('./pages/admin/admin-roles.component').then((m) => m.AdminRolesComponent),
+          },
+          {
+            path: 'permissions',
+            loadComponent: () =>
+              import('./pages/admin/admin-permissions.component').then((m) => m.AdminPermissionsComponent),
+          },
+          {
+            path: 'security',
+            loadComponent: () =>
+              import('./pages/admin/admin-security.component').then((m) => m.AdminSecurityComponent),
+          },
           { path: '', redirectTo: 'users', pathMatch: 'full' },
         ],
       },
-      { path: 'entity/:code/new', component: EntityRecordComponent },
-      { path: 'entity/:code/:recordId', component: EntityRecordComponent },
-      { path: 'entity/:code', component: EntityListComponent },
+      {
+        path: 'entity/:code/new',
+        loadComponent: () =>
+          import('./pages/entity/entity-record.component').then((m) => m.EntityRecordComponent),
+      },
+      {
+        path: 'entity/:code/:recordId',
+        loadComponent: () =>
+          import('./pages/entity/entity-record.component').then((m) => m.EntityRecordComponent),
+      },
+      {
+        path: 'entity/:code',
+        loadComponent: () =>
+          import('./pages/entity/entity-list.component').then((m) => m.EntityListComponent),
+      },
     ],
   },
 ];

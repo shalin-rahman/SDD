@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
 import '../theme.dart';
+import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
+import '../utils/material_icon_util.dart';
 import '../utils/shell_nav_util.dart';
 import 'account_screen.dart';
 import 'admin_permissions_screen.dart';
@@ -111,7 +113,7 @@ class _EmcapShellState extends State<EmcapShell> {
           _ShellNavEntry(
             key: 'entity:${menu.entityCode}',
             label: menu.label,
-            icon: Icons.folder,
+            icon: iconFromMaterialName(menu.icon),
             groupLabel: group.moduleLabel,
           ),
         );
@@ -210,6 +212,7 @@ class _EmcapShellState extends State<EmcapShell> {
   }
 
   List<Widget> _navTiles({required bool rail}) {
+    final tokens = context.emcapTokens;
     final tiles = <Widget>[];
     String? currentGroup;
     for (final entry in _entries) {
@@ -217,7 +220,12 @@ class _EmcapShellState extends State<EmcapShell> {
         currentGroup = entry.groupLabel;
         tiles.add(
           Padding(
-            padding: EdgeInsets.fromLTRB(rail ? 12 : 16, 12, 8, 4),
+            padding: EdgeInsets.fromLTRB(
+              rail ? tokens.spaceSm + 4 : tokens.spaceMd,
+              tokens.spaceSm + 4,
+              tokens.spaceSm,
+              tokens.spaceXs,
+            ),
             child: Text(
               currentGroup!,
               style: Theme.of(context).textTheme.labelSmall,
@@ -259,6 +267,7 @@ class _EmcapShellState extends State<EmcapShell> {
   }
 
   Widget _rail() {
+    final tokens = context.emcapTokens;
     final slots = buildRailNavSlots(
       _entries
           .map(
@@ -277,12 +286,17 @@ class _EmcapShellState extends State<EmcapShell> {
           border: Border(right: BorderSide(color: Theme.of(context).dividerColor)),
         ),
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: tokens.spaceSm),
           children: [
             for (final slot in slots)
               if (slot.isHeader)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
+                  padding: EdgeInsets.fromLTRB(
+                    tokens.spaceXs,
+                    tokens.spaceSm + 4,
+                    tokens.spaceXs,
+                    tokens.spaceXs,
+                  ),
                   child: Text(
                     slot.headerLabel!,
                     textAlign: TextAlign.center,
@@ -352,6 +366,18 @@ class _EmcapShellState extends State<EmcapShell> {
                   );
                 },
               ),
+              ValueListenableBuilder<bool>(
+                valueListenable: EmcapTheme.compactDensity,
+                builder: (context, compact, _) {
+                  return IconButton(
+                    tooltip: compact
+                        ? EmcapLocale.t('platform.account.densityComfortable')
+                        : EmcapLocale.t('platform.account.densityCompact'),
+                    icon: Icon(compact ? Icons.density_small : Icons.density_medium),
+                    onPressed: EmcapTheme.toggleCompactDensity,
+                  );
+                },
+              ),
             ],
           ),
           body: Row(
@@ -364,7 +390,10 @@ class _EmcapShellState extends State<EmcapShell> {
                     Material(
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.emcapTokens.spaceSm + 4,
+                          vertical: context.emcapTokens.spaceXs + 2,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
@@ -393,7 +422,7 @@ class _EmcapShellState extends State<EmcapShell> {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(context.emcapTokens.spaceSm + 4),
                         child: _bodyForSelection(),
                       ),
                     ),
@@ -460,7 +489,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('EMCAP Mobile')),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(context.emcapTokens.spaceLg),
         child: Column(
           children: [
             TextField(controller: _username, decoration: const InputDecoration(labelText: 'Username')),

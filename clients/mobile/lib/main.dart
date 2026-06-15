@@ -31,22 +31,35 @@ class EmcapApp extends StatelessWidget {
         return ValueListenableBuilder<ThemeMode>(
           valueListenable: EmcapTheme.themeMode,
           builder: (context, mode, _) {
-            return ValueListenableBuilder<Locale>(
-              valueListenable: EmcapLocale.locale,
-              builder: (context, locale, _) {
-                return MaterialApp(
-                  title: 'EMCAP Mobile',
-                  theme: ThemeData(colorSchemeSeed: seed, useMaterial3: true, brightness: Brightness.light),
-                  darkTheme: ThemeData(colorSchemeSeed: seed, useMaterial3: true, brightness: Brightness.dark),
-                  themeMode: mode,
-                  locale: locale,
-                  supportedLocales: EmcapLocale.supported,
-                  localizationsDelegates: const [
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  home: LoginScreen(client: client),
+            return ValueListenableBuilder<bool>(
+              valueListenable: EmcapTheme.compactDensity,
+              builder: (context, compact, _) {
+                return ValueListenableBuilder<Locale>(
+                  valueListenable: EmcapLocale.locale,
+                  builder: (context, locale, _) {
+                    return MaterialApp(
+                      title: 'EMCAP Mobile',
+                      theme: EmcapTheme.buildThemeData(
+                        seed: seed,
+                        brightness: Brightness.light,
+                        compact: compact,
+                      ),
+                      darkTheme: EmcapTheme.buildThemeData(
+                        seed: seed,
+                        brightness: Brightness.dark,
+                        compact: compact,
+                      ),
+                      themeMode: mode,
+                      locale: locale,
+                      supportedLocales: EmcapLocale.supported,
+                      localizationsDelegates: const [
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      home: LoginScreen(client: client),
+                    );
+                  },
                 );
               },
             );

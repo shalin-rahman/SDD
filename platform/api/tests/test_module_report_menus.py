@@ -46,3 +46,19 @@ def test_procurement_sales_accounting_pos_hrm_report_menus():
     assert _report_menu("ACCOUNTING", "ACCOUNT_BALANCES") is not None
     assert _report_menu("POS", "DAILY_SALES") is not None
     assert _report_menu("HRM", "ACTIVE_EMPLOYEES") is not None
+
+
+def test_menus_include_material_icons():
+    menus = client.get("/api/v1/menus").json()["menus"]
+    products = next(m for m in menus if m["module"] == "INVENTORY" and m["code"] == "products")
+    leads = next(m for m in menus if m["module"] == "CRM" and m["code"] == "leads")
+    assert products["icon"] == "inventory_2"
+    assert leads["icon"] == "person_search"
+
+
+def test_all_module_menus_expose_icon_field():
+    menus = client.get("/api/v1/menus").json()["menus"]
+    assert menus, "expected at least one menu item"
+    for menu in menus:
+        assert "icon" in menu, f"menu {menu['module']}/{menu['code']} missing icon"
+        assert menu["icon"], f"menu {menu['module']}/{menu['code']} has empty icon"

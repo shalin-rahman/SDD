@@ -272,21 +272,27 @@ MODULE = ModuleDefinition(
         )
     ],
     menus=[
-        MenuDefinition(code="products", label="Products", entity_code="PRODUCT"),
-        MenuDefinition(code="warehouses", label="Warehouses", entity_code="WAREHOUSE"),
-        MenuDefinition(code="stock_movements", label="Stock Movements", entity_code="STOCK_MOVEMENT"),
-        MenuDefinition(code="low_stock", label="Low Stock Report", entity_code="PRODUCT", report_code="LOW_STOCK"),
+        MenuDefinition(code="products", label="Products", entity_code="PRODUCT", icon="inventory_2"),
+        MenuDefinition(code="warehouses", label="Warehouses", entity_code="WAREHOUSE", icon="warehouse"),
+        MenuDefinition(
+            code="stock_movements", label="Stock Movements", entity_code="STOCK_MOVEMENT", icon="swap_horiz"
+        ),
+        MenuDefinition(
+            code="low_stock", label="Low Stock Report", entity_code="PRODUCT", report_code="LOW_STOCK", icon="warning"
+        ),
         MenuDefinition(
             code="inventory_valuation",
             label="Inventory Valuation",
             entity_code="PRODUCT",
             report_code="INVENTORY_VALUATION",
+            icon="assessment",
         ),
         MenuDefinition(
             code="stock_movement_history",
             label="Movement History",
             entity_code="STOCK_MOVEMENT",
             report_code="STOCK_MOVEMENT_HISTORY",
+            icon="history",
         ),
     ],
     permissions=["inventory.access"],

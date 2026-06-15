@@ -126,18 +126,18 @@
   font-weight: 600;
 
   &--ok {
-    background: #e6f4ea;
-    color: #137333;
+    background: var(--emcap-badge-success-bg);
+    color: var(--emcap-badge-success-fg);
   }
 
   &--warning {
-    background: #fef7e0;
-    color: #b06000;
+    background: var(--emcap-badge-warn-bg);
+    color: var(--emcap-badge-warn-fg);
   }
 
   &--overdue {
-    background: #fce8e6;
-    color: #c5221f;
+    background: var(--emcap-badge-error-bg);
+    color: var(--emcap-badge-error-fg);
   }
 }
 

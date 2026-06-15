@@ -125,6 +125,10 @@ class EmcapClient {
     return List<Map<String, dynamic>>.from(body['runs'] as List);
   }
 
+  Future<Map<String, dynamic>> getReportRun(String runId) async {
+    return _request('GET', '/api/v1/reports/runs/$runId');
+  }
+
   Future<Map<String, dynamic>> getDocument(String documentId) async {
     return _request('GET', '/api/v1/documents/$documentId');
   }

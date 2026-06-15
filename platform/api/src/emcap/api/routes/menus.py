@@ -17,6 +17,8 @@ def list_menus(request: Request) -> dict[str, Any]:
                 "entity_code": menu.entity_code,
                 "permission": menu.permission,
             }
+            if menu.icon:
+                entry["icon"] = menu.icon
             if menu.report_code:
                 entry["report_code"] = menu.report_code
             menus.append(entry)

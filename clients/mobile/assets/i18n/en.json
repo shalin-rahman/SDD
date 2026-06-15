@@ -244,6 +244,8 @@
   "platform.account.paymentsDisabled": "Payments disabled in platform config.",
   "platform.account.checkInventory": "Check inventory.access",
   "platform.account.paymentConfirmed": "Payment confirmed",
+  "platform.account.densityCompact": "Compact density",
+  "platform.account.densityComfortable": "Comfortable density",
   "platform.reports.title": "Reports",
   "platform.reports.noReports": "No reports registered.",
   "platform.reports.loadFailed": "Failed to load reports",

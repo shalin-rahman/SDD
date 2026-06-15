@@ -92,5 +92,14 @@ describe('AdminRolesComponent', () => {
 
   });
 
+  it('renders admin breadcrumbs', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.page-header__breadcrumbs')?.textContent).toContain('Admin');
+  });
+
 });
 

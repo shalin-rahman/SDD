@@ -51,7 +51,8 @@ curl.exe http://localhost:8000/api/v1/health
 cd clients\mobile
 flutter pub get
 flutter analyze
-flutter test test\metadata_contract_test.dart
+flutter test test\theme_tokens_test.dart test\emcap_badge_test.dart test\entity_record_hero_test.dart
+flutter test test\metadata_contract_test.dart test\crm_entity_contract_test.dart
 ```
 
 Full suite:

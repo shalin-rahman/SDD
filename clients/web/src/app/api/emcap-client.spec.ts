@@ -77,6 +77,9 @@ const REQUIRED_METHODS = [
   'getAdminSecurityPolicies',
   'getAdminAbacPolicies',
   'updateAdminAbacPolicies',
+  'getAdminIntegrations',
+  'updateAdminIntegrations',
+  'testAdminRestIntegration',
   'updateAdminFieldAccess',
 ] as const;
 

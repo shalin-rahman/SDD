@@ -16,6 +16,22 @@ describe('ThemeService', () => {
     expect(service.mode()).toBe('light');
   });
 
+  it('persists and applies density mode', () => {
+    localStorage.clear();
+    const service = new ThemeService();
+    service.init();
+    expect(service.density()).toBe('comfortable');
+    expect(document.documentElement.dataset['density']).toBe('comfortable');
+
+    service.applyDensity('compact');
+    expect(service.density()).toBe('compact');
+    expect(document.documentElement.dataset['density']).toBe('compact');
+    expect(localStorage.getItem('emcap-density')).toBe('compact');
+
+    service.toggleDensity();
+    expect(service.density()).toBe('comfortable');
+  });
+
   it('applies tenant primary CSS variable', () => {
     const service = new ThemeService();
     service.applyTenantPrimary('#aabbcc');

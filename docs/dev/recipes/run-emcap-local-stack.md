@@ -38,6 +38,8 @@ Run **directly** in terminal — do not pipe (`| Select-Object`) batch output.
 | Web | http://localhost:4200 |
 | Login | `admin` / `admin123` |
 
+**PostgreSQL migrations (Docker mode):** after stack is up, run `docs/dev/recipes/apply-pg-migrations.md` (`python scripts/migrate.py up` with `DATABASE_URL` set).
+
 ## Logs
 
 | Output | Location |

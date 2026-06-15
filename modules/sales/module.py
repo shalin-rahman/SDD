@@ -125,19 +125,21 @@ MODULE = ModuleDefinition(
     ],
     dashboards=[],
     menus=[
-        MenuDefinition(code="sales_orders", label="Sales Orders", entity_code="SALES_ORDER"),
-        MenuDefinition(code="invoices", label="Invoices", entity_code="INVOICE"),
+        MenuDefinition(code="sales_orders", label="Sales Orders", entity_code="SALES_ORDER", icon="receipt_long"),
+        MenuDefinition(code="invoices", label="Invoices", entity_code="INVOICE", icon="request_quote"),
         MenuDefinition(
             code="open_sales_orders",
             label="Open Orders Report",
             entity_code="SALES_ORDER",
             report_code="OPEN_SALES_ORDERS",
+            icon="pending_actions",
         ),
         MenuDefinition(
             code="outstanding_invoices",
             label="Outstanding Invoices",
             entity_code="INVOICE",
             report_code="OUTSTANDING_INVOICES",
+            icon="account_balance_wallet",
         ),
     ],
     permissions=["sales.access"],

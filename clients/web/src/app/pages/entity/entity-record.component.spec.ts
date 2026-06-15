@@ -13,9 +13,10 @@ describe('EntityRecordComponent', () => {
 
   beforeEach(async () => {
     getFormMetadata = jasmine.createSpy('getFormMetadata').and.resolveTo({
-      schema_version: 1,
+      schema_version: '1',
       entity_code: 'PRODUCT',
-      sections: [{ code: 'main', fields: [] }],
+      sections: [{ code: 'main', label: 'Main', fields: [] }],
+      conditions: [],
     });
     const paramMap$ = new BehaviorSubject(
       convertToParamMap({ code: 'PRODUCT', recordId: 'new' }),
