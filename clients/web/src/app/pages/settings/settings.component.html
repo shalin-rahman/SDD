@@ -9,6 +9,12 @@
 @if (status) {
   <p class="status">{{ status }}</p>
 }
+@if (reloadHint) {
+  <p class="settings-hint">{{ reloadHint }}</p>
+}
+@if (moduleEffectiveSummary) {
+  <p class="settings-hint">{{ moduleEffectiveSummary }}</p>
+}
 
 <mat-tab-group class="settings-tabs">
   <mat-tab [label]="i18n.t('settings.domains.modules')">
@@ -17,7 +23,11 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.modules') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="moduleItems()" (itemChange)="onModuleChange($event)" />
+        <app-settings-toggle-group
+          [items]="moduleItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onModuleChange($event)"
+        />
       </mat-expansion-panel>
     </mat-accordion>
   </mat-tab>
@@ -28,14 +38,53 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.auth') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="authItems()" (itemChange)="onAuthChange($event)" />
+        <app-settings-toggle-group
+          [items]="authItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onAuthChange($event)"
+        />
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.security') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <p class="settings-readonly">MFA enrollment: Account page</p>
-        <p class="settings-readonly">Rate limiting & security headers: enabled via platform middleware</p>
+        <div class="settings-document-cards">
+          <mat-card class="settings-document-card">
+            <mat-card-header>
+              <mat-card-title>{{ i18n.t('settings.security.rateLimit') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="settings-document-value">
+                {{ securitySettings.rateLimitPerMinute }} {{ i18n.t('settings.security.requestsPerMinute') }}
+              </p>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="settings-document-card">
+            <mat-card-header>
+              <mat-card-title>{{ i18n.t('settings.security.headers') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="settings-document-value">{{ securityHeadersLabel() }}</p>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="settings-document-card">
+            <mat-card-header>
+              <mat-card-title>{{ i18n.t('settings.security.mfa') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="settings-document-value">{{ i18n.t('settings.security.mfaAccount') }}</p>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="settings-document-card">
+            <mat-card-header>
+              <mat-card-title>{{ i18n.t('settings.security.abacPolicies') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="settings-document-value">{{ securitySettings.abacPolicyCount }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <p class="settings-hint">{{ i18n.t('settings.security.readOnlyHint') }}</p>
         <p class="settings-hint">
           <a routerLink="/app/admin/security">{{ i18n.t('settings.domains.openSecurity') }}</a>
         </p>
@@ -57,19 +106,31 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.grid') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="gridItems()" (itemChange)="onGridChange($event)" />
+        <app-settings-toggle-group
+          [items]="gridItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onGridChange($event)"
+        />
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.workflow') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="workflowItems()" (itemChange)="onWorkflowChange($event)" />
+        <app-settings-toggle-group
+          [items]="workflowItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onWorkflowChange($event)"
+        />
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.rules') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="rulesItems()" (itemChange)="onRulesChange($event)" />
+        <app-settings-toggle-group
+          [items]="rulesItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onRulesChange($event)"
+        />
         <p class="settings-hint">
           <a routerLink="/app/settings/rules">{{ i18n.t('settings.rules.evaluate.openPanel') }}</a>
         </p>
@@ -78,7 +139,11 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.ai') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="aiItems()" (itemChange)="onAiChange($event)" />
+        <app-settings-toggle-group
+          [items]="aiItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onAiChange($event)"
+        />
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -91,7 +156,11 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.audit') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="auditItems()" (itemChange)="onAuditChange($event)" />
+        <app-settings-toggle-group
+          [items]="auditItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onAuditChange($event)"
+        />
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -145,25 +214,43 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.notifications') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="notificationItems()" (itemChange)="onNotificationChange($event)" />
+        <app-settings-toggle-group
+          [items]="notificationItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onNotificationChange($event)"
+        />
+        @if (smsChannelEnabled() || pushChannelEnabled()) {
+          <p class="settings-hint">{{ i18n.t('settings.channels.templateHint') }}</p>
+        }
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.payments') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <app-settings-toggle-group [items]="paymentItems()" (itemChange)="onPaymentChange($event)" />
+        <app-settings-toggle-group
+          [items]="paymentItems()"
+          [customBadgeLabel]="i18n.t('settings.override.badge')"
+          (itemChange)="onPaymentChange($event)"
+        />
         @if (!paymentsModuleEnabled()) {
           <p class="settings-hint">{{ i18n.t('settings.payments.moduleRequired') }}</p>
         } @else {
+          <p class="settings-hint">{{ i18n.t('settings.payments.providerCardsHint') }}</p>
+          <div class="settings-provider-cards" [class.settings-form-grid--disabled]="!paymentCredentialsEnabled()">
+            @for (provider of paymentProviders; track provider) {
+              <button
+                type="button"
+                class="settings-provider-card"
+                [class.settings-provider-card--selected]="paymentProviderSelected(provider)"
+                [disabled]="!paymentCredentialsEnabled()"
+                (click)="selectPaymentProvider(provider)"
+              >
+                <span class="settings-provider-card__title">{{ provider }}</span>
+                <span class="settings-provider-card__subtitle">{{ i18n.t('settings.payments.providerCard') }}</span>
+              </button>
+            }
+          </div>
           <div class="settings-form-grid" [class.settings-form-grid--disabled]="!paymentCredentialsEnabled()">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ i18n.t('settings.payments.provider') }}</mat-label>
-              <mat-select [(ngModel)]="paymentProvider" [disabled]="!paymentCredentialsEnabled()">
-                @for (provider of paymentProviders; track provider) {
-                  <mat-option [value]="provider">{{ provider }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ i18n.t('settings.payments.publishableKey') }}</mat-label>
               <input matInput [(ngModel)]="paymentPublishableKey" [disabled]="!paymentCredentialsEnabled()" />
@@ -189,6 +276,19 @@
           <mat-panel-title>{{ i18n.t('settings.sections.integrations') }}</mat-panel-title>
           <mat-panel-description>{{ i18n.t('settings.integrations.subtitle') }}</mat-panel-description>
         </mat-expansion-panel-header>
+        <div class="settings-integration-registry">
+          @for (entry of integrationRegistry(); track entry.id) {
+            <mat-card class="settings-integration-card">
+              <mat-card-header>
+                <mat-card-title>{{ i18n.t(entry.labelKey) }}</mat-card-title>
+                <mat-card-subtitle>{{ integrationStatusLabel(entry.status) }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="settings-integration-card__detail">{{ entry.detail }}</p>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
         <div class="settings-form-grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ i18n.t('settings.integrations.restBaseUrl') }}</mat-label>
@@ -225,9 +325,9 @@
           </button>
         </div>
         @if (integrationTestStatus) {
-          <p class="status">{{ integrationTestStatus }}</p>
+          <p class="status settings-integration-test-result">{{ integrationTestStatus }}</p>
         }
-        <p class="settings-hint">{{ i18n.t('settings.integrations.accountHint') }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.integrations.saveHint') }}</p>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -283,70 +383,102 @@
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.templates') }}</mat-panel-title>
+          <mat-panel-description>{{ i18n.t('settings.templates.subtitle') }}</mat-panel-description>
         </mat-expansion-panel-header>
+        <div class="settings-template-channel-bar" aria-label="Notification channel status">
+          @for (chip of templateChannelBar(); track chip.channel) {
+            <span
+              class="settings-template-channel-bar__chip"
+              [class.settings-template-channel-bar__chip--on]="chip.enabled"
+            >
+              {{ chip.label }}
+              <span class="emcap-badge">{{ channelBarStateLabel(chip.enabled) }}</span>
+            </span>
+          }
+        </div>
         <app-master-detail-layout>
           <div listPane class="settings-template-list">
-            <button mat-button type="button" (click)="startCreateTemplate()">New template</button>
-            <div class="admin-table-scroll">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Channel</th>
-                    <th>Subject</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (template of templates; track template.id) {
-                    <tr
-                      class="admin-table__row"
-                      [class.admin-table__row--selected]="selectedTemplateId === template.id"
-                      (click)="selectTemplate(template)"
-                    >
-                      <td>{{ template.code }}</td>
-                      <td>{{ template.channel }}</td>
-                      <td>{{ template.subject }}</td>
+            <button mat-button type="button" (click)="startCreateTemplate()">
+              {{ i18n.t('settings.templates.new') }}
+            </button>
+            @if (templates.length === 0) {
+              <app-empty-state
+                [message]="i18n.t('settings.templates.empty')"
+                [actionLabel]="i18n.t('settings.templates.new')"
+                (action)="startCreateTemplate()"
+              />
+            } @else {
+              <div class="admin-table-scroll">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>{{ i18n.t('settings.templates.code') }}</th>
+                      <th>{{ i18n.t('settings.templates.channel') }}</th>
+                      <th>{{ i18n.t('settings.templates.subject') }}</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    @for (template of templates; track template.id) {
+                      <tr
+                        class="admin-table__row"
+                        [class.admin-table__row--selected]="selectedTemplateId === template.id"
+                        (click)="selectTemplate(template)"
+                      >
+                        <td>{{ template.code }}</td>
+                        <td>{{ template.channel }}</td>
+                        <td>{{ template.subject }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
           </div>
           <div detailPane>
             @if (!selectedTemplate && !creatingTemplate) {
-              <app-detail-placeholder message="Select a template or click New template." />
+              <app-detail-placeholder [message]="i18n.t('settings.templates.selectPlaceholder')" />
             } @else {
               <app-admin-form-panel
-                [title]="selectedTemplate ? 'Edit template' : 'Create template'"
-                [subtitle]="selectedTemplate?.code ?? 'New email template'"
+                [title]="selectedTemplate ? i18n.t('settings.templates.editTitle') : i18n.t('settings.templates.createTitle')"
+                [subtitle]="selectedTemplate?.code ?? i18n.t('settings.templates.createSubtitle')"
               >
                 <div actions>
                   @if (selectedTemplate) {
-                    <button mat-button type="button" (click)="deleteTemplate()">Delete</button>
+                    <button mat-button type="button" (click)="deleteTemplate()">
+                      {{ i18n.t('settings.templates.delete') }}
+                    </button>
                   }
-                  <button mat-flat-button color="primary" type="button" (click)="saveTemplate()">Save template</button>
+                  <button mat-flat-button color="primary" type="button" (click)="saveTemplate()">
+                    {{ i18n.t('settings.templates.save') }}
+                  </button>
                 </div>
+                <p class="settings-hint">{{ i18n.t('settings.templates.variablesHint') }}</p>
+                <mat-chip-set class="settings-template-vars" aria-label="Template variables">
+                  @for (variable of templateVariables; track variable) {
+                    <mat-chip (click)="insertTemplateVariable(variable)">{{ variable }}</mat-chip>
+                  }
+                </mat-chip-set>
                 <div class="admin-form-grid">
                   @if (!selectedTemplate) {
                     <mat-form-field appearance="outline">
-                      <mat-label>Template code</mat-label>
+                      <mat-label>{{ i18n.t('settings.templates.code') }}</mat-label>
                       <input matInput [(ngModel)]="templateCode" />
                     </mat-form-field>
                   }
                   <mat-form-field appearance="outline">
-                    <mat-label>Channel</mat-label>
+                    <mat-label>{{ i18n.t('settings.templates.channel') }}</mat-label>
                     <mat-select [(ngModel)]="templateChannel">
-                      <mat-option value="email">Email</mat-option>
-                      <mat-option value="sms">SMS</mat-option>
-                      <mat-option value="push">Push</mat-option>
+                      <mat-option value="email">{{ i18n.t('settings.channels.email') }}</mat-option>
+                      <mat-option value="sms">{{ i18n.t('settings.channels.sms') }}</mat-option>
+                      <mat-option value="push">{{ i18n.t('settings.channels.push') }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field appearance="outline">
-                    <mat-label>Subject</mat-label>
+                    <mat-label>{{ i18n.t('settings.templates.subject') }}</mat-label>
                     <input matInput [(ngModel)]="templateSubject" />
                   </mat-form-field>
                   <mat-form-field appearance="outline">
-                    <mat-label>Body template</mat-label>
+                    <mat-label>{{ i18n.t('settings.templates.body') }}</mat-label>
                     <textarea matInput rows="6" [(ngModel)]="templateBody"></textarea>
                   </mat-form-field>
                 </div>

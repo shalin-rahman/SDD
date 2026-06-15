@@ -1,10 +1,12 @@
 # User feedback registry — canonical memory
 
 **Read this before product/UX planning or claiming “done.”**  
-Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-system.md`.
+Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-product-system.md`.
 
-**Last consolidated:** 2026-06-14 (architecture memory + Slice 15C + P13/P19 admin slice)  
-**Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md` · §L below  
+**Terminology (2026-06-15):** The term **"viable product"** is **retired**. Canonical term is **standard product** everywhere (plans, handoffs, matrices). Historical session memos may still say "viable" — treat as audit trail only.
+
+**Last consolidated:** 2026-06-15 (§M security/memory standing orders; P22 doc integrity)  
+**Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md` · §L + §M below  
 **Update rule:** Add new user feedback here + link task ID in `plan/03-task-backlog.md`.
 
 ---
@@ -13,11 +15,12 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-syst
 
 | Topic | Document |
 |-------|----------|
-| Master roadmap (API · web · mobile) | `plan/17-viable-product-execution-playbook.md`, `plan/16-standard-viable-system.md` |
+| Master roadmap (API · web · mobile) | `plan/17-standard-product-execution-playbook.md`, `plan/16-standard-product-system.md` |
 | Product-ready DoD | `plan/16-product-ready-dod.md` |
 | Honest UX status | `spec/sdd/07-product-readiness-matrix.md` |
 | Platform wired (not product) | `spec/sdd/04-capability-matrix.md` |
 | Pitfalls / error memory | `docs/dev/known-pitfalls.md` |
+| Security + memory tiers | §M below |
 | Phase 12 item checklist | §B below (from full review memo) |
 
 ---
@@ -57,7 +60,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-syst
 | B7 | User management (dedicated admin, not Account) | P12B, **P19-T02** | Wired |
 | B8 | Role management | P12B, **P19-T02** | Wired |
 | B9 | Permission setup editable | P12B picker, **P19-T03** field overrides | **Done** (web field matrix + API P13-T10) |
-| B10 | Settings / configuration hub | P12C, **P19-T01** IA | Wired/Demo |
+| B10 | Settings / configuration hub | P12C, **P19-T01** IA | Wired/Demo — Phase 12 tasks Done |
 | B11 | Payment configuration | P12C, P12F secrets, **P19-T11** | Partial |
 | B12 | Email templates CRUD UI | P12C-T04, **P19-T01** | Demo |
 | B13 | Platform setups (workflow, grid, audit, tenant…) | P12C, **P19** | Toggle-heavy / Wired |
@@ -67,26 +70,26 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-syst
 
 **UX fixes already applied (keep):** detail placeholder message; admin list/form panes; permission picker groups; settings nav refresh after save; no fake payment provider text field.
 
-**Still open from Phase 12 review:** integrations/doc settings polish, full i18n catalogs, entity Material polish, per-file auth coverage below 80% (total gate passes).
+**Still open from Phase 12 review:** P19-T05/T06 product polish (07 gate), full i18n catalogs, entity Material polish, per-file auth coverage below 80% (total gate passes). Phase 12 backlog rows are **Done** (Wired/Demo).
 
 ---
 
-## C. Product viability pivot (2026-06-12)
+## C. Product standard pivot (2026-06-12)
 
 | ID | User critique | Response in plan |
 |----|---------------|----------------|
 | C1 | Entities lack **standard application attributes** | **W1** P14: system fields, version, soft delete, enum/lookup |
 | C2 | `created_at`/`updated_at` on API but not in UI/metadata | P14-T03–T05 (web Done); mobile **P14-T30** |
 | C3 | No `created_by`, version, soft delete, status lifecycle | P14-T10–T14, P14-T13 |
-| C4 | UI is wiring, not professional / viable product | **W2** P15 + **W3** P16 |
+| C4 | UI is wiring, not professional / standard product | **W2** P15 + **W3** P16 |
 | C5 | Account page is dev/demo (adapter tests) | **P17-T08** profile hub |
 | C6 | Matrices mark Done when only API/pytest exists | **07** Wired/Demo/Product-ready; §A12 |
 | C7 | Pause Phase 12/13 as “product complete” | Phase 13 → **P19** after **M1** |
-| C8 | Move toward viable product, **not more admin toggles** | Critical path 14→15→17→18 before 19 |
+| C8 | Move toward standard product, **not more admin toggles** | Critical path 14→15→17→18 before 19 |
 | C9 | **PRODUCT** reference entity end-to-end first | M1–M2 milestones |
 | C10 | Done needs **screenshot + UX criteria**, not pytest alone | `16-product-ready-dod.md`, P20 |
 | C11 | Basic design/layout below standard | **W3** Material 3 tokens, P16 |
-| C12 | Prepare **whole plan** for all services, web, mobile | `plan/16-standard-viable-system.md` W1–W8 |
+| C12 | Prepare **whole plan** for all services, web, mobile | `plan/16-standard-product-system.md` W1–W8 |
 | C13 | Memorize all feedback | **this file** |
 | C14 | Inventory needs **standard stock movement types** (receive, return, gift, damage, lost, bonus, transfer, adjustment, issue, …) as first-class enum + transactional entity | **W5 Done (API+UX code)** — `STOCK_MOVEMENT` + `STOCK_MOVEMENT_LINE` · `apply_posted_movement` **P20-T19** · web Karma 115/115 + mobile contracts **P20-T18** · screenshot pack pending |
 | C15 | **List page and entry page must be separated** — not a single master–detail view on one route | **Slice 15C Done** · **P15-T15** web · **P15-T17** mobile · `plan/15-entity-page-redesign.md` |
@@ -99,7 +102,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-syst
 | Question | Answer recorded |
 |----------|-----------------|
 | Partial/No items — is there a plan? | Phase 7 closed API; product gaps → 14–21 |
-| Where are we focusing? | Viable product path, not admin checklist |
+| Where are we focusing? | Standard product path, not admin checklist |
 | What else for full end-user per `framework-sdd.txt`? | Phase 8 + 12 + now 14–21; 04 vs 07 |
 | Everything done from SDD — all APIs + web + mobile? | **API mostly Done** in 04; **product not** — honest in 06/07 |
 | “Make it 100%” | API closure Phase 8–9; product closure is separate (07) |
@@ -121,7 +124,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-viable-syst
 | E8 | Flutter not on PATH locally | CI mobile job; optional local |
 | E9 | Check logs / browser when issues | Log triage: stale API, SQLite drift, JWT 401; **`logs/emcap/web.log`** for Angular compile errors |
 | E10 | Summarize and memorize conversation | `docs/dev/session-memos/` + `docs/product/user-feedback-registry.md` §L |
-| E11 | Architecture + handoff for new chats | `docs/dev/HANDOFF-continue-viable-product.md`, `2026-06-14-conversation-architecture-memory.md` |
+| E11 | Architecture + handoff for new chats | `docs/dev/HANDOFF-continue-standard-product.md`, `2026-06-14-conversation-architecture-memory.md` |
 
 ---
 
@@ -243,11 +246,36 @@ Module FieldDefinition.read_roles
 
 ### Session handoff
 
-New chat: `docs/dev/HANDOFF-continue-viable-product.md`
+New chat: `docs/dev/HANDOFF-continue-standard-product.md`
 
 ---
 
-## J. Scope boundaries (do not promise in viable v1)
+## M. Security & memory standing orders (2026-06-15)
+
+### Memory tiers (agent read order)
+
+| Tier | Sources | Trust |
+|------|---------|-------|
+| **1 — Always** | `codebase-index.md`, this file §A, §M | Canonical |
+| **2 — Task context** | `HANDOFF-continue-standard-product.md`, `plan/20`, backlog Crash course | Current sprint |
+| **3 — Historical** | `docs/dev/session-memos/*` | Audit trail only — verify paths against Tier 1–2 |
+
+**Memo rule:** If a session memo conflicts with registry or `codebase-index.md`, **registry wins**. Memos may reference removed paths (`entity.component.*`, mobile `entity_screen.dart`, master–detail entity UX).
+
+### Security standing orders
+
+| ID | Rule | Implementation |
+|----|------|----------------|
+| M1 | Field security at **metadata AND record** | `metadata/security.py` filters form/grid; `apply_field_security` on GET; web `field-security.util.ts` defense in depth (P23-T01/T02) |
+| M2 | Overrides in settings DB | `PUT /admin/security/field-access`; runtime merge via `app.state.field_overrides` |
+| M3 | ABAC admin-editable + testable | `GET/PUT /admin/security/abac`; `POST /auth/check` preview in `admin-security` (P19-T04 partial) |
+| M4 | Secured fields omitted from metadata JSON | Do not rely on UI hide alone — fields user cannot read must be absent from form/grid payloads |
+| M5 | Mobile admin security API parity | `emcap_client.dart` `updateAdminFieldAccess` + contract test (P21-T06 Done) |
+| M6 | No secrets in GET responses | Mask payment/integration secrets; see Phase 12 pitfalls |
+
+---
+
+## J. Scope boundaries (do not promise in standard product v1)
 
 - Runtime module hot-install
 - PCI payment capture
@@ -260,7 +288,7 @@ New chat: `docs/dev/HANDOFF-continue-viable-product.md`
 
 ## K. Agent session checklist
 
-1. `codebase-index.md` → this file (if product/UX) → `plan/17-viable-product-execution-playbook.md` §4 sprint order  
+1. `codebase-index.md` → this file §A + §M → `plan/17-standard-product-execution-playbook.md` §4 sprint order  
 2. `known-pitfalls.md` before debugging  
 3. Update **07** matrix for product claims; backlog **Done** ≠ Product-ready  
 4. No commit unless user asks (A7)  

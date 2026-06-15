@@ -1,7 +1,7 @@
 # Phase 17 — Platform services product UX
 
 **Status:** Planned — presentation-only (APIs Done in `04-capability-matrix`)  
-**Parent:** `plan/17-viable-product-execution-playbook.md` §9 · **Sprint:** S7–S8  
+**Parent:** `plan/17-standard-product-execution-playbook.md` §9 · **Sprint:** S7–S8  
 **Depends on:** P16-T05–T06 (component standardization) — can start with Material defaults if tokens lag
 
 **Driver (feedback C5, G):** Platform APIs exist; pages are thin shells or buried on Account demo.

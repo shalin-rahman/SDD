@@ -5,6 +5,7 @@ export interface SettingsToggleItem {
   key: string;
   label: string;
   checked: boolean;
+  custom?: boolean;
 }
 
 @Component({
@@ -16,6 +17,7 @@ export interface SettingsToggleItem {
 })
 export class SettingsToggleGroupComponent {
   @Input() items: SettingsToggleItem[] = [];
+  @Input() customBadgeLabel = 'Custom';
   @Output() itemChange = new EventEmitter<{ key: string; checked: boolean }>();
 
   onChange(item: SettingsToggleItem, event: MatCheckboxChange): void {

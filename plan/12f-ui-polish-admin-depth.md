@@ -81,7 +81,7 @@
 | Area | Web files | Mobile files |
 |------|-----------|--------------|
 | Shell chrome | `app-layout.component.*`, `shell-nav.util` labels | `shell.dart` |
-| Entity | `entity.component.*`, grid/form views | `entity_screen.dart` |
+| Entity | `entity-list.component.*`, `entity-record.component.*` | `entity_list_screen.dart`, `entity_record_screen.dart` |
 | Admin | users, roles, permissions pages | `admin_*_screen.dart` |
 | Settings | `settings.component.*` | `settings_screen.dart` |
 | Account / workflow / reports | remaining page titles + actions | matching `*_screen.dart` |

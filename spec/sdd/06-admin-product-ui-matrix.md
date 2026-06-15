@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-14 (rev. 12 — P19-T03 Done; P19-T05/T06 Partial; entity routes not master–detail)
+**Last updated:** 2026-06-15 (rev. 14 — Phase 12 partials closed; security read-only cards)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -36,7 +36,7 @@
 
 | Workflow / reports / AI nav when enabled | Partial | Partial | Platform links gated; Admin/Settings when permitted |
 
-| Integrations / payments entry points | Partial | Partial | Settings registry + masked secrets; Account ad-hoc tests |
+| Integrations / payments entry points | Partial | Partial | Settings → Integrations registry, test REST dispatch, provider cards; Account has no integration tests (P19-T10/T11) |
 
 
 
@@ -80,7 +80,7 @@
 
 | Hide disabled module menus | Partial | Partial | Shell filters menus + settings toggles |
 
-| **Module on/off settings UI** | Partial | Partial | Settings hub module section; P19-T01 mat-tab IA (Modules \| Identity \| Platform \| Integrations) |
+| **Module on/off settings UI** | Partial | Partial | Settings mat-tab hub + module toggles (P12C-T02 Done; P19-T01) |
 
 | Per-page enable within module | No | No | Not in SDD v1 detail |
 
@@ -157,7 +157,7 @@
 | Row/field security admin | Partial | Partial | Partial | P19-T03 web field matrix + permission picker; `PUT /admin/security/field-access` + merged policies GET (P13-T10/T11 Done) |
 | ABAC policy admin | Done | Partial | Partial | `GET/PUT /admin/security/abac`; web table editor; P19-T04 delete confirm + empty permission validation |
 
-| Auth provider config UI | Partial | Partial | Partial | Settings authentication toggles |
+| Auth provider config UI | Partial | Partial | Partial | Settings Identity tab auth toggles; override badges (P12B-T09 Done) |
 
 
 
@@ -216,7 +216,7 @@
 
 | Channel flags (email/sms/push/…) | Done | Partial | Partial | Dropdown when sending |
 
-| **Channel toggles settings UI** | Partial | Partial | Partial | Settings notifications section |
+| **Channel toggles settings UI** | Partial | Partial | Partial | Settings notifications + template channel bar (P12C-T16 Done; P19-T12) |
 
 | Email / SMS templates CRUD | Done | Partial | Partial | Settings templates master–detail |
 
@@ -238,7 +238,7 @@
 
 | Document upload/list on record | Done | Done | Done | — |
 
-| Document platform settings UI | Partial | No | No | P19-T06: read-only cards in Settings → Platform from GET `/config/platform` |
+| Document platform settings UI | Partial | Partial | Partial | Read-only cards web + mobile (P12C-T12 Done; polish P19-T06) |
 
 | Integration registry admin | Partial | Partial | Partial | Settings integrations panel + test REST (P12F-T30–T36) |
 
@@ -272,7 +272,7 @@
 
 | Settings change audit | Partial | Partial | Admin audit log list |
 
-| Security settings UI (rate limit, MFA policy) | No | No | — |
+| Security settings UI (rate limit, MFA policy) | Partial | Partial | Read-only cards: rate limit, headers, MFA account hint, ABAC count (P12C-T19 Done) |
 
 | Admin route hardening | Partial | Partial | API RBAC + permission-filtered nav |
 

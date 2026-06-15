@@ -35,6 +35,10 @@ logs/emcap/
 .env.*
 !.env.example
 
+# Local SQLite databases (never commit)
+*.db
+emcap*.db
+
 # Terraform
 *.tfstate
 *.tfstate.*

@@ -1,7 +1,10 @@
 <div class="entity-record-page">
-  <app-page-header [title]="title" [showBack]="true" (back)="backToList()">
-    <span class="entity-record-page__breadcrumb">{{ recordHeadline() }}</span>
-  </app-page-header>
+  <app-page-header
+    [title]="title"
+    [breadcrumbs]="recordBreadcrumbs()"
+    [showBack]="true"
+    (back)="backToList()"
+  ></app-page-header>
 
   @if (loadError) {
     <app-empty-state
@@ -34,7 +37,24 @@
           (cancel)="cancelEdit()"
           (save)="submitForm()"
           (restore)="restoreRecord()"
-        />
+        >
+          @if (canPostMovement()) {
+            <button
+              recordExtraActions
+              mat-flat-button
+              color="accent"
+              type="button"
+              [disabled]="postingMovement"
+              (click)="postMovement()"
+            >
+              {{ i18n.t('entity.postMovement') }}
+            </button>
+          }
+        </app-record-detail-header>
+
+        @if (postMovementError) {
+          <p class="error">{{ postMovementError }}</p>
+        }
 
         @if (detailError) {
           <p class="error">{{ detailError }}</p>
@@ -53,6 +73,34 @@
           (fieldChange)="onFormFieldChange($event.name, $event.value)"
           (noteInputChange)="noteInput = $event"
         />
+
+        @if (entityCode === 'STOCK_MOVEMENT' && selectedRecordId && !creatingNew) {
+          <section class="movement-lines">
+            <h3>{{ i18n.t('entity.movementLinesTitle') }}</h3>
+            @if (movementLinesError) {
+              <p class="error">{{ movementLinesError }}</p>
+            } @else if (!movementLines.length) {
+              <p>{{ i18n.t('entity.movementLinesEmpty') }}</p>
+            } @else {
+              <table class="movement-lines__table">
+                <thead>
+                  <tr>
+                    <th>{{ i18n.t('entity.movementLineProduct') }}</th>
+                    <th>{{ i18n.t('entity.movementLineQty') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (line of movementLines; track line['id']) {
+                    <tr>
+                      <td>{{ line['product_id'] }}</td>
+                      <td>{{ line['quantity'] }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </section>
+        }
 
         @if (selectedRecordId && !creatingNew) {
           <app-record-tabs

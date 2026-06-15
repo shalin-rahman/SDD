@@ -9,7 +9,7 @@ import { validateFormMetadata, validateGridMetadata } from '../../metadata/contr
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { DynamicDataGridComponent } from '../../shared/data/dynamic-data-grid.component';
 import { I18nService } from '../../shared/services/i18n.service';
 import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from '../../shared/constants/layout.constants';
@@ -65,6 +65,13 @@ export class EntityListComponent implements OnInit, OnDestroy {
 
   columnFields: string[] = [];
   displayGroups: Array<{ key: string; records: Record<string, unknown>[] }> = [];
+
+  listBreadcrumbs(): PageBreadcrumb[] {
+    return [
+      { label: this.i18n.t('shell.breadcrumb.records') },
+      { label: this.title || this.entityCode },
+    ];
+  }
 
   constructor() {
     effect(() => {

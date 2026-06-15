@@ -137,3 +137,40 @@ def test_field_access_override_validation(client: TestClient) -> None:
         },
     )
     assert forbidden.status_code == 403
+
+
+def test_metadata_form_hides_restricted_fields_for_viewer(client: TestClient) -> None:
+    admin_headers = {"Authorization": f"Bearer {_admin_token(client)}"}
+    record_id = _seed_product(client, admin_headers)
+
+    restricted = client.put(
+        "/api/v1/admin/security/field-access",
+        headers=admin_headers,
+        json={
+            "entity_code": "PRODUCT",
+            "field_name": "unit_price",
+            "read_roles": ["inventory.access"],
+        },
+    )
+    assert restricted.status_code == 200
+
+    viewer_headers = {"Authorization": f"Bearer {_viewer_token(client)}"}
+    form_meta = client.get("/api/v1/metadata/forms/PRODUCT", headers=viewer_headers)
+    assert form_meta.status_code == 200
+    main = next(section for section in form_meta.json()["sections"] if section["code"] == "main")
+    field_names = {field["name"] for field in main["fields"]}
+    assert "unit_price" not in field_names
+    assert "sku" in field_names
+
+    grid_meta = client.get("/api/v1/metadata/grids/PRODUCT", headers=viewer_headers)
+    assert grid_meta.status_code == 200
+    column_names = {column["field"] for column in grid_meta.json()["columns"]}
+    assert "unit_price" not in column_names
+    assert "sku" in column_names
+    assert "created_at" in column_names
+
+    record = client.get(
+        f"/api/v1/entities/PRODUCT/records/{record_id}",
+        headers=viewer_headers,
+    )
+    assert "unit_price" not in record.json()

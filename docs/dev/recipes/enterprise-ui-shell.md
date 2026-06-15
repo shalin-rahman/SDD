@@ -54,21 +54,32 @@ Page title: `resolvePageTitle()` in `shared/utils/page-title.util.ts`.
 
 ---
 
-## Step 2 — Entity master–detail (P12A-T04, T05)
+## Step 2 — Entity list + record routes (P15-T15, Slice 15C)
 
-`pages/entity/entity.component.html` composes shared components:
+**Not master–detail.** Admin screens still use `MasterDetailLayoutComponent`.
+
+| Route | Component |
+|-------|-----------|
+| `/app/entity/:code` | `entity-list.component` — grid only |
+| `/app/entity/:code/new`, `/:recordId` | `entity-record.component` — form + tabs |
 
 ```html
-<app-page-header ...>
-<app-master-detail-layout [detailOpen]="mobileDetailOpen">
-  <div listPane><app-dynamic-data-grid ... /></div>
-  <div detailPane><app-dynamic-form-view ... /><app-record-tabs ... /></div>
-</app-master-detail-layout>
+<!-- entity-list: grid + New CTA -->
+<app-page-header [title]="title">
+  <button mat-flat-button (click)="openNew()">New</button>
+</app-page-header>
+<app-dynamic-data-grid ... (rowSelect)="openRecord($event)" />
+
+<!-- entity-record: hero + form + tabs -->
+<app-page-header [title]="title" [showBack]="true" (back)="backToList()" />
+<app-record-detail-header ... />
+<app-dynamic-form-view ... />
+<app-record-tabs ... />
 ```
 
-Business logic stays in `entity.component.ts`; layout/CSS in shared components.
+Business logic in `entity-list.component.ts` / `entity-record.component.ts`; layout in shared components.
 
-Mobile: `LayoutService.isMobile$` + `[detailOpen]` on master–detail.
+Mobile: `entity_list_screen.dart` → push `entity_record_screen.dart`.
 
 ---
 
@@ -101,7 +112,7 @@ scripts\lint-format.bat
 cd clients\web && npm run build && npm run test:ci
 ```
 
-Manual: module sidenav · Product master–detail · mobile back · no duplicate on save
+Manual: module sidenav · Product list → record navigation · mobile back · no duplicate on save
 
 ---
 

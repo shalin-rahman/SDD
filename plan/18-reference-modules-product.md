@@ -1,7 +1,7 @@
 # Phase 18 — Reference modules product depth
 
 **Status:** Planned — S9–S10  
-**Parent:** `plan/17-viable-product-execution-playbook.md` §10  
+**Parent:** `plan/17-standard-product-execution-playbook.md` §10  
 **DoD:** `docs/modules/inventory-definition-of-done-v2.md` · CRM: create `docs/modules/crm-definition-of-done.md` in P18-T06
 
 **Driver (feedback C9, C12):** Modules pass API pytest but fail stakeholder demo bar.

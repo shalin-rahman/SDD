@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api/emcap_client.dart';
 import '../services/i18n_service.dart';
 import '../utils/document_platform_settings_util.dart';
+import '../utils/security_platform_settings_util.dart';
 import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 import '../widgets/settings_toggle_group.dart';
@@ -28,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _tenantStrategy = '';
   bool _multiTenant = false;
   DocumentPlatformSettings _documentSettings = parseDocumentPlatformSettings({});
+  SecurityPlatformSettings _securitySettings = parseSecurityPlatformSettings({});
 
   String? _selectedTemplateId;
   bool _creatingTemplate = false;
@@ -99,6 +101,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _tenantStrategy = '${health['tenant_strategy']}';
         _multiTenant = health['multi_tenant'] == true;
         _documentSettings = parseDocumentPlatformSettings(platformConfig);
+        _securitySettings = parseSecurityPlatformSettings(platformConfig);
         _tenantThemeController.text = '${defaultTenant['theme'] ?? 'default'}';
         _tenantDomainController.text = '${defaultTenant['domain'] ?? 'localhost'}';
         _syncPaymentFields(settings);
@@ -341,6 +344,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _selectedTemplateId = null;
       _templateDetailOpen = false;
     });
+  }
+
+  List<Map<String, dynamic>> _templateChannelBarData() => [
+        {
+          'channel': 'email',
+          'label': EmcapLocale.t('settings.channels.email'),
+          'enabled': _bool('notifications', 'email'),
+        },
+        {
+          'channel': 'sms',
+          'label': EmcapLocale.t('settings.channels.sms'),
+          'enabled': _bool('notifications', 'sms'),
+        },
+        {
+          'channel': 'push',
+          'label': EmcapLocale.t('settings.channels.push'),
+          'enabled': _bool('notifications', 'push'),
+        },
+      ];
+
+  String _channelBarStateLabel(bool enabled) =>
+      enabled ? EmcapLocale.t('settings.channels.enabled') : EmcapLocale.t('settings.channels.disabled');
+
+  Widget _templateChannelBar() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: _templateChannelBarData()
+          .map(
+            (chip) => Chip(
+              label: Text('${chip['label']} · ${_channelBarStateLabel(chip['enabled'] as bool)}'),
+              backgroundColor: (chip['enabled'] as bool)
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+          )
+          .toList(),
+    );
   }
 
   Widget _documentSettingRow(String label, String value) {
@@ -684,6 +725,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Card(
           margin: const EdgeInsets.only(bottom: 8),
           child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.security')),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.security.rateLimit'),
+                      '${_securitySettings.rateLimitPerMinute} ${EmcapLocale.t('settings.security.requestsPerMinute')}',
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.security.headers'),
+                      _securitySettings.securityHeadersEnabled
+                          ? EmcapLocale.t('settings.security.headersEnabled')
+                          : EmcapLocale.t('settings.security.headersDisabled'),
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.security.mfa'),
+                      EmcapLocale.t('settings.security.mfaAccount'),
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.security.abacPolicies'),
+                      '${_securitySettings.abacPolicyCount}',
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      EmcapLocale.t('settings.security.readOnlyHint'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ExpansionTile(
             title: Text(EmcapLocale.t('settings.sections.documents')),
             subtitle: Text(EmcapLocale.t('settings.documents.subtitle')),
             children: [
@@ -745,6 +825,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         Text('Email templates', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        _templateChannelBar(),
+        const SizedBox(height: 8),
         SizedBox(
           height: 360,
           child: MasterDetailLayout(

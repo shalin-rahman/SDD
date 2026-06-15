@@ -1,6 +1,6 @@
 # Product-ready definition of done (all surfaces)
 
-Use before marking any row **Product-ready** in `spec/sdd/07-product-readiness-matrix.md` or closing a milestone in `plan/16-standard-viable-system.md`.
+Use before marking any row **Product-ready** in `spec/sdd/07-product-readiness-matrix.md` or closing a milestone in `plan/16-standard-product-system.md`.
 
 Copy applicable sections into PR descriptions.
 
@@ -44,7 +44,7 @@ Copy applicable sections into PR descriptions.
 
 - [ ] Same feature parity as web for the task scope
 - [ ] `metadata_contract_test.dart` or widget test for metadata/renderer changes
-- [ ] Master–detail/back stack behaves on phone width
+- [ ] List → record uses **push navigation** (`EntityListScreen` → `EntityRecordScreen` → pop); not master–detail on one route
 - [ ] Theme + locale persistence unchanged
 
 ---

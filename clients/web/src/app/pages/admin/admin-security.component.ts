@@ -53,6 +53,10 @@ export class AdminSecurityComponent implements OnInit {
 
   abacFieldErrors: Record<number, { permission?: string }> = {};
 
+  abacTestPermission = '';
+  abacTestAllowed: boolean | null = null;
+  abacTestError = '';
+
   ngOnInit(): void {
     void this.reload();
     void this.loadAbac();
@@ -232,6 +236,22 @@ export class AdminSecurityComponent implements OnInit {
     return access === 'restricted'
       ? this.i18n.t('admin.security.accessRestricted')
       : this.i18n.t('admin.security.accessOpen');
+  }
+
+  async testAbacPermission(): Promise<void> {
+    const permission = this.abacTestPermission.trim();
+    if (!permission) {
+      return;
+    }
+    this.abacTestError = '';
+    this.abacTestAllowed = null;
+    try {
+      const result = await this.api.client.checkAuth(permission);
+      this.abacTestAllowed = result.allowed;
+    } catch (err) {
+      this.abacTestError =
+        err instanceof Error ? err.message : this.i18n.t('admin.security.abacTestFailed');
+    }
   }
 
   private syncEditingField(): void {

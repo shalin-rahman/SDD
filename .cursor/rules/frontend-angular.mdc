@@ -8,7 +8,7 @@ alwaysApply: false
 
 - **Stack:** Angular CLI 19 standalone components, routing, Karma/Jasmine tests.
 - UI is metadata-driven: dynamic forms and universal grid only — no entity-specific field components.
-- Entity UX: `src/app/pages/entity/entity.component.ts`.
+- Entity UX: `src/app/pages/entity/entity-list.component.ts` + `entity-record.component.ts` (separate list/record routes — **A15**).
 - Shell: `src/app/pages/shell/shell.component.ts` + child routes in `app.routes.ts`.
 - API: `EmcapApiService` → `api/emcap-client.ts` (Bearer + `X-Tenant-ID`).
 - Metadata: `src/app/metadata/contract.ts` + `dynamic-form.renderer.ts` / `dynamic-grid.renderer.ts`.

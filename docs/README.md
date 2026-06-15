@@ -7,8 +7,8 @@ All project documentation lives in this repo. Start from `docs/dev/codebase-inde
 | Document | Purpose |
 |----------|---------|
 | `plan/03-task-backlog.md` | Task status (Done / Pending / Partial) |
-| `plan/17-viable-product-execution-playbook.md` | Viable product execution (sprints S1–S15) |
-| `plan/16-standard-viable-system.md` | Master roadmap W1–W8, milestones M1–M6 |
+| `plan/17-standard-product-execution-playbook.md` | Standard product execution (sprints S1–S15) |
+| `plan/16-standard-product-system.md` | Master roadmap W1–W8, milestones M1–M6 |
 | `plan/16-product-ready-dod.md` | Product-ready checklist |
 | `plan/` | Phase playbooks (0–21) |
 
@@ -39,7 +39,7 @@ All project documentation lives in this repo. Start from `docs/dev/codebase-inde
 | Document | Purpose |
 |----------|---------|
 | `docs/dev/codebase-index.md` | File lookup — read first |
-| **`docs/dev/HANDOFF-continue-viable-product.md`** | **New chat — continue viable product here** |
+| **`docs/dev/HANDOFF-continue-standard-product.md`** | **New chat — continue standard product here** |
 | `docs/dev/known-pitfalls.md` | Error registry + tests |
 | `docs/dev/recall-index.md` | Session memo index |
 | `docs/dev/session-memos/` | Handoff summaries (35 memos) |

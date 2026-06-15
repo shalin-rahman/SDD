@@ -13,6 +13,7 @@
     }
   </div>
   <div class="record-header__actions">
+    <ng-content select="[recordExtraActions]" />
     @if (canRestore) {
       <button mat-stroked-button type="button" color="primary" (click)="restore.emit()">
         <mat-icon>restore</mat-icon>

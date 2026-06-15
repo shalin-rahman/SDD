@@ -28,13 +28,16 @@ Registry: `emcap.auth.providers.registry.AuthProviderRegistry`
 
 ## ABAC
 
-- Policies in `emcap.auth.abac.DEFAULT_POLICIES`
-- Check via `POST /api/v1/auth/check`
+- Policies in `SettingOverrideRow` `security.abac_policies` (admin-editable)
+- `GET/PUT /api/v1/admin/security/abac`
+- Runtime check via `POST /api/v1/auth/check`
+- Admin UI test preview in `pages/admin/admin-security.component`
 
 ## Row / field security
 
 - Row: `tenant_id` on all entity records; resolved via `X-Tenant-ID` header
-- Field: `FieldDefinition.read_roles` — filter via `apply_field_security()`
+- Field (record GET): `FieldDefinition.read_roles` merged with `security.field_overrides` → `apply_field_security()` in `metadata/security.py`
+- Field (metadata): `GET /metadata/forms|grids/{entity}` filters fields by effective `read_roles` (P23-T01) — do not rely on UI hide alone
 
 ## MFA
 
@@ -57,21 +60,21 @@ Registry: `emcap.auth.providers.registry.AuthProviderRegistry`
 |---------|-----|--------|
 | Login | `clients/web/src/app/pages/login/` | `clients/mobile/lib/app/shell.dart` |
 | OAuth / MFA | Account pages | `account_screen.dart` |
-| Permissions viewer | Account (demo) | Account |
 
-## Admin UX (Phase 12 — planned)
+## Admin UX (Phase 12/19 — implemented)
 
-| Feature | API target | Web target |
-|---------|------------|------------|
-| User CRUD | `GET/POST/PUT /admin/users` | `pages/admin/users/` |
-| Role CRUD | `GET/POST/PUT /admin/roles` | `pages/admin/roles/` |
-| Permission matrix | read from roles + registry | `pages/admin/permissions/` |
-| Settings hub | `GET/PUT /admin/settings` | `pages/settings/` |
+| Feature | API | Web | Mobile |
+|---------|-----|-----|--------|
+| User CRUD | `GET/POST/PUT /admin/users` | `pages/admin/admin-users.component` | — |
+| Role CRUD | `GET/POST/PUT /admin/roles` | `pages/admin/admin-roles.component` | — |
+| Permission matrix | read from roles + registry | `pages/admin/permissions/` | — |
+| Settings hub | `GET/PUT /admin/settings` | `pages/settings/` | `settings_screen.dart` |
+| Field access overrides | `PUT /admin/security/field-access` | `pages/admin/admin-security.component` | `updateAdminFieldAccess` in `emcap_client.dart` |
+| ABAC policies | `GET/PUT /admin/security/abac` | same + `checkAuth` test preview | — |
+| Policy viewer | `GET /admin/security/policies` | admin security screens | — |
 
-Today: only `GET /auth/roles`, `POST /auth/roles/assign` — **not** admin CRUD.
+## Web defense in depth (P23-T02)
 
-Seed admin permissions: `data/seed/core/roles.json` → `admin.users.*`, `admin.settings.*`.
+`clients/web/src/app/shared/utils/field-security.util.ts` — hide form fields absent from secured record payload even if metadata still lists them.
 
-See skill **`emcap-enterprise-ui`** and recipe `docs/dev/recipes/add-admin-api-and-ui.md`.
-
-Tests: `tests/test_auth_security.py` today; add `tests/test_admin_*.py` in Phase 12B.
+Tests: `tests/test_admin_api.py`, `tests/test_admin_field_access_override.py`, `field-security.util.spec.ts`, `clients/mobile/test/admin_field_access_client_test.dart`

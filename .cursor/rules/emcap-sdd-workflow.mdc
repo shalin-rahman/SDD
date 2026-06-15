@@ -12,7 +12,7 @@ alwaysApply: true
 3. Read `docs/dev/known-pitfalls.md` for regressions to avoid.
 4. Follow the matching recipe in `docs/dev/recipes/`.
 5. Check matrices: `04` (API wired), `05` (CRUD depth), `06` (admin shell), **`07` (product-ready)** — never mark product UX Done from pytest alone.
-6. Viable product work: follow `plan/17-viable-product-execution-playbook.md` (Phases 14–21).
+6. Standard product work: follow `plan/17-standard-product-execution-playbook.md` (Phases 14–21).
 7. Session handoffs: `docs/dev/session-memos/` + `docs/dev/recall-index.md`.
 8. If Phase 12 work: `plan/12-enterprise-product-ui.md` — treat backlog Done as Wired/Demo until `07` Product-ready.
 9. Check `spec/sdd/03-traceability-matrix.md` for requirement IDs.

@@ -18,10 +18,39 @@
   }
 }
 
+.page-header__breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+  font-size: var(--emcap-font-body-sm);
+  color: var(--emcap-text-muted);
+}
+
+.page-header__crumb {
+  color: inherit;
+  text-decoration: none;
+
+  &--current {
+    color: var(--emcap-text);
+    font-weight: 500;
+  }
+}
+
+a.page-header__crumb:hover {
+  color: var(--emcap-primary);
+  text-decoration: underline;
+}
+
+.page-header__sep {
+  color: var(--emcap-text-muted);
+}
+
 .page-header__subtitle {
   margin: 0.25rem 0 0;
-  color: #666;
-  font-size: 0.875rem;
+  color: var(--emcap-text-muted);
+  font-size: var(--emcap-font-body-sm);
 }
 
 .page-header__back {

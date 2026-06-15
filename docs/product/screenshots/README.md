@@ -1,6 +1,6 @@
 # Product screenshots (EMCAP-P20-T01)
 
-Evidence images for **Product-ready** gates in `plan/16-product-ready-dod.md` and milestone sign-off in `plan/16-standard-viable-system.md`.
+Evidence images for **Product-ready** gates in `plan/16-product-ready-dod.md` and milestone sign-off in `plan/16-standard-product-system.md`.
 
 **Do not** commit secrets, real customer data, or unmasked API keys. Use demo seed (`admin` / `admin123`, tenant `default`).
 

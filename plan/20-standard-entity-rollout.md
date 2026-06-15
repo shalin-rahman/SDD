@@ -197,20 +197,16 @@ W5    STOCK_MOVEMENT + STOCK_MOVEMENT_LINE entities, movement_type enum, tests, 
 | Datetime/currency/lookup/textarea renderers | `shared/forms/*`, `shared/utils/field-display.util.ts` | Verify |
 | Status chip from metadata | `shared/utils/record-headline.util.ts` → `buildStatusChipView` | Verify |
 | Grid system columns | `shared/data/dynamic-data-grid.component.*` | Verify |
-| If-Match on save | `pages/entity/entity.component.ts` | Verify |
-| Soft delete restore | `pages/entity/entity.component.ts` | Verify |
+| If-Match on save | `pages/entity/entity-record.component.ts` | Verify |
+| Soft delete restore | `pages/entity/entity-record.component.ts` | Verify |
 
 ### 2.2 Per-entity web work
 
 | Task ID | Work | Paths | Wave |
 |---------|------|-------|------|
-| P15-T20 | Hero headline from metadata hints (not hard-coded PRODUCT) | `shared/utils/record-headline.util.ts`, `entity.component.ts` | W1 |
-| P15-T21 | WAREHOUSE + CRM page polish pass | `pages/entity/entity.component.*` | W1 |
-| P20-T05-web | Karma spec loads each entity fixture | `metadata/entity-system.fixture.spec.ts` (**new**) | W1 |
-| P18-T03 | WAREHOUSE screenshot pack | `docs/product/screenshots/phase18-warehouse-*.png` | W1 |
-| P18-T06 | LEAD/CONTACT screenshots | `docs/product/screenshots/phase18-crm-*.png` | W1 |
-| P20-T16 | W4 entity fixtures + Karma parity | `assets/fixtures/metadata/{supplier,po,so,invoice}.*.json` | W4 |
-| P20-T18 | W5 stock movement entity UX | `pages/entity/entity.component.*`, movement type select | W5 |
+| P15-T20 | Hero headline from metadata hints (not hard-coded PRODUCT) | `shared/utils/record-headline.util.ts`, `entity-record.component.ts` | W1 |
+| P15-T21 | WAREHOUSE + CRM page polish pass | generic `entity-list` / `entity-record` | W1 — **Cancelled** |
+| P20-T18 | W5 stock movement entity UX | `entity-record.component.*`, post movement action | W5 |
 
 ### 2.3 Web assets
 
@@ -332,4 +328,4 @@ Existing tasks still apply: **P15-T21**, **P18-T03**, **P18-T06**, **P19-T03** (
 | `spec/sdd/07-product-readiness-matrix.md` | Entity rows |
 | `docs/dev/codebase-index.md` | New tests/paths |
 | `docs/dev/recall-index.md` | Session memo |
-| `docs/dev/HANDOFF-continue-viable-product.md` | Critical path |
+| `docs/dev/HANDOFF-continue-standard-product.md` | Critical path |

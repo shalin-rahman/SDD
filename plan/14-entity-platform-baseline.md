@@ -20,7 +20,7 @@ A capability is **Product-ready** only when:
 
 **Wired** = API/metadata exists, shells show raw data  
 **Demo** = functional wiring, not professional UX  
-**Product-ready** = viable for end-user demo without apology
+**Product-ready** = ready for end-user demo without apology
 
 Phase 12/13 backlog items remain **Wired** or **Partial** until re-verified under this gate.
 
@@ -81,7 +81,8 @@ platform/api/src/emcap/metadata/builder.py
 platform/api/src/emcap/persistence/repository.py
 platform/api/tests/test_system_fields.py
 clients/web/src/app/shared/utils/field-display.util.ts
-clients/web/src/app/pages/entity/entity.component.*
+clients/web/src/app/pages/entity/entity-list.component.*
+clients/web/src/app/pages/entity/entity-record.component.*
 ```
 
 ---

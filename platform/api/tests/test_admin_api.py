@@ -79,6 +79,7 @@ def test_admin_settings_and_templates(client: TestClient) -> None:
     )
     assert updated.status_code == 200
     assert updated.json()["settings"]["modules"]["ai"]["enabled"] is True
+    assert "modules.ai.enabled" in updated.json()["override_paths"]
 
     template = client.post(
         "/api/v1/admin/templates",
@@ -212,6 +213,44 @@ def test_admin_integrations_registry(client: TestClient) -> None:
         },
     )
     assert invalid_kafka.status_code == 400
+
+
+def test_admin_abac_check_auth_deny_path(client: TestClient) -> None:
+    """P23-T04: explicit deny when ABAC policy value mismatches tenant context."""
+    token = _admin_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    client.put(
+        "/api/v1/admin/security/abac",
+        headers=headers,
+        json={
+            "policies": [
+                {
+                    "permission": "product.write",
+                    "effect": "allow",
+                    "attribute": "tenant_id",
+                    "operator": "equals",
+                    "value": "restricted-tenant",
+                }
+            ]
+        },
+    )
+
+    denied = client.post(
+        "/api/v1/auth/check",
+        headers=headers,
+        json={"permission": "product.write", "tenant_id": "default"},
+    )
+    assert denied.status_code == 200
+    assert denied.json()["allowed"] is False
+
+    allowed = client.post(
+        "/api/v1/auth/check",
+        headers=headers,
+        json={"permission": "product.write", "tenant_id": "restricted-tenant"},
+    )
+    assert allowed.status_code == 200
+    assert allowed.json()["allowed"] is True
 
 
 def test_admin_abac_policies(client: TestClient) -> None:

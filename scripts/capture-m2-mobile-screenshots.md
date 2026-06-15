@@ -141,4 +141,4 @@ After PNG is in repo:
 2. Sign M2 mobile row in `spec/sdd/07-product-readiness-matrix.md`
 3. Update `plan/15-entity-page-redesign.md` P15-T13 status
 
-**Related:** `docs/product/screenshots/README.md` · `clients/mobile/lib/app/entity_screen.dart` · `plan/17-viable-product-execution-playbook.md` § S2
+**Related:** `docs/product/screenshots/README.md` · `clients/mobile/lib/app/entity_list_screen.dart` · `plan/17-standard-product-execution-playbook.md` § S2

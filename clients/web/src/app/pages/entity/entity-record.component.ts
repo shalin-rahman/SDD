@@ -9,7 +9,7 @@ import { validateFormMetadata } from '../../metadata/contract';
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { RecordDetailHeaderComponent } from '../../shared/entity/record-detail-header.component';
 import { RecordTabsComponent } from '../../shared/entity/record-tabs.component';
 import type {
@@ -30,6 +30,7 @@ import {
   canDeleteRecord as recordAllowsDelete,
   canRestoreRecord as recordAllowsRestore,
 } from '../../shared/utils/record-lifecycle.util';
+import { securedVisibleFieldNames } from '../../shared/utils/field-security.util';
 import { loadEntityMenuTitle } from './entity-page.util';
 
 @Component({
@@ -75,6 +76,10 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
   uploadContent = 'uploaded from web';
   previewingDocument: RecordDocument | null = null;
   creatingNew = false;
+  movementLines: Record<string, unknown>[] = [];
+  movementLinesError = '';
+  postingMovement = false;
+  postMovementError = '';
 
   visibleFields: FormFieldMetadata[] = [];
   notes: RecordNote[] = [];
@@ -164,6 +169,7 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
       }
       this.rebuildForm(loaded);
       await this.loadRecordDetail(id);
+      await this.loadMovementLines(id);
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('entity.loadFailed');
     }
@@ -174,10 +180,10 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
     this.formValues = { ...values };
     const visibleNames = this.formRenderer.visibleFieldNames(this.formValues);
     const systemNames = new Set(['id', 'created_at', 'updated_at', 'created_by']);
-    const names = this.creatingNew
+    const filtered = this.creatingNew
       ? visibleNames.filter((name) => !systemNames.has(name))
-      : visibleNames;
-    this.visibleFields = names
+      : securedVisibleFieldNames(visibleNames, this.formValues, false);
+    this.visibleFields = filtered
       .map((name) => this.formRenderer!.getField(name))
       .filter((f): f is FormFieldMetadata => f !== undefined);
     this.formError = '';
@@ -203,6 +209,16 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
 
   recordHeadline(): string {
     return this.headlineView().headline;
+  }
+
+  recordBreadcrumbs(): PageBreadcrumb[] {
+    const detailLabel = this.creatingNew
+      ? this.i18n.t('entity.newRecord')
+      : this.recordHeadline() || this.recordIdParam;
+    return [
+      { label: this.title || this.entityCode, routerLink: `/app/entity/${this.entityCode}` },
+      { label: detailLabel },
+    ];
   }
 
   recordSubtitle(): string {
@@ -261,12 +277,74 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
 
   onFormFieldChange(name: string, value: unknown): void {
     this.formValues = { ...this.formValues, [name]: value };
-    this.visibleFields = this.formRenderer
-      ? this.formRenderer
-          .visibleFieldNames(this.formValues)
-          .map((n) => this.formRenderer!.getField(n))
-          .filter((f): f is FormFieldMetadata => f !== undefined)
-      : [];
+    if (!this.formRenderer) {
+      this.visibleFields = [];
+      return;
+    }
+    const visibleNames = this.formRenderer.visibleFieldNames(this.formValues);
+    const names = this.creatingNew
+      ? visibleNames
+      : securedVisibleFieldNames(visibleNames, this.formValues, false);
+    this.visibleFields = names
+      .map((n) => this.formRenderer!.getField(n))
+      .filter((f): f is FormFieldMetadata => f !== undefined);
+  }
+
+  canPostMovement(): boolean {
+    return (
+      this.entityCode === 'STOCK_MOVEMENT' &&
+      !this.creatingNew &&
+      Boolean(this.selectedRecordId) &&
+      this.formValues['status'] === 'draft'
+    );
+  }
+
+  async postMovement(): Promise<void> {
+    if (!this.canPostMovement() || !this.selectedRecordId) {
+      return;
+    }
+    if (!window.confirm(this.i18n.t('entity.postMovementConfirm'))) {
+      return;
+    }
+    this.postMovementError = '';
+    this.postingMovement = true;
+    const id = this.selectedRecordId;
+    try {
+      const version = this.formValues['record_version'];
+      const ifMatch = typeof version === 'number' ? version : Number(version);
+      await this.api.client.updateRecord(
+        this.entityCode,
+        id,
+        { status: 'posted' },
+        Number.isFinite(ifMatch) ? ifMatch : undefined,
+      );
+      this.editingId = null;
+      await this.loadRecord(id, false);
+    } catch (err) {
+      this.postMovementError =
+        err instanceof Error ? err.message : this.i18n.t('entity.postMovementFailed');
+    } finally {
+      this.postingMovement = false;
+    }
+  }
+
+  private async loadMovementLines(recordId: string): Promise<void> {
+    if (this.entityCode !== 'STOCK_MOVEMENT') {
+      this.movementLines = [];
+      return;
+    }
+    this.movementLinesError = '';
+    try {
+      const response = await this.api.client.listRecords('STOCK_MOVEMENT_LINE');
+      const items = response.records ?? [];
+      this.movementLines = items.filter(
+        (row) => String(row['movement_id'] ?? '') === recordId,
+      );
+    } catch (err) {
+      this.movementLines = [];
+      this.movementLinesError =
+        err instanceof Error ? err.message : this.i18n.t('entity.movementLinesFailed');
+    }
   }
 
   async loadRecordDetail(recordIdValue: string): Promise<void> {

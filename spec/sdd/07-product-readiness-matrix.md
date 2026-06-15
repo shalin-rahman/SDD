@@ -6,8 +6,8 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Last updated:** 2026-06-14 (Slice 15C — separate list/record routes; entity-pack screenshots refreshed)
 
-**Execution index:** `plan/17-viable-product-execution-playbook.md`  
-**Roadmap:** `plan/16-standard-viable-system.md` — workstreams W1–W8, milestones M1–M6  
+**Execution index:** `plan/17-standard-product-execution-playbook.md`
+**Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
 **DoD gate:** `plan/16-product-ready-dod.md`  
 **Feedback memory:** `docs/product/user-feedback-registry.md` (§F entity UX pivot)
 
@@ -40,7 +40,7 @@ Architecture, feedback, and learnings consolidated in:
 
 - `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
 - `docs/product/user-feedback-registry.md` §L
-- `docs/dev/HANDOFF-continue-viable-product.md`
+- `docs/dev/HANDOFF-continue-standard-product.md`
 
 ---
 

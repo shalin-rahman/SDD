@@ -36,10 +36,10 @@
 | `session-memos/2026-06-12-log-triage-fixes.md` | Log triage fixes | `docs/dev/known-pitfalls.md` |
 | `session-memos/2026-06-12-user-feedback-memorized.md` | Early feedback memo | `docs/product/user-feedback-registry.md` |
 | `session-memos/2026-06-12-emcap-all-user-feedback-memorized.md` | All feedback consolidated | `docs/product/user-feedback-registry.md` |
-| `session-memos/2026-06-12-standard-viable-system-master-plan.md` | Master roadmap W1–W8 | `plan/16-standard-viable-system.md` |
+| `session-memos/2026-06-12-standard-viable-system-master-plan.md` | Master roadmap W1–W8 *(retired term: viable)* | `plan/16-standard-product-system.md` |
 | `session-memos/2026-06-12-phase-14-15-slice1-product-baseline.md` | P14/P15 slice 1 code | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
-| `session-memos/2026-06-12-viable-product-implementation-slice.md` | P14A-S2 + mobile parity | `plan/03-task-backlog.md` Phase 14–15 |
-| `session-memos/2026-06-12-viable-product-planning-complete.md` | Full viable product planning | `plan/17-viable-product-execution-playbook.md` |
+| `session-memos/2026-06-12-viable-product-implementation-slice.md` | P14A-S2 + mobile parity *(retired term)* | `plan/03-task-backlog.md` Phase 14–15 |
+| `session-memos/2026-06-12-viable-product-planning-complete.md` | Full standard product planning *(memo title: viable)* | `plan/17-standard-product-execution-playbook.md` |
 
 | `session-memos/2026-06-13-s3-implementation-slice.md` | S3 tokens + profile hub | P16-T02, P17-T08, P14-T14 |
 | `session-memos/2026-06-13-s1-m1-screenshots.md` | S1 M1 web screenshot pack | P15-T06, P20-T02, `07` M1 signed |

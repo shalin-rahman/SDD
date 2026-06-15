@@ -1,6 +1,6 @@
 # Product demo runbook — Inventory → Products (EMCAP-P21-T02)
 
-Stakeholder path for the **viable product** reference entity: `PRODUCT` under the Inventory module. Use this before M1 sign-off and for screenshot capture (P20-T02).
+Stakeholder path for the **standard product** reference entity: `PRODUCT` under the Inventory module. Use this before M1 sign-off and for screenshot capture (P20-T02).
 
 **Prerequisites:** `docs/dev/windows-local-dev.md` · demo seed enabled in `config/platform.yaml`
 
@@ -114,7 +114,7 @@ Full pitfall index: `docs/dev/known-pitfalls.md` (Phase 11 local dev, Phase 16 e
 
 | Doc | Purpose |
 |-----|---------|
-| `plan/16-standard-viable-system.md` | Milestones M1–M5 |
+| `plan/16-standard-product-system.md` | Milestones M1–M5 |
 | `plan/16-product-ready-dod.md` | Product-ready checklist |
 | `docs/modules/inventory-definition-of-done-v2.md` | Module product criteria |
 | `data/seed/README.md` | Seed pack layout |

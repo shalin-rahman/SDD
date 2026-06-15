@@ -6,7 +6,7 @@ Accepted — 2026-06-13 · Implementation pending (EMCAP-P16-T02–T08)
 
 ## Context
 
-Phase 12–15 delivered an enterprise shell and PRODUCT entity UX with Material Angular components, but spacing, radius, typography, and elevation are partly ad hoc. Phase 16 (W3 in `plan/16-standard-viable-system.md`) must align web and mobile to **Material Design 3** semantics before polishing workflow, reports, and admin surfaces (W4–W6).
+Phase 12–15 delivered an enterprise shell and PRODUCT entity UX with Material Angular components, but spacing, radius, typography, and elevation are partly ad hoc. Phase 16 (W3 in `plan/16-standard-product-system.md`) must align web and mobile to **Material Design 3** semantics before polishing workflow, reports, and admin surfaces (W4–W6).
 
 Stakeholder feedback (registry C6, C10): product sign-off requires visual consistency and WCAG 2.2 AA contrast — not pytest alone.
 
@@ -41,7 +41,7 @@ Angular Material theme generation should **derive** component themes from these 
 
 ## References
 
-- `plan/16-standard-viable-system.md` — W3 tasks P16-T01–T08
+- `plan/16-standard-product-system.md` — W3 tasks P16-T01–T08
 - `docs/product/design-system.md` — component catalog
 - ADR-005 — Angular CLI web client
 - [Material Design 3](https://m3.material.io/) · Flutter Material 3 theming

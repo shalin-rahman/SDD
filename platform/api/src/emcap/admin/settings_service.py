@@ -122,6 +122,13 @@ def _audit_payload_for(key: str, value: Any) -> dict[str, Any]:
     return {"value": value}
 
 
+def _override_paths(session: Session, allowed: frozenset[str]) -> list[str]:
+    rows = session.query(SettingOverrideRow).filter(
+        SettingOverrideRow.key.in_(allowed)
+    )
+    return sorted(row.key for row in rows.all())
+
+
 def get_settings(session: Session, config: PlatformConfig) -> dict[str, Any]:
     view = _extract_settings_view(config)
     overrides = session.query(SettingOverrideRow).all()
@@ -132,10 +139,12 @@ def get_settings(session: Session, config: PlatformConfig) -> dict[str, Any]:
         ):
             _set_nested(view, row.key, row.value)
     _apply_secret_masks(view, session)
+    override_keys = _override_paths(session, ALLOWED_SETTING_PATHS)
     return {
         "settings": view,
         "editable_paths": sorted(ALLOWED_SETTING_PATHS),
         "write_only_paths": sorted(SECRET_SETTING_PATHS),
+        "override_paths": override_keys,
     }
 
 

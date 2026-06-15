@@ -61,7 +61,7 @@ SDD/
 | Codebase index | `docs/dev/codebase-index.md` |
 | Session memos | `docs/dev/session-memos/` |
 | User feedback registry | `docs/product/user-feedback-registry.md` |
-| Viable product execution | `plan/17-viable-product-execution-playbook.md` |
+| Standard product execution | `plan/17-standard-product-execution-playbook.md` |
 | Product readiness matrix | `spec/sdd/07-product-readiness-matrix.md` |
 | Shared web components | `clients/web/src/app/shared/README.md` |
 | Task backlog | `plan/03-task-backlog.md` |

@@ -39,6 +39,18 @@ def _resolve_value(
     return token
 
 
+def _actual_attribute_value(
+    policy: AbacPolicy,
+    user_attrs: Mapping[str, object],
+    resource_attrs: Mapping[str, object],
+) -> object:
+    if policy.value.startswith("$user.") or policy.value.startswith("$resource."):
+        return resource_attrs.get(policy.attribute)
+    if policy.attribute in resource_attrs:
+        return resource_attrs.get(policy.attribute)
+    return user_attrs.get(policy.attribute)
+
+
 def evaluate_abac(
     policies: list[AbacPolicy],
     *,
@@ -52,7 +64,7 @@ def evaluate_abac(
 
     for policy in matched:
         expected = _resolve_value(policy.value, user_attrs, resource_attrs)
-        actual = user_attrs.get(policy.attribute) or resource_attrs.get(policy.attribute)
+        actual = _actual_attribute_value(policy, user_attrs, resource_attrs)
         allowed = str(actual) == str(expected)
         if policy.effect == "deny" and allowed:
             return False

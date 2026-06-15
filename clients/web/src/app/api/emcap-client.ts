@@ -27,12 +27,14 @@ export interface MaskedSecretView {
 export interface AdminSettingsResponse {
   settings: Record<string, unknown>;
   editable_paths: string[];
+  override_paths?: string[];
   write_only_paths?: string[];
 }
 
 export interface AdminIntegrationsResponse {
   integrations: Record<string, unknown>;
   editable_paths: string[];
+  override_paths?: string[];
   write_only_paths?: string[];
 }
 

@@ -9,11 +9,11 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Need | Document |
 |------|----------|
 | Task status | `plan/03-task-backlog.md` |
-| **Viable product roadmap (API·web·mobile)** | `plan/17-viable-product-execution-playbook.md`, `plan/16-standard-viable-system.md`, `plan/16-product-ready-dod.md` |
+| **Standard product roadmap (API·web·mobile)** | `plan/17-standard-product-execution-playbook.md`, `plan/16-standard-product-system.md`, `plan/16-product-ready-dod.md` |
 | **Standard entity rollout (all entities)** | `plan/20-standard-entity-rollout.md` |
 | Entity platform + UX | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
 | Product readiness gate | `spec/sdd/07-product-readiness-matrix.md` |
-| **All user feedback (memory)** | `docs/product/user-feedback-registry.md` |
+| **All user feedback (memory)** | `docs/product/user-feedback-registry.md` (§A, §M security/memory tiers) |
 | Design system + screenshots | `docs/product/design-system.md`, `docs/product/screenshots/README.md` |
 | PRODUCT demo runbook | `docs/dev/product-demo-runbook.md` |
 | Inventory product DoD v2 | `docs/modules/inventory-definition-of-done-v2.md` |
@@ -31,8 +31,8 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Windows local dev guide | `docs/dev/windows-local-dev.md` |
 | Pitfalls / regressions | `docs/dev/known-pitfalls.md` |
 | Session memos (handoffs) | `docs/dev/session-memos/`, `docs/dev/recall-index.md` |
-| **New chat handoff** | `docs/dev/HANDOFF-continue-viable-product.md` |
-| **Architecture & session memory** | `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md` |
+| **New chat handoff** | `docs/dev/HANDOFF-continue-standard-product.md` (tiered read order) |
+| **Architecture memory** | Registry §L/§M canonical; `session-memos/2026-06-14-conversation-architecture-memory.md` historical |
 | How-to recipes | `docs/dev/recipes/` |
 
 ---
@@ -43,7 +43,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 |------|-----------|---------------|
 | Platform API | `platform/api/src/emcap/` | Generic HTTP + services |
 | Entity SDK | `platform/api/src/emcap/entity/models.py`, `entity/registry.py` | `FieldType` (incl. ENUM, LOOKUP, CURRENCY, TEXTAREA), `lookup_entity` / `currency_code` validation |
-| Metadata display | `platform/api/src/emcap/metadata/display_schema.py`, `metadata/validation.py`, `entity/models.py` `StatusFieldDisplay` | Status chip contract; field-type validation at startup/build |
+| Metadata display | `platform/api/src/emcap/metadata/display_schema.py`, `metadata/validation.py`, `metadata/security.py`, `entity/models.py` `StatusFieldDisplay` | Status chip contract; field-level metadata filter (P23-T01) |
 | **Admin API** | `platform/api/src/emcap/admin/`, `api/routes/admin.py` | Users, roles, settings, templates, ABAC + field access overrides |
 | Seed loader | `platform/api/src/emcap/seed/` | JSON seed apply/purge |
 | Business modules | `modules/*/module.py` | Features **only** under `modules/`; optional `ENTITY_VALIDATORS` export |
@@ -84,7 +84,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 
 | Folder | Contents |
 |--------|----------|
-| `shared/layout/` | `AppLayoutComponent`, `MasterDetailLayoutComponent`, `PageHeaderComponent` |
+| `shared/layout/` | `AppLayoutComponent`, `MasterDetailLayoutComponent`, `PageHeaderComponent` (breadcrumbs P16-T09) |
 | `shared/navigation/` | `SidenavNavComponent`, `TenantSelectComponent` |
 | `shared/data/` | `DynamicDataGridComponent` |
 | `shared/forms/` | `DynamicFormViewComponent` |
@@ -93,7 +93,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `shared/assistant/` | `AssistantChatPanelComponent`, `AssistantMessageBubbleComponent` |
 | `shared/admin/` | `BrandingPreviewPanelComponent` (P19-T05 live preview) |
 | `shared/services/` | `LayoutService`, `ShellContextService`, `ThemeService`, `I18nService` |
-| `shared/utils/` | export, page-title, record, tenant, **branding**, **document-preview**, **document-platform-settings**, **assistant-chat**, **workflow-enabled** helpers |
+| `shared/utils/` | export, page-title, record, tenant, **branding**, **document-preview**, **document-platform-settings**, **security-platform-settings**, **assistant-chat**, **workflow-enabled**, **field-security** helpers |
 | `services/shell-nav.util.ts` | Menu filter + module grouping (app root) |
 
 ---
@@ -145,7 +145,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/services/i18n.service.spec.ts` | Locale bundles |
 | `clients/web/src/app/shared/utils/export.util.spec.ts` | CSV export |
 | `platform/api/tests/test_admin_api.py` | Admin users/roles/settings/templates + ABAC + security policies |
-| `platform/api/tests/test_admin_field_access_override.py` | P13-T10/T11 field `read_roles` override API + record API enforcement |
+| `platform/api/tests/test_admin_field_access_override.py` | P13-T10/T11 field `read_roles` override API + record/metadata enforcement |
 | `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Toolbar title resolution |
 | `clients/web/src/app/shared/utils/document-preview.util.spec.ts` | Document preview mime/version helpers |
 | `clients/web/src/app/shared/documents/document-preview-panel.component.spec.ts` | Document preview panel |
@@ -157,6 +157,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/utils/branding.util.spec.ts` | P19-T05 tenant branding parse + hex normalize |
 | `clients/web/src/app/shared/admin/branding-preview-panel.component.spec.ts` | P19-T05 branding preview panel smoke |
 | `clients/web/src/app/shared/utils/document-platform-settings.util.spec.ts` | P19-T06 parse `documents.*` from platform config |
+| `clients/web/src/app/shared/utils/security-platform-settings.util.spec.ts` | P12C-T19 parse security posture from platform config |
 | `clients/web/src/app/pages/admin/admin-users.component.spec.ts` | P19-T02 admin users smoke (empty state + API load) |
 | `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P19-T02 admin roles smoke (empty state + API load) |
 | `clients/web/src/app/shared/forms/lookup-field.component.spec.ts` | P14-T24 lookup picker |
@@ -180,8 +181,11 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/workflow_sla_util_test.dart` | P17-T02 SLA badge level thresholds |
 | `clients/mobile/test/workflow_enabled_util_test.dart` | P18-T04 platform workflow gate + PRODUCT start code |
 | `clients/mobile/lib/utils/document_platform_settings_util.dart` | P19-T06 parse `documents.*` from GET `/config/platform` |
+| `clients/mobile/lib/utils/security_platform_settings_util.dart` | P12C-T19 parse security posture from GET `/config/platform` |
 | `clients/mobile/test/document_platform_settings_util_test.dart` | P19-T06 document platform settings defaults + config parse |
-| `clients/web/src/app/shared/utils/workflow-enabled.util.spec.ts` | P18-T04 platform workflow gate + PRODUCT start code |
+| `clients/mobile/test/security_platform_settings_util_test.dart` | P12C-T19 security platform settings defaults + ABAC count |
+| `clients/web/src/app/shared/utils/field-security.util.spec.ts` | P23-T02 secured visible field names |
+| `clients/mobile/test/admin_field_access_client_test.dart` | P21-T06 mobile `updateAdminFieldAccess` contract |
 | `clients/web/src/app/pages/entity/entity-list.component.spec.ts` | P15-T15 list route loads grid |
 | `clients/mobile/lib/app/workflow_inbox_screen.dart` | P17-T02 filters, SLA, entity nav, detail panel |
 | `clients/web/src/app/pages/entity/entity-record.component.spec.ts` | P15-T15 `/new` route opens create form |

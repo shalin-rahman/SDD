@@ -4,6 +4,20 @@
       <button type="button" class="page-header__back" (click)="back.emit()">← List</button>
     }
     <div>
+      @if (breadcrumbs.length) {
+        <nav class="page-header__breadcrumbs" aria-label="Breadcrumb">
+          @for (item of breadcrumbs; track item.label; let last = $last) {
+            @if (!last && item.routerLink) {
+              <a class="page-header__crumb" [routerLink]="item.routerLink">{{ item.label }}</a>
+            } @else {
+              <span class="page-header__crumb" [class.page-header__crumb--current]="last">{{ item.label }}</span>
+            }
+            @if (!last) {
+              <span class="page-header__sep" aria-hidden="true">/</span>
+            }
+          }
+        </nav>
+      }
       <h2>{{ title }}</h2>
       @if (subtitle) {
         <p class="page-header__subtitle">{{ subtitle }}</p>

@@ -536,6 +536,18 @@ class EmcapClient {
     return List<Map<String, dynamic>>.from(body['policies'] as List);
   }
 
+  Future<Map<String, dynamic>> updateAdminFieldAccess({
+    required String entityCode,
+    required String fieldName,
+    required List<String> readRoles,
+  }) async {
+    return _request('PUT', '/api/v1/admin/security/field-access', body: {
+      'entity_code': entityCode,
+      'field_name': fieldName,
+      'read_roles': readRoles,
+    });
+  }
+
   Future<List<Map<String, dynamic>>> listAdminTemplates() async {
     final body = await _request('GET', '/api/v1/admin/templates');
     return List<Map<String, dynamic>>.from(body['templates'] as List);

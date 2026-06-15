@@ -14,7 +14,7 @@ New substantive sessions: add a memo here (not only under `~/.cursor/task-summar
 | Need | Path |
 |------|------|
 | Task backlog | `plan/03-task-backlog.md` |
-| Viable product execution | `plan/17-viable-product-execution-playbook.md` |
+| Standard product execution | `plan/17-standard-product-execution-playbook.md` |
 | User feedback | `docs/product/user-feedback-registry.md` |
 | Product readiness | `spec/sdd/07-product-readiness-matrix.md` |
 | Pitfalls | `docs/dev/known-pitfalls.md` |
@@ -41,7 +41,7 @@ New substantive sessions: add a memo here (not only under `~/.cursor/task-summar
 | Phase 13 ABAC | `2026-06-12-phase-13-slice1-abac-admin.md` |
 | Log triage | `2026-06-12-log-triage-fixes.md` |
 | User feedback memory | `2026-06-12-user-feedback-memorized.md`, `2026-06-12-emcap-all-user-feedback-memorized.md` |
-| Viable product master | `2026-06-12-standard-viable-system-master-plan.md` |
+| Standard product master *(retired term: viable)* | `2026-06-12-standard-viable-system-master-plan.md` |
 | Phase 14–15 slice 1 | `2026-06-12-phase-14-15-slice1-product-baseline.md` |
-| Viable product impl | `2026-06-12-viable-product-implementation-slice.md` |
-| Viable product planning | `2026-06-12-viable-product-planning-complete.md` |
+| Standard product impl *(retired term)* | `2026-06-12-viable-product-implementation-slice.md` |
+| Standard product planning *(retired term)* | `2026-06-12-viable-product-planning-complete.md` |

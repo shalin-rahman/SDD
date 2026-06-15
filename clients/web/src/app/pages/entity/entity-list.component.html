@@ -1,5 +1,5 @@
 <div class="entity-list-page">
-  <app-page-header [title]="title">
+  <app-page-header [title]="title" [breadcrumbs]="listBreadcrumbs()">
     <button type="button" class="entity-list-page__new" mat-flat-button color="primary" (click)="startCreate()">
       {{ i18n.t('entity.new') }}
     </button>

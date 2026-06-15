@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
 import {
@@ -17,6 +18,7 @@ import {
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
 import { BrandingPreviewPanelComponent } from '../../shared/admin/branding-preview-panel.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
+import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header.component';
 import { ShellContextService } from '../../shared/services/shell-context.service';
@@ -25,6 +27,10 @@ import {
   parseDocumentPlatformSettings,
   type DocumentPlatformSettings,
 } from '../../shared/utils/document-platform-settings.util';
+import {
+  parseSecurityPlatformSettings,
+  type SecurityPlatformSettings,
+} from '../../shared/utils/security-platform-settings.util';
 import {
   isBrandingPathEditable,
   parseTenantBranding,
@@ -39,6 +45,15 @@ interface EmailTemplate {
   body: string;
 }
 
+interface IntegrationRegistryEntry {
+  id: string;
+  labelKey: string;
+  status: 'configured' | 'partial' | 'not_configured';
+  detail: string;
+}
+
+const TEMPLATE_VARIABLES = ['{{name}}', '{{tenant}}', '{{code}}', '{{date}}'] as const;
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -52,11 +67,13 @@ interface EmailTemplate {
     MatInputModule,
     MatSelectModule,
     MatCardModule,
+    MatChipsModule,
     PageHeaderComponent,
     SettingsToggleGroupComponent,
     MasterDetailLayoutComponent,
     AdminFormPanelComponent,
     DetailPlaceholderComponent,
+    EmptyStateComponent,
     BrandingPreviewPanelComponent,
   ],
   templateUrl: './settings.component.html',
@@ -69,10 +86,14 @@ export class SettingsComponent implements OnInit {
 
   settings: Record<string, unknown> = {};
   editablePaths: string[] = [];
+  overridePaths: string[] = [];
+  integrationOverridePaths: string[] = [];
   templates: EmailTemplate[] = [];
   audit: Record<string, unknown>[] = [];
   loadError = '';
   status = '';
+  reloadHint = '';
+  moduleEffectiveSummary = '';
   tenantStrategy = '';
   multiTenant = false;
 
@@ -82,6 +103,7 @@ export class SettingsComponent implements OnInit {
   templateChannel = 'email';
   templateSubject = '';
   templateBody = '';
+  readonly templateVariables = TEMPLATE_VARIABLES;
   tenantTheme = 'default';
   tenantDomain = 'localhost';
   tenantPrimaryColor = '';
@@ -101,6 +123,7 @@ export class SettingsComponent implements OnInit {
   webhookSecretConfigured = false;
   integrationTestStatus = '';
   documentSettings: DocumentPlatformSettings = parseDocumentPlatformSettings({});
+  securitySettings: SecurityPlatformSettings = parseSecurityPlatformSettings({});
 
   ngOnInit(): void {
     void this.reload();
@@ -124,12 +147,15 @@ export class SettingsComponent implements OnInit {
       ]);
       this.settings = settingsPayload.settings;
       this.editablePaths = settingsPayload.editable_paths ?? [];
+      this.overridePaths = settingsPayload.override_paths ?? [];
       this.integrations = integrationsPayload.integrations;
+      this.integrationOverridePaths = integrationsPayload.override_paths ?? [];
       this.templates = templatesPayload.templates as unknown as EmailTemplate[];
       this.audit = auditPayload.audit;
       this.tenantStrategy = health.tenant_strategy;
       this.multiTenant = health.multi_tenant;
       this.documentSettings = parseDocumentPlatformSettings(platformConfig);
+      this.securitySettings = parseSecurityPlatformSettings(platformConfig);
       const branding = parseTenantBranding(this.settings, platformConfig);
       this.tenantTheme = branding.theme;
       this.tenantDomain = branding.domain;
@@ -138,21 +164,62 @@ export class SettingsComponent implements OnInit {
       this.brandingPrimaryFallback = branding.primaryColor;
       this.syncPaymentFields();
       this.syncIntegrationFields();
+      this.refreshModuleEffectiveSummary();
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : 'Failed to load settings';
     }
   }
 
+  templateChannelBar(): { channel: string; label: string; enabled: boolean }[] {
+    return [
+      {
+        channel: 'email',
+        label: this.i18n.t('settings.channels.email'),
+        enabled: this.bool('notifications', 'email'),
+      },
+      {
+        channel: 'sms',
+        label: this.i18n.t('settings.channels.sms'),
+        enabled: this.smsChannelEnabled(),
+      },
+      {
+        channel: 'push',
+        label: this.i18n.t('settings.channels.push'),
+        enabled: this.pushChannelEnabled(),
+      },
+    ];
+  }
+
+  channelBarStateLabel(enabled: boolean): string {
+    return enabled ? this.i18n.t('settings.channels.enabled') : this.i18n.t('settings.channels.disabled');
+  }
+
   moduleItems(): SettingsToggleItem[] {
     return [
-      { key: 'workflow', label: 'Workflow module', checked: this.flag('modules', 'workflow', 'enabled') },
-      { key: 'payments', label: 'Payments module', checked: this.flag('modules', 'payments', 'enabled') },
+      {
+        key: 'workflow',
+        label: this.i18n.t('settings.modules.workflow'),
+        checked: this.flag('modules', 'workflow', 'enabled'),
+        custom: this.isCustom('modules.workflow.enabled'),
+      },
+      {
+        key: 'payments',
+        label: this.i18n.t('settings.modules.payments'),
+        checked: this.flag('modules', 'payments', 'enabled'),
+        custom: this.isCustom('modules.payments.enabled'),
+      },
       {
         key: 'notifications',
-        label: 'Notifications module',
+        label: this.i18n.t('settings.modules.notifications'),
         checked: this.flag('modules', 'notifications', 'enabled'),
+        custom: this.isCustom('modules.notifications.enabled'),
       },
-      { key: 'ai', label: 'AI module', checked: this.flag('modules', 'ai', 'enabled') },
+      {
+        key: 'ai',
+        label: this.i18n.t('settings.modules.ai'),
+        checked: this.flag('modules', 'ai', 'enabled'),
+        custom: this.isCustom('modules.ai.enabled'),
+      },
     ];
   }
 
@@ -160,53 +227,156 @@ export class SettingsComponent implements OnInit {
     return [
       {
         key: 'username_password',
-        label: 'Username / password login',
+        label: this.i18n.t('settings.auth.usernamePassword'),
         checked: this.bool('authentication', 'username_password'),
+        custom: this.isCustom('authentication.username_password'),
       },
-      { key: 'oauth', label: 'OAuth', checked: this.bool('authentication', 'oauth') },
-      { key: 'ldap', label: 'LDAP', checked: this.bool('authentication', 'ldap') },
-      { key: 'sso', label: 'SSO', checked: this.bool('authentication', 'sso') },
+      {
+        key: 'oauth',
+        label: this.i18n.t('settings.auth.oauth'),
+        checked: this.bool('authentication', 'oauth'),
+        custom: this.isCustom('authentication.oauth'),
+      },
+      {
+        key: 'ldap',
+        label: this.i18n.t('settings.auth.ldap'),
+        checked: this.bool('authentication', 'ldap'),
+        custom: this.isCustom('authentication.ldap'),
+      },
+      {
+        key: 'sso',
+        label: this.i18n.t('settings.auth.sso'),
+        checked: this.bool('authentication', 'sso'),
+        custom: this.isCustom('authentication.sso'),
+      },
     ];
   }
 
   notificationItems(): SettingsToggleItem[] {
     return [
-      { key: 'email', label: 'Email channel', checked: this.bool('notifications', 'email') },
-      { key: 'sms', label: 'SMS channel', checked: this.bool('notifications', 'sms') },
-      { key: 'push', label: 'Push channel', checked: this.bool('notifications', 'push') },
-      { key: 'whatsapp', label: 'WhatsApp channel', checked: this.bool('notifications', 'whatsapp') },
+      {
+        key: 'email',
+        label: this.i18n.t('settings.channels.email'),
+        checked: this.bool('notifications', 'email'),
+        custom: this.isCustom('notifications.email'),
+      },
+      {
+        key: 'sms',
+        label: this.i18n.t('settings.channels.sms'),
+        checked: this.bool('notifications', 'sms'),
+        custom: this.isCustom('notifications.sms'),
+      },
+      {
+        key: 'push',
+        label: this.i18n.t('settings.channels.push'),
+        checked: this.bool('notifications', 'push'),
+        custom: this.isCustom('notifications.push'),
+      },
+      {
+        key: 'whatsapp',
+        label: this.i18n.t('settings.channels.whatsapp'),
+        checked: this.bool('notifications', 'whatsapp'),
+        custom: this.isCustom('notifications.whatsapp'),
+      },
     ];
   }
 
   gridItems(): SettingsToggleItem[] {
     return [
-      { key: 'export_csv', label: 'CSV export', checked: this.bool('grid', 'export_csv') },
-      { key: 'export_excel', label: 'Excel export', checked: this.bool('grid', 'export_excel') },
-      { key: 'export_pdf', label: 'PDF export', checked: this.bool('grid', 'export_pdf') },
-      { key: 'grouping', label: 'Row grouping', checked: this.bool('grid', 'grouping') },
-      { key: 'realtime', label: 'Realtime refresh', checked: this.bool('grid', 'realtime') },
-      { key: 'offline', label: 'Offline sync', checked: this.bool('grid', 'offline') },
+      {
+        key: 'export_csv',
+        label: this.i18n.t('settings.grid.exportCsv'),
+        checked: this.bool('grid', 'export_csv'),
+        custom: this.isCustom('grid.export_csv'),
+      },
+      {
+        key: 'export_excel',
+        label: this.i18n.t('settings.grid.exportExcel'),
+        checked: this.bool('grid', 'export_excel'),
+        custom: this.isCustom('grid.export_excel'),
+      },
+      {
+        key: 'export_pdf',
+        label: this.i18n.t('settings.grid.exportPdf'),
+        checked: this.bool('grid', 'export_pdf'),
+        custom: this.isCustom('grid.export_pdf'),
+      },
+      {
+        key: 'grouping',
+        label: this.i18n.t('settings.grid.grouping'),
+        checked: this.bool('grid', 'grouping'),
+        custom: this.isCustom('grid.grouping'),
+      },
+      {
+        key: 'realtime',
+        label: this.i18n.t('settings.grid.realtime'),
+        checked: this.bool('grid', 'realtime'),
+        custom: this.isCustom('grid.realtime'),
+      },
+      {
+        key: 'offline',
+        label: this.i18n.t('settings.grid.offline'),
+        checked: this.bool('grid', 'offline'),
+        custom: this.isCustom('grid.offline'),
+      },
     ];
   }
 
   workflowItems(): SettingsToggleItem[] {
     return [
-      { key: 'enabled', label: 'Workflow engine', checked: this.bool('workflow', 'enabled') },
-      { key: 'escalation', label: 'Escalation', checked: this.bool('workflow', 'escalation') },
-      { key: 'delegation', label: 'Delegation', checked: this.bool('workflow', 'delegation') },
-      { key: 'sla_tracking', label: 'SLA tracking', checked: this.bool('workflow', 'sla_tracking') },
+      {
+        key: 'enabled',
+        label: this.i18n.t('settings.workflow.engine'),
+        checked: this.bool('workflow', 'enabled'),
+        custom: this.isCustom('workflow.enabled'),
+      },
+      {
+        key: 'escalation',
+        label: this.i18n.t('settings.workflow.escalation'),
+        checked: this.bool('workflow', 'escalation'),
+        custom: this.isCustom('workflow.escalation'),
+      },
+      {
+        key: 'delegation',
+        label: this.i18n.t('settings.workflow.delegation'),
+        checked: this.bool('workflow', 'delegation'),
+        custom: this.isCustom('workflow.delegation'),
+      },
+      {
+        key: 'sla_tracking',
+        label: this.i18n.t('settings.workflow.slaTracking'),
+        checked: this.bool('workflow', 'sla_tracking'),
+        custom: this.isCustom('workflow.sla_tracking'),
+      },
     ];
   }
 
   rulesItems(): SettingsToggleItem[] {
     return [
-      { key: 'formula_enabled', label: 'Formula rules', checked: this.bool('rules', 'formula_enabled') },
-      { key: 'scripting_enabled', label: 'Scripting rules', checked: this.bool('rules', 'scripting_enabled') },
+      {
+        key: 'formula_enabled',
+        label: this.i18n.t('settings.rules.formula'),
+        checked: this.bool('rules', 'formula_enabled'),
+        custom: this.isCustom('rules.formula_enabled'),
+      },
+      {
+        key: 'scripting_enabled',
+        label: this.i18n.t('settings.rules.scripting'),
+        checked: this.bool('rules', 'scripting_enabled'),
+        custom: this.isCustom('rules.scripting_enabled'),
+      },
     ];
   }
 
   paymentItems(): SettingsToggleItem[] {
-    return [{ key: 'enabled', label: 'Payments enabled', checked: this.bool('payments', 'enabled') }];
+    return [
+      {
+        key: 'enabled',
+        label: this.i18n.t('settings.payments.enabled'),
+        checked: this.bool('payments', 'enabled'),
+        custom: this.isCustom('payments.enabled'),
+      },
+    ];
   }
 
   paymentsModuleEnabled(): boolean {
@@ -218,20 +388,129 @@ export class SettingsComponent implements OnInit {
   }
 
   aiItems(): SettingsToggleItem[] {
-    return [{ key: 'enabled', label: 'AI assistant enabled', checked: this.bool('ai', 'enabled') }];
+    return [
+      {
+        key: 'enabled',
+        label: this.i18n.t('settings.ai.enabled'),
+        checked: this.bool('ai', 'enabled'),
+        custom: this.isCustom('ai.enabled'),
+      },
+    ];
   }
 
   auditItems(): SettingsToggleItem[] {
     return [
-      { key: 'enabled', label: 'Audit logging', checked: this.bool('audit', 'enabled') },
-      { key: 'immutable', label: 'Immutable audit trail', checked: this.bool('audit', 'immutable') },
+      {
+        key: 'enabled',
+        label: this.i18n.t('settings.audit.enabled'),
+        checked: this.bool('audit', 'enabled'),
+        custom: this.isCustom('audit.enabled'),
+      },
+      {
+        key: 'immutable',
+        label: this.i18n.t('settings.audit.immutable'),
+        checked: this.bool('audit', 'immutable'),
+        custom: this.isCustom('audit.immutable'),
+      },
     ];
+  }
+
+  integrationRegistry(): IntegrationRegistryEntry[] {
+    const restConfigured = this.restBaseUrl.trim().length > 0;
+    const kafkaConfigured =
+      this.kafkaBootstrap.trim().length > 0 && this.kafkaTopicPrefix.trim().length > 0;
+    const kafkaPartial =
+      (this.kafkaBootstrap.trim().length > 0) !== (this.kafkaTopicPrefix.trim().length > 0);
+    const soapConfigured = this.soapEndpoint.trim().length > 0;
+    return [
+      {
+        id: 'rest',
+        labelKey: 'settings.integrations.registry.rest',
+        status: restConfigured ? 'configured' : 'not_configured',
+        detail: restConfigured ? this.restBaseUrl : this.i18n.t('settings.integrations.registry.notSet'),
+      },
+      {
+        id: 'kafka',
+        labelKey: 'settings.integrations.registry.kafka',
+        status: kafkaConfigured ? 'configured' : kafkaPartial ? 'partial' : 'not_configured',
+        detail: kafkaConfigured
+          ? `${this.kafkaBootstrap} · ${this.kafkaTopicPrefix}`
+          : this.i18n.t('settings.integrations.registry.notSet'),
+      },
+      {
+        id: 'soap',
+        labelKey: 'settings.integrations.registry.soap',
+        status: soapConfigured ? 'configured' : 'not_configured',
+        detail: soapConfigured ? this.soapEndpoint : this.i18n.t('settings.integrations.registry.notSet'),
+      },
+      {
+        id: 'webhook',
+        labelKey: 'settings.integrations.registry.webhook',
+        status: this.webhookSecretConfigured ? 'configured' : 'not_configured',
+        detail: this.webhookSecretConfigured
+          ? this.i18n.t('settings.integrations.registry.secretConfigured')
+          : this.i18n.t('settings.integrations.registry.notSet'),
+      },
+    ];
+  }
+
+  integrationStatusLabel(status: IntegrationRegistryEntry['status']): string {
+    if (status === 'configured') {
+      return this.i18n.t('settings.integrations.registry.statusConfigured');
+    }
+    if (status === 'partial') {
+      return this.i18n.t('settings.integrations.registry.statusPartial');
+    }
+    return this.i18n.t('settings.integrations.registry.statusNotConfigured');
+  }
+
+  selectPaymentProvider(provider: (typeof this.paymentProviders)[number]): void {
+    if (!this.paymentCredentialsEnabled()) {
+      return;
+    }
+    this.paymentProvider = provider;
+  }
+
+  paymentProviderSelected(provider: string): boolean {
+    return this.paymentProvider === provider;
+  }
+
+  insertTemplateVariable(variable: string): void {
+    this.templateBody = `${this.templateBody}${variable}`;
+  }
+
+  smsChannelEnabled(): boolean {
+    return this.bool('notifications', 'sms');
+  }
+
+  pushChannelEnabled(): boolean {
+    return this.bool('notifications', 'push');
+  }
+
+  private isCustom(path: string): boolean {
+    return this.overridePaths.includes(path);
+  }
+
+  private refreshModuleEffectiveSummary(): void {
+    const enabled = this.moduleItems()
+      .filter((item) => item.checked)
+      .map((item) => item.label);
+    this.moduleEffectiveSummary =
+      enabled.length > 0
+        ? `${this.i18n.t('settings.modules.effectivePrefix')} ${enabled.join(', ')}`
+        : this.i18n.t('settings.modules.effectiveNone');
   }
 
   virusScanLabel(): string {
     return this.documentSettings.virusScanEnabled
       ? this.i18n.t('settings.documents.enabled')
       : this.i18n.t('settings.documents.disabled');
+  }
+
+  securityHeadersLabel(): string {
+    return this.securitySettings.securityHeadersEnabled
+      ? this.i18n.t('settings.security.headersEnabled')
+      : this.i18n.t('settings.security.headersDisabled');
   }
 
   brandingPrimaryEditable(): boolean {
@@ -401,16 +680,21 @@ export class SettingsComponent implements OnInit {
     this.applyPaymentCredentials();
     this.applyIntegrationFields();
     this.status = '';
+    this.reloadHint = '';
     try {
       const [settingsPayload, integrationsPayload] = await Promise.all([
         this.api.client.updateAdminSettings(this.settings),
         this.api.client.updateAdminIntegrations(this.integrations),
       ]);
       this.settings = settingsPayload.settings;
+      this.overridePaths = settingsPayload.override_paths ?? [];
       this.integrations = integrationsPayload.integrations;
+      this.integrationOverridePaths = integrationsPayload.override_paths ?? [];
       this.syncPaymentFields();
       this.syncIntegrationFields();
       this.status = this.i18n.t('settings.saved');
+      this.reloadHint = this.i18n.t('settings.reloadHint');
+      this.refreshModuleEffectiveSummary();
       await this.shellContext.load();
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : 'Save failed';

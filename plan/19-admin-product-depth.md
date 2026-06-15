@@ -1,7 +1,7 @@
 # Phase 19 — Admin & settings product depth
 
 **Status:** Planned — **start after M1** (feedback C7, C8)  
-**Parent:** `plan/17-viable-product-execution-playbook.md` §11  
+**Parent:** `plan/17-standard-product-execution-playbook.md` §11  
 **Supersedes:** Phase 13 as “next admin work” — resumed Phase 12 partial items  
 **Prior:** `plan/13-enterprise-admin-depth.md` (ABAC slice 1 Done)
 

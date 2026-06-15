@@ -219,4 +219,23 @@
       {{ i18n.t('admin.security.saveAbac') }}
     </button>
   }
+  <div class="security-abac-test">
+    <h4>{{ i18n.t('admin.security.abacTestTitle') }}</h4>
+    <input
+      [(ngModel)]="abacTestPermission"
+      name="abacTestPermission"
+      [placeholder]="i18n.t('admin.security.abacTestPlaceholder')"
+    />
+    <button type="button" mat-button (click)="testAbacPermission()">
+      {{ i18n.t('admin.security.abacTestRun') }}
+    </button>
+    @if (abacTestError) {
+      <p class="error">{{ abacTestError }}</p>
+    }
+    @if (abacTestAllowed !== null) {
+      <p>
+        {{ abacTestAllowed ? i18n.t('admin.security.abacTestAllowed') : i18n.t('admin.security.abacTestDenied') }}
+      </p>
+    }
+  </div>
 </section>

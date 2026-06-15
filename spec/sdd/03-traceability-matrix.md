@@ -109,7 +109,7 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | Req / goal | Implementation | Task IDs | Evidence |
 |------------|----------------|----------|----------|
 | FR-008d Product shell | `shared/layout/app-layout`, `SidenavNavComponent`, `ShellContextService` | P12A-T01–T04, T10–T11 | `06` matrix Partial; `shell-nav.util.spec.ts` |
-| FR-008d Master–detail | `MasterDetailLayoutComponent`, `DynamicDataGridComponent`, entity page | P12A-T04–T05 | `entity.component.html`; mobile `detailOpen` |
+| FR-008d Entity list + record routes | `entity-list`, `entity-record`, `DynamicDataGridComponent`; admin panes use `MasterDetailLayoutComponent` | P12A-T04–T05, P15-T15/T17 | `entity-list.component.html`, `entity-record.component.html`; mobile push `entity_record_screen.dart` |
 | FR-008d Page title | `page-title.util.ts` + toolbar | P12A-T09 | `page-title.util.spec.ts` |
 | FR-008d i18n / themes | `ThemeService`, `I18nService`, toolbar switcher | P12A-T06–T07 | `theme.service.spec.ts`, `i18n.service.spec.ts` |
 | FR-002 Admin identity | `/api/v1/admin/users|roles`, `pages/admin/*`, guards | P12B-T01–T07 | `test_admin_api.py` |

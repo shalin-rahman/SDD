@@ -1,7 +1,12 @@
 <div class="settings-toggle-group">
   @for (item of items; track item.key) {
     <div class="settings-toggle-group__row">
-      <span class="settings-toggle-group__label">{{ item.label }}</span>
+      <span class="settings-toggle-group__label">
+        {{ item.label }}
+        @if (item.custom) {
+          <span class="emcap-badge">{{ customBadgeLabel }}</span>
+        }
+      </span>
       <mat-checkbox [checked]="item.checked" (change)="onChange(item, $event)" />
     </div>
   }

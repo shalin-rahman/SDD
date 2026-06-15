@@ -86,7 +86,7 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 |--|--|
 | **Symptom** | `flutter` not recognized; cannot run `clients/mobile`, capture M2 screenshots, or P16-T03 tokens |
 | **Where** | S2 (P15-T13, P20-T03), S3 (P16-T03), P17-T02 mobile inbox |
-| **Workaround** | **Skip S2/S3** on this machine; continue **web-only** viable product (P17 reports/docs, P14 lookup, P19 admin). M1 web gate already signed. |
+| **Workaround** | **Skip S2/S3** on this machine; continue **web-only** standard product (P17 reports/docs, P14 lookup, P19 admin). M1 web gate already signed. |
 | **To unblock M2** | Install Flutter SDK, add `flutter\bin` to PATH, then follow `scripts/capture-m2-mobile-screenshots.md` (`flutter pub get`, `flutter test`, run app, capture `phase15-mobile-product-detail.png`). Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. |
 | **CI** | Mobile lint/test still runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter optional until M2 sign-off. |
 
@@ -152,6 +152,23 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | 405 on workflow transition |
 | **Fix** | Match `workflows.py` route exactly (POST body shape) |
 | **Test** | `test_inventory_e2e.py` workflow lifecycle |
+
+### Field security — metadata leaks restricted fields
+
+| | |
+|--|--|
+| **Symptom** | Viewer sees restricted field labels/inputs; only record values were stripped |
+| **Where** | `api/routes/metadata.py` — must filter via `metadata/security.py` + `can_read_field()` |
+| **Fix** | Filter form/grid metadata by `read_roles` + admin field overrides; web uses `securedVisibleFieldNames` |
+| **Test** | `test_admin_field_access_override.py::test_metadata_form_hides_restricted_fields_for_viewer` |
+
+### SQLite databases committed to git
+
+| | |
+|--|--|
+| **Symptom** | `emcap-local.db` / `emcap.db` show in `git status` |
+| **Fix** | `*.db` in `.gitignore`; `git rm --cached` tracked DB files before push |
+| **Test** | `git check-ignore -v emcap-local.db` |
 
 ### Document upload missing entity context
 
@@ -477,13 +494,32 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Filter menus client-side AND optionally server-side in `list_menus` |
 | **Test** | Toggle in settings → nav updates without YAML edit |
 
-### Master–detail still stacked on desktop
+### ABAC `evaluate_abac` prefers user attrs over resource context
 
 | | |
 |--|--|
-| **Symptom** | List above form; not single-page ERP layout |
-| **Fix** | `mat-sidenav-container` or CSS grid split ≥1024px |
-| **Test** | `entity.component.spec.ts`; visual at 1280px |
+| **Symptom** | `test_admin_abac_check_auth_deny_path` allow branch fails; literal policy values never match payload `tenant_id` |
+| **Where** | `platform/api/src/emcap/auth/abac.py` — `_actual_attribute_value` |
+| **Cause** | `actual = user_attrs.get(attr) or resource_attrs.get(attr)` always read user tenant first |
+| **Fix** | Resolve `actual` from `resource_attrs` when policy value is literal or references `$user.` / `$resource.` |
+| **Test** | `test_admin_abac_check_auth_deny_path` + `test_abac_check` |
+
+### Tracked SQLite databases in git index
+
+| | |
+|--|--|
+| **Symptom** | `git status` shows `emcap-local.db` or `platform/api/emcap*.db` after local stack runs |
+| **Cause** | DB files were committed before `.gitignore` `*.db` / `emcap*.db` rule |
+| **Fix** | `git rm --cached emcap-local.db platform/api/emcap-local.db platform/api/emcap.db` (keeps local files); verify with `git check-ignore emcap-local.db` |
+| **Prevention** | `.gitignore` lines `*.db` and `emcap*.db`; never `git add` local SQLite |
+
+### Stale `entity.component` or master–detail entity UX docs
+
+| | |
+|--|--|
+| **Symptom** | Docs/skills reference `entity.component.*` or stacked list+form on one entity route |
+| **Fix** | Web: separate `entity-list` + `entity-record` routes; mobile: push `entity_record_screen.dart`; master–detail only for **admin** panes |
+| **Test** | Grep `entity.component` → 0 outside `docs/dev/session-memos/` |
 
 ### New admin client method without contract test
 
@@ -525,9 +561,37 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Same change: `docs/dev/recipes/sync-docs-after-change.md` · rule `.cursor/rules/emcap-doc-sync.mdc` |
 | **Test** | PR checklist section 6 in `plan/12-phase12-dod-checklist.md` |
 
+### Angular self-closing component with projected content (NG5002)
+
+| | |
+|--|--|
+| **Error** | `NG5002: Unexpected closing tag "app-page-header"` or self-closing tag rejects child nodes |
+| **Where** | `entity-record.component.html` — `<app-record-detail-header ... />` with toolbar/actions inside |
+| **Cause** | Angular treats `/>` as void element; projected content between open/self-close is invalid |
+| **Fix** | Use explicit open/close tags: `<app-record-detail-header>...</app-record-detail-header>`; ensure every custom element is properly closed |
+| **Test** | `cd clients/web && npm run build` before marking Phase 12 UI Done |
+
+### Admin API response field missing on TypeScript interface
+
+| | |
+|--|--|
+| **Error** | TS2339: Property `override_paths` does not exist on type `AdminSettingsResponse` |
+| **Where** | `settings.component.ts` reading `settingsPayload.override_paths` |
+| **Cause** | Backend added `override_paths` to GET/PUT `/admin/settings` without updating `emcap-client.ts` |
+| **Fix** | Add new fields to `AdminSettingsResponse` (and integrations response) in **same PR** as API or consumer |
+| **Test** | `npm run build` + `settings.component.spec.ts` mock includes new fields |
+
+### Claiming Phase 12 Done without `npm run build`
+
+| | |
+|--|--|
+| **Symptom** | Karma/pytest green but CI `client-lint-web` fails on template or strict TS errors |
+| **Fix** | Run `cd clients/web && npm run build && npm run test:ci` locally before matrix/backlog Done |
+| **Test** | `.github/workflows/ci.yml` `client-lint-web` job |
+
 ---
 
-## Phase 16 — Viable product / entity platform (prevent reintroduction)
+## Phase 16 — Standard product / entity platform (prevent reintroduction)
 
 ### Stale local API after platform entity changes
 
@@ -544,7 +608,7 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 |--|--|
 | **Symptom** | Save shows error after editing a record left open; API returns **409** with version conflict detail |
 | **Cause** | Stale `record_version` in form — another session/tab incremented version, or grid reload did not refresh detail |
-| **Where** | `platform/api/src/emcap/persistence/repository.py` (PUT); web `entity.component.ts` sends `If-Match` from `formValues['record_version']` |
+| **Where** | `platform/api/src/emcap/persistence/repository.py` (PUT); web `entity-record.component.ts` sends `If-Match` from `formValues['record_version']` |
 | **Fix** | Re-select row or reload list to fetch current `record_version`; submit again with fresh version; do not strip `record_version` from loaded record |
 | **Test** | `test_system_fields.py::test_version_conflict_returns_409` |
 
