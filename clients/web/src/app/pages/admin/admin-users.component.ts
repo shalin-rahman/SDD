@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,7 +15,7 @@ import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { AdminListToolbarComponent } from '../../shared/admin/admin-list-toolbar.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { formatRoleSummary } from '../../shared/utils/permission.util';
@@ -41,7 +40,6 @@ interface AdminUser {
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatChipsModule,
     PageHeaderComponent,
     MasterDetailLayoutComponent,
     AdminListToolbarComponent,
@@ -57,6 +55,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   private readonly layout = inject(LayoutService);
   readonly i18n = inject(I18nService);
   private readonly destroy$ = new Subject<void>();
+
+  adminBreadcrumbs(): PageBreadcrumb[] {
+    return [
+      { label: this.i18n.t('shell.breadcrumb.admin') },
+      { label: this.i18n.t('admin.users.title') },
+    ];
+  }
 
   users: AdminUser[] = [];
   roles: Array<{ id: string; code: string; name: string }> = [];

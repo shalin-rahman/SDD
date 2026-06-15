@@ -772,6 +772,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Chip(
+                        label: Text(
+                          EmcapLocale.t('settings.documents.readOnlyBadge'),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     _documentSettingRow(
                       EmcapLocale.t('settings.documents.storageBackend'),
                       _documentSettings.storageBackend,

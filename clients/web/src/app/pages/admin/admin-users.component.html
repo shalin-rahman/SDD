@@ -1,6 +1,7 @@
 <app-page-header
   [title]="i18n.t('admin.users.title')"
   [subtitle]="i18n.t('admin.users.subtitle')"
+  [breadcrumbs]="adminBreadcrumbs()"
   [showBack]="isMobile && detailOpen"
   (back)="closeDetail()"
 >
@@ -40,9 +41,13 @@
         <ng-container matColumnDef="active">
           <th mat-header-cell *matHeaderCellDef>Active</th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip [class.status-chip--active]="row.active" [class.status-chip--inactive]="!row.active">
+            <span
+              class="emcap-badge"
+              [class.emcap-badge--on]="row.active"
+              [class.emcap-badge--off]="!row.active"
+            >
               {{ row.active ? i18n.t('entity.statusActive') : i18n.t('entity.statusInactive') }}
-            </mat-chip>
+            </span>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

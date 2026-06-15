@@ -22,6 +22,7 @@ import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header.component';
 import { ShellContextService } from '../../shared/services/shell-context.service';
+import { ThemeService } from '../../shared/services/theme.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import {
   parseDocumentPlatformSettings,
@@ -32,9 +33,12 @@ import {
   type SecurityPlatformSettings,
 } from '../../shared/utils/security-platform-settings.util';
 import {
+  formatContrastRatio,
+  hasAdequatePrimaryContrast,
   isBrandingPathEditable,
   parseTenantBranding,
   previewPrimaryColor,
+  primaryOnWhiteContrast,
 } from '../../shared/utils/branding.util';
 
 interface EmailTemplate {
@@ -82,6 +86,7 @@ const TEMPLATE_VARIABLES = ['{{name}}', '{{tenant}}', '{{code}}', '{{date}}'] as
 export class SettingsComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
   private readonly shellContext = inject(ShellContextService);
+  private readonly theme = inject(ThemeService);
   readonly i18n = inject(I18nService);
 
   settings: Record<string, unknown> = {};
@@ -529,6 +534,21 @@ export class SettingsComponent implements OnInit {
     return !this.brandingPrimaryEditable() && !this.brandingLogoEditable();
   }
 
+  brandingContrastAdequate(): boolean {
+    return hasAdequatePrimaryContrast(this.brandingPreviewPrimary());
+  }
+
+  brandingContrastRatioLabel(): string {
+    return formatContrastRatio(primaryOnWhiteContrast(this.brandingPreviewPrimary()));
+  }
+
+  brandingContrastHint(): string {
+    const ratio = `${this.brandingContrastRatioLabel()}:1`;
+    return this.brandingContrastAdequate()
+      ? `${this.i18n.t('settings.branding.contrastOk')} (${ratio})`
+      : `${this.i18n.t('settings.branding.contrastWarning')} (${ratio})`;
+  }
+
   onModuleChange(event: { key: string; checked: boolean }): void {
     this.setFlag('modules', event.key, 'enabled', event.checked);
   }
@@ -695,6 +715,9 @@ export class SettingsComponent implements OnInit {
       this.status = this.i18n.t('settings.saved');
       this.reloadHint = this.i18n.t('settings.reloadHint');
       this.refreshModuleEffectiveSummary();
+      if (this.brandingPrimaryEditable()) {
+        this.theme.applyTenantPrimary(this.brandingPreviewPrimary());
+      }
       await this.shellContext.load();
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : 'Save failed';

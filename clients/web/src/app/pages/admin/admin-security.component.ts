@@ -10,7 +10,7 @@ import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.com
 import { PermissionPickerComponent } from '../../shared/admin/permission-picker.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { I18nService } from '../../shared/services/i18n.service';
 import { hasPermission } from '../../services/shell-nav.util';
 import { extractUserPermissions } from '../../shared/utils/tenant.util';
@@ -35,6 +35,13 @@ import { extractUserPermissions } from '../../shared/utils/tenant.util';
 export class AdminSecurityComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
   readonly i18n = inject(I18nService);
+
+  adminBreadcrumbs(): PageBreadcrumb[] {
+    return [
+      { label: this.i18n.t('shell.breadcrumb.admin') },
+      { label: this.i18n.t('admin.security.title') },
+    ];
+  }
 
   entities: SecurityPolicyEntity[] = [];
   rules: Record<string, string> = {};

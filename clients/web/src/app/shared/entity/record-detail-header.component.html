@@ -5,11 +5,13 @@
       <p class="record-header__subtitle">{{ subtitle }}</p>
     }
     @if (statusLabel) {
-      <mat-chip-set>
-        <mat-chip [highlighted]="statusActive" class="record-header__status">
-          {{ statusLabel }}
-        </mat-chip>
-      </mat-chip-set>
+      <span
+        class="emcap-badge record-header__status"
+        [class.emcap-badge--on]="statusActive"
+        [class.emcap-badge--off]="!statusActive"
+      >
+        {{ statusLabel }}
+      </span>
     }
   </div>
   <div class="record-header__actions">

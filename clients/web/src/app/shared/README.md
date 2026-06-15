@@ -33,6 +33,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `LookupPickerDialogComponent` | (dialog) | Search/select target entity record |
 | `CurrencyFieldComponent` | `app-currency-field` | Currency input with `currency_code` label |
 | `RecordTabsComponent` | `app-record-tabs` | Notes, documents, audit, workflow tabs on a record |
+| `RecordDetailHeaderComponent` | `app-record-detail-header` | Entity record hero: headline, subtitle, `.emcap-badge` status, action toolbar |
 | `DocumentPreviewPanelComponent` | `app-document-preview-panel` | Side panel: PDF/image inline, text snippet, download CTA, virus badge |
 
 ## Assistant (P17-T09)
@@ -50,7 +51,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `AdminListToolbarComponent` | `app-admin-list-toolbar` | List pane “New” action |
 | `PermissionPickerComponent` | `app-permission-picker` | Grouped checkbox permission assignment |
 | `SettingsToggleGroupComponent` | `app-settings-toggle-group` | Aligned label + toggle rows |
-| `BrandingPreviewPanelComponent` | `app-branding-preview-panel` | P19-T05 live shell snippet with scoped `--emcap-primary` |
+| `BrandingPreviewPanelComponent` | `app-branding-preview-panel` | P19-T05 live shell snippet with scoped `--emcap-primary` + WCAG contrast hint |
 
 ## Services & utils
 

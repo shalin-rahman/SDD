@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-14 (Slice 15C — separate list/record routes; entity-pack screenshots refreshed)
+**Last updated:** 2026-06-15 (M6 branding/doc PNGs re-captured; P16-T05 `RecordDetailHeaderComponent` `.emcap-badge`; NG8107 admin-security fix)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -30,7 +30,7 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | **M3** | Entity platform (lookup, status contract, UI complete) | Layout designer UI | **Partial** — 14A-S2 Done; P14-T21–T22 field-type API Done |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile open |
 | **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM + LOW_STOCK nav/report screenshots 2026-06-14 |
-| **M6** | Admin/settings product depth | — | **Partial** — P19-T01–T03 Done; T05/T06 Partial; field-access screenshot |
+| **M6** | Admin/settings product depth | — | **Partial** — P19-T01–T06 Demo+ with 5 admin/settings PNGs (IA, users, security, branding, documents); admin breadcrumbs + `.emcap-badge` on users/settings/entity record header |
 
 ---
 
@@ -118,11 +118,13 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Area | Backlog says | Product readiness | Plan |
 |------|--------------|-------------------|------|
-| Enterprise shell / nav | Many Done | **Demo** | P16-T09 |
-| Admin users/roles | Done | **Demo** | `phase19-admin-users-web.png` — P19-T02 search, active chips, empty state |
-| Settings hub | Partial/Done | **Demo** | `phase19-settings-ia-web.png` — P19-T01 mat-tab IA (Modules \| Identity \| Platform \| Integrations) |
+| Enterprise shell / nav | Many Done | **Demo** | P16-T09 — entity + **admin** breadcrumbs (`shell.breadcrumb.admin`) |
+| Admin users/roles | Done | **Demo** | `phase19-admin-users-web.png` — P19-T02; `.emcap-badge--on`/`--off` active chips |
+| Entity record header | Done | **Demo** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` status (ADR-006) |
+| Settings hub | Partial/Done | **Demo** | `phase19-settings-ia-web.png` — P19-T01 mat-tab IA |
+| Tenant branding preview | Done | **Demo** | P19-T05 — live preview + contrast badge; `phase19-settings-branding-web.png` |
 | ABAC editor (P13) | Done | **Wired** | P19-T04 |
-| Document platform settings | Partial | **No** | P19-T06, P12C-T12 — web read-only Platform tab; mobile pending |
+| Document platform settings | Done | **Demo** | P19-T06 — Platform tab badge chips; `phase19-settings-documents-web.png` |
 | Integrations on Account | Done | **Wired** (wrong place) | P19-T10, P17-T08 |
 | Report schedules | Done | **Demo** | P17-T03 |
 

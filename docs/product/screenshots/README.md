@@ -16,7 +16,7 @@ docs/product/screenshots/
 
 Reference paths in PRs, `spec/sdd/07-product-readiness-matrix.md`, and phase playbooks — not external attachments.
 
-**Inventory:** 25+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + P18 workflow tab + P19 admin security field-access + account profile.
+**Inventory:** 25+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + P18 workflow tab + P19 admin security field-access + account profile. **Pending:** branding + documents settings PNGs via `--only=admin-settings`.
 
 ---
 
@@ -94,13 +94,15 @@ Captured 2026-06-14 via `scripts/capture-screenshot-sprint.mjs` after parallel a
 | 13 | `phase18-crm-contact-grid-web.png` | `/app/entity/CONTACT` — grid | P18-T06 |
 | 14 | `phase18-crm-contact-detail-web.png` | CONTACT selected row | P18-T06 |
 
-### P19 — Admin / settings (3)
+### P19 — Admin / settings (5)
 
 | # | Filename | Route / scene | Task |
 |---|----------|---------------|------|
 | 15 | `phase19-settings-ia-web.png` | `/app/settings` — mat-tab IA (Modules \| Identity \| Platform \| Integrations) | P19-T01 |
 | 16 | `phase19-admin-users-web.png` | `/app/admin/users` — search, active chips, table or empty state | P19-T02 |
 | 17 | `phase19-admin-security-field-access-web.png` | `/app/admin/security` — field matrix + edit panel | P19-T03 |
+| 18 | `phase19-settings-branding-web.png` | `/app/settings` → Integrations tab → Branding panel + live preview | P19-T05 |
+| 19 | `phase19-settings-documents-web.png` | `/app/settings` → Platform tab → Documents cards + badge chips | P19-T06 |
 
 ### P18 — PRODUCT workflow (1)
 
@@ -128,6 +130,7 @@ node scripts/capture-screenshot-sprint.mjs
 node scripts/capture-screenshot-sprint.mjs --only=entity-packs
 node scripts/capture-screenshot-sprint.mjs --only=product-workflow
 node scripts/capture-screenshot-sprint.mjs --only=admin-security
+node scripts/capture-screenshot-sprint.mjs --only=admin-settings
 ```
 
 Entity-pack only refreshes WAREHOUSE, STOCK_MOVEMENT, LEAD, CONTACT grid + detail PNGs (Slice 15C separate routes).

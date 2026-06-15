@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-15 (rev. 14 — Phase 12 partials closed; security read-only cards)
+**Last updated:** 2026-06-15 (rev. 16 — P16-T05 admin `.emcap-badge`; admin breadcrumbs; M6 screenshot script)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -30,7 +30,7 @@
 
 |------------|-----|--------|-------|
 
-| Design system (Material / tokens) | Partial | Partial | Material shell + light/dark theme (P12A / P12D / P12F) |
+| Design system (Material / tokens) | Partial | Partial | Material shell + `--emcap-*` badges on admin/settings (P16-T05 partial) |
 
 | Responsive app shell | Partial | Partial | Sidenav/drawer + rail ≥900px; **entity separate list/record routes** (not master–detail) |
 
@@ -56,7 +56,7 @@
 
 | White-label theme from tenant | Partial | Partial | Partial | Seed color from tenant config |
 
-| **Tenant branding admin UI** | No | Partial | Partial | Settings split-pane: primary/logo + live preview (P19-T05); theme/domain save via admin PUT |
+| **Tenant branding admin UI** | No | Partial | Partial | Settings Integrations tab: split-pane live preview, primary/logo save, WCAG contrast hint (P19-T05 Done) |
 
 | Isolation strategy display | Done | Partial | Partial | Settings read-only line |
 
@@ -124,7 +124,7 @@
 
 | Layout designer | No | N/A | Phase 13 |
 
-| Breadcrumbs / page titles | Partial | Partial | AppBar title from selection |
+| Breadcrumbs / page titles | Partial | Partial | Entity list/record + admin users/roles/security/permissions (`P16-T09`) |
 
 
 
@@ -148,7 +148,7 @@
 
 | Permission assignment UI | Partial | Partial | Partial | Checkbox picker by module; list shows grouped chips; matrix read-only |
 
-| List / CRUD users | Done | Done | Done | Admin users screen; P19-T02 search, active chips, empty state |
+| List / CRUD users | Done | Done | Done | Admin users screen; P19-T02 search; `.emcap-badge` active chips (P16-T05) |
 
 | Assign role to user | Done | Done | Done | Role multi-select checkboxes |
 
@@ -238,7 +238,7 @@
 
 | Document upload/list on record | Done | Done | Done | — |
 
-| Document platform settings UI | Partial | Partial | Partial | Read-only cards web + mobile (P12C-T12 Done; polish P19-T06) |
+| Document platform settings UI | Partial | Partial | Partial | Read-only Platform tab + mobile Documents section with badge chips (P19-T06 Done) |
 
 | Integration registry admin | Partial | Partial | Partial | Settings integrations panel + test REST (P12F-T30–T36) |
 

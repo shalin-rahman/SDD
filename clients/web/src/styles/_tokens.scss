@@ -7,6 +7,7 @@
   --emcap-text: #1a1a1a;
   --emcap-text-muted: #5f6368;
   --emcap-color-error: #b00020;
+  --emcap-color-success: #1b5e20;
   --emcap-color-on-primary: #ffffff;
 
   --emcap-color-primary: var(--emcap-primary);
@@ -58,4 +59,20 @@ html[data-theme='dark'] {
   background: color-mix(in srgb, var(--emcap-primary) 12%, transparent);
   border-radius: var(--emcap-radius-sm);
   padding: 0.1rem 0.35rem;
+}
+
+.emcap-badge--on {
+  color: var(--emcap-color-success);
+  background: color-mix(in srgb, var(--emcap-color-success) 12%, transparent);
+}
+
+.emcap-badge--off,
+.emcap-badge--muted {
+  color: var(--emcap-text-muted);
+  background: var(--emcap-color-surface-container);
+}
+
+.emcap-badge--warn {
+  color: var(--emcap-color-error);
+  background: color-mix(in srgb, var(--emcap-color-error) 12%, transparent);
 }

@@ -1,6 +1,7 @@
 <app-page-header
   [title]="i18n.t('admin.permissions.title')"
   [subtitle]="i18n.t('admin.permissions.subtitle')"
+  [breadcrumbs]="adminBreadcrumbs()"
 >
   <a mat-button routerLink="/app/admin/users">Users</a>
   <a mat-button routerLink="/app/admin/roles">Roles</a>

@@ -32,8 +32,8 @@
 .settings-template-line,
 .settings-audit-line,
 .settings-readonly {
-  color: #666;
-  font-size: 0.875rem;
+  color: var(--emcap-text-muted);
+  font-size: var(--emcap-font-body-sm);
 }
 
 .settings-template-list {
@@ -73,6 +73,15 @@
   margin-top: 0.5rem;
 }
 
+.settings-documents-header {
+  margin-top: 0.5rem;
+}
+
+.settings-branding-contrast-hint {
+  margin: -0.25rem 0 0.5rem;
+  grid-column: 1 / -1;
+}
+
 .settings-document-card mat-card-title {
   font-size: 0.875rem;
 }
@@ -92,8 +101,8 @@
 
 .settings-branding-preview-label {
   margin: 0 0 0.5rem;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: var(--emcap-font-body-sm);
+  color: var(--emcap-text-muted);
 }
 
 .settings-integration-registry {

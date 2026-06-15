@@ -56,7 +56,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-product-sys
 | B3 | ~~List + edit one page (master–detail)~~ **Superseded 2026-06-14** — separate list + record routes (**A15**, **C15**, **P15-T15/T17**) | P12A, P15 Slice 15C | Web **Done** (`entity-list` / `entity-record`); mobile **Done** **P15-T17** |
 | B4 | Responsive grids | P12A, P15-T04 | Demo |
 | B5 | Multi-language (full pages, not toolbar only) | P12F, P15-T05, P17–P19 i18n | Partial |
-| B6 | Theme light/dark + tenant primary | P12A, **P16-T02–T03** | Partial |
+| B6 | Theme light/dark + tenant primary | P12A, **P16-T02–T03** | Partial — admin `.emcap-badge` tokens (P16-T05 partial) |
 | B7 | User management (dedicated admin, not Account) | P12B, **P19-T02** | Wired |
 | B8 | Role management | P12B, **P19-T02** | Wired |
 | B9 | Permission setup editable | P12B picker, **P19-T03** field overrides | **Done** (web field matrix + API P13-T10) |
@@ -70,7 +70,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-product-sys
 
 **UX fixes already applied (keep):** detail placeholder message; admin list/form panes; permission picker groups; settings nav refresh after save; no fake payment provider text field.
 
-**Still open from Phase 12 review:** P19-T05/T06 product polish (07 gate), full i18n catalogs, entity Material polish, per-file auth coverage below 80% (total gate passes). Phase 12 backlog rows are **Done** (Wired/Demo).
+**Still open from Phase 12 review:** full i18n catalogs, entity Material polish, per-file auth coverage below 80% (total gate passes). Phase 12 backlog rows are **Done** (Wired/Demo). P19-T05/T06 product polish **Done** 2026-06-15.
 
 ---
 
@@ -187,7 +187,8 @@ Full detail: `docs/dev/known-pitfalls.md`.
 | Gap | Task ID |
 |-----|---------|
 | Mobile SSE grid refresh | P15-T14 |
-| Shell breadcrumbs / nav polish | P16-T09 |
+| Shell breadcrumbs / nav polish | **P16-T09** Done (entity + admin) |
+| Web component tokens (admin/shell) | **P16-T05** Partial |
 | Rule evaluate product panel | P17-T11 |
 | Settings DB overrides + reload UX | P19-T09 |
 | Integrations product UX | P19-T10 |
@@ -197,8 +198,8 @@ Full detail: `docs/dev/known-pitfalls.md`.
 | Entity list/record separate routes (web) | **P15-T15** Done |
 | Entity list/record separate nav (mobile) | **P15-T17** Done |
 | Field `read_roles` override (API + web) | **P13-T10/T11**, **P19-T03** Done |
-| Branding live preview | **P19-T05** Partial |
-| Document platform settings UI | **P19-T06** Partial (web + mobile read-only) |
+| Branding live preview | **P19-T05** Done |
+| Document platform settings UI | **P19-T06** Done (web + mobile read-only Demo+) |
 | ABAC editor polish | **P19-T04** Partial |
 
 ---

@@ -19,21 +19,21 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 12 — Enterprise product UI & admin | 67 | 0 | 0 | 67 |
 | 14 — Entity platform baseline | 21 | 0 | 0 | 21 |
 | 15 — Entity page redesign | 13 | 5 | 2 | 20 |
-| 16 — Design system | 4 | 5 | 0 | 9 |
+| 16 — Design system | 4 | 4 | 1 | 9 |
 | 17 — Platform services UX | 11 | 0 | 0 | 11 |
 | 18 — Reference modules product | 5 | 2 | 1 | 8 |
-| 19 — Admin product depth | 8 | 2 | 2 | 12 |
+| 19 — Admin product depth | 10 | 2 | 0 | 12 |
 | 20 — Quality gates | 13 | 4 | 1 | 19 |
 | 21 — Infra/docs (support) | 5 | 1 | 0 | 6 |
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
-| **Total** | **268** | **50** | **4** | **326** |
+| **Total** | **270** | **47** | **4** | **326** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
 **Last updated:** 2026-06-15 · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md` · **Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
 
-**Current focus:** **CC-1 M2 mobile** (Flutter) · **P19-T05/T06** admin polish · **P16-T05** component tokens · See `Crash course` section below + `07-product-readiness-matrix.md`.
+**Current focus:** **CC-1 M2 mobile** (Flutter) · **P18-T06** CRM mobile sign-off · **P16-T05** component tokens · See `Crash course` section below + `07-product-readiness-matrix.md`.
 
 ---
 
@@ -430,11 +430,11 @@ Playbook: `plan/15-entity-page-redesign.md` · `plan/17-standard-product-executi
 | EMCAP-P16-T02 | Web CSS variables + theme | T01 | Done |
 | EMCAP-P16-T03 | Flutter ThemeExtension tokens | T01 | Pending |
 | EMCAP-P16-T04 | `docs/product/design-system.md` catalog | T02–T03 | Done |
-| EMCAP-P16-T05 | Web component standardization | T02 | Partial — global `.emcap-badge` token; settings override + template channel chips |
+| EMCAP-P16-T05 | Web component standardization | T02 | Partial — `.emcap-badge` on admin users/roles, settings hub, `RecordDetailHeaderComponent` status; layout/navigation `--emcap-*` tokens; interactive `mat-chip` template vars in settings remain |
 | EMCAP-P16-T06 | Mobile component standardization | T03 | Pending |
 | EMCAP-P16-T07 | Density comfortable/compact | T05–T06 | Pending |
 | EMCAP-P16-T08 | Dark mode contrast audit | T02–T03 | Pending |
-| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — `PageHeaderComponent` breadcrumbs on entity-list/record; back link on record |
+| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — `PageHeaderComponent` breadcrumbs on entity-list/record + admin users/roles/security/permissions |
 
 Playbook: `plan/16-standard-product-system.md` § W3 · ADR-006
 
@@ -471,7 +471,7 @@ Playbook: `plan/17-platform-services-product-ux.md`
 | EMCAP-P18-T05 | Module report UX | P17-T03 | Done — report menus in module nav + `test_module_report_menus.py` |
 
 > **P18-T05:** Reports UX + `phase18-inventory-low-stock-report.png` + `phase18-inventory-low-stock-via-nav-web.png` Done 2026-06-14 (module report menus + sidenav reachability).
-| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots refreshed 2026-06-14; mobile Demo+ (hero, status chip, read-only fields, grid formatters); device PNG pending |
+| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots; mobile Demo+ (`crm_entity_contract_test.dart` + headline edge cases); device PNG pending |
 | EMCAP-P18-T07 | Menu icons in metadata | P16 | Pending |
 | EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Pending |
 
@@ -487,8 +487,8 @@ Playbook: `plan/18-reference-modules-product.md`
 | EMCAP-P19-T02 | Admin users/roles UX | P16 | Done — users search, active chips, empty state; roles search + empty + module permission chips, save validation, i18n; `admin-users.component.spec.ts` + `admin-roles.component.spec.ts` smoke |
 | EMCAP-P19-T03 | Field `read_roles` override UI | P19-T02 | Done — web field matrix + picker; API P13-T10; screenshot `phase19-admin-security-field-access-web.png` |
 | EMCAP-P19-T04 | ABAC editor polish | P19-T03 | Done — delete confirm + inline validation + checkAuth test preview; deny-path pytest P23-T04 |
-| EMCAP-P19-T05 | Branding live preview | P16-T02 | Partial — Integrations tab split-pane preview + tenant primary save when allowed |
-| EMCAP-P19-T06 | Document settings UI | P19-T01 | Partial — read-only storage backend, max upload, virus scan, retention in web Platform tab + mobile Settings Documents section |
+| EMCAP-P19-T05 | Branding live preview | P16-T02 | Done — split-pane preview, tenant primary save + `ThemeService.applyTenantPrimary`, WCAG contrast hint, i18n EN/FR/BN; screenshot `phase19-settings-branding-web.png` |
+| EMCAP-P19-T06 | Document settings UI | P19-T01 | Done — read-only Platform tab + mobile Documents section with badge chips; `document-platform-settings.util` web + mobile tests; screenshot `phase19-settings-documents-web.png` |
 | EMCAP-P19-T07 | Isolation write (ops) | P19-T01 | Pending |
 | EMCAP-P19-T08 | Layout designer ADR | M3 | Pending |
 | EMCAP-P19-T09 | Settings DB overrides + reload UX | P19-T01 | Done — Custom badge on override paths; reload hint + module effective summary after save; `settings.component.spec.ts` |

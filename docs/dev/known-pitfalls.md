@@ -561,6 +561,16 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Same change: `docs/dev/recipes/sync-docs-after-change.md` · rule `.cursor/rules/emcap-doc-sync.mdc` |
 | **Test** | PR checklist section 6 in `plan/12-phase12-dod-checklist.md` |
 
+### Angular optional chain on Record index (NG8107)
+
+| | |
+|--|--|
+| **Warning** | `NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type` |
+| **Where** | `admin-security.component.html` — `abacFieldErrors[idx]?.permission` |
+| **Cause** | Angular strict templates type `Record<number, T>` index access as always `T`, not `T \| undefined`; `?.` on the index is redundant |
+| **Fix** | Use `abacFieldErrors[idx].permission` in template (falsy when key missing); keep `?.` in TS component code where index may be absent |
+| **Test** | `cd clients/web && npm run build` — no NG8107 on admin-security template |
+
 ### Angular self-closing component with projected content (NG5002)
 
 | | |
@@ -580,6 +590,15 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Cause** | Backend added `override_paths` to GET/PUT `/admin/settings` without updating `emcap-client.ts` |
 | **Fix** | Add new fields to `AdminSettingsResponse` (and integrations response) in **same PR** as API or consumer |
 | **Test** | `npm run build` + `settings.component.spec.ts` mock includes new fields |
+
+### Branding preview contrast test uses failing color
+
+| | |
+|--|--|
+| **Symptom** | `BrandingPreviewPanelComponent` spec fails: `contrastAdequate()` false for `#ff0000` |
+| **Cause** | Pure red on white toolbar text is below WCAG AA 4.5:1 (~3.99:1) |
+| **Fix** | Use `#005cbb` or another dark primary in preview specs; test low-contrast separately with `#ffffcc` |
+| **Test** | `branding.util.spec.ts` + `branding-preview-panel.component.spec.ts` |
 
 ### Claiming Phase 12 Done without `npm run build`
 
@@ -638,6 +657,16 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Cause** | Raw hex/pixel values in `shared/` instead of `--emcap-*` tokens (ADR-006) |
 | **Fix** | Use `styles/_tokens.scss` and catalog `docs/product/design-system.md`; reject ad hoc values in review |
 | **Test** | Visual screenshot pair at 1280px; dark mode contrast audit P16-T08 |
+
+### Playwright Chromium not installed (screenshot scripts)
+
+| | |
+|--|--|
+| **Symptom** | `capture-screenshot-sprint.mjs` fails: `Executable doesn't exist` / banner suggests `npx playwright install` |
+| **Cause** | Fresh clone or CI agent without Playwright browser binaries |
+| **Where** | `scripts/capture-screenshot-sprint.mjs`, `scripts/capture-m1-screenshots.mjs` |
+| **Fix** | `npx --yes playwright@1.49.1 install chromium` then re-run script; stack must be up (`scripts\start-emcap-local.bat`) |
+| **Test** | `node scripts/capture-screenshot-sprint.mjs --only=admin-settings` |
 
 ### Playwright entity screenshots after list/record route split
 

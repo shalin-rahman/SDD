@@ -4,7 +4,7 @@
       <span class="settings-toggle-group__label">
         {{ item.label }}
         @if (item.custom) {
-          <span class="emcap-badge">{{ customBadgeLabel }}</span>
+          <span class="emcap-badge emcap-badge--muted">{{ customBadgeLabel }}</span>
         }
       </span>
       <mat-checkbox [checked]="item.checked" (change)="onChange(item, $event)" />

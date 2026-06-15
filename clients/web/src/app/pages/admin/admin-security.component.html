@@ -1,6 +1,7 @@
 <app-page-header
   [title]="i18n.t('admin.security.title')"
   [subtitle]="i18n.t('admin.security.subtitleEditor')"
+  [breadcrumbs]="adminBreadcrumbs()"
 >
   <a mat-button routerLink="/app/admin/users">Users</a>
   <a mat-button routerLink="/app/admin/roles">Roles</a>
@@ -162,10 +163,10 @@
                   [(ngModel)]="policy.permission"
                   [name]="'perm' + idx"
                   (ngModelChange)="onAbacPermissionChange(idx)"
-                  [class.input-error]="abacFieldErrors[idx]?.permission"
+                  [class.input-error]="abacFieldErrors[idx].permission"
                 />
-                @if (abacFieldErrors[idx]?.permission) {
-                  <span class="field-error">{{ abacFieldErrors[idx]?.permission }}</span>
+                @if (abacFieldErrors[idx].permission) {
+                  <span class="field-error">{{ abacFieldErrors[idx].permission }}</span>
                 }
               } @else {
                 {{ policy.permission }}

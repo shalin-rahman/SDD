@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { I18nService } from '../../shared/services/i18n.service';
 import {
   groupPermissions,
@@ -29,6 +29,13 @@ interface AdminRole {
 export class AdminPermissionsComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
   readonly i18n = inject(I18nService);
+
+  adminBreadcrumbs(): PageBreadcrumb[] {
+    return [
+      { label: this.i18n.t('shell.breadcrumb.admin') },
+      { label: this.i18n.t('admin.permissions.title') },
+    ];
+  }
 
   roles: AdminRole[] = [];
   groups: PermissionGroup[] = [];

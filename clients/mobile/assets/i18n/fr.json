@@ -91,6 +91,7 @@
   "settings.documents.enabled": "Activé",
   "settings.documents.disabled": "Désactivé",
   "settings.documents.readOnlyHint": "Les paramètres document sont chargés depuis la configuration plateforme. Les modifications nécessitent un déploiement ops ou une future API d'écriture admin.",
+  "settings.documents.readOnlyBadge": "Lecture seule",
   "settings.templates.new": "Nouveau modèle",
   "settings.templates.save": "Enregistrer le modèle",
   "settings.templates.delete": "Supprimer",

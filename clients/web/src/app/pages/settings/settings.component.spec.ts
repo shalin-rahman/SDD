@@ -5,13 +5,22 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { ShellContextService } from '../../shared/services/shell-context.service';
+import { ThemeService } from '../../shared/services/theme.service';
 import { SettingsComponent } from './settings.component';
 
 describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
   let getPlatformConfig: jasmine.Spy;
+  let updateAdminSettings: jasmine.Spy;
+  let applyTenantPrimary: jasmine.Spy;
 
   beforeEach(async () => {
+    applyTenantPrimary = jasmine.createSpy('applyTenantPrimary');
+    updateAdminSettings = jasmine.createSpy('updateAdminSettings').and.callFake(async (settings: Record<string, unknown>) => ({
+      settings,
+      editable_paths: ['tenants.default.primary_color', 'tenants.default.logo_url'],
+      override_paths: ['modules.ai.enabled'],
+    }));
     getPlatformConfig = jasmine.createSpy('getPlatformConfig').and.resolveTo({
       documents: {
         storage_backend: 'filesystem',
@@ -50,10 +59,7 @@ describe('SettingsComponent', () => {
                 .createSpy('getHealth')
                 .and.resolveTo({ tenant_strategy: 'shared_database', multi_tenant: false }),
               getPlatformConfig,
-              updateAdminSettings: jasmine.createSpy('updateAdminSettings').and.resolveTo({
-                settings: { modules: { ai: { enabled: true } } },
-                override_paths: ['modules.ai.enabled'],
-              }),
+              updateAdminSettings,
               updateAdminIntegrations: jasmine
                 .createSpy('updateAdminIntegrations')
                 .and.resolveTo({ integrations: {}, override_paths: [] }),
@@ -63,6 +69,10 @@ describe('SettingsComponent', () => {
         {
           provide: ShellContextService,
           useValue: { load: jasmine.createSpy('load').and.resolveTo(undefined) },
+        },
+        {
+          provide: ThemeService,
+          useValue: { applyTenantPrimary },
         },
       ],
     }).compileComponents();
@@ -92,6 +102,20 @@ describe('SettingsComponent', () => {
     expect(fixture.componentInstance.tenantPrimaryColor).toBe('#112233');
     expect(fixture.componentInstance.brandingPrimaryEditable()).toBeTrue();
     expect(fixture.componentInstance.brandingPreviewPrimary()).toBe('#112233');
+    expect(fixture.componentInstance.brandingContrastAdequate()).toBeTrue();
+  });
+
+  it('persists tenant primary on save and applies theme', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.tenantPrimaryColor = '#223344';
+    await fixture.componentInstance.saveSettings();
+
+    const payload = updateAdminSettings.calls.mostRecent().args[0] as Record<string, unknown>;
+    const tenants = payload['tenants'] as Record<string, Record<string, string>>;
+    expect(tenants.default.primary_color).toBe('#223344');
+    expect(applyTenantPrimary).toHaveBeenCalledWith('#223344');
   });
 
   it('marks DB override paths with custom badge on module toggles', async () => {

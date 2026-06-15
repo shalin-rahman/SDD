@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
@@ -15,7 +14,7 @@ import { AdminListToolbarComponent } from '../../shared/admin/admin-list-toolbar
 import { PermissionPickerComponent } from '../../shared/admin/permission-picker.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { groupPermissions, permissionGroupSummary } from '../../shared/utils/permission.util';
@@ -35,7 +34,6 @@ interface AdminRole {
     FormsModule,
     MatTableModule,
     MatButtonModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
     PageHeaderComponent,
@@ -54,6 +52,13 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
   private readonly layout = inject(LayoutService);
   readonly i18n = inject(I18nService);
   private readonly destroy$ = new Subject<void>();
+
+  adminBreadcrumbs(): PageBreadcrumb[] {
+    return [
+      { label: this.i18n.t('shell.breadcrumb.admin') },
+      { label: this.i18n.t('admin.roles.title') },
+    ];
+  }
 
   roles: AdminRole[] = [];
   allPermissions: string[] = [];

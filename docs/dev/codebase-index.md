@@ -112,7 +112,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `scripts/apply-seed.py` | Apply JSON seed to running Postgres |
 | `scripts/capture-m1-screenshots.mjs` | Playwright M1 PRODUCT web screenshot pack (P15-T06 / P20-T02); requires local stack |
 | `scripts/capture-p17-screenshots.mjs` | Playwright P17 platform services pack only |
-| `scripts/capture-screenshot-sprint.mjs` | Combined P17-T10 + P18 M4/M5 + W5 stock movement screenshot sprint |
+| `scripts/capture-screenshot-sprint.mjs` | Combined P17-T10 + P18 M4/M5 + W5 + P19 admin screenshot sprint; `--only=admin-settings` for branding/doc PNGs |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); requires Flutter SDK |
 
 **Run from repository root:** `scripts\run-emcap.bat`
@@ -154,11 +154,12 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/pages/assistant/assistant.component.spec.ts` | P17-T09 assistant page flag gate |
 | `clients/web/src/app/pages/settings/rule-evaluate.component.spec.ts` | P17-T11 rule evaluate panel |
 | `clients/web/src/app/pages/settings/settings.component.spec.ts` | P19-T05/T06 settings branding preview + document platform load |
-| `clients/web/src/app/shared/utils/branding.util.spec.ts` | P19-T05 tenant branding parse + hex normalize |
-| `clients/web/src/app/shared/admin/branding-preview-panel.component.spec.ts` | P19-T05 branding preview panel smoke |
+| `clients/web/src/app/shared/utils/branding.util.spec.ts` | P19-T05 tenant branding parse, hex normalize, WCAG contrast |
+| `clients/web/src/app/shared/admin/branding-preview-panel.component.spec.ts` | P19-T05 branding preview panel + contrast warning |
 | `clients/web/src/app/shared/utils/document-platform-settings.util.spec.ts` | P19-T06 parse `documents.*` from platform config |
 | `clients/web/src/app/shared/utils/security-platform-settings.util.spec.ts` | P12C-T19 parse security posture from platform config |
-| `clients/web/src/app/pages/admin/admin-users.component.spec.ts` | P19-T02 admin users smoke (empty state + API load) |
+| `clients/web/src/app/pages/admin/admin-users.component.spec.ts` | P19-T02 admin users smoke (empty state, breadcrumbs, `.emcap-badge--on`) |
+| `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + headline/grid contract (no Flutter run) |
 | `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P19-T02 admin roles smoke (empty state + API load) |
 | `clients/web/src/app/shared/forms/lookup-field.component.spec.ts` | P14-T24 lookup picker |
 | `clients/web/src/app/shared/forms/currency-field.component.spec.ts` | P14-T24 currency input |
@@ -183,6 +184,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/lib/utils/document_platform_settings_util.dart` | P19-T06 parse `documents.*` from GET `/config/platform` |
 | `clients/mobile/lib/utils/security_platform_settings_util.dart` | P12C-T19 parse security posture from GET `/config/platform` |
 | `clients/mobile/test/document_platform_settings_util_test.dart` | P19-T06 document platform settings defaults + config parse |
+| `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + hero/grid contract tests |
 | `clients/mobile/test/security_platform_settings_util_test.dart` | P12C-T19 security platform settings defaults + ABAC count |
 | `clients/web/src/app/shared/utils/field-security.util.spec.ts` | P23-T02 secured visible field names |
 | `clients/mobile/test/admin_field_access_client_test.dart` | P21-T06 mobile `updateAdminFieldAccess` contract |

@@ -1,87 +1,174 @@
-<div class="record-tabs">
-  <mat-tab-group
-    class="record-tabs__group"
-    [selectedIndex]="selectedTabIndex"
-    (selectedIndexChange)="onTabChange($event)"
-  >
-    <mat-tab [label]="notesTabLabel()">
-      <div class="record-tabs__panel">
-        <ul>
-          @for (note of notes; track note.body) {
-            <li>{{ note.body }}</li>
-          }
-        </ul>
-      </div>
-    </mat-tab>
-
-    <mat-tab [label]="documentsTabLabel()">
-      <div class="record-tabs__panel">
-        <ul class="record-tabs__documents">
-          @for (doc of documents; track doc.id) {
-            <li class="record-tabs__document">
-              <span class="record-tabs__document-name">{{ doc.filename }}</span>
-              <span class="record-tabs__document-meta">{{ versionLabel(doc.version) }}</span>
-              @if (doc.virus_scan_status) {
-                <span class="virus-badge" [ngClass]="virusBadgeClass(doc.virus_scan_status)">{{ doc.virus_scan_status }}</span>
-              }
-              <button type="button" (click)="previewDocument.emit(doc)">{{ i18n.t('record.previewDocument') }}</button>
-            </li>
-          }
-        </ul>
-
-        <form class="record-tabs__upload" (ngSubmit)="uploadDocument.emit()">
-          <input
-            [placeholder]="i18n.t('record.docFilename')"
-            [ngModel]="uploadFilename"
-            (ngModelChange)="uploadFilenameChange.emit($event)"
-            name="uploadFilename"
-          />
-          <textarea
-            [placeholder]="i18n.t('record.docContent')"
-            [ngModel]="uploadContent"
-            (ngModelChange)="uploadContentChange.emit($event)"
-            name="uploadContent"
-          ></textarea>
-          <button type="submit">{{ i18n.t('record.uploadDocument') }}</button>
-        </form>
-      </div>
-    </mat-tab>
-
-    <mat-tab [label]="auditTabLabel()">
-      <div class="record-tabs__panel">
-        <ul>
-          @for (entry of auditEntries; track entry.payloadJson) {
-            <li>{{ entry.action }} — {{ entry.payloadJson }}</li>
-          }
-        </ul>
-      </div>
-    </mat-tab>
-
-    @if (showWorkflowTab) {
-      <mat-tab [label]="workflowTabLabel()">
-        <div class="record-tabs__panel">
-          @if (workflowInstances.length === 0) {
-            <p class="record-tabs__empty">{{ i18n.t('record.noWorkflowInstances') }}</p>
-          } @else {
-            <ul class="record-tabs__workflow-list">
-              @for (instance of workflowInstances; track instance.id) {
-                <li class="record-tabs__workflow-item">
-                  <span class="record-tabs__workflow-code">{{ instance.workflow_code }}</span>
-                  <span class="record-tabs__workflow-state">{{ instance.current_state }}</span>
-                  @if (instance.assignee) {
-                    <span class="record-tabs__workflow-assignee">
-                      {{ i18n.t('platform.workflow.colAssignee') }}: {{ instance.assignee }}
-                    </span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-          <a mat-stroked-button routerLink="/app/workflow" class="record-tabs__inbox-link">
-            {{ i18n.t('record.openInbox') }}
-          </a>
-        </div>
-      </mat-tab>
-    }
-  </mat-tab-group>
-</div>
+<div class="record-tabs">
+
+  <mat-tab-group
+
+    class="record-tabs__group"
+
+    [selectedIndex]="selectedTabIndex"
+
+    (selectedIndexChange)="onTabChange($event)"
+
+  >
+
+    <mat-tab [label]="notesTabLabel()">
+
+      <div class="record-tabs__panel">
+
+        <ul>
+
+          @for (note of notes; track note.body) {
+
+            <li>{{ note.body }}</li>
+
+          }
+
+        </ul>
+
+      </div>
+
+    </mat-tab>
+
+
+
+    <mat-tab [label]="documentsTabLabel()">
+
+      <div class="record-tabs__panel">
+
+        <ul class="record-tabs__documents">
+
+          @for (doc of documents; track doc.id) {
+
+            <li class="record-tabs__document">
+
+              <span class="record-tabs__document-name">{{ doc.filename }}</span>
+
+              <span class="record-tabs__document-meta">{{ versionLabel(doc.version) }}</span>
+
+              @if (doc.virus_scan_status) {
+
+                <span class="virus-badge" [ngClass]="virusBadgeClass(doc.virus_scan_status)">{{ doc.virus_scan_status }}</span>
+
+              }
+
+              <button type="button" (click)="previewDocument.emit(doc)">{{ i18n.t('record.previewDocument') }}</button>
+
+            </li>
+
+          }
+
+        </ul>
+
+
+
+        <form class="record-tabs__upload" (ngSubmit)="uploadDocument.emit()">
+
+          <input
+
+            [placeholder]="i18n.t('record.docFilename')"
+
+            [ngModel]="uploadFilename"
+
+            (ngModelChange)="uploadFilenameChange.emit($event)"
+
+            name="uploadFilename"
+
+          />
+
+          <textarea
+
+            [placeholder]="i18n.t('record.docContent')"
+
+            [ngModel]="uploadContent"
+
+            (ngModelChange)="uploadContentChange.emit($event)"
+
+            name="uploadContent"
+
+          ></textarea>
+
+          <button type="submit">{{ i18n.t('record.uploadDocument') }}</button>
+
+        </form>
+
+      </div>
+
+    </mat-tab>
+
+
+
+    <mat-tab [label]="auditTabLabel()">
+
+      <div class="record-tabs__panel">
+
+        <ul>
+
+          @for (entry of auditEntries; track entry.payloadJson) {
+
+            <li>{{ entry.action }} — {{ entry.payloadJson }}</li>
+
+          }
+
+        </ul>
+
+      </div>
+
+    </mat-tab>
+
+
+
+    @if (showWorkflowTab) {
+
+      <mat-tab [label]="workflowTabLabel()">
+
+        <div class="record-tabs__panel">
+
+          @if (workflowInstances.length === 0) {
+
+            <p class="record-tabs__empty">{{ i18n.t('record.noWorkflowInstances') }}</p>
+
+          } @else {
+
+            <ul class="record-tabs__workflow-list">
+
+              @for (instance of workflowInstances; track instance.id) {
+
+                <li class="record-tabs__workflow-item">
+
+                  <span class="record-tabs__workflow-code">{{ instance.workflow_code }}</span>
+
+                  <span class="record-tabs__workflow-state">{{ instance.current_state }}</span>
+
+                  @if (instance.assignee) {
+
+                    <span class="record-tabs__workflow-assignee">
+
+                      {{ i18n.t('platform.workflow.colAssignee') }}: {{ instance.assignee }}
+
+                    </span>
+
+                  }
+
+                </li>
+
+              }
+
+            </ul>
+
+          }
+
+          <a mat-stroked-button routerLink="/app/workflow" class="record-tabs__inbox-link">
+
+            {{ i18n.t('record.openInbox') }}
+
+          </a>
+
+        </div>
+
+      </mat-tab>
+
+    }
+
+  </mat-tab-group>
+
+</div>
+

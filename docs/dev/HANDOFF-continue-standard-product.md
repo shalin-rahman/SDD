@@ -3,7 +3,7 @@
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
 **Last updated:** 2026-06-15  
-**Backlog:** see progress table in `plan/03-task-backlog.md` (~268 Done / ~50 Pending / ~4 Partial)  
+**Backlog:** see progress table in `plan/03-task-backlog.md` (~270 Done / ~47 Pending / ~4 Partial)  
 **Do not commit** unless user explicitly asks.
 
 ---
@@ -67,13 +67,17 @@
 | **M2** PRODUCT mobile | Open — Flutter blocked locally |
 | **M4** Inventory web | Signed |
 | **M5** Platform + CRM | Partial |
-| **M6** Admin/settings | Partial — Phase 12 backlog Done (Wired); product polish P19-T05/T06 |
+| **M6** Admin/settings | Partial — P19 Demo+ with 5 PNGs (IA, users, security, branding, documents) |
 
 ---
 
 ## Recently Done (uncommitted)
 
-- **Phase 12 close-out** — P12B-T09, P12C-T02/T07/T12/T16/T19, P12D-T05 → Done; security read-only cards web+mobile; NG5002/`override_paths` pitfalls documented
+- **M6 screenshot capture** — `phase19-settings-branding-web.png` + `phase19-settings-documents-web.png` via `--only=admin-settings` (2026-06-15)
+- **NG8107 fix** — `admin-security.component.html` `abacFieldErrors[idx]?.permission` → `.permission` (Record index typed as always defined in templates)
+- **P16-T05** (partial) — `.emcap-badge` on admin users/roles, settings hub, `RecordDetailHeaderComponent` status chip; layout/navigation `--emcap-*` tokens
+- **P16-T09** — admin breadcrumbs (`shell.breadcrumb.admin`) on users/roles/security/permissions
+- **P18-T06** — CRM mobile contract tests extended (LEAD company-only, inactive; CONTACT email fallback)
 - **P23-T04** — ABAC `evaluate_abac` resource-context fix + deny-path pytest green
 - **P23-T03** — `git rm --cached` for tracked `*.db` files
 - **P19-T04/T09–T12** — ABAC complete; settings overrides/reload; integrations/payments/templates product UX
@@ -94,10 +98,9 @@
 | Priority | Task | Blocker |
 |----------|------|---------|
 | 1 | P15-T13 / P20-T03 M2 mobile PNGs | Flutter SDK |
-| 2 | P18-T06 CRM mobile Product-ready | Flutter device |
-| 3 | P19-T05/T06 branding + document settings **product** polish (07 gate) | — |
-| 4 | P16-T05 web component standardization | — |
-| 5 | P15-T21 WAREHOUSE/CRM polish | — |
+| 2 | P18-T06 CRM mobile Product-ready sign-off | Flutter device PNG |
+| 3 | P19-T07 isolation write (ops) | — |
+| 4 | P16-T08 dark mode contrast audit | — |
 
 ---
 
@@ -119,8 +122,19 @@ Login: `admin` / `admin123` · Web: http://localhost:4200 · Logs: `logs/emcap/w
 cd platform\api && python -m pytest tests/test_entity_system_contract.py tests/test_admin_field_access_override.py -q
 cd clients\web && npm run test:ci
 node scripts/capture-m1-screenshots.mjs
-node scripts/capture-screenshot-sprint.mjs --only=entity-packs
+node scripts/capture-screenshot-sprint.mjs --only=admin-settings
 ```
+
+**Manual M6 capture (when stack up):**
+
+```bat
+scripts\start-emcap-local.bat
+npx --yes playwright@1.49.1 install chromium
+node scripts/capture-screenshot-sprint.mjs --only=admin-settings
+node scripts/capture-screenshot-sprint.mjs --only=admin-security
+```
+
+Captured 2026-06-15: `docs/product/screenshots/phase19-settings-branding-web.png`, `phase19-settings-documents-web.png`.
 
 ---
 

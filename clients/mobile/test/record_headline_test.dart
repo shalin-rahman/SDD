@@ -78,6 +78,20 @@ void main() {
     expect(view.statusActive, isTrue);
   });
 
+  test('buildRecordHeadlineView LEAD inactive status chip', () {
+    final view = buildRecordHeadlineView(
+      'LEAD',
+      {'company': 'Acme', 'contact_name': 'Jane', 'active': false, 'status': 'lost'},
+      false,
+      'lead-2',
+      _t,
+      statusField: _statusField,
+    );
+    expect(view.headline, 'Acme — Jane');
+    expect(view.statusLabel, 'Inactive');
+    expect(view.statusActive, isFalse);
+  });
+
   test('buildRecordHeadlineView JOURNAL_ENTRY reference', () {
     final view = buildRecordHeadlineView(
       'JOURNAL_ENTRY',

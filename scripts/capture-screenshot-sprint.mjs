@@ -7,6 +7,7 @@
  *   node scripts/capture-screenshot-sprint.mjs
  *   node scripts/capture-screenshot-sprint.mjs --only=product-workflow
  *   node scripts/capture-screenshot-sprint.mjs --only=admin-security
+ *   node scripts/capture-screenshot-sprint.mjs --only=admin-settings
  */
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -276,6 +277,45 @@ async function captureAdminSecurity(page) {
   await capture(page, 'phase19-admin-security-field-access-web.png');
 }
 
+async function openSettingsTab(page, labelPattern) {
+  const tab = page.locator('mat-tab-group.settings-tabs .mat-mdc-tab').filter({ hasText: labelPattern });
+  await tab.first().waitFor({ state: 'visible', timeout: 30_000 });
+  await tab.first().click();
+  await page.waitForTimeout(250);
+}
+
+async function expandSettingsPanel(page, titlePattern) {
+  const header = page.locator('mat-expansion-panel-header').filter({ hasText: titlePattern });
+  await header.first().waitFor({ state: 'visible', timeout: 30_000 });
+  const panel = header.first().locator('xpath=ancestor::mat-expansion-panel[1]');
+  const expanded = await panel.getAttribute('class');
+  if (!expanded?.includes('mat-expanded')) {
+    await header.first().click();
+    await page.waitForTimeout(300);
+  }
+}
+
+async function captureAdminSettingsPolish(page) {
+  console.log('\nphase19-settings-branding-web.png…');
+  await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.settings-tabs, mat-tab-group', { timeout: 45_000 });
+  await openSettingsTab(page, /Integrations|Intégrations|ইন্টিগ্রেশন/i);
+  await expandSettingsPanel(page, /Branding|Marque|ব্র্যান্ডিং/i);
+  await page.locator('app-branding-preview-panel').waitFor({ state: 'visible', timeout: 30_000 });
+  await page.locator('.settings-branding-split').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-settings-branding-web.png');
+
+  console.log('phase19-settings-documents-web.png…');
+  await openSettingsTab(page, /Platform|Plateforme|প্ল্যাটফর্ম/i);
+  await expandSettingsPanel(page, /Documents|Document|নথি/i);
+  await page.locator('.settings-document-cards').first().waitFor({ state: 'visible', timeout: 30_000 });
+  await page.locator('.settings-documents-header, .settings-document-cards').first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-settings-documents-web.png');
+}
+
 async function captureAdminAndSettings(page) {
   console.log('\nphase19-settings-ia-web.png…');
   await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
@@ -322,6 +362,12 @@ async function main() {
     if (ONLY === 'admin-security') {
       await captureAdminSecurity(page);
       console.log('\nAdmin security capture complete — see docs/product/screenshots/');
+      return;
+    }
+
+    if (ONLY === 'admin-settings') {
+      await captureAdminSettingsPolish(page);
+      console.log('\nAdmin settings polish capture complete — see docs/product/screenshots/');
       return;
     }
 

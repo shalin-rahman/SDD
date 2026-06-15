@@ -16,7 +16,13 @@ void main() {
 
   test('formats LEAD status enum and active boolean in grid cells', () {
     expect(formatGridCellValue('status', 'qualified', fieldType: 'select'), 'qualified');
+    expect(formatGridCellValue('status', 'won', fieldType: 'select'), 'won');
     expect(formatGridCellValue('active', true), 'Yes');
     expect(formatGridCellValue('active', false), 'No');
+  });
+
+  test('formats CONTACT email and lead lookup in grid cells', () {
+    expect(formatGridCellValue('email', 'bob@example.com'), 'bob@example.com');
+    expect(formatGridCellValue('lead_id', 'lead-1', fieldType: 'lookup'), 'lead-1');
   });
 }

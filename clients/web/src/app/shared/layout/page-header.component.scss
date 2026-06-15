@@ -55,7 +55,7 @@ a.page-header__crumb:hover {
 
 .page-header__back {
   border: 1px solid var(--emcap-border);
-  background: #fff;
+  background: var(--emcap-surface);
   padding: 0.35rem 0.75rem;
   cursor: pointer;
 }

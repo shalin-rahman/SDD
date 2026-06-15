@@ -45,4 +45,25 @@ describe('AdminUsersComponent', () => {
     expect(listAdminUsers).toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).toContain('No users match your search');
   });
+
+  it('renders admin breadcrumbs and status badges', async () => {
+    listAdminUsers.and.resolveTo({
+      users: [
+        {
+          id: 'u1',
+          username: 'alice',
+          tenant_id: 'default',
+          active: true,
+          roles: [{ code: 'admin', name: 'Admin' }],
+        },
+      ],
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.page-header__breadcrumbs')?.textContent).toContain('Admin');
+    expect(el.querySelector('.emcap-badge--on')).toBeTruthy();
+  });
 });

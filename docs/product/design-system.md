@@ -60,7 +60,7 @@ Product-facing UI follows **Material Design 3** tokens (spacing, color roles, ty
 | Dynamic data grid | `app-dynamic-data-grid` | Metadata columns, search, export |
 | Record detail header | `app-record-detail-header` | SKU — Name hero, status chip, actions |
 | Record tabs | `app-record-tabs` | Notes, documents, audit |
-| Status chip | Material `mat-chip` | `active`, workflow state (standardize P16-T05) |
+| Status chip | `.emcap-badge` (`--on` / `--off` / `--warn`) | `record-detail-header`, admin users, settings platform cards (P16-T05) |
 
 **Grid behaviors:** zebra rows, sticky header, datetime formatting (`field-display.util.ts`).
 

@@ -91,6 +91,7 @@
   "settings.documents.enabled": "সক্রিয়",
   "settings.documents.disabled": "নিষ্ক্রিয়",
   "settings.documents.readOnlyHint": "নথি প্ল্যাটফর্ম সেটিংস প্ল্যাটফর্ম কনফিগ থেকে লোড হয়। পরিবর্তনের জন্য ops ডিপ্লয়মেন্ট বা ভবিষ্যত admin write API প্রয়োজন।",
+  "settings.documents.readOnlyBadge": "শুধু পড়া",
   "settings.templates.new": "নতুন টেমপ্লেট",
   "settings.templates.save": "টেমপ্লেট সংরক্ষণ",
   "settings.templates.delete": "মুছুন",

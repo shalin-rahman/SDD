@@ -1,9 +1,12 @@
 import {
   DEFAULT_EMCAP_PRIMARY,
+  formatContrastRatio,
+  hasAdequatePrimaryContrast,
   isBrandingPathEditable,
   normalizePrimaryColor,
   parseTenantBranding,
   previewPrimaryColor,
+  primaryOnWhiteContrast,
 } from './branding.util';
 
 describe('branding.util', () => {
@@ -39,5 +42,11 @@ describe('branding.util', () => {
     expect(previewPrimaryColor('#ff0000')).toBe('#ff0000');
     expect(previewPrimaryColor('not-a-color', '#00ff00')).toBe('#00ff00');
     expect(previewPrimaryColor('', '')).toBe(DEFAULT_EMCAP_PRIMARY);
+  });
+
+  it('evaluates WCAG contrast for primary on white toolbar text', () => {
+    expect(hasAdequatePrimaryContrast('#005cbb')).toBeTrue();
+    expect(hasAdequatePrimaryContrast('#ffffcc')).toBeFalse();
+    expect(formatContrastRatio(primaryOnWhiteContrast('#005cbb'))).not.toBe('—');
   });
 });

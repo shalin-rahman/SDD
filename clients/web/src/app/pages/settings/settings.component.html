@@ -167,13 +167,18 @@
           <mat-panel-title>{{ i18n.t('settings.sections.documents') }}</mat-panel-title>
           <mat-panel-description>{{ i18n.t('settings.documents.subtitle') }}</mat-panel-description>
         </mat-expansion-panel-header>
+        <div class="settings-documents-header">
+          <span class="emcap-badge emcap-badge--muted">{{ i18n.t('settings.documents.readOnlyBadge') }}</span>
+        </div>
         <div class="settings-document-cards">
           <mat-card class="settings-document-card">
             <mat-card-header>
               <mat-card-title>{{ i18n.t('settings.documents.storageBackend') }}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <p class="settings-document-value">{{ documentSettings.storageBackend }}</p>
+              <p class="settings-document-value">
+                <span class="emcap-badge emcap-badge--muted">{{ documentSettings.storageBackend }}</span>
+              </p>
             </mat-card-content>
           </mat-card>
           <mat-card class="settings-document-card">
@@ -191,7 +196,15 @@
               <mat-card-title>{{ i18n.t('settings.documents.virusScan') }}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-              <p class="settings-document-value">{{ virusScanLabel() }}</p>
+              <p class="settings-document-value">
+                <span
+                  class="emcap-badge"
+                  [class.emcap-badge--on]="documentSettings.virusScanEnabled"
+                  [class.emcap-badge--off]="!documentSettings.virusScanEnabled"
+                >
+                  {{ virusScanLabel() }}
+                </span>
+              </p>
             </mat-card-content>
           </mat-card>
           <mat-card class="settings-document-card">
@@ -346,6 +359,17 @@
                   [placeholder]="brandingPrimaryFallback"
                 />
               </mat-form-field>
+              @if (brandingPrimaryEditable()) {
+                <p class="settings-branding-contrast-hint">
+                  <span
+                    class="emcap-badge"
+                    [class.emcap-badge--on]="brandingContrastAdequate()"
+                    [class.emcap-badge--warn]="!brandingContrastAdequate()"
+                  >
+                    {{ brandingContrastHint() }}
+                  </span>
+                </p>
+              }
               <mat-form-field appearance="outline">
                 <mat-label>{{ i18n.t('settings.branding.logoUrl') }}</mat-label>
                 <input
@@ -392,7 +416,11 @@
               [class.settings-template-channel-bar__chip--on]="chip.enabled"
             >
               {{ chip.label }}
-              <span class="emcap-badge">{{ channelBarStateLabel(chip.enabled) }}</span>
+              <span
+                class="emcap-badge"
+                [class.emcap-badge--on]="chip.enabled"
+                [class.emcap-badge--off]="!chip.enabled"
+              >{{ channelBarStateLabel(chip.enabled) }}</span>
             </span>
           }
         </div>

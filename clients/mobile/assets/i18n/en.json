@@ -91,6 +91,7 @@
   "settings.documents.enabled": "Enabled",
   "settings.documents.disabled": "Disabled",
   "settings.documents.readOnlyHint": "Document platform settings are loaded from platform configuration. Changes require ops deployment or a future admin write API.",
+  "settings.documents.readOnlyBadge": "Read-only",
   "settings.templates.new": "New template",
   "settings.templates.save": "Save template",
   "settings.templates.delete": "Delete",

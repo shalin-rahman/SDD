@@ -1,4 +1,9 @@
 <div class="branding-preview" [style.--emcap-primary]="resolvedPrimary()">
+  @if (!contrastAdequate()) {
+    <p class="branding-preview__contrast">
+      <span class="emcap-badge emcap-badge--warn">{{ contrastHint() }}</span>
+    </p>
+  }
   <header class="branding-preview__toolbar">
     <div class="branding-preview__brand">
       @if (logoUrl) {

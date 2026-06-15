@@ -7,21 +7,11 @@
   margin-bottom: 0.5rem;
 }
 
-:host ::ng-deep mat-chip.status-chip--active {
-  --mdc-chip-elevated-container-color: #e6f4ea;
-  --mdc-chip-label-text-color: #137333;
-}
-
-:host ::ng-deep mat-chip.status-chip--inactive {
-  --mdc-chip-elevated-container-color: #fce8e6;
-  --mdc-chip-label-text-color: #c5221f;
-}
-
 .admin-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--emcap-border);
-  border-radius: 4px;
-  background: #fff;
+  border-radius: var(--emcap-radius-sm);
+  background: var(--emcap-surface);
 }
 
 .admin-table {
@@ -34,5 +24,5 @@
 }
 
 .admin-table__row--selected {
-  background: #e8eaf6;
+  background: color-mix(in srgb, var(--emcap-primary) 10%, var(--emcap-surface));
 }

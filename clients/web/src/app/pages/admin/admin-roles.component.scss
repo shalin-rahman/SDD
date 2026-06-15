@@ -10,8 +10,8 @@
 .admin-table-scroll {
   overflow-x: auto;
   border: 1px solid var(--emcap-border);
-  border-radius: 4px;
-  background: #fff;
+  border-radius: var(--emcap-radius-sm);
+  background: var(--emcap-surface);
 }
 
 .admin-table {
@@ -24,12 +24,12 @@
 }
 
 .admin-table__row--selected {
-  background: #e8eaf6;
+  background: color-mix(in srgb, var(--emcap-primary) 10%, var(--emcap-surface));
 }
 
 .admin-section-title {
-  margin: 1rem 0 0.5rem;
-  font-size: 0.95rem;
+  margin: var(--emcap-space-md) 0 var(--emcap-space-sm);
+  font-size: var(--emcap-font-body-sm);
   font-weight: 600;
 }
 
@@ -37,19 +37,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.25rem;
-}
-
-:host ::ng-deep mat-chip.permission-chip {
-  --mdc-chip-elevated-container-color: #e8eaf6;
-  --mdc-chip-label-text-color: #3949ab;
-  font-size: 0.75rem;
-  min-height: 24px;
+  gap: var(--emcap-space-xs);
 }
 
 .permission-overflow {
-  font-size: 0.75rem;
-  color: var(--emcap-muted, #666);
+  font-size: var(--emcap-font-label-sm);
+  color: var(--emcap-text-muted);
 }
 
 .field-error {

@@ -14,8 +14,8 @@
 
 .master-detail__detail {
   border: 1px solid var(--emcap-border);
-  border-radius: 4px;
-  background: #fff;
+  border-radius: var(--emcap-radius-sm);
+  background: var(--emcap-surface);
   min-height: 320px;
 }
 

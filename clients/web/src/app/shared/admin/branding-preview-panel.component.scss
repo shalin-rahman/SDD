@@ -5,6 +5,13 @@
   background: var(--emcap-surface);
 }
 
+.branding-preview__contrast {
+  margin: 0;
+  padding: 0.35rem 0.5rem;
+  background: var(--emcap-color-surface-container);
+  border-bottom: 1px solid var(--emcap-border);
+}
+
 .branding-preview__toolbar {
   display: flex;
   align-items: center;
