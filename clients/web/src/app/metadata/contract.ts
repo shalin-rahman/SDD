@@ -65,6 +65,7 @@ export interface GridMetadata {
   grouping: boolean;
   realtime: boolean;
   offline: boolean;
+  bulk_actions?: boolean;
   i18n?: Record<string, Record<string, string>>;
   display?: DisplayMetadata;
 }

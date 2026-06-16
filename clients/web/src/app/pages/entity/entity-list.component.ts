@@ -60,6 +60,9 @@ export class EntityListComponent implements OnInit, OnDestroy {
   exportCsv = false;
   exportExcel = false;
   exportPdf = false;
+  bulkActions = false;
+  selectedRecordIds: string[] = [];
+  bulkError = '';
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private streamCleanup: (() => void) | null = null;
 
@@ -139,6 +142,8 @@ export class EntityListComponent implements OnInit, OnDestroy {
       this.exportCsv = loadedGridMeta.export.csv;
       this.exportExcel = loadedGridMeta.export.excel;
       this.exportPdf = loadedGridMeta.export.pdf;
+      this.bulkActions = loadedGridMeta.bulk_actions === true;
+      this.selectedRecordIds = [];
       this.applyGridRenderer();
       this.refreshGrid();
       if (loadedGridMeta.realtime) {
@@ -258,5 +263,56 @@ export class EntityListComponent implements OnInit, OnDestroy {
   exportPdfFile(): void {
     if (!this.gridRenderer) return;
     printPdfTable(this.gridRenderer.columnFields(), this.allRecords, this.title);
+  }
+
+  toggleRecordSelection(record: Record<string, unknown>): void {
+    const id = recordId(record);
+    if (!id) return;
+    if (this.selectedRecordIds.includes(id)) {
+      this.selectedRecordIds = this.selectedRecordIds.filter((value) => value !== id);
+      return;
+    }
+    this.selectedRecordIds = [...this.selectedRecordIds, id];
+  }
+
+  toggleSelectAllPage(): void {
+    const pageIds = this.displayGroups
+      .flatMap((group) => group.records.map((record) => recordId(record)))
+      .filter((id): id is string => Boolean(id));
+    const allSelected = pageIds.length > 0 && pageIds.every((id) => this.selectedRecordIds.includes(id));
+    if (allSelected) {
+      this.selectedRecordIds = this.selectedRecordIds.filter((id) => !pageIds.includes(id));
+      return;
+    }
+    this.selectedRecordIds = [...new Set([...this.selectedRecordIds, ...pageIds])];
+  }
+
+  selectedRecords(): Record<string, unknown>[] {
+    const selected = new Set(this.selectedRecordIds);
+    return this.allRecords.filter((record) => selected.has(recordId(record) ?? ''));
+  }
+
+  async bulkDeleteSelected(): Promise<void> {
+    if (!this.bulkActions || this.selectedRecordIds.length === 0) return;
+    this.bulkError = '';
+    this.loadingList = true;
+    try {
+      for (const id of [...this.selectedRecordIds]) {
+        await this.api.client.deleteRecord(this.entityCode, id);
+      }
+      this.selectedRecordIds = [];
+      await this.reloadAll();
+    } catch (err) {
+      this.bulkError = err instanceof Error ? err.message : this.i18n.t('entity.bulkDeleteFailed');
+    } finally {
+      this.loadingList = false;
+    }
+  }
+
+  exportSelectedCsv(): void {
+    if (!this.gridRenderer) return;
+    const rows = this.selectedRecords();
+    if (rows.length === 0) return;
+    downloadCsv(this.gridRenderer.columnFields(), rows, `${this.entityCode}-selected.csv`);
   }
 }

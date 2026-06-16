@@ -5,9 +5,9 @@
   [showBack]="isMobile && detailOpen"
   (back)="closeDetail()"
 >
-  <a mat-button routerLink="/app/admin/roles">Roles</a>
-  <a mat-button routerLink="/app/admin/permissions">Permissions</a>
-  <a mat-button routerLink="/app/admin/security">Security</a>
+  <a mat-button routerLink="/app/admin/roles">{{ i18n.t('admin.nav.roles') }}</a>
+  <a mat-button routerLink="/app/admin/permissions">{{ i18n.t('admin.nav.permissions') }}</a>
+  <a mat-button routerLink="/app/admin/security">{{ i18n.t('admin.nav.security') }}</a>
 </app-page-header>
 
 @if (loadError) {
@@ -16,30 +16,34 @@
 
 <app-master-detail-layout [detailOpen]="detailOpen">
   <div listPane class="admin-list-pane">
-    <app-admin-list-toolbar newLabel="New user" (create)="startCreate()" />
+    <app-admin-list-toolbar [newLabel]="i18n.t('admin.users.new')" (create)="startCreate()" />
     <mat-form-field appearance="outline" class="admin-search-field">
       <mat-label>{{ i18n.t('admin.users.search') }}</mat-label>
       <input matInput [(ngModel)]="searchTerm" autocomplete="off" />
     </mat-form-field>
     @if (filteredUsers.length === 0 && !loadError) {
-      <app-empty-state [message]="i18n.t('admin.users.empty')" actionLabel="New user" (action)="startCreate()" />
+      <app-empty-state
+        [message]="i18n.t('admin.users.empty')"
+        [actionLabel]="i18n.t('admin.users.new')"
+        (action)="startCreate()"
+      />
     } @else {
     <div class="admin-table-scroll">
       <table mat-table [dataSource]="filteredUsers" class="admin-table">
         <ng-container matColumnDef="username">
-          <th mat-header-cell *matHeaderCellDef>Username</th>
+          <th mat-header-cell *matHeaderCellDef>{{ i18n.t('admin.users.colUsername') }}</th>
           <td mat-cell *matCellDef="let row">{{ row.username }}</td>
         </ng-container>
         <ng-container matColumnDef="tenant_id">
-          <th mat-header-cell *matHeaderCellDef>Tenant</th>
+          <th mat-header-cell *matHeaderCellDef>{{ i18n.t('admin.users.colTenant') }}</th>
           <td mat-cell *matCellDef="let row">{{ row.tenant_id }}</td>
         </ng-container>
         <ng-container matColumnDef="roles">
-          <th mat-header-cell *matHeaderCellDef>Roles</th>
+          <th mat-header-cell *matHeaderCellDef>{{ i18n.t('admin.users.colRoles') }}</th>
           <td mat-cell *matCellDef="let row">{{ formatRoleSummary(row.roles) }}</td>
         </ng-container>
         <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef>Active</th>
+          <th mat-header-cell *matHeaderCellDef>{{ i18n.t('admin.users.colActive') }}</th>
           <td mat-cell *matCellDef="let row">
             <span
               class="emcap-badge"
@@ -65,43 +69,49 @@
 
   <div detailPane>
     @if (!selected && !creating) {
-      <app-detail-placeholder message="Select a user from the list or click New user." />
+      <app-detail-placeholder [message]="i18n.t('admin.users.selectPlaceholder')" />
     } @else {
       <app-admin-form-panel
-        [title]="selected ? 'Edit user' : 'Create user'"
-        [subtitle]="selected ? selected.username : 'New account'"
+        [title]="selected ? i18n.t('admin.users.editTitle') : i18n.t('admin.users.createTitle')"
+        [subtitle]="selected ? selected.username : i18n.t('admin.users.newAccountSubtitle')"
       >
         <div actions>
           @if (selected?.active) {
-            <button mat-button type="button" (click)="deactivateSelected()">Deactivate</button>
+            <button mat-button type="button" (click)="deactivateSelected()">
+              {{ i18n.t('admin.users.deactivate') }}
+            </button>
           }
-          <button mat-flat-button color="primary" type="button" (click)="save()">Save</button>
+          <button mat-flat-button color="primary" type="button" (click)="save()">
+            {{ i18n.t('admin.users.save') }}
+          </button>
         </div>
 
         <div class="admin-form-grid">
           @if (!selected) {
             <mat-form-field appearance="outline">
-              <mat-label>Username</mat-label>
+              <mat-label>{{ i18n.t('admin.users.colUsername') }}</mat-label>
               <input matInput [(ngModel)]="draftUsername" autocomplete="off" />
             </mat-form-field>
           }
           <mat-form-field appearance="outline">
-            <mat-label>{{ selected ? 'New password (optional)' : 'Password' }}</mat-label>
+            <mat-label>{{
+              selected ? i18n.t('admin.users.passwordOptionalLabel') : i18n.t('admin.users.passwordLabel')
+            }}</mat-label>
             <input matInput type="password" [(ngModel)]="draftPassword" autocomplete="new-password" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Tenant</mat-label>
+            <mat-label>{{ i18n.t('admin.users.colTenant') }}</mat-label>
             <input matInput [(ngModel)]="draftTenantId" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Roles</mat-label>
+            <mat-label>{{ i18n.t('admin.users.colRoles') }}</mat-label>
             <mat-select [(ngModel)]="draftRoleCodes" multiple>
               @for (role of roles; track role.id) {
                 <mat-option [value]="role.code">{{ role.name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
-          <mat-checkbox [(ngModel)]="draftActive">Account active</mat-checkbox>
+          <mat-checkbox [(ngModel)]="draftActive">{{ i18n.t('admin.users.accountActive') }}</mat-checkbox>
         </div>
       </app-admin-form-panel>
     }

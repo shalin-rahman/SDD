@@ -11,6 +11,14 @@
     <button type="button" (click)="toggleGroup.emit()">{{ groupBy ? i18n.t('grid.ungroup') : i18n.t('grid.group') }}</button>
   </div>
 
+  @if (bulkActions && selectedCount > 0) {
+    <div class="data-grid__bulk">
+      <span>{{ selectedCount }} {{ i18n.t('grid.selectedCount') }}</span>
+      <button type="button" (click)="bulkExportClick.emit()">{{ i18n.t('grid.bulkExport') }}</button>
+      <button type="button" (click)="bulkDeleteClick.emit()">{{ i18n.t('grid.bulkDelete') }}</button>
+    </div>
+  }
+
   @if (exportCsv || exportExcel || exportPdf) {
     <div class="data-grid__export">
       @if (exportCsv) {
@@ -47,6 +55,17 @@
       (keydown)="handleGridKeydown($event)"
     >
       <tr>
+        @if (bulkActions) {
+          <th scope="col">
+            <input
+              type="checkbox"
+              [checked]="allPageSelected"
+              [attr.aria-label]="i18n.t('grid.selectAll')"
+              (click)="$event.stopPropagation()"
+              (change)="selectAllToggle.emit()"
+            />
+          </th>
+        }
         @for (field of columnFields; track field) {
           <th
             [style.cursor]="gridRenderer.isSortable(field) ? 'pointer' : 'default'"
@@ -57,6 +76,9 @@
         }
       </tr>
       <tr>
+        @if (bulkActions) {
+          <th></th>
+        }
         @for (field of columnFields; track field) {
           <th>
             @if (gridRenderer.isFilterable(field)) {
@@ -72,7 +94,7 @@
       @for (group of displayGroups; track group.key) {
         @if (groupBy && group.key) {
           <tr>
-            <td [attr.colspan]="columnFields.length">{{ groupBy }}: {{ group.key }}</td>
+            <td [attr.colspan]="columnFields.length + (bulkActions ? 1 : 0)">{{ groupBy }}: {{ group.key }}</td>
           </tr>
         }
         @for (record of group.records; track recordId(record)) {
@@ -86,6 +108,16 @@
             (focus)="onRowFocus(flatRowIndex(record))"
             (click)="recordSelect.emit(record)"
           >
+            @if (bulkActions) {
+              <td (click)="$event.stopPropagation()">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected(record)"
+                  [attr.aria-label]="rowAriaLabel(record)"
+                  (change)="selectionToggle.emit({ record, event: $event })"
+                />
+              </td>
+            }
             @for (field of columnFields; track field) {
               <td>{{ cellValue(field, record) }}</td>
             }

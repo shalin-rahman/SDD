@@ -14,6 +14,7 @@ describe('EmcapApiService', () => {
           useValue: {
             getToken: () => 'session-token',
             getTenantId: () => 'tenant-x',
+            handleUnauthorized: jasmine.createSpy('handleUnauthorized'),
           },
         },
       ],
@@ -21,6 +22,26 @@ describe('EmcapApiService', () => {
     const service = TestBed.inject(EmcapApiService);
     const client = service.client;
     expect(client.getTenantId()).toBe('tenant-x');
+  });
+
+  it('wires client unauthorized handler to AuthService', () => {
+    const handleUnauthorized = jasmine.createSpy('handleUnauthorized');
+    TestBed.configureTestingModule({
+      providers: [
+        EmcapApiService,
+        {
+          provide: AuthService,
+          useValue: {
+            getToken: () => null,
+            getTenantId: () => 'default',
+            handleUnauthorized,
+          },
+        },
+      ],
+    });
+    const service = TestBed.inject(EmcapApiService);
+    service.client.setToken('tok', 'default');
+    expect(handleUnauthorized).not.toHaveBeenCalled();
   });
 });
 

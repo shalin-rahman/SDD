@@ -55,7 +55,7 @@ export class AdminPermissionsComponent implements OnInit {
       this.roles = rolesPayload.roles as unknown as AdminRole[];
       this.groups = groupPermissions(permissionsPayload.permissions);
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load permissions';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.permissions.loadFailed');
     }
   }
 

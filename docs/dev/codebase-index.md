@@ -10,6 +10,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 |------|----------|
 | Task status | `plan/03-task-backlog.md` |
 | **Standard product roadmap (API·web·mobile)** | `plan/17-standard-product-execution-playbook.md`, `plan/16-standard-product-system.md`, `plan/16-product-ready-dod.md` |
+| **Standard professional app gap plan** | `plan/18-standard-professional-app-gap-plan.md` (Phase 18B — P18-T09–T22, Phases A–F) |
 | **Standard entity rollout (all entities)** | `plan/20-standard-entity-rollout.md` |
 | Entity platform + UX | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
 | Product readiness gate | `spec/sdd/07-product-readiness-matrix.md` |
@@ -115,6 +116,8 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `scripts/capture-m1-screenshots.mjs` | Playwright M1 PRODUCT web screenshot pack (P15-T06 / P20-T02); requires local stack |
 | `scripts/capture-p17-screenshots.mjs` | Playwright P17 platform services pack only |
 | `scripts/capture-screenshot-sprint.mjs` | Combined P17-T10 + P18 M4/M5 + W5 + P19 admin screenshot sprint; `--only=admin-settings` for branding/doc PNGs |
+| `scripts/e2e-smoke.mjs` | P18-T14 Playwright smoke: login → PRODUCT CRUD → settings save → LEAD list; recipe `docs/dev/recipes/e2e-smoke.md` |
+| `.github/workflows/e2e-smoke.yml` | Weekly + manual E2E smoke (does not gate PRs) |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); requires Flutter SDK |
 
 **Run from repository root:** `scripts\run-emcap.bat`
@@ -176,7 +179,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `platform/api/tests/test_layout_merge.py` | Unit tests for `layout_merge.py` form/grid merge helpers |
 | `platform/api/tests/test_rbac.py` | RBAC `list_roles` / `assign_role` unit tests |
 | `platform/api/tests/test_formula_engine.py` | Formula rule engine AST evaluator edge cases |
-| `clients/web/karma.conf.js` | Karma coverage reporter + **80% branch / line** gate (`npm run test:coverage`; Sprint 14: 406 specs, 80.57% branches) |
+| `clients/web/karma.conf.js` | Karma coverage reporter + **80% branch / line** gate (`npm run test:coverage`; 417 specs, 80.14% branches) |
 | `clients/web/src/app/metadata/contract.spec.ts` | `resolveFieldLabel` / `resolveColumnLabel` + `??` fallback contract |
 | `clients/web/src/app/services/auth.service.spec.ts` | Auth token/session helpers |
 | `clients/web/src/app/shared/admin/permission-picker.component.spec.ts` | Permission picker chip toggle |
@@ -291,4 +294,4 @@ python scripts/check-flutter-coverage.py --lcov clients/mobile/coverage/lcov.inf
 .\scripts\verify-full-stack.ps1
 ```
 
-**Gates:** lint-format · pytest **80%** (~91%) · Angular format+lint+build+Karma **406** specs + **80% branches** (`test:coverage`) · Flutter **80%** lines (`check-flutter-coverage.py`). Recipe: `docs/dev/recipes/add-coverage-gate.md`.
+**Gates:** lint-format · pytest **80%** (~91%) · Angular format+lint+build+Karma **417** specs + **80% branches** (`test:coverage`) · Flutter **80%** lines (`check-flutter-coverage.py`). Recipe: `docs/dev/recipes/add-coverage-gate.md`.

@@ -380,7 +380,7 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
           payloadJson: JSON.stringify(e.payload ?? {}),
         }));
     } catch (err) {
-      this.detailError = err instanceof Error ? err.message : 'Failed to load record';
+      this.detailError = err instanceof Error ? err.message : this.i18n.t('entity.loadRecordFailed');
     }
   }
 
@@ -495,7 +495,7 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
       }
       this.formError = '';
     } catch (err) {
-      this.formError = err instanceof Error ? err.message : 'Save failed';
+      this.formError = err instanceof Error ? err.message : this.i18n.t('entity.saveFailed');
     }
   }
 }

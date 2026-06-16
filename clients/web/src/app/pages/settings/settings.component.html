@@ -265,7 +265,7 @@
             <mat-label>{{ i18n.t('settings.documents.storageBackend') }}</mat-label>
             <mat-select [(ngModel)]="documentSettings.storageBackend">
               @for (backend of documentStorageBackends; track backend) {
-                <mat-option [value]="backend">{{ backend }}</mat-option>
+                <mat-option [value]="backend">{{ documentStorageBackendLabel(backend) }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -324,7 +324,7 @@
                 [disabled]="!paymentCredentialsEnabled()"
                 (click)="selectPaymentProvider(provider)"
               >
-                <span class="settings-provider-card__title">{{ provider }}</span>
+                <span class="settings-provider-card__title">{{ paymentProviderLabel(provider) }}</span>
                 <span class="settings-provider-card__subtitle">{{ i18n.t('settings.payments.providerCard') }}</span>
               </button>
             }
@@ -475,7 +475,7 @@
           <mat-panel-title>{{ i18n.t('settings.sections.templates') }}</mat-panel-title>
           <mat-panel-description>{{ i18n.t('settings.templates.subtitle') }}</mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="settings-template-channel-bar" aria-label="Notification channel status">
+        <div class="settings-template-channel-bar" [attr.aria-label]="i18n.t('settings.templates.channelStatusAria')">
           @for (chip of templateChannelBar(); track chip.channel) {
             <span
               class="settings-template-channel-bar__chip"

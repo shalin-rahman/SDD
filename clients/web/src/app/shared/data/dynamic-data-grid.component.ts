@@ -36,6 +36,8 @@ export class DynamicDataGridComponent {
   @Input() exportCsv = false;
   @Input() exportExcel = false;
   @Input() exportPdf = false;
+  @Input() bulkActions = false;
+  @Input() selectedRecordIds: string[] = [];
 
   @Output() searchInputChange = new EventEmitter<string>();
   @Output() prevPage = new EventEmitter<void>();
@@ -48,8 +50,25 @@ export class DynamicDataGridComponent {
   @Output() exportExcelClick = new EventEmitter<void>();
   @Output() exportPdfClick = new EventEmitter<void>();
   @Output() createRecord = new EventEmitter<void>();
+  @Output() selectionToggle = new EventEmitter<{ record: Record<string, unknown>; event: Event }>();
+  @Output() selectAllToggle = new EventEmitter<void>();
+  @Output() bulkDeleteClick = new EventEmitter<void>();
+  @Output() bulkExportClick = new EventEmitter<void>();
 
   focusedRowIndex = 0;
+
+  get selectedCount(): number {
+    return this.selectedRecordIds.length;
+  }
+
+  isSelected(record: Record<string, unknown>): boolean {
+    return this.selectedRecordIds.includes(this.recordId(record));
+  }
+
+  get allPageSelected(): boolean {
+    const pageIds = this.flatRecords.map((record) => this.recordId(record)).filter(Boolean);
+    return pageIds.length > 0 && pageIds.every((id) => this.selectedRecordIds.includes(id));
+  }
 
   get isEmpty(): boolean {
     return this.displayGroups.every((group) => group.records.length === 0);

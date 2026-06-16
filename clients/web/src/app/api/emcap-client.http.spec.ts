@@ -165,4 +165,21 @@ describe('EmcapClient HTTP surface', () => {
     expect(custom).toBeTruthy();
     delete (window as unknown as { EMCAP_API_URL?: string }).EMCAP_API_URL;
   });
+
+  it('invokes onUnauthorized when an authenticated request returns 401', async () => {
+    const onUnauthorized = jasmine.createSpy('onUnauthorized');
+    client.setOnUnauthorized(onUnauthorized);
+    fetchSpy.and.resolveTo(new Response('expired', { status: 401 }));
+    await expectAsync(client.getMenus()).toBeRejected();
+    expect(onUnauthorized).toHaveBeenCalled();
+  });
+
+  it('does not invoke onUnauthorized for 401 when no token is set', async () => {
+    const fresh = createClient('http://localhost:8000');
+    const onUnauthorized = jasmine.createSpy('onUnauthorized');
+    fresh.setOnUnauthorized(onUnauthorized);
+    fetchSpy.and.resolveTo(new Response('unauthorized', { status: 401 }));
+    await expectAsync(fresh.getAuthProviders()).toBeRejected();
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
 });

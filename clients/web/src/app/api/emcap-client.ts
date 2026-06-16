@@ -122,6 +122,11 @@ export class EmcapClient {
 
   private token: string | null = null;
   private tenantId = 'default';
+  private onUnauthorized: (() => void) | null = null;
+
+  setOnUnauthorized(handler: () => void): void {
+    this.onUnauthorized = handler;
+  }
 
   setToken(token: string, tenantId: string): void {
     this.token = token;
@@ -153,6 +158,10 @@ export class EmcapClient {
       headers: { ...this.headers(), ...(init.headers as Record<string, string>) },
     });
     if (!response.ok) {
+      if (response.status === 401 && this.token) {
+        this.token = null;
+        this.onUnauthorized?.();
+      }
       const detail = await response.text();
       throw new Error(`${response.status}: ${detail}`);
     }

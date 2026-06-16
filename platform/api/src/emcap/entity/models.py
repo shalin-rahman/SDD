@@ -98,6 +98,7 @@ class EntityOptions(BaseModel):
     workflow_enabled: bool = False
     notes_enabled: bool = False
     document_enabled: bool = False
+    bulk_actions: bool = False
     status_field: StatusFieldDisplay | None = None
 
 

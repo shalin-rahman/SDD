@@ -30,6 +30,8 @@
         [exportCsv]="exportCsv"
         [exportExcel]="exportExcel"
         [exportPdf]="exportPdf"
+        [bulkActions]="bulkActions"
+        [selectedRecordIds]="selectedRecordIds"
         (searchInputChange)="onSearchInputChange($event)"
         (prevPage)="prevPage()"
         (nextPage)="nextPage()"
@@ -41,7 +43,14 @@
         (exportExcelClick)="exportExcelFile()"
         (exportPdfClick)="exportPdfFile()"
         (createRecord)="startCreate()"
+        (selectionToggle)="toggleRecordSelection($event.record)"
+        (selectAllToggle)="toggleSelectAllPage()"
+        (bulkDeleteClick)="bulkDeleteSelected()"
+        (bulkExportClick)="exportSelectedCsv()"
       />
+      @if (bulkError) {
+        <p class="entity-list-page__error">{{ bulkError }}</p>
+      }
     </div>
   }
 </div>

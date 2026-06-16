@@ -69,18 +69,24 @@
     </app-section-card>
 
     <app-section-card [title]="i18n.t('platform.account.mfa')">
+      <ol class="mfa-steps">
+        <li [class.mfa-steps__active]="mfaStep === 1">{{ i18n.t('platform.account.mfaStep1') }}</li>
+        <li [class.mfa-steps__active]="mfaStep === 2">{{ i18n.t('platform.account.mfaStep2') }}</li>
+      </ol>
       <div class="section-card__row">
-        <button type="button" mat-stroked-button (click)="enrollMfa()">
+        <button type="button" mat-stroked-button (click)="enrollMfa()" [disabled]="mfaStep > 1 && !mfaSecret">
           {{ i18n.t('platform.account.enrollMfa') }}
         </button>
-        <input
-          [(ngModel)]="mfaCode"
-          name="mfaCode"
-          [placeholder]="i18n.t('platform.account.totpCode')"
-        />
-        <button type="button" mat-flat-button color="primary" (click)="verifyMfa()">
-          {{ i18n.t('platform.account.verifyMfa') }}
-        </button>
+        @if (mfaStep >= 2) {
+          <input
+            [(ngModel)]="mfaCode"
+            name="mfaCode"
+            [placeholder]="i18n.t('platform.account.totpCode')"
+          />
+          <button type="button" mat-flat-button color="primary" (click)="verifyMfa()">
+            {{ i18n.t('platform.account.verifyMfa') }}
+          </button>
+        }
       </div>
       @if (mfaSecret) {
         <p class="settings-hint">{{ mfaSecret }}</p>

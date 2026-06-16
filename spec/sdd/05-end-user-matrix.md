@@ -4,7 +4,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 
 **Legend:** Done · Partial · No · N/A (admin/ops only)
 
-**Last updated:** 2026-06-13 · P14-T24 web lookup/currency/textarea renderers
+**Last updated:** 2026-06-16 · P18-T13 PRODUCT grid bulk actions (web)
 
 **Companion:** `spec/sdd/04-capability-matrix.md`
 
@@ -23,6 +23,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 | Delete record | Done | Done | — |
 | Search records (`?q=`) | Done | Done | — |
 | Pagination | Done | Done | — |
+| Grid bulk select / export / soft-delete | Partial | No | P18-T13 — PRODUCT `bulk_actions` metadata; web checkbox toolbar |
 | Record detail (notes, docs, audit) | Done | Done | — |
 
 ---

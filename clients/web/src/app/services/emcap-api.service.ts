@@ -8,6 +8,10 @@ export class EmcapApiService {
   private readonly auth = inject(AuthService);
   private readonly _client = createClient();
 
+  constructor() {
+    this._client.setOnUnauthorized(() => this.auth.handleUnauthorized());
+  }
+
   get client(): EmcapClient {
     const token = this.auth.getToken();
     if (token) {

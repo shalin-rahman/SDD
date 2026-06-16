@@ -97,6 +97,7 @@ MODULE = ModuleDefinition(
                 workflow_enabled=True,
                 notes_enabled=True,
                 document_enabled=False,
+                bulk_actions=True,
                 status_field=StatusFieldDisplay(
                     field="active",
                     active_values=[True],

@@ -8,7 +8,9 @@
 
 **Last updated:** 2026-06-16  
 
-**Backlog:** see progress table in `plan/03-task-backlog.md` (296 Done / 27 Pending)  
+**Backlog:** see progress table in `plan/03-task-backlog.md` (296 Done / 27 Pending / 6 Partial)  
+
+**Recent (2026-06-16):** P18-T11/T13/T12/T14 — auth UX, bulk grid, settings i18n, Playwright smoke script + weekly CI workflow. Karma **417** specs, **80%+** branches. Next: mobile mirror, P18-T15 screenshots.
 
 **Sprint plan 11:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-11-rapid-dev.md` (Sprints 11–14 rapid dev)
 

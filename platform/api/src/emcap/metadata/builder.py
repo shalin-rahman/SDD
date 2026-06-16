@@ -267,6 +267,7 @@ def build_grid_metadata(entity: EntityDefinition, config: PlatformConfig) -> Gri
         grouping=grid.grouping,
         realtime=grid.realtime,
         offline=grid.offline,
+        bulk_actions=entity.options.bulk_actions,
         i18n={
             "en": {**entity_i18n["en"], **system_i18n["en"]},
             "bn": {**entity_i18n["bn"], **system_i18n["bn"]},

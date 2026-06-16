@@ -67,4 +67,17 @@ describe('DynamicDataGridComponent keyboard navigation', () => {
     component.handleGridKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
     expect(component.focusedRowIndex).toBe(1);
   });
+
+  it('tracks bulk selection on the current page', () => {
+    component.bulkActions = true;
+    component.selectedRecordIds = ['r1'];
+    fixture.detectChanges();
+
+    expect(component.isSelected(records[0])).toBeTrue();
+    expect(component.allPageSelected).toBeFalse();
+
+    component.selectedRecordIds = ['r1', 'r2'];
+    expect(component.allPageSelected).toBeTrue();
+    expect(component.selectedCount).toBe(2);
+  });
 });

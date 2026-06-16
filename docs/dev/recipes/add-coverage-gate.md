@@ -31,7 +31,7 @@ python ../../scripts/check-flutter-coverage.py --lcov coverage/lcov.info --min 8
 
 Coverage output: `clients/web/coverage/web/` (HTML + `lcov.info`).
 
-**Baselines (Sprint 14, 2026-06-16):** Karma **406** specs; branches **80.57%** (954/1184) gate **80%**; statements **78%**, functions **79%**, lines **80%** (`karma.conf.js` `check.global`).
+**Baselines (2026-06-16):** Karma **417** specs; branches **80.14%** (973/1214) gate **80%** (`karma.conf.js` `check.global`).
 
 Mobile: `clients/mobile/coverage/lcov.info`; CI enforces **80%** line coverage via `scripts/check-flutter-coverage.py`.
 

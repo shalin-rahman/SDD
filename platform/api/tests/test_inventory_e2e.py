@@ -114,6 +114,7 @@ def test_product_grid_metadata_api(client: TestClient) -> None:
     body = response.json()
     assert body["entity_code"] == "PRODUCT"
     assert body["export"]["excel"] is True
+    assert body["bulk_actions"] is True
     assert len(body["columns"]) == 14
 
 
@@ -130,6 +131,7 @@ def test_product_metadata_contract_keys(client: TestClient) -> None:
         "grouping",
         "realtime",
         "offline",
+        "bulk_actions",
         "i18n",
     }
     assert expected_form_keys.issubset(form.keys())

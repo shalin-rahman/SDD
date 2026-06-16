@@ -512,6 +512,18 @@ export class SettingsComponent implements OnInit {
     return this.paymentProvider === provider;
   }
 
+  paymentProviderLabel(provider: string): string {
+    const key = `settings.payments.providers.${provider}`;
+    const label = this.i18n.t(key);
+    return label === key ? provider : label;
+  }
+
+  documentStorageBackendLabel(backend: string): string {
+    const key = `settings.documents.backends.${backend}`;
+    const label = this.i18n.t(key);
+    return label === key ? backend : label;
+  }
+
   insertTemplateVariable(variable: string): void {
     this.templateBody = `${this.templateBody}${variable}`;
   }

@@ -670,4 +670,13 @@ describe('SettingsComponent', () => {
     await cmp.applyIsolationMode();
     expect(cmp.isolationOpsStatus).toBeTruthy();
   });
+
+  it('localizes payment provider and storage backend labels', () => {
+    const cmp = fixture.componentInstance;
+    expect(cmp.paymentProviderLabel('stripe')).toBe('Stripe');
+    expect(cmp.paymentProviderLabel('unknown')).toBe('unknown');
+    expect(cmp.documentStorageBackendLabel('filesystem')).toBe('Filesystem');
+    expect(cmp.documentStorageBackendLabel('s3')).toContain('S3');
+    expect(cmp.documentStorageBackendLabel('unknown')).toBe('unknown');
+  });
 });

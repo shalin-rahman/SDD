@@ -32,4 +32,16 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBeFalse();
     expect(navigate).toHaveBeenCalledWith(['/']);
   });
+
+  it('handleUnauthorized clears session and navigates with sessionExpired flag', () => {
+    service.setSession('abc-token', 'default');
+    service.handleUnauthorized();
+    expect(service.getToken()).toBeNull();
+    expect(navigate).toHaveBeenCalledWith(['/'], { queryParams: { sessionExpired: '1' } });
+  });
+
+  it('handleUnauthorized is a no-op when not authenticated', () => {
+    service.handleUnauthorized();
+    expect(navigate).not.toHaveBeenCalled();
+  });
 });

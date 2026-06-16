@@ -21,17 +21,17 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 15 — Entity page redesign | 16 | 1 | 2 | 20 |
 | 16 — Design system | 9 | 0 | 0 | 9 |
 | 17 — Platform services UX | 11 | 0 | 0 | 11 |
-| 18 — Reference modules product | 6 | 1 | 1 | 8 |
+| 18 — Reference modules product | 6 | 1 | 4 | 11 |
 | 19 — Admin product depth | 12 | 0 | 0 | 12 |
 | 20 — Quality gates | 16 | 2 | 1 | 19 |
 | 21 — Infra/docs (support) | 6 | 0 | 0 | 6 |
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
-| **Total** | **296** | **27** | **4** | **330** |
+| **Total** | **296** | **27** | **7** | **333** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-16 (Sprint 14: web branch coverage 80.57%, Karma 406 specs; Flutter CI 80% gate) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
+**Last updated:** 2026-06-16 (P18-T12 settings i18n + P18-T14 e2e smoke; Karma 417 specs) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
 
 **Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · See `Crash course` + `07-product-readiness-matrix.md`.
 
@@ -480,6 +480,16 @@ Playbook: `plan/17-platform-services-product-ux.md`
 | EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Done — `test_inventory_product_smoke.py` WAREHOUSE + STOCK_MOVEMENT draft chain |
 
 Playbook: `plan/18-reference-modules-product.md`
+
+### Phase 18B — Standard professional app gap (planning)
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P18-PLAN | Standard professional app gap analysis | — | Done — `plan/18-standard-professional-app-gap-plan.md` |
+| EMCAP-P18-T11 | Enterprise auth UX (OAuth cards, MFA steps, session expiry) | P19-T02 | Partial — web login i18n + provider picker + 401 redirect; account MFA steps; mobile mirror pending |
+| EMCAP-P18-T13 | Grid bulk actions (select, export, soft-delete) | P14 entity platform | Partial — `EntityOptions.bulk_actions` + PRODUCT enabled; web grid toolbar; mobile deferred |
+| EMCAP-P18-T12 | App i18n depth (entity, admin, settings bodies) | P16 shell i18n | Partial — admin users + entity record errors; settings payment/storage labels + template aria; mobile parity pending |
+| EMCAP-P18-T14 | Playwright E2E smoke + CI hook | Local stack recipe | Partial — `scripts/e2e-smoke.mjs` + `.github/workflows/e2e-smoke.yml` (manual/weekly); CRM LEAD list in smoke |
 
 ---
 

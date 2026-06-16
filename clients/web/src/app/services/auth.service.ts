@@ -26,8 +26,20 @@ export class AuthService {
   }
 
   logout(): void {
+    this.clearSession();
+    void this.router.navigate(['/']);
+  }
+
+  clearSession(): void {
     sessionStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(TENANT_KEY);
-    this.router.navigate(['/']);
+  }
+
+  handleUnauthorized(): void {
+    if (!this.isAuthenticated()) {
+      return;
+    }
+    this.clearSession();
+    void this.router.navigate(['/'], { queryParams: { sessionExpired: '1' } });
   }
 }

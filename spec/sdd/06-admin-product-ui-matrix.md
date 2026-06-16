@@ -118,7 +118,7 @@
 
 | Metadata i18n labels | Done | Done | `label_key` + BN sample on PRODUCT |
 
-| **App UI i18n + locale switcher** | Demo | Demo | Shell + platform workflow state labels localized (EN/FR/BN); page bodies still Partial |
+| **App UI i18n + locale switcher** | Demo | Demo | P18-T12 — login/admin users/settings payment+storage labels; entity errors; settings tabs mostly keyed |
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 
@@ -140,7 +140,7 @@
 
 |------------|-----|-----|--------|-------|
 
-| Login / MFA / OAuth | Done | Done | Done | — |
+| Login / MFA / OAuth | Done | Partial | Partial | P18-T11 — web provider cards, session-expiry redirect, MFA steps; mobile mirror pending |
 
 | List roles | Done | Done | Done | Admin roles screen; P19-T02 search, empty state, module permission chips |
 

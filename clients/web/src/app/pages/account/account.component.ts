@@ -45,6 +45,7 @@ export class AccountComponent implements OnInit {
   mfaSecret = '';
   mfaVerified = false;
   mfaError = '';
+  mfaStep = 1;
 
   ngOnInit(): void {
     this.tenantId = this.auth.getTenantId();
@@ -86,6 +87,7 @@ export class AccountComponent implements OnInit {
     this.mfaError = '';
     void this.api.client.enrollMfa().then((r) => {
       this.mfaSecret = `${this.i18n.t('platform.account.mfaSecret')}: ${r.secret}`;
+      this.mfaStep = 2;
     }).catch((err) => {
       this.mfaError = err instanceof Error ? err.message : this.i18n.t('platform.account.mfaEnrollFailed');
     });

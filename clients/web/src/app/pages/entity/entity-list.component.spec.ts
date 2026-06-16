@@ -315,4 +315,65 @@ describe('EntityListComponent', () => {
     expect(cmp.filters['sku']).toBe('needle');
     jasmine.clock().uninstall();
   });
+
+  it('supports bulk selection, export selected, and bulk delete', async () => {
+    const deleteRecord = jasmine.createSpy('deleteRecord').and.resolveTo({});
+    TestBed.inject(EmcapApiService).client.deleteRecord = deleteRecord;
+    TestBed.inject(EmcapApiService).client.getGridMetadata = jasmine
+      .createSpy('getGridMetadata')
+      .and.resolveTo({
+        schema_version: '1',
+        entity_code: 'PRODUCT',
+        columns: [{ field: 'sku', label: 'SKU', sortable: true, filterable: true }],
+        export: { csv: true, excel: false, pdf: false },
+        grouping: false,
+        realtime: false,
+        offline: false,
+        bulk_actions: true,
+      });
+    listRecords.and.resolveTo({
+      records: [
+        { id: '1', sku: 'A-1' },
+        { id: '2', sku: 'B-2' },
+      ],
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.bulkActions).toBeTrue();
+
+    cmp.toggleRecordSelection({ id: '1', sku: 'A-1' });
+    expect(cmp.selectedRecordIds).toEqual(['1']);
+
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:selected');
+    cmp.exportSelectedCsv();
+    expect(cmp.selectedRecords().length).toBe(1);
+
+    await cmp.bulkDeleteSelected();
+    expect(deleteRecord).toHaveBeenCalledWith('PRODUCT', '1');
+    expect(cmp.selectedRecordIds).toEqual([]);
+  });
+
+  it('toggleSelectAllPage deselects and bulk delete no-ops when disabled', async () => {
+    listRecords.and.resolveTo({
+      records: [
+        { id: '1', sku: 'A-1' },
+        { id: '2', sku: 'B-2' },
+      ],
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.toggleSelectAllPage();
+    expect(cmp.selectedRecordIds).toEqual(['1', '2']);
+    cmp.toggleSelectAllPage();
+    expect(cmp.selectedRecordIds).toEqual([]);
+
+    cmp.bulkActions = false;
+    cmp.selectedRecordIds = ['1'];
+    await cmp.bulkDeleteSelected();
+    expect(cmp.selectedRecordIds).toEqual(['1']);
+  });
 });

@@ -1,0 +1,51 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>{{ i18n.t('platform.login.title') }}</h1>
+    <p class="login-card__subtitle">{{ i18n.t('platform.login.subtitle') }}</p>
+
+    @if (loadingProviders) {
+      <p>{{ i18n.t('common.loading') }}</p>
+    } @else {
+      <div class="login-card__providers" role="tablist">
+        @for (provider of providers; track provider) {
+          <button
+            type="button"
+            class="login-card__provider"
+            [class.login-card__provider--active]="selectedProvider === provider"
+            (click)="selectProvider(provider)"
+          >
+            {{ providerLabel(provider) }}
+          </button>
+        }
+      </div>
+
+      @if (selectedProvider === 'username_password') {
+        <form class="login-form" (ngSubmit)="onSubmit()">
+          <label>
+            {{ i18n.t('platform.login.username') }}
+            <input [(ngModel)]="username" name="username" autocomplete="username" />
+          </label>
+          <label>
+            {{ i18n.t('platform.login.password') }}
+            <input
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+            />
+          </label>
+          <button type="submit">{{ i18n.t('platform.login.signIn') }}</button>
+        </form>
+      } @else if (selectedProvider === 'oauth') {
+        <div class="login-form">
+          <p class="login-card__hint">{{ i18n.t('platform.login.oauthHint') }}</p>
+          <button type="button" (click)="onOAuth()">{{ i18n.t('platform.login.oauth') }}</button>
+        </div>
+      }
+    }
+
+    @if (error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
+  </div>
+</div>

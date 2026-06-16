@@ -103,6 +103,7 @@ describe('AccountComponent', () => {
     fixture.componentInstance.enrollMfa();
     await fixture.whenStable();
     expect(fixture.componentInstance.mfaSecret).toContain('SECRET');
+    expect(fixture.componentInstance.mfaStep).toBe(2);
 
     fixture.componentInstance.mfaCode = '123456';
     fixture.componentInstance.verifyMfa();

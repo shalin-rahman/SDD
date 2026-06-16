@@ -128,7 +128,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this.users = usersPayload.users as unknown as AdminUser[];
       this.roles = rolesPayload.roles as unknown as Array<{ id: string; code: string; name: string }>;
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load users';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.users.loadFailed');
     }
   }
 
@@ -197,7 +197,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         this.mobileDetailOpen = true;
       }
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Save failed';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.users.saveFailed');
     }
   }
 

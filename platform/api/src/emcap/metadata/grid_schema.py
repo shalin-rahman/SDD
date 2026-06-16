@@ -28,5 +28,6 @@ class GridMetadata(BaseModel):
     grouping: bool = True
     realtime: bool = True
     offline: bool = True
+    bulk_actions: bool = False
     i18n: dict[str, dict[str, str]] = Field(default_factory=dict)
     display: DisplayMetadata = Field(default_factory=DisplayMetadata)

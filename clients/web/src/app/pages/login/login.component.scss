@@ -1,0 +1,60 @@
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: min(100%, 26rem);
+  padding: 1.5rem;
+  border: 1px solid var(--emcap-border, #d0d7de);
+  border-radius: 0.5rem;
+  background: var(--emcap-surface, #fff);
+}
+
+.login-card__subtitle {
+  margin: 0 0 1rem;
+  color: var(--emcap-muted, #57606a);
+}
+
+.login-card__providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.login-card__provider {
+  border: 1px solid var(--emcap-border, #d0d7de);
+  border-radius: 0.375rem;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.login-card__provider--active {
+  border-color: var(--emcap-primary, #1565c0);
+  background: color-mix(in srgb, var(--emcap-primary, #1565c0) 12%, transparent);
+}
+
+.login-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.login-form label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.login-card__hint {
+  margin: 0;
+  color: var(--emcap-muted, #57606a);
+}
+
+.error {
+  color: #b42318;
+  margin-top: 0.75rem;
+}

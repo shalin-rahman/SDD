@@ -112,7 +112,7 @@ export class AdminSecurityComponent implements OnInit {
       }
       this.syncEditingField();
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load security policies';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.security.loadFailed');
     }
   }
 
@@ -122,7 +122,7 @@ export class AdminSecurityComponent implements OnInit {
       const payload = await this.api.client.getAdminAbacPolicies();
       this.abacPolicies = payload.policies.map((policy) => ({ ...policy }));
     } catch (err) {
-      this.abacError = err instanceof Error ? err.message : 'Failed to load ABAC policies';
+      this.abacError = err instanceof Error ? err.message : this.i18n.t('admin.security.abacLoadFailed');
     }
   }
 
@@ -189,7 +189,7 @@ export class AdminSecurityComponent implements OnInit {
       this.abacPolicies = payload.policies;
       this.abacSaved = true;
     } catch (err) {
-      this.abacError = err instanceof Error ? err.message : 'Failed to save ABAC policies';
+      this.abacError = err instanceof Error ? err.message : this.i18n.t('admin.security.abacSaveFailed');
     }
   }
 

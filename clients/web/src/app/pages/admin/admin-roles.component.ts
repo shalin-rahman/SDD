@@ -126,7 +126,7 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
       this.roles = rolesPayload.roles as unknown as AdminRole[];
       this.allPermissions = permissionsPayload.permissions;
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load roles';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.roles.loadFailed');
     }
   }
 
