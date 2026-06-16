@@ -86,5 +86,10 @@ void main() {
     expect(client.updateAdminIntegrations, isA<Function>());
     expect(client.testAdminRestIntegration, isA<Function>());
     expect(client.updateAdminFieldAccess, isA<Function>());
+    expect(client.getAdminLayoutMetadata, isA<Function>());
+    expect(client.putAdminLayoutOverride, isA<Function>());
+    expect(client.deleteAdminLayoutOverride, isA<Function>());
+    expect(client.getTenantIsolationOps, isA<Function>());
+    expect(client.putTenantIsolationOps, isA<Function>());
   });
 }

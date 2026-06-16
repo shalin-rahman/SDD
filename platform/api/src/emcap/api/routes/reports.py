@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from emcap.auth.dependencies import get_tenant_id
+from emcap.admin.report_schedule_service import get_effective_schedule_cron
 from emcap.entity.registry import EntityRegistry
 from emcap.reporting.models import DashboardDefinition, ReportDefinition
 from emcap.reporting.service import ReportingService
@@ -24,17 +25,23 @@ def _session(request: Request) -> Session:
 @router.get("/reports")
 def list_reports(request: Request) -> dict[str, Any]:
     reports: dict[str, ReportDefinition] = request.app.state.report_definitions
-    return {
-        "reports": [
-            {
-                "code": definition.code,
-                "name": definition.name,
-                "entity_code": definition.entity_code,
-                "schedule_cron": definition.schedule_cron,
-            }
-            for definition in reports.values()
-        ]
-    }
+    session = _session(request)
+    try:
+        return {
+            "reports": [
+                {
+                    "code": definition.code,
+                    "name": definition.name,
+                    "entity_code": definition.entity_code,
+                    "schedule_cron": get_effective_schedule_cron(
+                        session, definition.code, definition.schedule_cron
+                    ),
+                }
+                for definition in reports.values()
+            ]
+        }
+    finally:
+        session.close()
 
 
 @router.post("/reports/{report_code}/run")

@@ -31,7 +31,7 @@
           <select [ngModel]="stateFilter" (ngModelChange)="stateFilter = $event">
             <option value="">{{ i18n.t('platform.workflow.filterAll') }}</option>
             @for (state of stateOptions; track state) {
-              <option [value]="state">{{ state }}</option>
+              <option [value]="state">{{ stateLabel(state) }}</option>
             }
           </select>
         </label>
@@ -63,7 +63,7 @@
                     >{{ instance.record_id }}</a>
                   </p>
                 </div>
-                <span class="state-chip">{{ instance.current_state }}</span>
+                <span class="state-chip">{{ stateLabel(instance.current_state) }}</span>
               </div>
               <p class="workflow-card__meta">
                 {{ i18n.t('platform.workflow.colAssignee') }}: {{ instance.assignee || i18n.t('common.emptyValue') }}
@@ -117,7 +117,7 @@
                       {{ instance.record_id }}
                     </a>
                   </td>
-                  <td><span class="state-chip">{{ instance.current_state }}</span></td>
+                  <td><span class="state-chip">{{ stateLabel(instance.current_state) }}</span></td>
                   <td>{{ instance.assignee || i18n.t('common.emptyValue') }}</td>
                   <td>
                     {{ formatDue(instance) }}

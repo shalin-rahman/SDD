@@ -552,6 +552,35 @@ class EmcapClient {
     });
   }
 
+  Future<Map<String, dynamic>> getAdminLayoutMetadata(String entityCode) async {
+    return _request('GET', '/api/v1/admin/metadata/layouts/$entityCode');
+  }
+
+  Future<Map<String, dynamic>> putAdminLayoutOverride(
+    String entityCode,
+    Map<String, dynamic> payload,
+  ) async {
+    return _request('PUT', '/api/v1/admin/metadata/layouts/$entityCode/override', body: payload);
+  }
+
+  Future<Map<String, dynamic>> deleteAdminLayoutOverride(String entityCode) async {
+    return _request('DELETE', '/api/v1/admin/metadata/layouts/$entityCode/override');
+  }
+
+  Future<Map<String, dynamic>> getTenantIsolationOps() async {
+    return _request('GET', '/api/v1/admin/ops/tenant-isolation');
+  }
+
+  Future<Map<String, dynamic>> putTenantIsolationOps({
+    required String mode,
+    required String confirmationToken,
+  }) async {
+    return _request('PUT', '/api/v1/admin/ops/tenant-isolation', body: {
+      'mode': mode,
+      'confirmation_token': confirmationToken,
+    });
+  }
+
   Future<List<Map<String, dynamic>>> listAdminTemplates() async {
     final body = await _request('GET', '/api/v1/admin/templates');
     return List<Map<String, dynamic>>.from(body['templates'] as List);

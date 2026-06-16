@@ -82,11 +82,39 @@ export interface FieldAccessUpdateResponse {
   access: string;
 }
 
+export interface AdminLayoutMetadataResponse {
+  entity_code: string;
+  form: FormMetadata;
+  grid: GridMetadata;
+  has_override: boolean;
+}
+
+export interface AdminLayoutOverrideResponse {
+  entity_code: string;
+  override: Record<string, unknown>;
+}
+
+export interface TenantIsolationOpsState {
+  configured_mode: string;
+  effective_mode: string;
+  has_override: boolean;
+  reload_hint: string;
+}
+
 export interface ReportSummary {
   code: string;
   name: string;
   entity_code: string;
   schedule_cron: string | null;
+}
+
+export interface ReportScheduleSummary {
+  code: string;
+  name: string;
+  entity_code: string;
+  default_schedule_cron: string | null;
+  schedule_cron: string | null;
+  has_override: boolean;
 }
 
 export class EmcapClient {
@@ -558,6 +586,20 @@ export class EmcapClient {
     });
   }
 
+  getAdminReportSchedules(): Promise<{ schedules: ReportScheduleSummary[] }> {
+    return this.request('/api/v1/admin/reports/schedules');
+  }
+
+  updateAdminReportSchedule(
+    reportCode: string,
+    scheduleCron: string,
+  ): Promise<ReportScheduleSummary> {
+    return this.request(`/api/v1/admin/reports/schedules/${encodeURIComponent(reportCode)}`, {
+      method: 'PUT',
+      body: JSON.stringify({ schedule_cron: scheduleCron }),
+    });
+  }
+
   getAdminIntegrations(): Promise<AdminIntegrationsResponse> {
     return this.request('/api/v1/admin/integrations');
   }
@@ -632,6 +674,44 @@ export class EmcapClient {
 
   getAdminAudit(): Promise<{ audit: Record<string, unknown>[] }> {
     return this.request('/api/v1/admin/audit');
+  }
+
+  getAdminLayoutMetadata(entityCode: string): Promise<AdminLayoutMetadataResponse> {
+    return this.request(`/api/v1/admin/metadata/layouts/${entityCode}`);
+  }
+
+  getAdminLayoutOverride(entityCode: string): Promise<AdminLayoutOverrideResponse> {
+    return this.request(`/api/v1/admin/metadata/layouts/${entityCode}/override`);
+  }
+
+  putAdminLayoutOverride(
+    entityCode: string,
+    payload: { form?: Record<string, unknown>; grid?: Record<string, unknown> },
+  ): Promise<AdminLayoutOverrideResponse> {
+    return this.request(`/api/v1/admin/metadata/layouts/${entityCode}/override`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  deleteAdminLayoutOverride(entityCode: string): Promise<{ entity_code: string; deleted: boolean }> {
+    return this.request(`/api/v1/admin/metadata/layouts/${entityCode}/override`, {
+      method: 'DELETE',
+    });
+  }
+
+  getTenantIsolationOps(): Promise<TenantIsolationOpsState> {
+    return this.request('/api/v1/admin/ops/tenant-isolation');
+  }
+
+  putTenantIsolationOps(payload: {
+    mode: string;
+    confirmation_token: string;
+  }): Promise<{ mode: string; reload_hint: string }> {
+    return this.request('/api/v1/admin/ops/tenant-isolation', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
   }
 
   listReports(): Promise<{ reports: ReportSummary[] }> {

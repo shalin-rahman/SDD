@@ -52,6 +52,8 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `PermissionPickerComponent` | `app-permission-picker` | Grouped checkbox permission assignment |
 | `SettingsToggleGroupComponent` | `app-settings-toggle-group` | Aligned label + toggle rows |
 | `BrandingPreviewPanelComponent` | `app-branding-preview-panel` | P19-T05 live shell snippet with scoped `--emcap-primary` + WCAG contrast hint |
+| `LayoutEditorPanelComponent` | `app-layout-editor-panel` | P13-T31/T32 settings Platform tab — form row/col/span + grid column reorder/flags/width override editor (ADR-007) |
+| `layout_editor_panel.dart` (mobile) | — | P13-T31/T32 mobile settings ExpansionTile — same override editor parity |
 
 ## Services & utils
 
@@ -67,6 +69,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `utils/record-lifecycle.util.ts` | Soft delete: `canDeleteRecord`, `canRestoreRecord` |
 | `utils/record-headline.util.ts` | Entity hero headline/subtitle from main-section field hints (`sku`/`code`/`terminal_id`/`employee_no`/`movement_number`/etc. + `name`/`location`/`full_name`/`company`/`contact_name`); status chip from `display.status_field` |
 | `utils/workflow-sla.util.ts` | Workflow inbox SLA badge levels from `due_at` |
+| `utils/workflow-state.util.ts` | Workflow `current_state` code → localized label (EN/FR/BN) |
 | `utils/workflow-enabled.util.ts` | Platform workflow gate + entity start-workflow codes (PRODUCT → STOCK_ADJUSTMENT) |
 | `utils/field-display.util.ts` | Grid/form datetime, currency, textarea cell formatters |
 | `utils/lookup-display.util.ts` | Resolve lookup record display label (name/code/sku) |

@@ -8,7 +8,9 @@
 
 **Last updated:** 2026-06-16  
 
-**Backlog:** see progress table in `plan/03-task-backlog.md` (291 Done / 28 Pending)  
+**Backlog:** see progress table in `plan/03-task-backlog.md` (296 Done / 27 Pending)  
+
+**Sprint plan 11:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-11-rapid-dev.md` (Sprints 11–14 rapid dev)
 
 **Do not commit** unless user explicitly asks.
 
@@ -47,6 +49,11 @@
 7. **Sprint plan 4:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-15-emcap-sprint-plan-4.md`
 8. **Sprint plan 5:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-15-emcap-sprint-plan-5.md`
 9. **Sprint plan 6:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-6.md`
+10. **Sprint plan 7:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-7.md`
+11. **Sprint plan 8:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-8.md`
+12. **Sprint plan 9:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-9.md`
+13. **Sprint plan 10:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-10.md`
+14. **Sprint plan 11:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-11-rapid-dev.md`
 
 
 
@@ -180,6 +187,18 @@
 
 - **Sprint 5 (2026-06-16)** — P19-T08/P13-T30 ADR-007 layout designer; P20-T08 matrix 07 M2–M6 rev; P18-T07 mobile menu icons (`material_icon_util.dart`)
 
+- **Sprint 6 (2026-06-16)** — P13-T31 layout override API + merge; P13-T20 ops isolation write; CC-5 grid i18n deny; shell i18n; mobile doc preview tests
+
+- **Sprint 7 (2026-06-16)** — P13-T21 settings isolation ops UI; P13-T31/T32 `LayoutEditorPanelComponent` (form + grid); web/mobile client parity (`getAdminLayoutMetadata`, `getTenantIsolationOps`); FR/BN i18n; Karma **209/209**; build **822 kB**; pytest **94**
+
+- **Sprint 9 (2026-06-16)** — P13-T12 mobile field `read_roles` editor; mobile settings i18n + isolation ops panel; web settings/account i18n (isolation mode labels, observability, MFA errors); Karma **210/210**; build **830 kB**
+
+- **Sprint 10 (2026-06-16)** — Mobile `layout_editor_panel.dart`; workflow state i18n (web + mobile); P20-T08 matrix 07 M2/M3/M5/M6 rev; Karma **213/213**; build **831 kB**
+
+- **Sprint 11 (2026-06-16)** — Coverage ratchet: `test_rbac.py`, `test_formula_engine.py`; web specs (account, login, utils); Karma **231/231**; coverage **~57% lines**
+
+- **Sprint 12–13 (2026-06-16)** — Editable document settings + report schedule admin; `test_workflow_engine.py`, `test_oauth_provider.py`; dynamic-form + shell specs; Karma **241/241**; coverage **~59% lines**; pytest **298**; Flutter `--coverage` CI; mobile `layout_editor_panel_test.dart`
+
 
 
 ---
@@ -198,11 +217,9 @@
 
 | 2 | P18-T06 CRM mobile Product-ready sign-off | Flutter device PNG |
 
-| 3 | P13-T31 layout editor MVP (form override API) | M3 entity platform Product-ready |
+| 3 | P20-T08 matrix 07 rev when M2 signed | M2 PNG |
 
-| 4 | P13-T20 tenant isolation write (ops API) | ops scope |
-
-**Sprint Plan 6:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-6.md`
+**Sprint Plan 10:** `C:\Users\u1074139\.cursor\task-summaries\2026-06-16-emcap-sprint-plan-10.md`
 
 
 
@@ -215,14 +232,11 @@
 
 
 ```bat
-
-cd platform\api && python -m pytest tests/test_inventory_product_smoke.py tests/test_entity_system_contract.py -q
-
-cd clients\web && npm run build && npm run test:ci
-
+cd platform\api && python -m pytest -q --cov=src --cov-fail-under=80
+cd clients\web && npm run build && npm run test:ci && npm run test:coverage
 ```
 
-Last verified 2026-06-16: pytest **91 passed**; Karma **207 SUCCESS**; build **818 kB**.
+Last verified 2026-06-16: pytest **298 passed**; Karma **241 SUCCESS**; coverage **~59% lines**; build **831 kB**.
 
 
 

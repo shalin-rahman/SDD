@@ -87,7 +87,7 @@ export class AccountComponent implements OnInit {
     void this.api.client.enrollMfa().then((r) => {
       this.mfaSecret = `${this.i18n.t('platform.account.mfaSecret')}: ${r.secret}`;
     }).catch((err) => {
-      this.mfaError = err instanceof Error ? err.message : 'MFA enroll failed';
+      this.mfaError = err instanceof Error ? err.message : this.i18n.t('platform.account.mfaEnrollFailed');
     });
   }
 
@@ -97,7 +97,7 @@ export class AccountComponent implements OnInit {
       this.auth.setSession(r.access_token, this.auth.getTenantId());
       this.mfaVerified = true;
     }).catch((err) => {
-      this.mfaError = err instanceof Error ? err.message : 'MFA verify failed';
+      this.mfaError = err instanceof Error ? err.message : this.i18n.t('platform.account.mfaVerifyFailed');
     });
   }
 }

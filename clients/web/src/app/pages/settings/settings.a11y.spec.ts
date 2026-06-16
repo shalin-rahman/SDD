@@ -38,6 +38,29 @@ describe('SettingsComponent a11y (P15-T32)', () => {
               getHealth: jasmine
                 .createSpy('getHealth')
                 .and.resolveTo({ tenant_strategy: 'shared_database', multi_tenant: false }),
+              getTenantIsolationOps: jasmine.createSpy('getTenantIsolationOps').and.resolveTo({
+                configured_mode: 'shared_database',
+                effective_mode: 'shared_database',
+                has_override: false,
+                reload_hint: '',
+              }),
+              listEntities: jasmine.createSpy('listEntities').and.resolveTo({ entities: ['PRODUCT'] }),
+              getAdminLayoutMetadata: jasmine.createSpy('getAdminLayoutMetadata').and.resolveTo({
+                entity_code: 'PRODUCT',
+                has_override: false,
+                form: {
+                  sections: [{ code: 'main', fields: [{ name: 'sku', row: 0, col: 0, span: 6 }] }],
+                },
+                grid: {
+                  columns: [{ field: 'sku', label: 'Sku', sortable: true, filterable: true }],
+                },
+              }),
+              putAdminLayoutOverride: jasmine
+                .createSpy('putAdminLayoutOverride')
+                .and.resolveTo({ entity_code: 'PRODUCT', override: {} }),
+              deleteAdminLayoutOverride: jasmine
+                .createSpy('deleteAdminLayoutOverride')
+                .and.resolveTo({ entity_code: 'PRODUCT', deleted: true }),
               getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({
                 documents: {
                   storage_backend: 'filesystem',

@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-16 (Sprint 5: P19-T08 ADR-007 layout designer; P18-T07 mobile menu icons; matrix 07 M5/M6 rev)
+**Last updated:** 2026-06-16 (Sprint 12–13: editable document settings, report schedule admin, workflow engine tests, Karma ~59% / API 92%)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -26,11 +26,11 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | Milestone | Scope | Blocking | Status |
 |-----------|--------|----------|--------|
 | **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile open |
-| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo+ (hero tests, `EmcapThemeTokens`, menu icons); PNG blocked (Flutter SDK) |
-| **M3** | Entity platform (lookup, status contract, UI complete) | Layout designer UI | **Partial** — 14A-S2 Done; P14-T21–T22 field-type API Done; **ADR-007** layout override API designed (P19-T08); editor UI post-M3 |
-| **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ (icons + tokens) |
-| **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM + LOW_STOCK nav/report screenshots 2026-06-14; sidenav menu icons (P18-T07 web + mobile) |
-| **M6** | Admin/settings product depth | — | **Partial** — P19-T01–T06 Demo+ with 5 admin/settings PNGs; P16-T06 mobile tokens Done; P15-T32 axe a11y gate; P21-T03 migration CI |
+| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo+ (hero tests, tokens, menu icons, settings i18n, layout editor, field access); PNG blocked (Flutter SDK) |
+| **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — 14A-S2 Done; field-type API Done; **ADR-007 layout editor web + mobile** (P13-T31/T32); M2 PNG still open |
+| **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
+| **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM screenshots; menu icons; **workflow state i18n** (web + mobile) |
+| **M6** | Admin/settings product depth | — | **Partial** — P19 Demo+ PNGs; mobile tokens, isolation ops, field access, layout editor; P15-T32 axe; P21-T03 migration CI |
 
 ---
 
@@ -121,14 +121,13 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Enterprise shell / nav | Many Done | **Demo** | P16-T09 breadcrumbs; P18-T07 Material menu icons (web sidenav + mobile shell `material_icon_util.dart`) |
 | Admin users/roles | Done | **Demo** | `phase19-admin-users-web.png` — P19-T02; `.emcap-badge--on`/`--off` active chips |
 | Entity record header | Done | **Demo** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` status (ADR-006) |
-| Settings hub | Partial/Done | **Demo** | `phase19-settings-ia-web.png` — P19-T01 mat-tab IA |
-| Tenant branding preview | Done | **Demo** | P19-T05 — live preview + contrast badge; `phase19-settings-branding-web.png` |
+| Settings hub | Partial/Done | **Demo** | P19-T01 mat-tab IA; P13 layout/workflow toggles/isolation; **Sprint 12** document + report schedule edit |
+| Layout designer (ADR-007) | Done | **Demo** | Web `LayoutEditorPanelComponent` + mobile `layout_editor_panel.dart`; `layout_editor_panel_test.dart` |
+| Tenant branding preview | Done | **Demo** | P19-T05 — `phase19-settings-branding-web.png`; capture runbook § Sprint 13 |
+| Document platform settings | Done | **Partial** | **Sprint 12** editable admin settings (was read-only cards); screenshot runbook pending refresh |
+| Report schedules | Done | **Partial** | **Sprint 12** admin cron MVP in settings; `test_report_schedule_admin.py` |
 | ABAC editor (P13) | Done | **Wired** | P19-T04 |
-| Document platform settings | Done | **Demo** | P19-T06 — Platform tab badge chips; `phase19-settings-documents-web.png` |
 | Integrations on Account | Done | **Wired** (wrong place) | P19-T10, P17-T08 |
-| Report schedules | Done | **Demo** | P17-T03 |
-
-Continue Phase 19 only after M1 PRODUCT web **Product-ready**.
 
 ---
 

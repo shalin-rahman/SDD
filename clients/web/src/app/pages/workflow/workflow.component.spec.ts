@@ -50,4 +50,9 @@ describe('WorkflowComponent', () => {
     expect(listWorkflowInstances).toHaveBeenCalled();
     expect(text).toContain('No open workflow instances');
   });
+
+  it('localizes workflow state labels', () => {
+    expect(fixture.componentInstance.stateLabel('draft')).toBe('Draft');
+    expect(fixture.componentInstance.stateLabel('unknown')).toBe('unknown');
+  });
 });

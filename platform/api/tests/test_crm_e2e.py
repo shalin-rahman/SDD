@@ -26,7 +26,7 @@ def test_lead_crud(client: TestClient) -> None:
     created = client.post(
         "/api/v1/entities/LEAD/records",
         headers=headers,
-        json={"company": "Acme", "contact_name": "Jane", "status": "open"},
+        json={"company": "Acme", "contact_name": "Jane", "status": "new"},
     )
     assert created.status_code == 201
     record_id = created.json()["id"]
@@ -44,4 +44,5 @@ def test_lead_crud(client: TestClient) -> None:
     assert len(search.json()["records"]) >= 1
 
     deleted = client.delete(f"/api/v1/entities/LEAD/records/{record_id}", headers=headers)
-    assert deleted.status_code == 204
+    assert deleted.status_code == 200
+    assert deleted.json()["deleted_at"] is not None

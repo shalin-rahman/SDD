@@ -49,6 +49,10 @@ ALLOWED_SETTING_PATHS: frozenset[str] = frozenset(
         "tenants.default.domain",
         "tenants.default.primary_color",
         "tenants.default.logo_url",
+        "documents.storage_backend",
+        "documents.max_upload_size_mb",
+        "documents.virus_scan_enabled",
+        "documents.retention_days",
     }
 )
 

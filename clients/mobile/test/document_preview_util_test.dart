@@ -56,4 +56,28 @@ void main() {
     expect(bytes, isNotNull);
     expect(decodeUtf8Bytes(bytes!), 'Hello');
   });
+
+  test('builds pdf preview for large pdf payload', () {
+    final bytes = Uint8List.fromList(List.generate(120, (i) => i % 256));
+    final view = buildDocumentPreviewView({
+      'filename': 'report.pdf',
+      'content_base64': base64Encode(bytes),
+    });
+    expect(view.mode, DocumentPreviewMode.pdf);
+    expect(view.bytes?.length, 120);
+  });
+
+  test('isTextMimeType recognizes text and json', () {
+    expect(isTextMimeType('text/plain'), isTrue);
+    expect(isTextMimeType('application/json'), isTrue);
+    expect(isTextMimeType('application/pdf'), isFalse);
+  });
+
+  test('documentDownloadFallbackText prefers text content', () {
+    final view = buildDocumentPreviewView({
+      'filename': 'notes.txt',
+      'ocr_text': 'Saved note',
+    });
+    expect(documentDownloadFallbackText(view, 'notes.txt'), 'Saved note');
+  });
 }

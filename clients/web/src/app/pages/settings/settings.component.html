@@ -93,9 +93,47 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.isolation') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <p class="settings-readonly">Strategy: <strong>{{ tenantStrategy }}</strong></p>
-        <p class="settings-readonly">Multi-tenant mode: <strong>{{ multiTenant ? 'enabled' : 'disabled' }}</strong></p>
-        <p class="settings-hint">Changing isolation strategy requires ops deployment (Phase 13).</p>
+        <p class="settings-readonly">
+          {{ i18n.t('settings.isolation.configured') }}:
+          <strong>{{ isolationConfigured || tenantStrategy }}</strong>
+        </p>
+        <p class="settings-readonly">
+          {{ i18n.t('settings.isolation.effective') }}:
+          <strong>{{ isolationEffective || tenantStrategy }}</strong>
+        </p>
+        <p class="settings-readonly">
+          {{ i18n.t('settings.isolation.multiTenant') }}:
+          <strong>{{ multiTenant ? i18n.t('settings.isolation.enabled') : i18n.t('settings.isolation.disabled') }}</strong>
+        </p>
+        @if (isolationHasOverride) {
+          <span class="emcap-badge emcap-badge--muted">{{ i18n.t('settings.override.badge') }}</span>
+        }
+        @if (isolationOpsAvailable) {
+          <mat-form-field appearance="outline" class="settings-field">
+            <mat-label>{{ i18n.t('settings.isolation.mode') }}</mat-label>
+            <mat-select [(ngModel)]="isolationModeDraft">
+              @for (mode of isolationModes; track mode) {
+                <mat-option [value]="mode">{{ isolationModeLabel(mode) }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="settings-field">
+            <mat-label>{{ i18n.t('settings.isolation.confirmationToken') }}</mat-label>
+            <input matInput [(ngModel)]="isolationConfirmToken" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="button" (click)="applyIsolationMode()">
+            {{ i18n.t('settings.isolation.apply') }}
+          </button>
+        } @else {
+          <p class="settings-hint">{{ i18n.t('settings.isolation.opsReadOnly') }}</p>
+        }
+        @if (isolationReloadHint) {
+          <p class="settings-hint">{{ isolationReloadHint }}</p>
+        }
+        @if (isolationOpsStatus) {
+          <p class="settings-hint">{{ isolationOpsStatus }}</p>
+        }
+        <p class="settings-hint">{{ i18n.t('settings.isolation.runbookHint') }}</p>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-tab>
@@ -149,8 +187,8 @@
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.observability') }}</mat-panel-title>
         </mat-expansion-panel-header>
-        <p class="settings-readonly">Metrics: GET /api/v1/metrics (Prometheus format)</p>
-        <p class="settings-hint">Grafana dashboards are external ops tooling (see infra/ansible).</p>
+        <p class="settings-readonly">{{ i18n.t('settings.observability.metrics') }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.observability.grafanaHint') }}</p>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -164,59 +202,87 @@
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title>{{ i18n.t('settings.sections.documents') }}</mat-panel-title>
-          <mat-panel-description>{{ i18n.t('settings.documents.subtitle') }}</mat-panel-description>
+          <mat-panel-title>{{ i18n.t('settings.sections.layouts') }}</mat-panel-title>
+          <mat-panel-description>{{ i18n.t('settings.layouts.subtitle') }}</mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="settings-documents-header">
-          <span class="emcap-badge emcap-badge--muted">{{ i18n.t('settings.documents.readOnlyBadge') }}</span>
+        <app-layout-editor-panel />
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ i18n.t('settings.sections.reports') }}</mat-panel-title>
+          <mat-panel-description>{{ i18n.t('settings.reports.subtitle') }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        @if (reportSchedules.length === 0) {
+          <p class="settings-hint">{{ i18n.t('settings.reports.empty') }}</p>
+        } @else {
+          <table class="settings-report-schedules">
+            <thead>
+              <tr>
+                <th>{{ i18n.t('settings.reports.report') }}</th>
+                <th>{{ i18n.t('settings.reports.defaultCron') }}</th>
+                <th>{{ i18n.t('settings.reports.cron') }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of reportSchedules; track row.code) {
+                <tr>
+                  <td>
+                    {{ row.name }}
+                    @if (row.has_override) {
+                      <span class="emcap-badge emcap-badge--muted">{{ i18n.t('settings.override.badge') }}</span>
+                    }
+                  </td>
+                  <td>{{ row.default_schedule_cron ?? '—' }}</td>
+                  <td>
+                    <input
+                      [(ngModel)]="row.schedule_cron"
+                      [attr.aria-label]="i18n.t('settings.reports.cron')"
+                      class="settings-cron-input"
+                    />
+                  </td>
+                  <td>
+                    <button type="button" mat-stroked-button (click)="saveReportSchedule(row)">
+                      {{ i18n.t('common.save') }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+        @if (reportScheduleStatus) {
+          <p class="settings-status">{{ reportScheduleStatus }}</p>
+        }
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ i18n.t('settings.sections.documents') }}</mat-panel-title>
+          <mat-panel-description>{{ i18n.t('settings.documents.subtitleEditable') }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="settings-document-form">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.documents.storageBackend') }}</mat-label>
+            <mat-select [(ngModel)]="documentSettings.storageBackend">
+              @for (backend of documentStorageBackends; track backend) {
+                <mat-option [value]="backend">{{ backend }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.documents.maxUploadSize') }}</mat-label>
+            <input matInput type="number" min="1" [(ngModel)]="documentSettings.maxUploadSizeMb" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.documents.retentionDays') }}</mat-label>
+            <input matInput type="number" min="1" [(ngModel)]="documentSettings.retentionDays" />
+          </mat-form-field>
+          <label class="settings-checkbox-row">
+            <input type="checkbox" [(ngModel)]="documentSettings.virusScanEnabled" />
+            {{ i18n.t('settings.documents.virusScan') }}
+          </label>
         </div>
-        <div class="settings-document-cards">
-          <mat-card class="settings-document-card">
-            <mat-card-header>
-              <mat-card-title>{{ i18n.t('settings.documents.storageBackend') }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="settings-document-value">
-                <span class="emcap-badge emcap-badge--muted">{{ documentSettings.storageBackend }}</span>
-              </p>
-            </mat-card-content>
-          </mat-card>
-          <mat-card class="settings-document-card">
-            <mat-card-header>
-              <mat-card-title>{{ i18n.t('settings.documents.maxUploadSize') }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="settings-document-value">
-                {{ documentSettings.maxUploadSizeMb }} {{ i18n.t('settings.documents.megabytes') }}
-              </p>
-            </mat-card-content>
-          </mat-card>
-          <mat-card class="settings-document-card">
-            <mat-card-header>
-              <mat-card-title>{{ i18n.t('settings.documents.virusScan') }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="settings-document-value">
-                <span
-                  class="emcap-badge"
-                  [class.emcap-badge--on]="documentSettings.virusScanEnabled"
-                  [class.emcap-badge--off]="!documentSettings.virusScanEnabled"
-                >
-                  {{ virusScanLabel() }}
-                </span>
-              </p>
-            </mat-card-content>
-          </mat-card>
-          <mat-card class="settings-document-card">
-            <mat-card-header>
-              <mat-card-title>{{ i18n.t('settings.documents.retentionDays') }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="settings-document-value">{{ documentSettings.retentionDays }}</p>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        <p class="settings-hint">{{ i18n.t('settings.documents.readOnlyHint') }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.documents.editableHint') }}</p>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-tab>

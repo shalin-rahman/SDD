@@ -16,7 +16,7 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 7 — SDD gap closure (§2 Partial/No) | 16 | 0 | 0 | 16 |
 | 8 — End-user product depth (§9 UX) | 23 | 0 | 0 | 23 |
 | 11 — Local dev tooling (scripts, seed, lint) | 16 | 0 | 0 | 16 |
-| 12 — Enterprise product UI & admin | 67 | 0 | 0 | 67 |
+| 12 — Enterprise product UI & admin | 71 | 0 | 0 | 71 |
 | 14 — Entity platform baseline | 21 | 0 | 0 | 21 |
 | 15 — Entity page redesign | 16 | 1 | 2 | 20 |
 | 16 — Design system | 9 | 0 | 0 | 9 |
@@ -27,13 +27,13 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 21 — Infra/docs (support) | 6 | 0 | 0 | 6 |
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
-| **Total** | **291** | **28** | **4** | **326** |
+| **Total** | **296** | **27** | **4** | **330** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-16 (Sprint 5: P19-T08/P13-T30 ADR-007 layout designer; P20-T08 matrix 07 M5/M6 rev; P18-T07 mobile menu icons) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md` · **Architecture memo:** `docs/dev/session-memos/2026-06-14-conversation-architecture-memory.md`
+**Last updated:** 2026-06-16 (Sprint 9: P13-T12 mobile field access editor; mobile settings i18n + isolation ops; web settings/account i18n polish) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
 
-**Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · **P13-T31** layout editor MVP (post-M3) · See `Crash course` section below + `07-product-readiness-matrix.md`.
+**Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · See `Crash course` + `07-product-readiness-matrix.md`.
 
 ---
 
@@ -356,8 +356,12 @@ Playbook: `plan/11-local-dev-tooling.md` · Recipe: `docs/dev/recipes/run-emcap-
 | EMCAP-P13-T06 | pytest + matrix rev. 7 | T02–T05 | Done |
 | EMCAP-P13-T10 | Field `read_roles` override API | T06 | Done |
 | EMCAP-P13-T11 | Merge overrides in `apply_field_security` + policies GET | T10 | Done |
-| EMCAP-P13-T20 | Tenant isolation write (ops) | — | Pending |
-| EMCAP-P13-T30 | Layout designer ADR | — | Done — `spec/sdd/adrs/007-layout-designer-metadata-editor.md` (override API + MVP scope; UI P13-T31–T32) |
+| EMCAP-P13-T12 | Mobile field row edit (permission multi-select) | T11 | Done — `admin_security_screen.dart` field tap → permission picker + `PUT /admin/security/field-access`; `admin_security_field_access_test.dart` |
+| EMCAP-P13-T20 | Tenant isolation write (ops) | — | Done — `PUT/GET /admin/ops/tenant-isolation` + confirmation token; `test_admin_ops_isolation.py`; ops runbook § in `infra/ansible/README.md` |
+| EMCAP-P13-T21 | Settings isolation ops UI (web) | T20 | Done — settings Platform tab mode + confirmation token; `getTenantIsolationOps`/`putTenantIsolationOps` client; FR/BN i18n |
+| EMCAP-P13-T30 | Layout designer ADR | — | Done — ADR-007 + API (`tenant_layout_overrides`, merge, admin CRUD) |
+| EMCAP-P13-T31 | Form layout editor MVP (web) | T30 | Done — `LayoutEditorPanelComponent` form row/col/span table; settings Platform tab |
+| EMCAP-P13-T32 | Grid column editor MVP (web) | T31 | Done — column reorder, sortable/filterable/width; `layout-editor-panel.component.spec.ts` |
 
 Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterprise-admin-depth.md` · **14:** `plan/14-entity-platform-baseline.md` · **15:** `plan/15-entity-page-redesign.md` · Product gate: `spec/sdd/07-product-readiness-matrix.md`
 
@@ -511,7 +515,7 @@ Playbook: `plan/19-admin-product-depth.md` · `plan/13-enterprise-admin-depth.md
 | EMCAP-P20-T05 | Metadata snapshot CI all entities | P14-T26 | Done |
 | EMCAP-P20-T06 | Web bundle / lazy routes plan | P16 | Done — entity list/record, notifications, account lazy-loaded; initial 818 kB (under 900 kB warning) |
 | EMCAP-P20-T07 | Entity list perf budget | P15-T22 | Done — lazy entity routes; `app.routes.spec.ts` smoke |
-| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Ongoing — Sprint 5 rev: M2/M3/M4/M5/M6 rows + §12 shell nav (2026-06-16) |
+| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Ongoing — Sprint 10 rev: M2/M3/M5/M6 + §12 layout/workflow i18n (2026-06-16); M2 sign-off pending PNG |
 | EMCAP-P20-T09 | W1 standard module fields (WAREHOUSE, CRM) | P20-T05 | Done |
 | EMCAP-P20-T10 | W1 web fixtures + headline generalize | P20-T09 | Done |
 | EMCAP-P20-T11 | W1 mobile contracts + If-Match PUT | P20-T09 | Done |

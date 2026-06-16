@@ -16,7 +16,26 @@ docs/product/screenshots/
 
 Reference paths in PRs, `spec/sdd/07-product-readiness-matrix.md`, and phase playbooks — not external attachments.
 
-**Inventory:** 25+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + P18 workflow tab + P19 admin security field-access + account profile. **Pending:** branding + documents settings PNGs via `--only=admin-settings`.
+**Inventory:** 25+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + P19 admin security field-access + account profile. **Sprint 13 pending:** branding, documents (editable), layout editor, isolation ops — see § Sprint 13 below.
+
+---
+
+## Sprint 13 — Settings Product-ready pack (web)
+
+Capture after local stack (`docs/dev/recipes/run-emcap-local-stack.md`), login `admin` / `admin123`:
+
+```bat
+node scripts/capture-screenshot-sprint.mjs --only=admin-settings
+```
+
+| File | Route / panel |
+|------|----------------|
+| `phase19-settings-branding-web.png` | Settings → Integrations → Branding (existing; refresh after Sprint 12) |
+| `phase19-settings-documents-web.png` | Settings → Platform → Documents (editable form) |
+| `phase19-settings-layout-editor-web.png` | Settings → Platform → Entity layouts |
+| `phase19-settings-isolation-web.png` | Settings → Platform → Tenant isolation |
+
+Matrix 07 §12 rows move **Demo → Product-ready** when PNG + DoD checklist pass.
 
 ---
 

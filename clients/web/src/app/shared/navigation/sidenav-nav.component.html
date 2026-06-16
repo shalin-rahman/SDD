@@ -1,5 +1,5 @@
 <mat-nav-list>
-  <div matSubheader>Platform</div>
+  <div matSubheader>{{ i18n.t('nav.platform') }}</div>
   @for (link of platformLinks; track link.route) {
     @if (link.visible) {
       <a
@@ -8,7 +8,7 @@
         routerLinkActive="sidenav-nav-active"
         (click)="onClick()"
       >
-        {{ link.label }}
+        {{ linkLabel(link) }}
       </a>
     }
   }
@@ -16,7 +16,7 @@
 
 @for (group of navGroups; track group.moduleCode) {
   <mat-nav-list>
-    <div matSubheader>{{ group.moduleLabel }}</div>
+    <div matSubheader>{{ moduleLabel(group) }}</div>
     @for (item of group.items; track item.code) {
       <a
         mat-list-item

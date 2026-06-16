@@ -53,7 +53,8 @@ def test_customer_crud_and_audit(client: TestClient) -> None:
     assert len(audit.json()["audit"]) >= 2
 
     delete = client.delete(f"/api/v1/entities/CUSTOMER/records/{record_id}")
-    assert delete.status_code == 204
+    assert delete.status_code == 200
+    assert delete.json()["deleted_at"] is not None
 
 
 def test_menus_and_permissions(client: TestClient) -> None:

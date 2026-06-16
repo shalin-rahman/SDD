@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
 import '../services/i18n_service.dart';
+import '../utils/shell_nav_util.dart';
 import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 
@@ -18,6 +19,8 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
   List<Map<String, dynamic>> _entities = [];
   Map<String, dynamic> _rules = {};
   List<Map<String, dynamic>> _abacPolicies = [];
+  List<String> _allPermissions = [];
+  bool _canEditSecurity = false;
   String? _selectedCode;
   bool _loading = true;
   String? _error;
@@ -37,12 +40,25 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
     try {
       final payload = await widget.client.getAdminSecurityPolicies();
       final abac = await widget.client.getAdminAbacPolicies();
+      final permissions = await widget.client.getPermissions();
+      var canEdit = false;
+      try {
+        final me = await widget.client.getMe();
+        final userPermissions = extractUserPermissions(me);
+        canEdit = hasPermission(userPermissions, 'admin.security.write') ||
+            hasPermission(userPermissions, 'admin.*') ||
+            hasPermission(userPermissions, '*.*');
+      } catch (_) {
+        canEdit = false;
+      }
       if (!mounted) return;
       final entities = List<Map<String, dynamic>>.from(payload['entities'] as List? ?? []);
       setState(() {
         _entities = entities;
         _rules = Map<String, dynamic>.from(payload['rules'] as Map? ?? {});
         _abacPolicies = abac;
+        _allPermissions = permissions;
+        _canEditSecurity = canEdit;
         _selectedCode = _selectedCode ?? (entities.isNotEmpty ? '${entities.first['code']}' : null);
         _loading = false;
       });
@@ -122,6 +138,70 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
     setState(() => _abacPolicies[index] = updated);
   }
 
+  Future<void> _editFieldAccess(String fieldName, List<String> readRoles) async {
+    if (!_canEditSecurity || _selectedCode == null) {
+      return;
+    }
+    final draft = {...readRoles};
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('${EmcapLocale.t('admin.security.editField')}: $fieldName'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 320,
+            child: _allPermissions.isEmpty
+                ? Text(EmcapLocale.t('admin.security.selectPlaceholder'))
+                : ListView(
+                    children: [
+                      for (final permission in _allPermissions)
+                        CheckboxListTile(
+                          value: draft.contains(permission),
+                          title: Text(permission, style: Theme.of(context).textTheme.bodySmall),
+                          onChanged: (checked) {
+                            setDialogState(() {
+                              if (checked == true) {
+                                draft.add(permission);
+                              } else {
+                                draft.remove(permission);
+                              }
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(EmcapLocale.t('common.cancel'))),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: Text(EmcapLocale.t('admin.security.saveFieldAccess'))),
+          ],
+        ),
+      ),
+    );
+    if (saved != true || !mounted) {
+      return;
+    }
+    try {
+      await widget.client.updateAdminFieldAccess(
+        entityCode: _selectedCode!,
+        fieldName: fieldName,
+        readRoles: draft.toList(),
+      );
+      if (!mounted) return;
+      await _reload();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(EmcapLocale.t('admin.security.fieldAccessSaved'))),
+      );
+    } catch (err) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(EmcapLocale.t('admin.security.fieldAccessSaveFailed'))),
+      );
+    }
+  }
+
   Future<void> _saveAbac() async {
     setState(() => _abacError = null);
     try {
@@ -194,9 +274,15 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
                 rows: [
                   for (final field in List<Map<String, dynamic>>.from(entity['fields'] as List? ?? []))
                     DataRow(
+                      onSelectChanged: _canEditSecurity
+                          ? (_) => _editFieldAccess(
+                                '${field['name']}',
+                                List<String>.from(field['read_roles'] as List? ?? []),
+                              )
+                          : null,
                       cells: [
                         DataCell(Text('${field['name']}')),
-                        DataCell(Text(_accessLabel('${field['access']}')),
+                        DataCell(Text(_accessLabel('${field['access']}'))),
                         DataCell(Text((field['read_roles'] as List?)?.join(', ') ?? '—')),
                       ],
                     ),

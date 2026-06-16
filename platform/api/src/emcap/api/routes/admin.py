@@ -6,6 +6,15 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from emcap.admin.access import require_permission
+from emcap.admin.layout_service import (
+    LayoutValidationError,
+    build_effective_metadata,
+    delete_layout_override,
+    get_layout_override,
+    put_layout_override,
+)
+from emcap.admin.ops_service import OpsValidationError, get_tenant_isolation_state, update_tenant_isolation_mode
+from emcap.entity.registry import EntityRegistryError
 from emcap.admin.integrations_service import AdminValidationError as IntegrationsValidationError
 from emcap.admin.integrations_service import (
     get_integrations,
@@ -22,6 +31,11 @@ from emcap.admin.security_service import (
     load_field_overrides,
     update_abac_policies,
     update_field_access,
+)
+from emcap.admin.report_schedule_service import (
+    ReportScheduleValidationError,
+    list_report_schedules,
+    put_report_schedule,
 )
 from emcap.admin.settings_service import AdminValidationError as SettingsValidationError
 from emcap.admin.settings_service import get_settings, list_admin_audit, update_settings
@@ -42,7 +56,9 @@ from emcap.admin.users_service import (
 )
 from emcap.auth.dependencies import require_user
 from emcap.auth.models import CurrentUser
+from emcap.config.models import TenantStrategyMode
 from emcap.persistence.database import AdminAuditRow
+from emcap.tenancy.strategies import get_tenant_strategy
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -471,6 +487,143 @@ class FieldAccessRequest(BaseModel):
     read_roles: list[str] = Field(default_factory=list)
 
 
+class LayoutOverrideRequest(BaseModel):
+    form: dict[str, Any] | None = None
+    grid: dict[str, Any] | None = None
+
+
+class TenantIsolationRequest(BaseModel):
+    mode: TenantStrategyMode
+    confirmation_token: str
+
+
+@router.get("/metadata/layouts/{entity_code}")
+def admin_get_layout_metadata(
+    entity_code: str,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.metadata.read")
+    session = _open_session(request)
+    tenant_id = getattr(request.state, "tenant_id", "default")
+    try:
+        return build_effective_metadata(
+            request.app.state.entity_registry,
+            request.app.state.platform_config,
+            session=session,
+            tenant_id=tenant_id,
+            entity_code=entity_code,
+        )
+    except (LayoutValidationError, EntityRegistryError) as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.get("/metadata/layouts/{entity_code}/override")
+def admin_get_layout_override(
+    entity_code: str,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.metadata.read")
+    session = _open_session(request)
+    tenant_id = getattr(request.state, "tenant_id", "default")
+    try:
+        return get_layout_override(session, tenant_id=tenant_id, entity_code=entity_code)
+    except LayoutValidationError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.put("/metadata/layouts/{entity_code}/override")
+def admin_put_layout_override(
+    entity_code: str,
+    payload: LayoutOverrideRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.metadata.write")
+    session = _open_session(request)
+    tenant_id = getattr(request.state, "tenant_id", "default")
+    try:
+        body = payload.model_dump(exclude_none=True)
+        return put_layout_override(
+            session,
+            request.app.state.entity_registry,
+            tenant_id=tenant_id,
+            entity_code=entity_code,
+            payload=body,
+            actor=_actor(user),
+        )
+    except LayoutValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.delete("/metadata/layouts/{entity_code}/override", status_code=200)
+def admin_delete_layout_override(
+    entity_code: str,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.metadata.write")
+    session = _open_session(request)
+    tenant_id = getattr(request.state, "tenant_id", "default")
+    try:
+        return delete_layout_override(
+            session,
+            tenant_id=tenant_id,
+            entity_code=entity_code,
+            actor=_actor(user),
+        )
+    except LayoutValidationError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.get("/ops/tenant-isolation")
+def admin_get_tenant_isolation(
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.ops")
+    session = _open_session(request)
+    try:
+        return get_tenant_isolation_state(
+            session,
+            configured_mode=request.app.state.platform_config.tenant_strategy.mode,
+        )
+    finally:
+        session.close()
+
+
+@router.put("/ops/tenant-isolation")
+def admin_put_tenant_isolation(
+    payload: TenantIsolationRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.ops")
+    session = _open_session(request)
+    try:
+        result = update_tenant_isolation_mode(
+            session,
+            mode=payload.mode,
+            confirmation_token_value=payload.confirmation_token,
+            actor=_actor(user),
+        )
+        request.app.state.tenant_strategy = get_tenant_strategy(payload.mode)
+        return result
+    except OpsValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
 @router.put("/security/field-access")
 def admin_put_field_access(
     payload: FieldAccessRequest,
@@ -584,5 +737,47 @@ def admin_list_audit(
     session = _open_session(request)
     try:
         return {"audit": list_admin_audit(session)}
+    finally:
+        session.close()
+
+
+class ReportScheduleUpdateRequest(BaseModel):
+    schedule_cron: str
+
+
+@router.get("/reports/schedules")
+def admin_list_report_schedules(
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.settings.read")
+    session = _open_session(request)
+    try:
+        definitions = request.app.state.report_definitions
+        return {"schedules": list_report_schedules(session, definitions)}
+    finally:
+        session.close()
+
+
+@router.put("/reports/schedules/{report_code}")
+def admin_update_report_schedule(
+    report_code: str,
+    payload: ReportScheduleUpdateRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.settings.write")
+    session = _open_session(request)
+    try:
+        definitions = request.app.state.report_definitions
+        return put_report_schedule(
+            session,
+            report_code=report_code,
+            schedule_cron=payload.schedule_cron,
+            actor=_actor(user),
+            definitions=definitions,
+        )
+    except ReportScheduleValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     finally:
         session.close()

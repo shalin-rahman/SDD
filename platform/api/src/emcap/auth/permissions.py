@@ -13,6 +13,9 @@ PLATFORM_ADMIN_PERMISSIONS: list[str] = [
     "admin.templates.write",
     "admin.security.read",
     "admin.security.write",
+    "admin.metadata.read",
+    "admin.metadata.write",
+    "admin.ops",
     "*.*",
 ]
 

@@ -1,0 +1,78 @@
+<div class="layout-editor">
+  <mat-form-field appearance="outline" class="layout-editor__entity">
+    <mat-label>{{ i18n.t('settings.layouts.entity') }}</mat-label>
+    <mat-select [ngModel]="selectedEntity" (ngModelChange)="onEntityChange($event)">
+      @for (entity of entities; track entity) {
+        <mat-option [value]="entity">{{ entity }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (hasOverride) {
+    <span class="emcap-badge emcap-badge--muted">{{ i18n.t('settings.layouts.overrideBadge') }}</span>
+  }
+
+  @if (status) {
+    <p class="layout-editor__status">{{ status }}</p>
+  }
+
+  <mat-tab-group>
+    <mat-tab [label]="i18n.t('settings.layouts.formTab')">
+      <div class="layout-editor__table">
+        @for (field of formFields; track field.name) {
+          <div class="layout-editor__row">
+            <span class="layout-editor__name">{{ field.name }}</span>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ i18n.t('settings.layouts.row') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="field.row" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ i18n.t('settings.layouts.col') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="field.col" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ i18n.t('settings.layouts.span') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="field.span" />
+            </mat-form-field>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="i18n.t('settings.layouts.gridTab')">
+      <div class="layout-editor__table">
+        @for (column of gridColumns; track column.field; let i = $index) {
+          <div class="layout-editor__row layout-editor__row--grid">
+            <span class="layout-editor__name">{{ column.label }} ({{ column.field }})</span>
+            <mat-checkbox [(ngModel)]="column.sortable">{{ i18n.t('settings.layouts.sortable') }}</mat-checkbox>
+            <mat-checkbox [(ngModel)]="column.filterable">{{ i18n.t('settings.layouts.filterable') }}</mat-checkbox>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ i18n.t('settings.layouts.width') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="column.width" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" (click)="moveColumn(i, -1)" [disabled]="i === 0">
+              ↑
+            </button>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="moveColumn(i, 1)"
+              [disabled]="i === gridColumns.length - 1"
+            >
+              ↓
+            </button>
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="layout-editor__actions">
+    <button mat-flat-button color="primary" type="button" (click)="saveLayout()" [disabled]="loading">
+      {{ i18n.t('settings.layouts.save') }}
+    </button>
+    <button mat-stroked-button type="button" (click)="resetLayout()" [disabled]="loading || !hasOverride">
+      {{ i18n.t('settings.layouts.resetDefaults') }}
+    </button>
+  </div>
+</div>

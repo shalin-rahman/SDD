@@ -91,3 +91,17 @@ curl -s https://emcap-api.dev.local/api/v1/health
 - Terraform: `infra/terraform/README.md`
 - Helm: `infra/helm/README.md`
 - SDD traceability: `EMCAP-P4-T03` → NFR-008, NFR-009
+
+## Tenant isolation strategy write (P13-T20 / P13-T22)
+
+**Read isolation** (entity CRUD tenant scoping) is verified by `docs/dev/recipes/tenant-isolation-write-test.md`.
+
+**Ops write** (change effective isolation strategy):
+
+1. Set `EMCAP_OPS_CONFIRMATION_TOKEN` in the API environment (default dev token documented in `ops_service.py`).
+2. Caller must have `admin.ops` (included in `admin.*`).
+3. `PUT /api/v1/admin/ops/tenant-isolation` with body `{ "mode": "database_per_tenant", "confirmation_token": "…" }`.
+4. `GET /api/v1/admin/ops/tenant-isolation` returns configured vs effective mode.
+5. **Production:** prefer Helm/env override of `tenant_strategy.mode` over runtime ops PUT; use ops API only for controlled drills.
+
+Tests: `platform/api/tests/test_admin_ops_isolation.py`.

@@ -203,6 +203,20 @@ class SettingOverrideRow(Base):
     )
 
 
+class TenantLayoutOverrideRow(Base):
+    __tablename__ = "tenant_layout_overrides"
+
+    tenant_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    entity_code: Mapped[str] = mapped_column(String(64), primary_key=True)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    updated_by: Mapped[str] = mapped_column(String(128), default="system")
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+
 class NotificationTemplateRow(Base):
     __tablename__ = "notification_templates"
 

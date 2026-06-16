@@ -5,6 +5,7 @@ import '../services/i18n_service.dart';
 import '../utils/field_display.dart';
 import '../utils/workflow_detail_util.dart';
 import '../utils/workflow_sla_util.dart';
+import '../utils/workflow_state_util.dart';
 
 class WorkflowInboxScreen extends StatefulWidget {
   const WorkflowInboxScreen({
@@ -344,7 +345,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                               decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.filterState')),
                               items: [
                                 DropdownMenuItem(value: '', child: Text(EmcapLocale.t('platform.workflow.filterAll'))),
-                                ..._stateOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))),
+                                ..._stateOptions.map((s) => DropdownMenuItem(value: s, child: Text(workflowStateLabel(s)))),
                               ],
                               onChanged: (v) => setState(() => _stateFilter = v ?? ''),
                             ),
@@ -388,7 +389,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                                       ),
                                     ),
                                     Chip(
-                                      label: Text(state, style: const TextStyle(fontSize: 11)),
+                                      label: Text(workflowStateLabel(state), style: const TextStyle(fontSize: 11)),
                                       visualDensity: VisualDensity.compact,
                                     ),
                                   ],

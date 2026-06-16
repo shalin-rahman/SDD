@@ -1,6 +1,6 @@
 # Phase 13 — Enterprise admin depth (deferred from Phase 12)
 
-**Status:** Slice 1 Done · **Slice 2 API Done (P13-T10/T11)** · Web UI **P19-T03 Done** · mobile field edit **P13-T12 Pending**  
+**Status:** Slice 1 Done · **Slice 2 Done (P13-T10/T11/T12/T13)** · Web UI **P19-T03 Done** · mobile field edit **P13-T12 Done**  
 **Driver:** Phase 12 shipped read-only security viewer; matrix marks ABAC builder, layout designer, isolation write as Phase 13.  
 **Depends on:** Phase 12F (`GET /admin/security/policies`) · `plan/12-enterprise-product-ui.md`  
 **Matrix:** `spec/sdd/06-admin-product-ui-matrix.md`  
@@ -54,24 +54,24 @@
 |----|------|
 | P13-T10 | `PUT /admin/security/field-access` single-field override | **Done** |
 | P13-T11 | Merge overrides in `apply_field_security` + policies GET | **Done** |
-| P13-T12 | Web/mobile field row edit (permission multi-select) | Web **Done** (P19-T03); mobile Pending |
+| P13-T12 | Web/mobile field row edit (permission multi-select) | Web **Done** (P19-T03); mobile **Done** (P13-T12) |
 | P13-T13 | Contract test: restricted field hidden for viewer | **Done** (`test_admin_field_access_override.py`) |
 
 ### Slice 3 — Tenant isolation write (P13-T20–T22)
 
-| ID | Task |
-|----|------|
-| P13-T20 | Ops API with typed confirmation token |
-| P13-T21 | Settings UI gated + audit |
-| P13-T22 | Runbook doc in `infra/ansible` |
+| ID | Task | Status |
+|----|------|--------|
+| P13-T20 | Ops API with typed confirmation token | **Done** |
+| P13-T21 | Settings UI gated + audit | **Done** (web) |
+| P13-T22 | Runbook doc in `infra/ansible` | **Done** |
 
 ### Slice 4 — Layout designer (P13-T30+)
 
-| ID | Task |
-|----|------|
-| P13-T30 | ADR + metadata edit API design |
-| P13-T31 | Form layout editor MVP |
-| P13-T32 | Grid column editor MVP |
+| ID | Task | Status |
+|----|------|--------|
+| P13-T30 | ADR + metadata edit API design | **Done** |
+| P13-T31 | Form layout editor MVP | **Done** (web settings) |
+| P13-T32 | Grid column editor MVP | **Done** (web settings) |
 
 ---
 

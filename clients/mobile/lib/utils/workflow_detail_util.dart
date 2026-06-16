@@ -1,5 +1,6 @@
 import '../services/i18n_service.dart';
 import 'field_display.dart';
+import 'workflow_state_util.dart';
 
 class WorkflowDetailEntry {
   const WorkflowDetailEntry({required this.key, required this.label, required this.value});
@@ -34,7 +35,9 @@ List<WorkflowDetailEntry> workflowDetailEntries(
         final label = i18nKey != null ? EmcapLocale.t(i18nKey) : (key == 'id' ? 'ID' : key);
         final value = key == 'due_at'
             ? formatRecordFieldValue(key, 'datetime', entry.value, locale: locale)
-            : '${entry.value}';
+            : key == 'current_state'
+                ? workflowStateLabel('${entry.value}')
+                : '${entry.value}';
         return WorkflowDetailEntry(key: key, label: label, value: value);
       })
       .toList();

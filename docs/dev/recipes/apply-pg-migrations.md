@@ -34,6 +34,7 @@ Expected after fresh stack + apply:
 ```
 001  [applied]  001_baseline.sql
 002  [applied]  002_system_columns.sql
+003  [applied]  003_tenant_layout_override.sql
 
 0 pending
 ```
@@ -91,4 +92,5 @@ Integration CI job runs `python scripts/migrate.py up` against the Postgres serv
 
 - `docs/ops/release-process.md` — deploy order
 - `platform/api/migrations/002_system_columns.sql` — P21-T01 system columns
+- `platform/api/migrations/003_tenant_layout_override.sql` — P13-T31 layout overrides (ADR-007)
 - `docs/dev/recipes/run-emcap-local-stack.md` — start Docker stack

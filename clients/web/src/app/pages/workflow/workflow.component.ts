@@ -14,6 +14,7 @@ import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { formatRecordFieldValue } from '../../shared/utils/field-display.util';
 import { workflowSlaLevel, type WorkflowSlaLevel } from '../../shared/utils/workflow-sla.util';
+import { workflowStateLabel } from '../../shared/utils/workflow-state.util';
 
 export interface WorkflowInstanceRow {
   id: string;
@@ -115,7 +116,9 @@ export class WorkflowComponent implements OnInit, OnDestroy {
         value:
           key === 'due_at'
             ? formatRecordFieldValue(key, 'datetime', value)
-            : String(value),
+            : key === 'current_state'
+              ? this.stateLabel(String(value))
+              : String(value),
       }));
   }
 
@@ -201,6 +204,10 @@ export class WorkflowComponent implements OnInit, OnDestroy {
   actionLabel(action: string): string {
     const key = `platform.workflow.${action}` as const;
     return this.i18n.t(key);
+  }
+
+  stateLabel(state: string): string {
+    return workflowStateLabel(state, this.i18n);
   }
 
   confirmTransition(instance: WorkflowInstanceRow, action: string): void {

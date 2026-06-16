@@ -22,9 +22,9 @@
       <div class="section-card__row">
         <label for="localeSelect">{{ i18n.t('platform.account.locale') }}</label>
         <select id="localeSelect" [ngModel]="i18n.locale()" (ngModelChange)="onLocaleChange($event)">
-          <option value="en">English</option>
-          <option value="fr">Français</option>
-          <option value="bn">বাংলা</option>
+          <option value="en">{{ i18n.t('toolbar.language.en') }}</option>
+          <option value="fr">{{ i18n.t('toolbar.language.fr') }}</option>
+          <option value="bn">{{ i18n.t('toolbar.language.bn') }}</option>
         </select>
         <button type="button" mat-stroked-button (click)="theme.toggle()">
           {{ theme.mode() === 'dark' ? i18n.t('platform.account.themeLight') : i18n.t('platform.account.themeDark') }}

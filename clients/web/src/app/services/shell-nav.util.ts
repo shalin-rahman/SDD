@@ -8,6 +8,7 @@ export interface ModuleNavGroup {
 
 export interface PlatformNavLink {
   label: string;
+  labelKey?: string;
   route: string;
   visible: boolean;
 }
@@ -93,26 +94,42 @@ export function buildPlatformLinks(
   userPermissions: string[] = ['*.*'],
 ): PlatformNavLink[] {
   const links: PlatformNavLink[] = [
-    { label: 'Workflow tasks', route: '/app/workflow', visible: modules?.workflow?.enabled !== false },
-    { label: 'Reports', route: '/app/reports', visible: true },
-    { label: 'Dashboards', route: '/app/dashboards', visible: true },
     {
+      labelKey: 'platform.workflow.title',
+      label: 'Workflow tasks',
+      route: '/app/workflow',
+      visible: modules?.workflow?.enabled !== false,
+    },
+    { labelKey: 'platform.reports.title', label: 'Reports', route: '/app/reports', visible: true },
+    {
+      labelKey: 'platform.dashboards.title',
+      label: 'Dashboards',
+      route: '/app/dashboards',
+      visible: true,
+    },
+    {
+      labelKey: 'platform.notifications.title',
       label: 'Notifications',
       route: '/app/notifications',
       visible: modules?.notifications?.enabled !== false,
     },
-    { label: 'Account', route: '/app/account', visible: true },
-    { label: 'Assistant', route: '/app/assistant', visible: modules?.ai?.enabled === true },
+    { labelKey: 'platform.account.title', label: 'Account', route: '/app/account', visible: true },
+    {
+      labelKey: 'platform.assistant.title',
+      label: 'Assistant',
+      route: '/app/assistant',
+      visible: modules?.ai?.enabled === true,
+    },
   ];
   if (
     hasPermission(userPermissions, 'admin.users.read') ||
     hasPermission(userPermissions, 'admin.roles.read') ||
     hasPermission(userPermissions, 'admin.*')
   ) {
-    links.push({ label: 'Admin', route: '/app/admin/users', visible: true });
+    links.push({ labelKey: 'nav.admin', label: 'Admin', route: '/app/admin/users', visible: true });
   }
   if (hasPermission(userPermissions, 'admin.settings.read') || hasPermission(userPermissions, 'admin.*')) {
-    links.push({ label: 'Settings', route: '/app/settings', visible: true });
+    links.push({ labelKey: 'nav.settings', label: 'Settings', route: '/app/settings', visible: true });
   }
   return links;
 }

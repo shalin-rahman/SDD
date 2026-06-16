@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-16 · **UI deferred** until M3 entity platform complete (P13-T31–T32)
+Accepted — 2026-06-16 · **API phase Done** (P13-T31 storage + merge + admin CRUD) · **UI deferred** post-M3 (P13-T32)
 
 ## Context
 

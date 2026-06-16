@@ -58,9 +58,9 @@
 
 | **Tenant branding admin UI** | No | Partial | Partial | Settings Integrations tab: split-pane live preview, primary/logo save, WCAG contrast hint (P19-T05 Done) |
 
-| Isolation strategy display | Done | Partial | Partial | Settings read-only line |
+| Isolation strategy display | Done | Partial | Partial | Settings Platform tab shows configured/effective mode |
 
-| Isolation strategy **change** UI | No | No | No | Phase 13 (ops) |
+| Isolation strategy **change** UI | Done | Partial | Partial | P13-T20/T21 — ops confirmation token; web + mobile settings form |
 
 
 
@@ -118,11 +118,11 @@
 
 | Metadata i18n labels | Done | Done | `label_key` + BN sample on PRODUCT |
 
-| **App UI i18n + locale switcher** | Partial | Partial | EN/FR/**BN** JSON bundles; shell/admin/settings/entity chrome |
+| **App UI i18n + locale switcher** | Demo | Demo | Shell + platform workflow state labels localized (EN/FR/BN); page bodies still Partial |
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 
-| Layout designer | ADR Done | N/A | **ADR-007** — override API designed; UI P13-T31–T32 post-M3 |
+| Layout designer | Partial | Partial | **ADR-007** — web + mobile settings layout editor; override API + merge |
 
 | Breadcrumbs / page titles | Done | Partial | Entity list/record + admin users/roles/security/permissions; Karma specs on all admin pages (`P16-T09`) |
 
@@ -154,7 +154,7 @@
 
 | Permission-filtered menus | Partial | Partial | Partial | Shell filters via `/auth/me` |
 
-| Row/field security admin | Partial | Partial | Partial | P19-T03 web field matrix + permission picker; `PUT /admin/security/field-access` + merged policies GET (P13-T10/T11 Done) |
+| Row/field security admin | Partial | Partial | Partial | P19-T03 web + P13-T12 mobile field matrix edit; `PUT /admin/security/field-access` + merged policies GET (P13-T10/T11 Done) |
 | ABAC policy admin | Done | Partial | Partial | `GET/PUT /admin/security/abac`; web table editor; P19-T04 delete confirm + empty permission validation |
 
 | Auth provider config UI | Partial | Partial | Partial | Settings Identity tab auth toggles; override badges (P12B-T09 Done) |
@@ -198,7 +198,7 @@
 
 | Dashboards / KPI widgets | Partial | Partial | Overview dashboard |
 
-| **Report schedule admin UI** | No | No | API partial |
+| **Report schedule admin UI** | Partial | Partial | No | **Sprint 12** — `GET/PUT /admin/reports/schedules`; settings Platform tab; `test_report_schedule_admin.py` |
 
 
 
@@ -238,7 +238,7 @@
 
 | Document upload/list on record | Done | Done | Done | — |
 
-| Document platform settings UI | Partial | Partial | Partial | Read-only Platform tab + mobile Documents section with badge chips (P19-T06 Done) |
+| Document platform settings UI | Partial | Partial | Partial | **Sprint 12** — editable Platform tab via `PUT /admin/settings` (`documents.*` paths) |
 
 | Integration registry admin | Partial | Partial | Partial | Settings integrations panel + test REST (P12F-T30–T36) |
 
@@ -296,7 +296,7 @@
 
 | Localization from SDK | Partial | App EN/FR/BN switcher + metadata keys |
 
-| **Operate platform without YAML edits** | Partial | Users/roles/settings/integrations/payments via admin UI |
+| **Operate platform without YAML edits** | Partial | Users/roles/settings/integrations/payments/documents/report schedules via admin UI |
 
 
 
@@ -321,7 +321,7 @@
 | Admin & settings consoles | **Partial** (web + mobile parity on core flows) |
 
 | Phase 13 ABAC builder | **Partial** (Slice 1 done) |
-| Phase 13 (field override editor, layout designer, isolation write) | **Partial** (P13-T10/T11 API Done; P19-T03 web UI; P13-T20/T30 pending) |
+| Phase 13 (field override editor, layout designer, isolation write) | **Partial** (P13-T10–T12/T20/T21/T30–T32 web+mobile Done) |
 
 
 

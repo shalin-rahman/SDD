@@ -69,6 +69,8 @@ const REQUIRED_METHODS = [
   'updateAdminRole',
   'getAdminSettings',
   'updateAdminSettings',
+  'getAdminReportSchedules',
+  'updateAdminReportSchedule',
   'listAdminTemplates',
   'createAdminTemplate',
   'updateAdminTemplate',
@@ -81,6 +83,12 @@ const REQUIRED_METHODS = [
   'updateAdminIntegrations',
   'testAdminRestIntegration',
   'updateAdminFieldAccess',
+  'getAdminLayoutMetadata',
+  'getAdminLayoutOverride',
+  'putAdminLayoutOverride',
+  'deleteAdminLayoutOverride',
+  'getTenantIsolationOps',
+  'putTenantIsolationOps',
 ] as const;
 
 describe('EmcapClient contract', () => {

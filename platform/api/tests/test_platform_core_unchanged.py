@@ -150,7 +150,14 @@ def test_inventory_module_file_exports_module_definition() -> None:
         "STOCK_MOVEMENT_HISTORY",
     }
     assert {dashboard.code for dashboard in definition.dashboards} == {"INVENTORY_OVERVIEW"}
-    assert {menu.code for menu in definition.menus} == {"products", "warehouses", "stock_movements"}
+    assert {menu.code for menu in definition.menus} == {
+        "products",
+        "warehouses",
+        "stock_movements",
+        "low_stock",
+        "inventory_valuation",
+        "stock_movement_history",
+    }
 
 
 def test_inventory_module_uses_sdk_imports_only() -> None:

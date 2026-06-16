@@ -56,6 +56,25 @@ def test_migrate_script_status_lists_002() -> None:
     assert "002_system_columns.sql" in result.stdout
 
 
+def test_migrate_script_status_lists_003() -> None:
+    result = subprocess.run(
+        [sys.executable, str(MIGRATE_SCRIPT), "status"],
+        cwd=MIGRATE_SCRIPT.parent.parent,
+        capture_output=True,
+        text=True,
+        check=False,
+        env={"DATABASE_URL": "sqlite:///:memory:", **__import__("os").environ},
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert "003_tenant_layout_override.sql" in result.stdout
+
+
+def test_003_tenant_layout_override_sql_declares_table() -> None:
+    sql = _read_sql("003_tenant_layout_override.sql")
+    assert "tenant_layout_overrides" in sql
+    assert "PRIMARY KEY (tenant_id, entity_code)" in sql
+
+
 def test_migrate_script_applies_001_on_sqlite() -> None:
     """001 is a no-op SELECT; safe to apply in unit tests without Postgres."""
     result = subprocess.run(

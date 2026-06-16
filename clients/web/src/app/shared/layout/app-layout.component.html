@@ -31,9 +31,9 @@
         (valueChange)="onLocaleChange($event)"
         aria-label="Language"
       >
-        <mat-option value="en">EN</mat-option>
-        <mat-option value="fr">FR</mat-option>
-        <mat-option value="bn">BN</mat-option>
+        <mat-option value="en">{{ i18n.t('toolbar.language.en') }}</mat-option>
+        <mat-option value="fr">{{ i18n.t('toolbar.language.fr') }}</mat-option>
+        <mat-option value="bn">{{ i18n.t('toolbar.language.bn') }}</mat-option>
       </mat-select>
       <button mat-icon-button type="button" [attr.aria-label]="i18n.t('toolbar.theme')" (click)="theme.toggle()">
         <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>

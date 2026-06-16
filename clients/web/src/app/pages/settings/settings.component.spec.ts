@@ -58,8 +58,55 @@ describe('SettingsComponent', () => {
               getHealth: jasmine
                 .createSpy('getHealth')
                 .and.resolveTo({ tenant_strategy: 'shared_database', multi_tenant: false }),
+              getTenantIsolationOps: jasmine.createSpy('getTenantIsolationOps').and.resolveTo({
+                configured_mode: 'shared_database',
+                effective_mode: 'shared_database',
+                has_override: false,
+                reload_hint: '',
+              }),
+              listEntities: jasmine.createSpy('listEntities').and.resolveTo({ entities: ['PRODUCT'] }),
+              getAdminLayoutMetadata: jasmine.createSpy('getAdminLayoutMetadata').and.resolveTo({
+                entity_code: 'PRODUCT',
+                has_override: false,
+                form: {
+                  sections: [{ code: 'main', fields: [{ name: 'sku', row: 0, col: 0, span: 6 }] }],
+                },
+                grid: {
+                  columns: [{ field: 'sku', label: 'Sku', sortable: true, filterable: true }],
+                },
+              }),
+              putAdminLayoutOverride: jasmine
+                .createSpy('putAdminLayoutOverride')
+                .and.resolveTo({ entity_code: 'PRODUCT', override: {} }),
+              deleteAdminLayoutOverride: jasmine
+                .createSpy('deleteAdminLayoutOverride')
+                .and.resolveTo({ entity_code: 'PRODUCT', deleted: true }),
               getPlatformConfig,
               updateAdminSettings,
+              getAdminReportSchedules: jasmine
+                .createSpy('getAdminReportSchedules')
+                .and.resolveTo({
+                  schedules: [
+                    {
+                      code: 'LOW_STOCK',
+                      name: 'Low Stock',
+                      entity_code: 'PRODUCT',
+                      default_schedule_cron: '0 7 * * *',
+                      schedule_cron: '0 7 * * *',
+                      has_override: false,
+                    },
+                  ],
+                }),
+              updateAdminReportSchedule: jasmine
+                .createSpy('updateAdminReportSchedule')
+                .and.resolveTo({
+                  code: 'LOW_STOCK',
+                  name: 'Low Stock',
+                  entity_code: 'PRODUCT',
+                  default_schedule_cron: '0 7 * * *',
+                  schedule_cron: '0 8 * * *',
+                  has_override: true,
+                }),
               updateAdminIntegrations: jasmine
                 .createSpy('updateAdminIntegrations')
                 .and.resolveTo({ integrations: {}, override_paths: [] }),
@@ -162,6 +209,31 @@ describe('SettingsComponent', () => {
     expect(fixture.componentInstance.securityHeadersLabel()).toContain('Enabled');
   });
 
+  it('loads report schedules from admin API', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.reportSchedules.length).toBe(1);
+    expect(fixture.componentInstance.reportSchedules[0].code).toBe('LOW_STOCK');
+  });
+
+  it('persists document settings on platform save', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.documentSettings = {
+      ...fixture.componentInstance.documentSettings,
+      maxUploadSizeMb: 32,
+      retentionDays: 180,
+    };
+    await fixture.componentInstance.saveSettings();
+
+    const payload = updateAdminSettings.calls.mostRecent().args[0] as Record<string, unknown>;
+    const documents = payload['documents'] as Record<string, unknown>;
+    expect(documents['max_upload_size_mb']).toBe(32);
+    expect(documents['retention_days']).toBe(180);
+  });
+
   it('builds SMS/push channel bar from notification toggles', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -184,5 +256,10 @@ describe('SettingsComponent', () => {
       payments: { enabled: true },
     };
     expect(fixture.componentInstance.paymentCredentialsEnabled()).toBeFalse();
+  });
+
+  it('maps isolation mode codes to i18n labels', () => {
+    expect(fixture.componentInstance.isolationModeLabel('shared_database')).toContain('Shared');
+    expect(fixture.componentInstance.isolationModeLabel('unknown_mode')).toBe('unknown_mode');
   });
 });

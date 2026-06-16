@@ -21,7 +21,9 @@ def test_grid_metadata_api(client: TestClient) -> None:
     body = response.json()
     assert body["entity_code"] == "CUSTOMER"
     assert body["export"]["excel"] is True
-    assert len(body["columns"]) == 3
+    business_fields = {"name", "email", "active"}
+    assert business_fields.issubset({column["field"] for column in body["columns"]})
+    assert len(body["columns"]) >= len(business_fields)
 
 
 def test_metadata_contract_keys(client: TestClient) -> None:

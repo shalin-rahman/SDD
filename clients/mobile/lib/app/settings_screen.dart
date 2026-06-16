@@ -6,6 +6,7 @@ import '../services/i18n_service.dart';
 import '../utils/document_platform_settings_util.dart';
 import '../utils/security_platform_settings_util.dart';
 import '../widgets/emcap_badge.dart';
+import '../widgets/layout_editor_panel.dart';
 import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 import '../widgets/settings_toggle_group.dart';
@@ -30,6 +31,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _status = '';
   String _tenantStrategy = '';
   bool _multiTenant = false;
+  bool _isolationOpsAvailable = false;
+  String _isolationConfigured = '';
+  String _isolationEffective = '';
+  bool _isolationHasOverride = false;
+  String _isolationReloadHint = '';
+  String _isolationOpsStatus = '';
+  String _isolationModeDraft = 'shared_database';
+  final _isolationConfirmController = TextEditingController();
+  static const _isolationModes = [
+    'shared_database',
+    'database_per_tenant',
+    'schema_per_tenant',
+    'hybrid',
+  ];
   DocumentPlatformSettings _documentSettings = parseDocumentPlatformSettings({});
   SecurityPlatformSettings _securitySettings = parseSecurityPlatformSettings({});
 
@@ -76,6 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _kafkaTopicPrefixController.dispose();
     _soapEndpointController.dispose();
     _webhookSecretController.dispose();
+    _isolationConfirmController.dispose();
     super.dispose();
   }
 
@@ -91,6 +107,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final audit = await widget.client.getAdminAudit();
       final health = await widget.client.getHealth();
       final platformConfig = await widget.client.getPlatformConfig();
+      var isolationOpsAvailable = false;
+      var isolationConfigured = '${health['tenant_strategy']}';
+      var isolationEffective = isolationConfigured;
+      var isolationHasOverride = false;
+      var isolationReloadHint = '';
+      var isolationModeDraft = isolationConfigured.isNotEmpty ? isolationConfigured : 'shared_database';
+      try {
+        final isolation = await widget.client.getTenantIsolationOps();
+        isolationOpsAvailable = true;
+        isolationConfigured = '${isolation['configured_mode'] ?? isolationConfigured}';
+        isolationEffective = '${isolation['effective_mode'] ?? isolationConfigured}';
+        isolationHasOverride = isolation['has_override'] == true;
+        isolationReloadHint = '${isolation['reload_hint'] ?? ''}';
+        isolationModeDraft = isolationEffective.isNotEmpty ? isolationEffective : 'shared_database';
+      } catch (_) {
+        isolationOpsAvailable = false;
+      }
       if (!mounted) return;
       final settings = Map<String, dynamic>.from(settingsPayload['settings'] as Map? ?? {});
       final tenants = settings['tenants'] as Map? ?? {};
@@ -102,6 +135,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _audit = audit;
         _tenantStrategy = '${health['tenant_strategy']}';
         _multiTenant = health['multi_tenant'] == true;
+        _isolationOpsAvailable = isolationOpsAvailable;
+        _isolationConfigured = isolationConfigured;
+        _isolationEffective = isolationEffective;
+        _isolationHasOverride = isolationHasOverride;
+        _isolationReloadHint = isolationReloadHint;
+        _isolationModeDraft = isolationModeDraft;
         _documentSettings = parseDocumentPlatformSettings(platformConfig);
         _securitySettings = parseSecurityPlatformSettings(platformConfig);
         _tenantThemeController.text = '${defaultTenant['theme'] ?? 'default'}';
@@ -115,6 +154,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         _error = err.toString();
         _loading = false;
+      });
+    }
+  }
+
+  String _isolationModeLabel(String mode) {
+    final key = 'settings.isolation.modes.$mode';
+    final label = EmcapLocale.t(key);
+    return label == key ? mode : label;
+  }
+
+  Future<void> _applyIsolationMode() async {
+    setState(() {
+      _isolationOpsStatus = '';
+      _error = null;
+    });
+    try {
+      final result = await widget.client.putTenantIsolationOps(
+        mode: _isolationModeDraft,
+        confirmationToken: _isolationConfirmController.text,
+      );
+      if (!mounted) return;
+      setState(() {
+        _isolationOpsStatus = '${result['reload_hint'] ?? ''}';
+        _isolationConfirmController.clear();
+      });
+      await _reload();
+    } catch (err) {
+      if (!mounted) return;
+      setState(() {
+        _isolationOpsStatus = EmcapLocale.t('settings.isolation.applyFailed');
       });
     }
   }
@@ -406,14 +475,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   List<SettingsToggleItem> _moduleItems() => [
-        SettingsToggleItem(key: 'workflow', label: 'Workflow module', checked: _flag('modules', 'workflow', 'enabled')),
-        SettingsToggleItem(key: 'payments', label: 'Payments module', checked: _flag('modules', 'payments', 'enabled')),
+        SettingsToggleItem(
+          key: 'workflow',
+          label: EmcapLocale.t('settings.modules.workflow'),
+          checked: _flag('modules', 'workflow', 'enabled'),
+        ),
+        SettingsToggleItem(
+          key: 'payments',
+          label: EmcapLocale.t('settings.modules.payments'),
+          checked: _flag('modules', 'payments', 'enabled'),
+        ),
         SettingsToggleItem(
           key: 'notifications',
-          label: 'Notifications module',
+          label: EmcapLocale.t('settings.modules.notifications'),
           checked: _flag('modules', 'notifications', 'enabled'),
         ),
-        SettingsToggleItem(key: 'ai', label: 'AI module', checked: _flag('modules', 'ai', 'enabled')),
+        SettingsToggleItem(
+          key: 'ai',
+          label: EmcapLocale.t('settings.modules.ai'),
+          checked: _flag('modules', 'ai', 'enabled'),
+        ),
       ];
 
   @override
@@ -431,7 +512,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: TextButton.icon(
             onPressed: _startCreateTemplate,
             icon: const Icon(Icons.add),
-            label: const Text('New template'),
+            label: Text(EmcapLocale.t('settings.templates.new')),
           ),
         ),
         Expanded(
@@ -456,7 +537,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     final templateDetailPane = (!_creatingTemplate && _selectedTemplate == null)
-        ? const DetailPlaceholder(message: 'Select an email template or create a new one.')
+        ? DetailPlaceholder(message: EmcapLocale.t('settings.templates.selectPlaceholder'))
         : ListView(
             padding: EdgeInsets.all(tokens.spaceSm + 4),
             children: [
@@ -464,31 +545,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      _selectedTemplate != null ? 'Edit template' : 'Create template',
+                      _selectedTemplate != null
+                          ? EmcapLocale.t('settings.templates.editTitle')
+                          : EmcapLocale.t('settings.templates.createTitle'),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   if (_selectedTemplate != null)
-                    TextButton(onPressed: _deleteTemplate, child: const Text('Delete')),
-                  FilledButton(onPressed: _saveTemplate, child: const Text('Save template')),
+                    TextButton(onPressed: _deleteTemplate, child: Text(EmcapLocale.t('settings.templates.delete'))),
+                  FilledButton(onPressed: _saveTemplate, child: Text(EmcapLocale.t('settings.templates.save'))),
                 ],
               ),
               if (_selectedTemplate == null)
                 TextField(
                   controller: _templateCodeController,
-                  decoration: const InputDecoration(labelText: 'Template code', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: EmcapLocale.t('settings.templates.code'),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
               TextField(
                 controller: _templateChannelController,
-                decoration: const InputDecoration(labelText: 'Channel', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: EmcapLocale.t('settings.templates.channel'),
+                  border: const OutlineInputBorder(),
+                ),
               ),
               TextField(
                 controller: _templateSubjectController,
-                decoration: const InputDecoration(labelText: 'Subject', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: EmcapLocale.t('settings.templates.subject'),
+                  border: const OutlineInputBorder(),
+                ),
               ),
               TextField(
                 controller: _templateBodyController,
-                decoration: const InputDecoration(labelText: 'Body', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: EmcapLocale.t('settings.templates.body'),
+                  border: const OutlineInputBorder(),
+                ),
                 maxLines: 6,
               ),
             ],
@@ -498,72 +593,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: EdgeInsets.only(bottom: tokens.spaceLg),
       children: [
         Text(EmcapLocale.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
-        Text('Tenant strategy: $_tenantStrategy · multi-tenant: $_multiTenant'),
+        Text(EmcapLocale.t('settings.subtitle'), style: Theme.of(context).textTheme.bodySmall),
         if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
         if (_status.isNotEmpty) Text(_status, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
         Align(
           alignment: Alignment.centerRight,
-          child: FilledButton(onPressed: _saveSettings, child: const Text('Save settings')),
+          child: FilledButton(onPressed: _saveSettings, child: Text(EmcapLocale.t('settings.save'))),
         ),
         SizedBox(height: tokens.spaceSm),
         SettingsToggleGroup(
-          title: 'Modules',
+          title: EmcapLocale.t('settings.sections.modules'),
           items: _moduleItems(),
           onChanged: (key, checked) => _setFlag('modules', key, 'enabled', checked),
         ),
         SettingsToggleGroup(
-          title: 'Authentication',
+          title: EmcapLocale.t('settings.sections.auth'),
           items: [
-            SettingsToggleItem(key: 'username_password', label: 'Username / password', checked: _bool('authentication', 'username_password')),
-            SettingsToggleItem(key: 'oauth', label: 'OAuth', checked: _bool('authentication', 'oauth')),
-            SettingsToggleItem(key: 'ldap', label: 'LDAP', checked: _bool('authentication', 'ldap')),
-            SettingsToggleItem(key: 'sso', label: 'SSO', checked: _bool('authentication', 'sso')),
+            SettingsToggleItem(
+              key: 'username_password',
+              label: EmcapLocale.t('settings.auth.usernamePassword'),
+              checked: _bool('authentication', 'username_password'),
+            ),
+            SettingsToggleItem(key: 'oauth', label: EmcapLocale.t('settings.auth.oauth'), checked: _bool('authentication', 'oauth')),
+            SettingsToggleItem(key: 'ldap', label: EmcapLocale.t('settings.auth.ldap'), checked: _bool('authentication', 'ldap')),
+            SettingsToggleItem(key: 'sso', label: EmcapLocale.t('settings.auth.sso'), checked: _bool('authentication', 'sso')),
           ],
           onChanged: (key, checked) => _setBool('authentication', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Notifications',
+          title: EmcapLocale.t('settings.sections.notifications'),
           items: [
-            SettingsToggleItem(key: 'email', label: 'Email channel', checked: _bool('notifications', 'email')),
-            SettingsToggleItem(key: 'sms', label: 'SMS channel', checked: _bool('notifications', 'sms')),
-            SettingsToggleItem(key: 'push', label: 'Push channel', checked: _bool('notifications', 'push')),
-            SettingsToggleItem(key: 'whatsapp', label: 'WhatsApp channel', checked: _bool('notifications', 'whatsapp')),
+            SettingsToggleItem(key: 'email', label: EmcapLocale.t('settings.channels.email'), checked: _bool('notifications', 'email')),
+            SettingsToggleItem(key: 'sms', label: EmcapLocale.t('settings.channels.sms'), checked: _bool('notifications', 'sms')),
+            SettingsToggleItem(key: 'push', label: EmcapLocale.t('settings.channels.push'), checked: _bool('notifications', 'push')),
+            SettingsToggleItem(key: 'whatsapp', label: EmcapLocale.t('settings.channels.whatsapp'), checked: _bool('notifications', 'whatsapp')),
           ],
           onChanged: (key, checked) => _setBool('notifications', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Grid defaults',
+          title: EmcapLocale.t('settings.sections.grid'),
           items: [
-            SettingsToggleItem(key: 'export_csv', label: 'CSV export', checked: _bool('grid', 'export_csv')),
-            SettingsToggleItem(key: 'export_excel', label: 'Excel export', checked: _bool('grid', 'export_excel')),
-            SettingsToggleItem(key: 'export_pdf', label: 'PDF export', checked: _bool('grid', 'export_pdf')),
-            SettingsToggleItem(key: 'grouping', label: 'Row grouping', checked: _bool('grid', 'grouping')),
-            SettingsToggleItem(key: 'realtime', label: 'Realtime refresh', checked: _bool('grid', 'realtime')),
-            SettingsToggleItem(key: 'offline', label: 'Offline sync', checked: _bool('grid', 'offline')),
+            SettingsToggleItem(key: 'export_csv', label: EmcapLocale.t('settings.grid.exportCsv'), checked: _bool('grid', 'export_csv')),
+            SettingsToggleItem(key: 'export_excel', label: EmcapLocale.t('settings.grid.exportExcel'), checked: _bool('grid', 'export_excel')),
+            SettingsToggleItem(key: 'export_pdf', label: EmcapLocale.t('settings.grid.exportPdf'), checked: _bool('grid', 'export_pdf')),
+            SettingsToggleItem(key: 'grouping', label: EmcapLocale.t('settings.grid.grouping'), checked: _bool('grid', 'grouping')),
+            SettingsToggleItem(key: 'realtime', label: EmcapLocale.t('settings.grid.realtime'), checked: _bool('grid', 'realtime')),
+            SettingsToggleItem(key: 'offline', label: EmcapLocale.t('settings.grid.offline'), checked: _bool('grid', 'offline')),
           ],
           onChanged: (key, checked) => _setBool('grid', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Workflow',
+          title: EmcapLocale.t('settings.sections.workflow'),
           items: [
-            SettingsToggleItem(key: 'enabled', label: 'Workflow engine', checked: _bool('workflow', 'enabled')),
-            SettingsToggleItem(key: 'escalation', label: 'Escalation', checked: _bool('workflow', 'escalation')),
-            SettingsToggleItem(key: 'delegation', label: 'Delegation', checked: _bool('workflow', 'delegation')),
-            SettingsToggleItem(key: 'sla_tracking', label: 'SLA tracking', checked: _bool('workflow', 'sla_tracking')),
+            SettingsToggleItem(key: 'enabled', label: EmcapLocale.t('settings.workflow.engine'), checked: _bool('workflow', 'enabled')),
+            SettingsToggleItem(key: 'escalation', label: EmcapLocale.t('settings.workflow.escalation'), checked: _bool('workflow', 'escalation')),
+            SettingsToggleItem(key: 'delegation', label: EmcapLocale.t('settings.workflow.delegation'), checked: _bool('workflow', 'delegation')),
+            SettingsToggleItem(key: 'sla_tracking', label: EmcapLocale.t('settings.workflow.slaTracking'), checked: _bool('workflow', 'sla_tracking')),
           ],
           onChanged: (key, checked) => _setBool('workflow', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Rules',
+          title: EmcapLocale.t('settings.sections.rules'),
           items: [
-            SettingsToggleItem(key: 'formula_enabled', label: 'Formula rules', checked: _bool('rules', 'formula_enabled')),
-            SettingsToggleItem(key: 'scripting_enabled', label: 'Scripting rules', checked: _bool('rules', 'scripting_enabled')),
+            SettingsToggleItem(key: 'formula_enabled', label: EmcapLocale.t('settings.rules.formula'), checked: _bool('rules', 'formula_enabled')),
+            SettingsToggleItem(key: 'scripting_enabled', label: EmcapLocale.t('settings.rules.scripting'), checked: _bool('rules', 'scripting_enabled')),
           ],
           onChanged: (key, checked) => _setBool('rules', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Payments',
-          items: [SettingsToggleItem(key: 'enabled', label: 'Payments enabled', checked: _bool('payments', 'enabled'))],
+          title: EmcapLocale.t('settings.sections.payments'),
+          items: [
+            SettingsToggleItem(
+              key: 'enabled',
+              label: EmcapLocale.t('settings.payments.enabled'),
+              checked: _bool('payments', 'enabled'),
+            ),
+          ],
           onChanged: (key, checked) => _setBool('payments', key, checked),
         ),
         if (!_paymentsModuleEnabled)
@@ -713,17 +818,118 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         SettingsToggleGroup(
-          title: 'AI',
-          items: [SettingsToggleItem(key: 'enabled', label: 'AI assistant enabled', checked: _bool('ai', 'enabled'))],
+          title: EmcapLocale.t('settings.sections.ai'),
+          items: [
+            SettingsToggleItem(key: 'enabled', label: EmcapLocale.t('settings.ai.enabled'), checked: _bool('ai', 'enabled')),
+          ],
           onChanged: (key, checked) => _setBool('ai', key, checked),
         ),
         SettingsToggleGroup(
-          title: 'Audit',
+          title: EmcapLocale.t('settings.sections.audit'),
           items: [
-            SettingsToggleItem(key: 'enabled', label: 'Audit logging', checked: _bool('audit', 'enabled')),
-            SettingsToggleItem(key: 'immutable', label: 'Immutable audit trail', checked: _bool('audit', 'immutable')),
+            SettingsToggleItem(key: 'enabled', label: EmcapLocale.t('settings.audit.enabled'), checked: _bool('audit', 'enabled')),
+            SettingsToggleItem(key: 'immutable', label: EmcapLocale.t('settings.audit.immutable'), checked: _bool('audit', 'immutable')),
           ],
           onChanged: (key, checked) => _setBool('audit', key, checked),
+        ),
+        Card(
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
+          child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.isolation')),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.isolation.configured'),
+                      _isolationConfigured.isNotEmpty ? _isolationConfigured : _tenantStrategy,
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.isolation.effective'),
+                      _isolationEffective.isNotEmpty ? _isolationEffective : _tenantStrategy,
+                    ),
+                    _documentSettingRow(
+                      EmcapLocale.t('settings.isolation.multiTenant'),
+                      _multiTenant
+                          ? EmcapLocale.t('settings.isolation.enabled')
+                          : EmcapLocale.t('settings.isolation.disabled'),
+                    ),
+                    if (_isolationHasOverride) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      EmcapBadge(label: EmcapLocale.t('settings.layouts.overrideBadge'), variant: EmcapBadgeVariant.off),
+                    ],
+                    if (_isolationOpsAvailable) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      DropdownButtonFormField<String>(
+                        value: _isolationModes.contains(_isolationModeDraft) ? _isolationModeDraft : _isolationModes.first,
+                        decoration: InputDecoration(
+                          labelText: EmcapLocale.t('settings.isolation.mode'),
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: _isolationModes
+                            .map(
+                              (mode) => DropdownMenuItem(
+                                value: mode,
+                                child: Text(_isolationModeLabel(mode)),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setState(() => _isolationModeDraft = value);
+                        },
+                      ),
+                      SizedBox(height: tokens.spaceSm),
+                      TextField(
+                        controller: _isolationConfirmController,
+                        decoration: InputDecoration(
+                          labelText: EmcapLocale.t('settings.isolation.confirmationToken'),
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: tokens.spaceSm),
+                      FilledButton(
+                        onPressed: _applyIsolationMode,
+                        child: Text(EmcapLocale.t('settings.isolation.apply')),
+                      ),
+                    ] else
+                      Text(
+                        EmcapLocale.t('settings.isolation.opsReadOnly'),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    if (_isolationReloadHint.isNotEmpty) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      Text(_isolationReloadHint, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                    if (_isolationOpsStatus.isNotEmpty) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      Text(_isolationOpsStatus, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                    SizedBox(height: tokens.spaceSm),
+                    Text(
+                      EmcapLocale.t('settings.isolation.runbookHint'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Card(
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
+          child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.layouts')),
+            subtitle: Text(EmcapLocale.t('settings.layouts.subtitle')),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
+                child: LayoutEditorPanel(client: widget.client),
+              ),
+            ],
+          ),
         ),
         Card(
           margin: EdgeInsets.only(bottom: tokens.spaceSm),
@@ -815,7 +1021,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Card(
           margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
-            title: const Text('Branding'),
+            title: Text(EmcapLocale.t('settings.sections.branding')),
             children: [
               Padding(
                 padding: EdgeInsets.all(tokens.spaceSm + 4),

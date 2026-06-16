@@ -132,6 +132,16 @@ def test_payments_enabled(client: TestClient) -> None:
     assert response.json()["status"] == "pending"
 
 
+def test_payment_confirm_unknown_intent_returns_404(client: TestClient) -> None:
+    client.app.state.platform_config.modules.payments.enabled = True
+    client.app.state.platform_config.payments.enabled = True
+
+    response = client.post(
+        "/api/v1/payments/intents/00000000-0000-0000-0000-000000000099/confirm",
+    )
+    assert response.status_code == 404
+
+
 def test_ai_disabled_by_default(client: TestClient) -> None:
     response = client.post("/api/v1/ai/chat", json={"prompt": "Hello"})
     assert response.status_code == 403

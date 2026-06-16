@@ -151,6 +151,7 @@ jobs:
           npm run lint
           npm run build
           npm run test:ci
+          npm run test:coverage
           # Optional a11y-only gate (also covered by test:ci *.a11y.spec.ts):
           # npm run test:a11y
 
@@ -172,4 +173,5 @@ jobs:
           flutter pub get
           dart format --output=none --set-exit-if-changed .
           flutter analyze --no-fatal-infos
-          flutter test
+          flutter test --coverage
+          # Coverage output: clients/mobile/coverage/lcov.info (baseline gate TBD)

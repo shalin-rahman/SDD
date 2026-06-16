@@ -12,6 +12,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "test": "ng test",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless --no-progress",
+    "test:coverage": "ng test --configuration=coverage",
     "test:a11y": "ng test --watch=false --browsers=ChromeHeadless --no-progress --include=**/*.a11y.spec.ts"
   },
   "private": true,

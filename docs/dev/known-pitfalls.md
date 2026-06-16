@@ -177,8 +177,17 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 |--|--|
 | **Symptom** | Viewer sees restricted field labels/inputs; only record values were stripped |
 | **Where** | `api/routes/metadata.py` — must filter via `metadata/security.py` + `can_read_field()` |
-| **Fix** | Filter form/grid metadata by `read_roles` + admin field overrides; web uses `securedVisibleFieldNames` |
-| **Test** | `test_admin_field_access_override.py::test_metadata_form_hides_restricted_fields_for_viewer` |
+| **Fix** | Filter form/grid metadata by `read_roles` + admin field overrides; strip restricted keys from grid `i18n` maps; web uses `securedVisibleFieldNames` |
+| **Test** | `test_admin_field_access_override.py::test_metadata_form_hides_restricted_fields_for_viewer` (columns + `i18n.en`) |
+
+### Ops tenant isolation — `schema_per_tenant` on SQLite
+
+| | |
+|---|---|
+| **Symptom** | After `PUT /admin/ops/tenant-isolation` with `schema_per_tenant`, SQLite tests fail with `near "SCHEMA": syntax error` |
+| **Cause** | `SchemaPerTenantStrategy.bind_session` runs PostgreSQL DDL |
+| **Fix** | Use `database_per_tenant` or `shared_database` in local/CI tests; production Postgres for schema mode |
+| **Test** | `test_admin_ops_isolation.py` (reverts to `shared_database` after assert) |
 
 ### SQLite databases committed to git
 
@@ -656,7 +665,16 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Symptom** | Row disappears after delete; search cannot find SKU; user thinks data was lost |
 | **Cause** | `deleted_at` set; list query filters `deleted_at IS NULL` by default (`repository.py`) |
 | **Fix** | Expected behavior — use `POST .../records/{id}/restore` or restore UI when wired (P14-T14); audit tab still shows history |
-| **Test** | `test_system_fields.py` soft delete + restore; `test_inventory_e2e.py` delete assertions on `deleted_at` |
+| **Test** | `test_system_fields.py` soft delete + restore; `test_inventory_e2e.py` delete assertions on `deleted_at`; DELETE returns **200** + body with `deleted_at`, not **204** |
+
+### Entity DELETE returns 200 (soft delete body), not 204
+
+| | |
+|--|--|
+| **Symptom** | Contract tests assert `delete.status_code == 204` after system-column / soft-delete work |
+| **Cause** | `entities.delete_record` returns the soft-deleted record dict (200) for audit/UI parity |
+| **Fix** | Assert `200` and `deleted_at is not None`; use restore endpoint to undo |
+| **Test** | `test_health.py::test_customer_crud_and_audit`; `test_crm_e2e.py::test_lead_crud` |
 
 ### Product grid still shows 2 rows after seed expansion
 

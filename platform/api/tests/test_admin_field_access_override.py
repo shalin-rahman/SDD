@@ -164,10 +164,12 @@ def test_metadata_form_hides_restricted_fields_for_viewer(client: TestClient) ->
 
     grid_meta = client.get("/api/v1/metadata/grids/PRODUCT", headers=viewer_headers)
     assert grid_meta.status_code == 200
-    column_names = {column["field"] for column in grid_meta.json()["columns"]}
+    grid_body = grid_meta.json()
+    column_names = {column["field"] for column in grid_body["columns"]}
     assert "unit_price" not in column_names
     assert "sku" in column_names
     assert "created_at" in column_names
+    assert "unit_price" not in grid_body.get("i18n", {}).get("en", {})
 
     record = client.get(
         f"/api/v1/entities/PRODUCT/records/{record_id}",

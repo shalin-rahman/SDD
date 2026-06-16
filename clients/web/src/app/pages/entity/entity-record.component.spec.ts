@@ -58,4 +58,60 @@ describe('EntityRecordComponent', () => {
     expect(fixture.componentInstance.creatingNew).toBeTrue();
     expect(fixture.nativeElement.querySelector('app-dynamic-form-view')).toBeTruthy();
   });
+
+  it('loads existing record when recordId is set', async () => {
+    const getRecord = jasmine.createSpy('getRecord').and.resolveTo({
+      id: 'rec-1',
+      sku: 'SKU-1',
+      name: 'Widget',
+      active: true,
+      record_version: 1,
+    });
+    const getGridMetadata = jasmine.createSpy('getGridMetadata').and.resolveTo({
+      schema_version: '1',
+      entity_code: 'PRODUCT',
+      columns: [],
+      export: { excel: true },
+      grouping: false,
+      realtime: false,
+      offline: false,
+    });
+    const paramMap$ = new BehaviorSubject(convertToParamMap({ code: 'PRODUCT', recordId: 'rec-1' }));
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([]),
+        I18nService,
+        {
+          provide: ActivatedRoute,
+          useValue: { paramMap: paramMap$.asObservable() },
+        },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata,
+              getGridMetadata,
+              getRecord,
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({}),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({
+                menus: [{ entity_code: 'PRODUCT', label: 'Products' }],
+              }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(getRecord).toHaveBeenCalledWith('PRODUCT', 'rec-1');
+    expect(fixture.componentInstance.creatingNew).toBeFalse();
+    expect(fixture.componentInstance.formValues['sku']).toBe('SKU-1');
+  });
 });

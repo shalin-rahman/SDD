@@ -56,6 +56,7 @@ export interface GridMetadata {
     label: string;
     sortable: boolean;
     filterable: boolean;
+    width?: number | null;
     field_type?: string;
     lookup_entity?: string;
     currency_code?: string;

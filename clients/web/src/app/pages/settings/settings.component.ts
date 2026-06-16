@@ -16,6 +16,7 @@ import {
 } from '../../shared/admin/settings-toggle-group.component';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
 import { BrandingPreviewPanelComponent } from '../../shared/admin/branding-preview-panel.component';
+import { LayoutEditorPanelComponent } from '../../shared/admin/layout-editor-panel.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
@@ -25,8 +26,11 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import {
   parseDocumentPlatformSettings,
+  mergeDocumentSettings,
+  buildDocumentSettingsPayload,
   type DocumentPlatformSettings,
 } from '../../shared/utils/document-platform-settings.util';
+import type { ReportScheduleSummary } from '../../api/emcap-client';
 import {
   parseSecurityPlatformSettings,
   type SecurityPlatformSettings,
@@ -77,6 +81,7 @@ const TEMPLATE_VARIABLES = ['{{name}}', '{{tenant}}', '{{code}}', '{{date}}'] as
     DetailPlaceholderComponent,
     EmptyStateComponent,
     BrandingPreviewPanelComponent,
+    LayoutEditorPanelComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
@@ -99,6 +104,26 @@ export class SettingsComponent implements OnInit {
   moduleEffectiveSummary = '';
   tenantStrategy = '';
   multiTenant = false;
+  isolationConfigured = '';
+  isolationEffective = '';
+  isolationHasOverride = false;
+  isolationReloadHint = '';
+  isolationOpsAvailable = false;
+  isolationModeDraft = 'shared_database';
+  isolationConfirmToken = '';
+  isolationOpsStatus = '';
+  readonly isolationModes = [
+    'shared_database',
+    'database_per_tenant',
+    'schema_per_tenant',
+    'hybrid',
+  ] as const;
+
+  isolationModeLabel(mode: string): string {
+    const key = `settings.isolation.modes.${mode}`;
+    const label = this.i18n.t(key);
+    return label === key ? mode : label;
+  }
 
   selectedTemplateId: string | null = null;
   creatingTemplate = false;
@@ -127,6 +152,9 @@ export class SettingsComponent implements OnInit {
   integrationTestStatus = '';
   documentSettings: DocumentPlatformSettings = parseDocumentPlatformSettings({});
   securitySettings: SecurityPlatformSettings = parseSecurityPlatformSettings({});
+  reportSchedules: ReportScheduleSummary[] = [];
+  reportScheduleStatus = '';
+  readonly documentStorageBackends = ['filesystem', 's3'] as const;
 
   ngOnInit(): void {
     void this.reload();
@@ -139,7 +167,7 @@ export class SettingsComponent implements OnInit {
   async reload(): Promise<void> {
     this.loadError = '';
     try {
-      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health, platformConfig] =
+      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health, platformConfig, schedulesPayload] =
         await Promise.all([
         this.api.client.getAdminSettings(),
         this.api.client.getAdminIntegrations(),
@@ -147,6 +175,7 @@ export class SettingsComponent implements OnInit {
         this.api.client.getAdminAudit(),
         this.api.client.getHealth(),
         this.api.client.getPlatformConfig(),
+        this.api.client.getAdminReportSchedules(),
       ]);
       this.settings = settingsPayload.settings;
       this.editablePaths = settingsPayload.editable_paths ?? [];
@@ -157,8 +186,12 @@ export class SettingsComponent implements OnInit {
       this.audit = auditPayload.audit;
       this.tenantStrategy = health.tenant_strategy;
       this.multiTenant = health.multi_tenant;
-      this.documentSettings = parseDocumentPlatformSettings(platformConfig);
+      this.documentSettings = mergeDocumentSettings(
+        parseDocumentPlatformSettings(platformConfig),
+        settingsPayload.settings,
+      );
       this.securitySettings = parseSecurityPlatformSettings(platformConfig);
+      this.reportSchedules = schedulesPayload.schedules;
       const branding = parseTenantBranding(this.settings, platformConfig);
       this.tenantTheme = branding.theme;
       this.tenantDomain = branding.domain;
@@ -168,8 +201,9 @@ export class SettingsComponent implements OnInit {
       this.syncPaymentFields();
       this.syncIntegrationFields();
       this.refreshModuleEffectiveSummary();
+      await this.loadIsolationOps();
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Failed to load settings';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('settings.loadFailed');
     }
   }
 
@@ -693,10 +727,40 @@ export class SettingsComponent implements OnInit {
     this.paymentSecretDraft = '';
   }
 
+  async saveReportSchedule(row: ReportScheduleSummary): Promise<void> {
+    this.reportScheduleStatus = '';
+    try {
+      const updated = await this.api.client.updateAdminReportSchedule(
+        row.code,
+        row.schedule_cron ?? '',
+      );
+      const index = this.reportSchedules.findIndex((item) => item.code === updated.code);
+      if (index >= 0) {
+        this.reportSchedules = [
+          ...this.reportSchedules.slice(0, index),
+          updated,
+          ...this.reportSchedules.slice(index + 1),
+        ];
+      }
+      this.reportScheduleStatus = this.i18n.t('settings.reports.scheduleSaved');
+    } catch (err) {
+      this.reportScheduleStatus =
+        err instanceof Error ? err.message : this.i18n.t('settings.reports.scheduleSaveFailed');
+    }
+  }
+
+  private applyDocumentFields(): void {
+    this.settings = {
+      ...this.settings,
+      documents: buildDocumentSettingsPayload(this.documentSettings),
+    };
+  }
+
   async saveSettings(): Promise<void> {
     this.applyBranding();
     this.applyPaymentCredentials();
     this.applyIntegrationFields();
+    this.applyDocumentFields();
     this.status = '';
     this.reloadHint = '';
     try {
@@ -710,6 +774,7 @@ export class SettingsComponent implements OnInit {
       this.integrationOverridePaths = integrationsPayload.override_paths ?? [];
       this.syncPaymentFields();
       this.syncIntegrationFields();
+      this.documentSettings = mergeDocumentSettings(this.documentSettings, settingsPayload.settings);
       this.status = this.i18n.t('settings.saved');
       this.reloadHint = this.i18n.t('settings.reloadHint');
       this.refreshModuleEffectiveSummary();
@@ -718,7 +783,7 @@ export class SettingsComponent implements OnInit {
       }
       await this.shellContext.load();
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Save failed';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('settings.saveFailed');
     }
   }
 
@@ -741,7 +806,7 @@ export class SettingsComponent implements OnInit {
       await this.reload();
       this.startCreateTemplate();
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : 'Template save failed';
+      this.loadError = err instanceof Error ? err.message : this.i18n.t('settings.templates.saveFailed');
     }
   }
 
@@ -752,6 +817,39 @@ export class SettingsComponent implements OnInit {
     await this.api.client.deleteAdminTemplate(this.selectedTemplate.id);
     await this.reload();
     this.startCreateTemplate();
+  }
+
+  async loadIsolationOps(): Promise<void> {
+    try {
+      const state = await this.api.client.getTenantIsolationOps();
+      this.isolationOpsAvailable = true;
+      this.isolationConfigured = state.configured_mode;
+      this.isolationEffective = state.effective_mode;
+      this.isolationHasOverride = state.has_override;
+      this.isolationReloadHint = state.reload_hint;
+      this.isolationModeDraft = state.effective_mode;
+    } catch {
+      this.isolationOpsAvailable = false;
+      this.isolationConfigured = this.tenantStrategy;
+      this.isolationEffective = this.tenantStrategy;
+    }
+  }
+
+  async applyIsolationMode(): Promise<void> {
+    this.isolationOpsStatus = '';
+    try {
+      const result = await this.api.client.putTenantIsolationOps({
+        mode: this.isolationModeDraft,
+        confirmation_token: this.isolationConfirmToken,
+      });
+      this.isolationOpsStatus = result.reload_hint;
+      this.isolationConfirmToken = '';
+      await this.loadIsolationOps();
+      const health = await this.api.client.getHealth();
+      this.tenantStrategy = health.tenant_strategy;
+    } catch (err) {
+      this.isolationOpsStatus = err instanceof Error ? err.message : this.i18n.t('settings.isolation.applyFailed');
+    }
   }
 
   private bool(section: string, key: string): boolean {

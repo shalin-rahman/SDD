@@ -158,7 +158,9 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/utils/assistant-chat.util.spec.ts` | AI chat response extract helper |
 | `clients/web/src/app/pages/assistant/assistant.component.spec.ts` | P17-T09 assistant page flag gate |
 | `clients/web/src/app/pages/settings/rule-evaluate.component.spec.ts` | P17-T11 rule evaluate panel |
-| `clients/web/src/app/pages/settings/settings.component.spec.ts` | P19-T05/T06 settings branding preview + document platform load |
+| `clients/web/src/app/pages/settings/settings.component.spec.ts` | P19-T05/T06 settings branding preview + document platform load; P13-T21 isolation ops mocks |
+| `clients/web/src/app/shared/admin/layout-editor-panel.component.ts` | P13-T31/T32 form/grid layout override editor (settings Platform tab) |
+| `clients/web/src/app/shared/admin/layout-editor-panel.component.spec.ts` | Layout editor load metadata smoke |
 | `clients/web/src/app/shared/utils/branding.util.spec.ts` | P19-T05 tenant branding parse, hex normalize, WCAG contrast |
 | `clients/web/src/app/shared/admin/branding-preview-panel.component.spec.ts` | P19-T05 branding preview panel + contrast warning |
 | `clients/web/src/app/shared/utils/document-platform-settings.util.spec.ts` | P19-T06 parse `documents.*` from platform config |
@@ -166,7 +168,29 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/testing/a11y.util.ts` | P15-T32 axe-core Karma helper (`runA11yAudit`, component-scope rule exclusions) |
 | `clients/web/src/app/pages/entity/entity-list.a11y.spec.ts` | P15-T32 entity-list axe gate |
 | `clients/web/src/app/pages/settings/settings.a11y.spec.ts` | P15-T32 settings axe gate |
-| `platform/api/tests/test_migrations.py` | P21-T01/P21-T02 migration SQL contract + `migrate.py` smoke |
+| `platform/api/migrations/003_tenant_layout_override.sql` | P13-T31 tenant layout override table (ADR-007) |
+| `platform/api/src/emcap/metadata/layout_merge.py` | Merge tenant form/grid overrides onto SDK metadata |
+| `platform/api/src/emcap/admin/layout_service.py` | Admin layout override CRUD + effective metadata |
+| `platform/api/src/emcap/admin/ops_service.py` | P13-T20 tenant isolation ops write |
+| `platform/api/tests/test_layout_override.py` | Layout override API: merge, tenant scope, validation, effective metadata |
+| `platform/api/tests/test_layout_merge.py` | Unit tests for `layout_merge.py` form/grid merge helpers |
+| `platform/api/tests/test_rbac.py` | RBAC `list_roles` / `assign_role` unit tests |
+| `platform/api/tests/test_formula_engine.py` | Formula rule engine AST evaluator edge cases |
+| `clients/web/karma.conf.js` | Karma coverage reporter + baseline thresholds (`npm run test:coverage`) |
+| `clients/web/src/app/pages/account/account.component.spec.ts` | Account profile load, locale, role labels |
+| `clients/web/src/app/pages/login/login.component.spec.ts` | Password + OAuth login flows |
+| `clients/web/src/app/pages/entity/entity-page.util.spec.ts` | Entity menu title resolver |
+| `clients/web/src/app/shared/utils/record.util.spec.ts` | Record id + input type helpers |
+| `clients/web/src/app/shared/utils/tenant.util.spec.ts` | Tenant id/label + permission extractors |
+| `platform/api/src/emcap/admin/report_schedule_service.py` | Admin report `schedule_cron` overrides (SettingOverrideRow) |
+| `platform/api/tests/test_report_schedule_admin.py` | Report schedule admin API + document settings editable paths |
+| `platform/api/tests/test_workflow_engine.py` | WorkflowEngine unit tests (transition, delegate, escalate) |
+| `platform/api/tests/test_oauth_provider.py` | OAuth client-credentials provider |
+| `clients/web/src/app/shared/forms/dynamic-form-view.component.spec.ts` | Dynamic form view sections + fieldChange |
+| `clients/web/src/app/pages/shell/shell.component.spec.ts` | Shell page title + context load |
+| `clients/mobile/test/layout_editor_panel_test.dart` | Mobile layout editor widget smoke |
+| `platform/api/tests/test_admin_ops_isolation.py` | Ops isolation confirmation token + audit |
+| `platform/api/tests/test_migrations.py` | P21-T01/P21-T02/P13-T31 migration SQL contract + `migrate.py` smoke |
 | `docs/dev/recipes/apply-pg-migrations.md` | PostgreSQL `migrate.py up` recipe (Docker + manual); CI integration job applies before `pytest -m integration` |
 | `docs/dev/recipes/tenant-isolation-write-test.md` | P19-T07 tenant write isolation runbook (unit + integration + manual steps) |
 | `clients/mobile/lib/theme/app_tokens.dart` | P16-T03 `EmcapThemeTokens` ThemeExtension (ADR-006 web parity) |
@@ -174,6 +198,13 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/theme_tokens_test.dart` | P16-T03/P16-T06 token key + density contract |
 | `clients/mobile/test/emcap_badge_test.dart` | P16-T06 badge/chip variant contract |
 | `clients/mobile/test/entity_record_hero_test.dart` | P15-T13/P20-T03 M2 PRODUCT detail hero widget contract |
+| `clients/mobile/lib/app/admin_security_screen.dart` | P13-T12 mobile field `read_roles` permission picker + `updateAdminFieldAccess` |
+| `clients/mobile/test/admin_security_field_access_test.dart` | P13-T12 field access i18n keys + permission gate contract |
+| `clients/mobile/lib/app/settings_screen.dart` | Mobile settings hub — i18n toggle groups + isolation ops + layout editor |
+| `clients/mobile/lib/widgets/layout_editor_panel.dart` | P13-T31/T32 mobile layout override editor (settings) |
+| `clients/web/src/app/shared/utils/workflow-state.util.spec.ts` | Workflow state label i18n |
+| `clients/mobile/lib/utils/workflow_state_util.dart` | Workflow state label i18n (mobile) |
+| `clients/mobile/test/workflow_state_util_test.dart` | Workflow state label contract |
 | `clients/mobile/test/emcap_client_contract_test.dart` | P20-T04 full `EmcapClient` method contract (mirrors web `REQUIRED_METHODS`) |
 | `clients/mobile/test/mobile_sse_grid_test.dart` | P15-T14 SSE grid realtime + `GridMetadata.realtime`/`offline`/`grouping` contract (6 tests) |
 | `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + hero/grid contract tests |
@@ -197,7 +228,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/system_fields_contract_test.dart` | P14-T31 system section + datetime display contracts |
 | `clients/mobile/test/field_display_test.dart` | P14-T25 currency/textarea formatters |
 | `clients/mobile/test/lookup_display_test.dart` | P14-T25 lookup label + currency_code helpers |
-| `clients/mobile/test/document_preview_util_test.dart` | P17-T07 document preview mime/decode/version helpers |
+| `clients/mobile/test/document_preview_util_test.dart` | P17-T07 mime/PDF/text/download preview util contracts (9 tests) |
 | `clients/mobile/test/workflow_detail_util_test.dart` | P17-T02 workflow row actions + delegate rules |
 | `clients/mobile/test/workflow_sla_util_test.dart` | P17-T02 SLA badge level thresholds |
 | `clients/mobile/test/workflow_enabled_util_test.dart` | P18-T04 platform workflow gate + PRODUCT start code |

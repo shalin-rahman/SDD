@@ -58,6 +58,14 @@ describe('SidenavNavComponent', () => {
     expect(iconNames).toContain('warehouse');
   });
 
+  it('translates platform link labels via labelKey', () => {
+    fixture.componentInstance.platformLinks = [
+      { labelKey: 'platform.reports.title', label: 'Reports', route: '/app/reports', visible: true },
+    ];
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Reports');
+  });
+
   it('falls back to description icon when menu item has no icon', () => {
     fixture.componentInstance.navGroups = [
       {
