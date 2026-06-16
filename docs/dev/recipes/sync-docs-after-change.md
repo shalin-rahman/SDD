@@ -44,7 +44,7 @@
 | Client API method | `docs/dev/recipes/add-client-api-method.md` |
 | Agent entry points | `.cursor/skills/emcap-codebase-map/SKILL.md` |
 | Phase 12 patterns | `.cursor/skills/emcap-enterprise-ui/SKILL.md` |
-| Tests / CI | `.cursor/skills/emcap-testing/SKILL.md` |
+| Tests / CI | `.cursor/skills/emcap-testing/SKILL.md`, `docs/dev/recipes/add-coverage-gate.md` |
 
 Remove stale paths (e.g. `src/app/layout/` — use `src/app/shared/layout/`).
 

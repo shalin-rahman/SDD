@@ -26,13 +26,13 @@ module.exports = function (config) {
         { type: 'text-summary' },
         { type: 'lcovonly', subdir: '.', file: 'lcov.info' },
       ],
-      // Ratchet toward NFR-003 80%; baseline Sprint 12 (2026-06-16).
+      // Ratchet toward NFR-003 80%; baseline Sprint 13 (2026-06-16).
       check: {
         global: {
-          statements: 58,
-          branches: 41,
-          functions: 51,
-          lines: 58,
+          statements: 78,
+          branches: 80,
+          functions: 79,
+          lines: 80,
         },
       },
     },

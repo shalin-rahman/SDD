@@ -198,6 +198,7 @@
 - **Sprint 11 (2026-06-16)** — Coverage ratchet: `test_rbac.py`, `test_formula_engine.py`; web specs (account, login, utils); Karma **231/231**; coverage **~57% lines**
 
 - **Sprint 12–13 (2026-06-16)** — Editable document settings + report schedule admin; `test_workflow_engine.py`, `test_oauth_provider.py`; dynamic-form + shell specs; Karma **241/241**; coverage **~59% lines**; pytest **298**; Flutter `--coverage` CI; mobile `layout_editor_panel_test.dart`
+- **Sprint 14 (2026-06-16)** — NFR-003 branch coverage push: Karma **406/406**, **80.57% branches** (954/1184), **80%** gate in `karma.conf.js`; API pytest **~91%**; Flutter CI **80%** (`check-flutter-coverage.py`); pitfalls + recipe in `known-pitfalls.md` § NFR-003, `add-coverage-gate.md`
 
 
 
@@ -236,7 +237,7 @@ cd platform\api && python -m pytest -q --cov=src --cov-fail-under=80
 cd clients\web && npm run build && npm run test:ci && npm run test:coverage
 ```
 
-Last verified 2026-06-16: pytest **298 passed**; Karma **241 SUCCESS**; coverage **~59% lines**; build **831 kB**.
+Last verified 2026-06-16: pytest **~91%** (80% gate); Karma **406 SUCCESS**; web coverage **80.57% branches** (954/1184); `npm run test:coverage` green; build **831 kB**. Flutter gate runs in CI (SDK not on local dev shell).
 
 
 

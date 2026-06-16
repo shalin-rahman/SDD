@@ -89,4 +89,24 @@ describe('AccountComponent', () => {
     fixture.componentInstance.onLocaleChange('xx');
     expect(i18n.setLocale).toHaveBeenCalledTimes(1);
   });
+
+  it('handles load failure and MFA success paths', async () => {
+    getMe.and.rejectWith(new Error('profile down'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.error).toContain('profile down');
+
+    getMe.and.resolveTo({ username: 'bob' });
+    await fixture.componentInstance.load();
+    expect(fixture.componentInstance.userId).toBe('bob');
+
+    fixture.componentInstance.enrollMfa();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.mfaSecret).toContain('SECRET');
+
+    fixture.componentInstance.mfaCode = '123456';
+    fixture.componentInstance.verifyMfa();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.mfaVerified).toBeTrue();
+  });
 });

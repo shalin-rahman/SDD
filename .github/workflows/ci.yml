@@ -174,4 +174,4 @@ jobs:
           dart format --output=none --set-exit-if-changed .
           flutter analyze --no-fatal-infos
           flutter test --coverage
-          # Coverage output: clients/mobile/coverage/lcov.info (baseline gate TBD)
+          python ../../scripts/check-flutter-coverage.py --lcov coverage/lcov.info --min 80

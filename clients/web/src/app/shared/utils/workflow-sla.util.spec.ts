@@ -18,4 +18,9 @@ describe('workflowSlaLevel', () => {
   it('returns ok when due more than 24 hours away', () => {
     expect(workflowSlaLevel('2026-06-15T12:00:00.000Z', now)).toBe('ok');
   });
+
+  it('returns none for invalid due_at values', () => {
+    expect(workflowSlaLevel('not-a-date', now)).toBe('none');
+    expect(workflowSlaLevel(undefined, now)).toBe('none');
+  });
 });

@@ -77,4 +77,20 @@ describe('LoginComponent', () => {
     await fixture.componentInstance.onOAuth();
     expect(fixture.componentInstance.error).toBe('OAuth disabled in config');
   });
+
+  it('redirects when already authenticated and surfaces login errors', async () => {
+    spyOn(TestBed.inject(AuthService), 'isAuthenticated').and.returnValue(true);
+    fixture.detectChanges();
+    expect(navigate).toHaveBeenCalledWith(['/app']);
+
+    login.and.rejectWith(new Error('bad credentials'));
+    const errorFixture = TestBed.createComponent(LoginComponent);
+    errorFixture.detectChanges();
+    await errorFixture.componentInstance.onSubmit();
+    expect(errorFixture.componentInstance.error).toContain('bad credentials');
+
+    (TestBed.inject(EmcapApiService).client.loginOAuth as jasmine.Spy).and.rejectWith('oauth down');
+    await errorFixture.componentInstance.onOAuth();
+    expect(errorFixture.componentInstance.error).toBe('OAuth failed');
+  });
 });

@@ -42,7 +42,8 @@ scripts\run-emcap.bat --stack-only           rem Docker
 |-------|----------|
 | **12** | `plan/12-enterprise-product-ui.md` |
 | 11 | `plan/11-local-dev-tooling.md` |
-| Backlog | `plan/03-task-backlog.md` (204 tasks) |
+| Coverage gates | `docs/dev/recipes/add-coverage-gate.md`, `known-pitfalls.md` § NFR-003 |
+| Backlog | `plan/03-task-backlog.md` (330 tasks) |
 
 ## Canonical paths
 

@@ -65,6 +65,7 @@
 | `session-memos/2026-06-14-entity-ux-pivot-doc-correction.md` | C16 rejected — separate routes only | `plan/15-entity-page-redesign.md` Slice 15C, P15-T16 Cancelled |
 | `session-memos/2026-06-14-slice-15c-complete.md` | Slice 15C Done web+mobile | P15-T15/T17, M1 PNG refresh |
 | `session-memos/2026-06-14-parallel-p13-p19-p15-mobile.md` | P13 field access API + P19 admin + mobile loading | P13-T10/T11, P19-T03/T06, P15-T22/T23 mobile |
+| `session-memos/2026-06-16-web-branch-coverage-push.md` | Sprint 14 web branch coverage 80% | `add-coverage-gate.md`, `known-pitfalls.md` § NFR-003, `emcap-testing` skill |
 | `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).

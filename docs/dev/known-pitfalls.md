@@ -749,3 +749,117 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Where** | `scripts/capture-screenshot-sprint.mjs`, `scripts/capture-m1-screenshots.mjs` |
 | **Fix** | Click grid row → wait for record URL; use `.record-tabs__group [role="tab"]` last tab for Workflow; list PNGs from list route only |
 | **Test** | `node scripts/capture-m1-screenshots.mjs`; `node scripts/capture-screenshot-sprint.mjs --only=product-workflow` |
+
+---
+
+## NFR-003 — Web Karma branch coverage (prevent spec regressions)
+
+Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% branches** (Sprint 14, 2026-06-16 — **954/1184**, **406** specs).
+
+### Settings payment — `onPaymentChange` before credentials
+
+| | |
+|--|--|
+| **Symptom** | Payment apply/save tests fail or `payments.stripe` is boolean `true` instead of credential object |
+| **Cause** | `onPaymentChange({ key: 'stripe', checked: true })` runs before `applyPaymentCredentials()` and overwrites nested provider object |
+| **Fix** | Call `selectPaymentProvider('stripe')` (or target provider) instead of toggling via `onPaymentChange` first |
+| **Test** | `settings.component.spec.ts` payment credential tests |
+
+### Entity-record — async `restoreRecord` race
+
+| | |
+|--|--|
+| **Symptom** | Validation tests mutate `formValues` before form is hydrated; flaky pass/fail |
+| **Cause** | `restoreRecord()` is async; spec continues before record load completes |
+| **Fix** | `await fixture.whenStable()` (and resolve mocks) before mutating `formValues` or asserting validators |
+| **Test** | `entity-record.component.spec.ts` restore + validation specs |
+
+### Entity-record — router NG04002 after create/delete
+
+| | |
+|--|--|
+| **Error** | `NG04002: Cannot match any routes` when navigating after create or delete |
+| **Cause** | `RouterTestingModule` only defines list route `app/entity/:code`, not record route |
+| **Fix** | Provide **both** `app/entity/:code` and `app/entity/:code/:recordId` (and `/new` if tested) |
+| **Test** | `entity-record.component.spec.ts` create/delete navigation specs |
+
+### Reports `scheduleLabel` — i18n string mismatch
+
+| | |
+|--|--|
+| **Symptom** | Expect `'No schedule'` but received `'Manual only'` |
+| **Cause** | Key `platform.reports.noSchedule` resolves to **Manual only** in `en` bundle |
+| **Fix** | Assert translated label (`Manual only`) or spy `I18nService.t` with the key |
+| **Test** | `reports.component.spec.ts` |
+
+### `exportUtil.downloadCsv` — ES module not spyable
+
+| | |
+|--|--|
+| **Symptom** | `spyOn(exportUtil, 'downloadCsv')` throws or never called |
+| **Cause** | ES module exports are not reliably spyable in Karma/Jasmine |
+| **Fix** | Assert component side effects (`historyError`, `isDownloading`) instead of spying the util |
+| **Test** | `entity-list.component.spec.ts` export error path |
+
+### Workflow `slaLabel` — missing `due_at`
+
+| | |
+|--|--|
+| **Symptom** | `slaLabel` assertion is empty string |
+| **Cause** | Instance without `due_at` → SLA level `'none'` → label returns empty |
+| **Fix** | Use workflow instance fixture with `due_at` set when testing SLA label text |
+| **Test** | `workflow.component.spec.ts` |
+
+### DynamicFormRenderer `equals` with boolean
+
+| | |
+|--|--|
+| **Symptom** | Condition visibility test fails when `value: true` in rule |
+| **Cause** | `equals` compares types strictly; `{ flag: 'yes' }` does not match boolean `true` |
+| **Fix** | Pass `{ flag: true }` in test `formValues` when rule uses `value: true` |
+| **Test** | `dynamic-form.renderer.spec.ts` condition specs |
+
+### Entity-list pagination — page count
+
+| | |
+|--|--|
+| **Symptom** | Expected 2 pages, component reports 3 |
+| **Cause** | `DEFAULT_PAGE_SIZE` is **10**; 25 records → **3** pages (not 2) |
+| **Fix** | Use `Math.ceil(25 / 10)` or assert `totalPages === 3` |
+| **Test** | `entity-list.component.spec.ts` pagination |
+
+### Admin-roles — reject then `selectRole` without reload
+
+| | |
+|--|--|
+| **Symptom** | `selectRole` runs against stale/empty list after `listAdminRoles` reject |
+| **Cause** | Component still in prior load state; mobile layout needs explicit reload |
+| **Fix** | After reject mock, call `reload()` before `selectRole`; use `BehaviorSubject` for `isMobile$` |
+| **Test** | `admin-roles.component.spec.ts` error + mobile layout |
+
+### Contract label fallbacks — empty string is not nullish
+
+| | |
+|--|--|
+| **Symptom** | `resolveFieldLabel` / `resolveColumnLabel` return `''` instead of falling back to `name` |
+| **Cause** | Fallback uses `??`; empty string `''` is **not** nullish |
+| **Fix** | Use `undefined` (omit `label` / `label_key`) in fixtures when testing name fallback |
+| **Test** | `metadata/contract.spec.ts` |
+
+### `canPostMovement` — incomplete component state
+
+| | |
+|--|--|
+| **Symptom** | `canPostMovement()` false when all mocks look correct |
+| **Cause** | Requires `entityCode='STOCK_MOVEMENT'`, `formValues.status='draft'`, `selectedRecordId`, `creatingNew=false` |
+| **Fix** | Set all four on component before asserting post eligibility |
+| **Test** | `entity-record.component.spec.ts` post movement |
+
+### Settings integration status label — wrong enum
+
+| | |
+|--|--|
+| **Symptom** | `integrationStatusLabel` does not match expected copy |
+| **Cause** | Status value `'missing'` is wrong; API/settings use `'not_configured'` |
+| **Fix** | Use `'not_configured'` in integration status fixtures |
+| **Test** | `settings.component.spec.ts` integrations tab |

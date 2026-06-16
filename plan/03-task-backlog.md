@@ -31,7 +31,7 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-16 (Sprint 9: P13-T12 mobile field access editor; mobile settings i18n + isolation ops; web settings/account i18n polish) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
+**Last updated:** 2026-06-16 (Sprint 14: web branch coverage 80.57%, Karma 406 specs; Flutter CI 80% gate) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
 
 **Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · See `Crash course` + `07-product-readiness-matrix.md`.
 
@@ -211,7 +211,7 @@ Playbook: `plan/05-phase6-playbook.md`
 | EMCAP-P7-T10 | Integrations status UI (web + mobile) | T02 | Done |
 | EMCAP-P7-T11 | Payments UI — feature-flag gated | T02 | Done |
 | EMCAP-P7-T12 | Tenant picker + white-label theme shell | T02 | Done |
-| EMCAP-P7-T13 | CI coverage gates ≥80% + contract expansion | T03–T09 | Done |
+| EMCAP-P7-T13 | CI coverage gates ≥80% + contract expansion | T03–T09 | Done — API ~91%; web Karma **406** specs, **80% branches** gate (`karma.conf.js`); Flutter `check-flutter-coverage.py` 80%; recipe `add-coverage-gate.md` |
 | EMCAP-P7-T14 | Mobile SSE grid refresh parity | T02 | Done |
 | EMCAP-P7-T15 | Production readiness sign-off doc + Helm notes | T12 | Done |
 | EMCAP-P7-T16 | Traceability + matrix + pitfalls sync | T03–T15 | Done |
@@ -585,7 +585,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | **CC-5** | Security metadata filter | P23-T01–T02 | `test_admin_field_access_override.py` + new metadata deny test | — |
 | **CC-6** | Repo hygiene | P23-T03 | `git check-ignore emcap-local.db`; DB not in `git status` | — |
 | **CC-7** | Design + a11y | P16-T05, T09, P15-T30–T32 | `npm run test:ci`; axe CI job | — |
-| **CC-8** | Infra hardening | P21-T01, P20-T06–T07, P20-T04 | pytest; `ng build --stats-json` | — |
+| **CC-8** | Infra hardening | P21-T01, P20-T06–T07, P20-T04 | pytest; `ng build --stats-json`; `npm run test:coverage` | — |
 
 **Parallel lanes after CC-0:** CC-3 + CC-4 + CC-5 (web-only) while CC-1 blocked.
 

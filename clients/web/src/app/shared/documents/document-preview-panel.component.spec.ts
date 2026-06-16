@@ -71,4 +71,53 @@ describe('DocumentPreviewPanelComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Download');
     expect(fixture.nativeElement.textContent).toContain('pending');
   });
+
+  it('handles load errors, version changes, backdrop close, and download guard', async () => {
+    getDocument.and.rejectWith(new Error('doc missing'));
+    fixture.componentRef.setInput('open', true);
+    fixture.componentRef.setInput('document', {
+      id: 'doc-3',
+      filename: 'notes.txt',
+      version: '1',
+      virus_scan_status: '',
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.loadError).toContain('doc missing');
+    expect(cmp.virusScanLabel()).toBeTruthy();
+    expect(cmp.virusBadgeClass()).toContain('unknown');
+
+    getDocument.and.resolveTo({
+      id: 'doc-3',
+      filename: 'notes.txt',
+      version: 1,
+      virus_scan_status: 'clean',
+      ocr_text: 'Retry ok',
+      versions: [
+        { id: 'doc-3', version: 1 },
+        { id: 'doc-3-v2', version: 2 },
+      ],
+    });
+    cmp.retryLoad();
+    await fixture.whenStable();
+    expect(cmp.versions.length).toBe(2);
+
+    cmp.onVersionChange('');
+    cmp.onVersionChange('doc-3');
+    cmp.onVersionChange('doc-3-v2');
+    await fixture.whenStable();
+
+    cmp.previewView = null;
+    cmp.download();
+
+    const closed = jasmine.createSpy('closed');
+    cmp.closed.subscribe(closed);
+    cmp.close();
+    expect(closed).toHaveBeenCalled();
+
+    fixture.componentRef.setInput('open', false);
+    fixture.detectChanges();
+  });
 });

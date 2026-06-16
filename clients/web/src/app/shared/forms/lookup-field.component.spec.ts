@@ -68,4 +68,26 @@ describe('LookupFieldComponent', () => {
     expect(dialogOpen).toHaveBeenCalled();
     expect(emitted).toEqual(['wh-2']);
   });
+
+  it('handles empty values, lookup errors, and disabled clear', async () => {
+    fixture.componentRef.setInput('value', '');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.displayLabel).toBe('—');
+
+    getRecord.and.rejectWith(new Error('missing'));
+    fixture.componentRef.setInput('value', 'wh-missing');
+    await fixture.componentInstance.refreshLabel();
+    expect(fixture.componentInstance.displayLabel).toBe('wh-missing');
+
+    dialogOpen.and.returnValue({ afterClosed: () => of(undefined) } as never);
+    const emitted: unknown[] = [];
+    fixture.componentInstance.valueChange.subscribe((value) => emitted.push(value));
+    fixture.componentInstance.openPicker();
+    expect(emitted).toEqual([]);
+
+    fixture.componentRef.setInput('disabled', true);
+    fixture.componentInstance.clear();
+    expect(emitted).toEqual([]);
+  });
 });

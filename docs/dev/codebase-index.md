@@ -77,7 +77,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Seed JSON | `data/seed/core/`, `data/seed/demo/` | Core + demo data packs; W5 `stock_movements.json` (draft/posted movements + lines) |
 | Local scripts | `scripts/run-emcap.bat`, `scripts/lint-format.bat` | Dev workflow |
 | Run logs | `logs/emcap/*.log` (`web.log`, `api.log`, `run.log`, `seed.log`) | gitignored |
-| CI | `.github/workflows/ci.yml` | lint, pytest, `ng build`, `ng test:ci` |
+| CI | `.github/workflows/ci.yml` | lint, pytest 80%, `ng build`, `ng test:ci`, `npm run test:coverage` (branch gate), Flutter 80% |
 | Agent rules | `.cursor/rules/emcap-doc-sync.mdc` | **Docs mandatory with code** |
 
 ---
@@ -176,7 +176,28 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `platform/api/tests/test_layout_merge.py` | Unit tests for `layout_merge.py` form/grid merge helpers |
 | `platform/api/tests/test_rbac.py` | RBAC `list_roles` / `assign_role` unit tests |
 | `platform/api/tests/test_formula_engine.py` | Formula rule engine AST evaluator edge cases |
-| `clients/web/karma.conf.js` | Karma coverage reporter + baseline thresholds (`npm run test:coverage`) |
+| `clients/web/karma.conf.js` | Karma coverage reporter + **80% branch / line** gate (`npm run test:coverage`; Sprint 14: 406 specs, 80.57% branches) |
+| `clients/web/src/app/metadata/contract.spec.ts` | `resolveFieldLabel` / `resolveColumnLabel` + `??` fallback contract |
+| `clients/web/src/app/services/auth.service.spec.ts` | Auth token/session helpers |
+| `clients/web/src/app/shared/admin/permission-picker.component.spec.ts` | Permission picker chip toggle |
+| `clients/web/src/app/shared/admin/settings-toggle-group.component.spec.ts` | Settings boolean toggle group |
+| `clients/web/src/app/pages/workflow/workflow.component.spec.ts` | Workflow inbox SLA/delegate/action branches |
+| `clients/web/src/app/pages/reports/reports.component.spec.ts` | Report catalog + schedule label i18n |
+| `clients/web/src/app/pages/dashboards/dashboards.component.spec.ts` | Dashboard KPI load/empty |
+| `clients/web/src/app/pages/notifications/notifications.component.spec.ts` | Notification center list/mark-read |
+| `clients/web/src/app/shared/utils/workflow-sla.util.spec.ts` | SLA level thresholds + label |
+| `clients/web/src/app/shared/utils/record-lifecycle.util.spec.ts` | Soft delete / restore helpers |
+| `clients/web/src/app/shared/utils/workflow-enabled.util.spec.ts` | Platform workflow feature gate |
+| `clients/web/src/app/shared/entity/record-detail-header.component.spec.ts` | Record hero header actions |
+| `clients/web/src/app/shared/forms/lookup-picker-dialog.component.spec.ts` | Lookup modal search/select |
+| `clients/web/src/app/api/emcap-client.http.spec.ts` | EmcapClient fetch mock surface + SSE stream |
+| `clients/web/src/app/guards/guards.spec.ts` | `authGuard`, `adminGuard`, `settingsGuard` |
+| `clients/web/src/app/services/emcap-api.service.spec.ts` | API service token injection + HTTP errors |
+| `clients/web/src/app/shared/services/shell-context.service.spec.ts` | Shell context load + tenant select |
+| `clients/web/src/app/metadata/dynamic-grid.renderer.spec.ts` | Grid sort/filter/group/paginate |
+| `clients/web/src/app/shared/utils/record-headline.util.spec.ts` | Record hero headline resolver |
+| `scripts/check-flutter-coverage.py` | Flutter lcov **80%** gate (CI mobile job) |
+| `clients/mobile/test/admin_widgets_test.dart` | Mobile `SettingsToggleGroup` + `PermissionPicker` widget tests |
 | `clients/web/src/app/pages/account/account.component.spec.ts` | Account profile load, locale, role labels |
 | `clients/web/src/app/pages/login/login.component.spec.ts` | Password + OAuth login flows |
 | `clients/web/src/app/pages/entity/entity-page.util.spec.ts` | Entity menu title resolver |
@@ -264,9 +285,10 @@ Or layer by layer:
 
 ```powershell
 cd platform/api; ruff check src tests; black --check src tests; python -m pytest -q --cov=src --cov-fail-under=80
-cd clients/web; npm run format:check; npm run lint; npm run build; npm run test:ci
-cd clients/mobile; dart format --output=none --set-exit-if-changed .; flutter analyze; flutter test
+cd clients/web; npm run format:check; npm run lint; npm run build; npm run test:ci; npm run test:coverage
+cd clients/mobile; dart format --output=none --set-exit-if-changed .; flutter analyze; flutter test --coverage
+python scripts/check-flutter-coverage.py --lcov clients/mobile/coverage/lcov.info --min 80
 .\scripts\verify-full-stack.ps1
 ```
 
-**Gates:** lint-format · pytest 80% (total ~87%) · Angular format+lint+build+Karma (20 tests) · flutter test
+**Gates:** lint-format · pytest **80%** (~91%) · Angular format+lint+build+Karma **406** specs + **80% branches** (`test:coverage`) · Flutter **80%** lines (`check-flutter-coverage.py`). Recipe: `docs/dev/recipes/add-coverage-gate.md`.

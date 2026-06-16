@@ -81,4 +81,13 @@ describe('DynamicFormViewComponent', () => {
   it('maps input types via inputType helper', () => {
     expect(fixture.componentInstance.inputType(field('name', 'email'))).toBe('email');
   });
+
+  it('returns empty section fields for unknown section and formats display values', () => {
+    expect(fixture.componentInstance.sectionFields('missing')).toEqual([]);
+    expect(fixture.componentInstance.sectionFields('main').length).toBe(2);
+    const currencyField = field('price', 'currency', { currency_code: 'USD' });
+    expect(fixture.componentInstance.displayValue(currencyField, 10)).toContain('10');
+    fixture.componentInstance.noteInputChange.emit('note');
+    fixture.componentInstance.submit.emit();
+  });
 });

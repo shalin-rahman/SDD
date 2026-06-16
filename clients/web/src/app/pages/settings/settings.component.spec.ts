@@ -110,6 +110,14 @@ describe('SettingsComponent', () => {
               updateAdminIntegrations: jasmine
                 .createSpy('updateAdminIntegrations')
                 .and.resolveTo({ integrations: {}, override_paths: [] }),
+              createAdminTemplate: jasmine
+                .createSpy('createAdminTemplate')
+                .and.resolveTo({ id: 'tpl-1', code: 'welcome' }),
+              updateAdminTemplate: jasmine.createSpy('updateAdminTemplate').and.resolveTo({ id: 'tpl-1' }),
+              deleteAdminTemplate: jasmine.createSpy('deleteAdminTemplate').and.resolveTo(undefined),
+              testAdminRestIntegration: jasmine
+                .createSpy('testAdminRestIntegration')
+                .and.resolveTo({ job_id: 'job-1' }),
             },
           },
         },
@@ -261,5 +269,405 @@ describe('SettingsComponent', () => {
   it('maps isolation mode codes to i18n labels', () => {
     expect(fixture.componentInstance.isolationModeLabel('shared_database')).toContain('Shared');
     expect(fixture.componentInstance.isolationModeLabel('unknown_mode')).toBe('unknown_mode');
+  });
+
+  it('handles toggle groups and template editor actions', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.onModuleChange({ key: 'ai', checked: false });
+    cmp.onWorkflowChange({ key: 'sla', checked: true });
+    cmp.applyBranding();
+    cmp.startCreateTemplate();
+    expect(cmp.creatingTemplate).toBeTrue();
+    cmp.templateCode = 'welcome';
+    cmp.templateSubject = 'Hello';
+    cmp.templateBody = 'Body';
+    await cmp.saveTemplate();
+    expect(TestBed.inject(EmcapApiService).client.createAdminTemplate).toHaveBeenCalled();
+  });
+
+  it('saves report schedule overrides', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    const row = cmp.reportSchedules[0];
+    row.schedule_cron = '0 9 * * *';
+    await cmp.saveReportSchedule(row);
+    expect(TestBed.inject(EmcapApiService).client.updateAdminReportSchedule).toHaveBeenCalled();
+  });
+
+  it('runs REST integration smoke test', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await fixture.componentInstance.testRestIntegration();
+
+    expect(fixture.componentInstance.integrationTestStatus).toContain('job-1');
+  });
+
+  it('exercises remaining platform toggle handlers and payment fields', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.onAuthChange({ key: 'mfa', checked: true });
+    cmp.onNotificationChange({ key: 'sms', checked: false });
+    cmp.onGridChange({ key: 'grouping', checked: true });
+    cmp.onRulesChange({ key: 'formula', checked: true });
+    cmp.onAiChange({ key: 'chat', checked: false });
+    cmp.onAuditChange({ key: 'retention', checked: true });
+    cmp.selectPaymentProvider('stripe');
+    expect(cmp.paymentProviderSelected('stripe')).toBeTrue();
+    cmp.paymentPublishableKey = 'pk_test';
+    cmp.applyPaymentCredentials();
+    cmp.applyIntegrationFields();
+    expect(cmp.integrationRegistry().length).toBeGreaterThan(0);
+    expect(cmp.channelBarStateLabel(true)).toBeTruthy();
+    expect(cmp.smsChannelEnabled()).toBeFalse();
+  });
+
+  it('deletes selected template', async () => {
+    const deleteTemplate = TestBed.inject(EmcapApiService).client.deleteAdminTemplate as jasmine.Spy;
+    TestBed.inject(EmcapApiService).client.listAdminTemplates = jasmine
+      .createSpy('listAdminTemplates')
+      .and.resolveTo({
+        templates: [{ id: 'tpl-1', code: 'welcome', channel: 'email', subject: 'Hi', body: 'Body' }],
+      });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.templates = [{ id: 'tpl-1', code: 'welcome', channel: 'email', subject: 'Hi', body: 'Body' }];
+    cmp.selectTemplate(cmp.templates[0]);
+    await cmp.deleteTemplate();
+    expect(deleteTemplate).toHaveBeenCalledWith('tpl-1');
+  });
+
+  it('handles payment provider selection and onPaymentChange toggle', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.settings = {
+      modules: { payments: { enabled: true } },
+      payments: { enabled: true, provider: 'stripe', stripe: { publishable_key: 'pk' } },
+    };
+    cmp.onPaymentChange({ key: 'enabled', checked: false });
+    expect(cmp.paymentCredentialsEnabled()).toBeFalse();
+    cmp.selectPaymentProvider('paypal');
+    expect(cmp.paymentProvider).toBe('stripe');
+
+    cmp.settings = {
+      modules: { payments: { enabled: true } },
+      payments: { enabled: true },
+    };
+    cmp.selectPaymentProvider('paypal');
+    expect(cmp.paymentProvider).toBe('paypal');
+    cmp.paymentSecretDraft = 'sk_test';
+    cmp.applyPaymentCredentials();
+    const payments = cmp.settings['payments'] as Record<string, unknown>;
+    const stripe = payments['stripe'] as Record<string, unknown>;
+    expect(stripe['secret_key']).toBe('sk_test');
+  });
+
+  it('covers integration registry partial kafka and webhook configured states', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.kafkaBootstrap = 'localhost:9092';
+    expect(cmp.integrationRegistry().find((e) => e.id === 'kafka')?.status).toBe('partial');
+    cmp.kafkaTopicPrefix = 'emcap';
+    expect(cmp.integrationRegistry().find((e) => e.id === 'kafka')?.status).toBe('configured');
+    cmp.webhookSecretConfigured = true;
+    expect(cmp.integrationStatusLabel('configured')).toBeTruthy();
+    expect(cmp.integrationStatusLabel('partial')).toBeTruthy();
+    expect(cmp.integrationStatusLabel('not_configured')).toBeTruthy();
+  });
+
+  it('updates existing template and handles save failures', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.templates = [{ id: 'tpl-2', code: 'alert', channel: 'email', subject: 'S', body: 'B' }];
+    cmp.selectTemplate(cmp.templates[0]);
+    cmp.templateSubject = 'Updated';
+    await cmp.saveTemplate();
+    expect(TestBed.inject(EmcapApiService).client.updateAdminTemplate).toHaveBeenCalled();
+
+    TestBed.inject(EmcapApiService).client.updateAdminSettings = jasmine
+      .createSpy('updateAdminSettings')
+      .and.rejectWith(new Error('save failed'));
+    await cmp.saveSettings();
+    expect(cmp.loadError).toContain('save failed');
+  });
+
+  it('handles isolation ops failure and applyIsolationMode', async () => {
+    TestBed.inject(EmcapApiService).client.getTenantIsolationOps = jasmine
+      .createSpy('getTenantIsolationOps')
+      .and.rejectWith(new Error('ops unavailable'));
+    TestBed.inject(EmcapApiService).client.putTenantIsolationOps = jasmine
+      .createSpy('putTenantIsolationOps')
+      .and.resolveTo({ reload_hint: 'Restart API' });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.isolationOpsAvailable).toBeFalse();
+
+    await fixture.componentInstance.applyIsolationMode();
+    expect(fixture.componentInstance.isolationOpsStatus).toContain('Restart API');
+  });
+
+  it('shows branding contrast warning for low-contrast primary', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.tenantPrimaryColor = '#ffff00';
+    expect(cmp.brandingContrastAdequate()).toBeFalse();
+    expect(cmp.brandingContrastHint()).toContain('contrast');
+    cmp.insertTemplateVariable('{{name}}');
+    expect(cmp.templateBody).toContain('{{name}}');
+  });
+
+  it('handles reload errors and report schedule save failure', async () => {
+    TestBed.inject(EmcapApiService).client.getAdminSettings = jasmine
+      .createSpy('getAdminSettings')
+      .and.rejectWith(new Error('reload failed'));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.loadError).toContain('reload failed');
+
+    TestBed.inject(EmcapApiService).client.updateAdminReportSchedule = jasmine
+      .createSpy('updateAdminReportSchedule')
+      .and.rejectWith(new Error('cron invalid'));
+    fixture.componentInstance.settings = { modules: { ai: { enabled: false } } };
+    fixture.componentInstance.reportSchedules = [
+      {
+        code: 'LOW_STOCK',
+        name: 'Low Stock',
+        entity_code: 'PRODUCT',
+        default_schedule_cron: '0 7 * * *',
+        schedule_cron: 'bad',
+        has_override: false,
+      },
+    ];
+    await fixture.componentInstance.saveReportSchedule(fixture.componentInstance.reportSchedules[0]);
+    expect(fixture.componentInstance.reportScheduleStatus).toContain('cron invalid');
+  });
+
+  it('skips deleteTemplate when nothing selected and tests REST failure', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.selectedTemplateId = null;
+    await cmp.deleteTemplate();
+    expect(TestBed.inject(EmcapApiService).client.deleteAdminTemplate).not.toHaveBeenCalled();
+
+    TestBed.inject(EmcapApiService).client.testAdminRestIntegration = jasmine
+      .createSpy('testAdminRestIntegration')
+      .and.rejectWith(new Error('rest down'));
+    await cmp.testRestIntegration();
+    expect(cmp.integrationTestStatus).toContain('rest down');
+  });
+
+  it('clears payment secret when draft empty and exercises remaining toggles', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.settings = {
+      modules: { payments: { enabled: true } },
+      payments: { enabled: true, provider: 'stripe', stripe: { publishable_key: 'pk', secret_key: 'sk' } },
+    };
+    cmp.paymentSecretDraft = '';
+    cmp.applyPaymentCredentials();
+    const payments = cmp.settings['payments'] as Record<string, unknown>;
+    const stripe = payments['stripe'] as Record<string, unknown>;
+    expect(stripe['secret_key']).toBeUndefined();
+
+    cmp.onPaymentChange({ key: 'enabled', checked: true });
+    cmp.onWorkflowChange({ key: 'enabled', checked: true });
+    cmp.onGridChange({ key: 'export_csv', checked: true });
+    cmp.onRulesChange({ key: 'formula_enabled', checked: false });
+    cmp.onAiChange({ key: 'enabled', checked: true });
+    cmp.onAuditChange({ key: 'enabled', checked: false });
+    cmp.onAuthChange({ key: 'oauth', checked: true });
+    cmp.onNotificationChange({ key: 'email', checked: true });
+    expect(cmp.pushChannelEnabled()).toBeFalse();
+    expect(cmp.paymentsModuleEnabled()).toBeTrue();
+    expect(cmp.brandingReadOnly()).toBeFalse();
+    expect(cmp.channelBarStateLabel(false)).toBeTruthy();
+  });
+
+  it('applies integration fields and clears webhook secret when draft empty', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.restBaseUrl = 'https://api.example.com';
+    cmp.kafkaBootstrap = 'localhost:9092';
+    cmp.kafkaTopicPrefix = 'emcap';
+    cmp.soapEndpoint = 'https://soap.example.com';
+    cmp.webhookSecretDraft = '';
+    cmp.applyIntegrationFields();
+    const webhook = cmp.integrations['webhook'] as Record<string, unknown>;
+    expect(webhook['signing_secret']).toBeUndefined();
+    expect((cmp.integrations['rest'] as Record<string, unknown>)['base_url']).toBe('https://api.example.com');
+  });
+
+  it('handles saveSettings failure and creates new templates', async () => {
+    const updateAdminSettings = TestBed.inject(EmcapApiService).client.updateAdminSettings as jasmine.Spy;
+    updateAdminSettings.and.rejectWith(new Error('save boom'));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    await cmp.saveSettings();
+    expect(cmp.loadError).toContain('save boom');
+
+    const createAdminTemplate = jasmine.createSpy('createAdminTemplate').and.resolveTo({ id: 'tpl-new' });
+    TestBed.inject(EmcapApiService).client.createAdminTemplate = createAdminTemplate;
+    updateAdminSettings.and.resolveTo({ settings: cmp.settings, override_paths: [] });
+    TestBed.inject(EmcapApiService).client.updateAdminIntegrations = jasmine
+      .createSpy('updateAdminIntegrations')
+      .and.resolveTo({ integrations: cmp.integrations, override_paths: [] });
+
+    cmp.creatingTemplate = true;
+    cmp.templateCode = 'welcome';
+    cmp.templateChannel = 'email';
+    cmp.templateSubject = 'Hi';
+    cmp.templateBody = 'Body';
+    await cmp.saveTemplate();
+    expect(createAdminTemplate).toHaveBeenCalled();
+  });
+
+  it('saves report schedule for unknown code without list mutation', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    await cmp.saveReportSchedule({
+      code: 'UNKNOWN',
+      name: 'Unknown',
+      entity_code: 'PRODUCT',
+      default_schedule_cron: null,
+      schedule_cron: '0 8 * * *',
+      has_override: false,
+    });
+    expect(cmp.reportScheduleStatus).toBeTruthy();
+  });
+
+  it('covers integration labels, template helpers, and disabled payment provider', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.integrationStatusLabel('configured')).toBeTruthy();
+    expect(cmp.integrationStatusLabel('partial')).toBeTruthy();
+    expect(cmp.integrationStatusLabel('not_configured')).toBeTruthy();
+
+    cmp.templateBody = 'Hello ';
+    cmp.insertTemplateVariable('{{name}}');
+    expect(cmp.templateBody).toContain('{{name}}');
+
+    const providerBefore = cmp.paymentProvider;
+    cmp.settings = { ...cmp.settings, modules: { payments: { enabled: false } } };
+    cmp.selectPaymentProvider('stripe');
+    expect(cmp.paymentProvider).toBe(providerBefore);
+
+    cmp.applyBranding();
+    expect(cmp.brandingContrastRatioLabel()).toBeTruthy();
+    cmp.onGridChange({ key: 'export', checked: true });
+    cmp.onWorkflowChange({ key: 'sla', checked: false });
+    expect(cmp.virusScanLabel()).toBeTruthy();
+    expect(cmp.securityHeadersLabel()).toBeTruthy();
+  });
+
+  it('persists settings successfully and applies tenant primary', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    await cmp.saveSettings();
+    expect(cmp.status).toBeTruthy();
+    expect(applyTenantPrimary).toHaveBeenCalled();
+  });
+
+  it('shows module effective none, branding read-only, and disabled security labels', async () => {
+    TestBed.inject(EmcapApiService).client.getAdminSettings = jasmine
+      .createSpy('getAdminSettings')
+      .and.resolveTo({
+        settings: { modules: {} },
+        editable_paths: [],
+        override_paths: [],
+      });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.documentSettings = { ...cmp.documentSettings, virusScanEnabled: false };
+    cmp.securitySettings = { ...cmp.securitySettings, securityHeadersEnabled: false };
+    expect(cmp.moduleEffectiveSummary).toBeTruthy();
+    expect(cmp.brandingReadOnly()).toBeTrue();
+    expect(cmp.virusScanLabel()).toBeTruthy();
+    expect(cmp.securityHeadersLabel()).toBeTruthy();
+    expect(cmp.isolationModeLabel('unknown-mode')).toBe('unknown-mode');
+  });
+
+  it('surfaces non-Error save failures and syncs configured payment secret', async () => {
+    TestBed.inject(EmcapApiService).client.getAdminSettings = jasmine
+      .createSpy('getAdminSettings')
+      .and.resolveTo({
+        settings: {
+          modules: { payments: { enabled: true } },
+          payments: {
+            provider: 'paypal',
+            stripe: { publishable_key: 'pk', secret_key: { configured: true } },
+          },
+        },
+        editable_paths: [],
+        override_paths: [],
+      });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.paymentSecretConfigured).toBeTrue();
+    expect(cmp.paymentProvider).toBe('paypal');
+
+    const updateAdminSettings = TestBed.inject(EmcapApiService).client.updateAdminSettings as jasmine.Spy;
+    updateAdminSettings.and.rejectWith('save down');
+    TestBed.inject(EmcapApiService).client.updateAdminIntegrations = jasmine
+      .createSpy('updateAdminIntegrations')
+      .and.resolveTo({ integrations: cmp.integrations, override_paths: [] });
+    await cmp.saveSettings();
+    expect(cmp.loadError).toBeTruthy();
+
+    TestBed.inject(EmcapApiService).client.updateAdminTemplate = jasmine
+      .createSpy('updateAdminTemplate')
+      .and.rejectWith('template down');
+    cmp.creatingTemplate = false;
+    cmp.selectedTemplateId = 'tpl-1';
+    cmp.templates = [
+      { id: 'tpl-1', code: 'welcome', channel: 'email', subject: 'Hi', body: 'Body' },
+    ];
+    await cmp.saveTemplate();
+    expect(cmp.loadError).toBeTruthy();
+
+    TestBed.inject(EmcapApiService).client.putTenantIsolationOps = jasmine
+      .createSpy('putTenantIsolationOps')
+      .and.rejectWith('isolation down');
+    await cmp.applyIsolationMode();
+    expect(cmp.isolationOpsStatus).toBeTruthy();
   });
 });
