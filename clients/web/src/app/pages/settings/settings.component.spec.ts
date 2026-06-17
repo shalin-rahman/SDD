@@ -453,12 +453,31 @@ describe('SettingsComponent', () => {
         name: 'Low Stock',
         entity_code: 'PRODUCT',
         default_schedule_cron: '0 7 * * *',
-        schedule_cron: 'bad',
+        schedule_cron: '0 7 * * *',
         has_override: false,
       },
     ];
     await fixture.componentInstance.saveReportSchedule(fixture.componentInstance.reportSchedules[0]);
     expect(fixture.componentInstance.reportScheduleStatus).toContain('cron invalid');
+  });
+
+  it('rejects invalid cron client-side before calling API', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    const updateSpy = TestBed.inject(EmcapApiService).client
+      .updateAdminReportSchedule as jasmine.Spy;
+    updateSpy.calls.reset();
+    await cmp.saveReportSchedule({
+      code: 'LOW_STOCK',
+      name: 'Low Stock',
+      entity_code: 'PRODUCT',
+      default_schedule_cron: '0 7 * * *',
+      schedule_cron: 'bad-cron',
+      has_override: false,
+    });
+    expect(updateSpy).not.toHaveBeenCalled();
+    expect(cmp.reportScheduleStatus).toContain('valid cron');
   });
 
   it('skips deleteTemplate when nothing selected and tests REST failure', async () => {

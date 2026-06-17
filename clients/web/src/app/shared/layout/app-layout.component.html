@@ -12,14 +12,17 @@
     <app-sidenav-nav
       [platformLinks]="platformLinks"
       [navGroups]="navGroups"
+      [navLoadError]="navLoadError"
+      [navEmpty]="navEmpty"
       (navClick)="onNavClick()"
+      (retryNav)="navRetry.emit()"
     />
   </mat-sidenav>
 
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="app-layout__toolbar">
       @if (isMobile) {
-        <button mat-icon-button type="button" aria-label="Menu" (click)="drawer.toggle()">
+        <button mat-icon-button type="button" [attr.aria-label]="i18n.t('toolbar.menu')" (click)="drawer.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
       }
@@ -29,7 +32,7 @@
         class="app-layout__locale"
         [value]="i18n.locale()"
         (valueChange)="onLocaleChange($event)"
-        aria-label="Language"
+        [attr.aria-label]="i18n.t('toolbar.locale')"
       >
         <mat-option value="en">{{ i18n.t('toolbar.language.en') }}</mat-option>
         <mat-option value="fr">{{ i18n.t('toolbar.language.fr') }}</mat-option>

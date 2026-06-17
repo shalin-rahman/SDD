@@ -7,7 +7,7 @@
  *   node scripts/capture-screenshot-sprint.mjs
  *   node scripts/capture-screenshot-sprint.mjs --only=product-workflow
  *   node scripts/capture-screenshot-sprint.mjs --only=admin-security
- *   node scripts/capture-screenshot-sprint.mjs --only=admin-settings
+ *   node scripts/capture-screenshot-sprint.mjs --only=admin-settings   # P18-T15 full M6 batch (8 PNGs)
  */
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -310,10 +310,59 @@ async function captureAdminSettingsPolish(page) {
   console.log('phase19-settings-documents-web.png…');
   await openSettingsTab(page, /Platform|Plateforme|প্ল্যাটফর্ম/i);
   await expandSettingsPanel(page, /Documents|Document|নথি/i);
-  await page.locator('.settings-document-cards').first().waitFor({ state: 'visible', timeout: 30_000 });
-  await page.locator('.settings-documents-header, .settings-document-cards').first().scrollIntoViewIfNeeded();
+  await page.locator('.settings-document-form, .settings-document-cards').first().waitFor({
+    state: 'visible',
+    timeout: 30_000,
+  });
+  await page.locator('.settings-document-form, .settings-document-cards').first().scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   await capture(page, 'phase19-settings-documents-web.png');
+
+  console.log('phase19-settings-layout-editor-web.png…');
+  await openSettingsTab(page, /Platform|Plateforme|প্ল্যাটফর্ম/i);
+  await expandSettingsPanel(page, /Entity layouts|Dispositions|এনটিটি লেআউট/i);
+  await page.locator('app-layout-editor-panel .layout-editor__table').first().waitFor({
+    state: 'visible',
+    timeout: 45_000,
+  });
+  await page.locator('app-layout-editor-panel').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-settings-layout-editor-web.png');
+
+  console.log('phase19-settings-isolation-web.png…');
+  await openSettingsTab(page, /Identity|Identité|পরিচয়/i);
+  await expandSettingsPanel(page, /Tenant isolation|Isolation|টেন্যান্ট/i);
+  await page.locator('.settings-readonly, .settings-field').first().waitFor({
+    state: 'visible',
+    timeout: 30_000,
+  });
+  await page.locator('mat-expansion-panel').filter({ hasText: /Tenant isolation|Isolation|টেন্যান্ট/i }).first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-settings-isolation-web.png');
+}
+
+/** P18-T15 — full M6 admin/settings Product-ready screenshot batch. */
+async function captureAdminProductReadyBatch(page) {
+  console.log('\nphase19-settings-ia-web.png…');
+  await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.settings-tabs, mat-tab-group', { timeout: 45_000 });
+  await capture(page, 'phase19-settings-ia-web.png');
+
+  console.log('phase19-admin-users-web.png…');
+  await page.goto(`${BASE}/app/admin/users`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.admin-table, app-empty-state', { timeout: 45_000 });
+  await capture(page, 'phase19-admin-users-web.png');
+
+  console.log('phase19-admin-roles-web.png…');
+  await page.goto(`${BASE}/app/admin/roles`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.admin-table, app-empty-state', { timeout: 45_000 });
+  await capture(page, 'phase19-admin-roles-web.png');
+
+  await captureAdminSecurity(page);
+  await captureAdminSettingsPolish(page);
 }
 
 async function captureAdminAndSettings(page) {
@@ -366,8 +415,8 @@ async function main() {
     }
 
     if (ONLY === 'admin-settings') {
-      await captureAdminSettingsPolish(page);
-      console.log('\nAdmin settings polish capture complete — see docs/product/screenshots/');
+      await captureAdminProductReadyBatch(page);
+      console.log('\nP18-T15 admin/settings Product-ready capture complete — see docs/product/screenshots/');
       return;
     }
 

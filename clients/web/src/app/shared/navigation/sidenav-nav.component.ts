@@ -19,7 +19,10 @@ export class SidenavNavComponent {
 
   @Input() platformLinks: PlatformNavLink[] = [];
   @Input() navGroups: ModuleNavGroup[] = [];
+  @Input() navLoadError = '';
+  @Input() navEmpty = false;
   @Output() navClick = new EventEmitter<void>();
+  @Output() retryNav = new EventEmitter<void>();
 
   readonly entityRoute = entityRoute;
   readonly menuRoute = menuRoute;
@@ -33,6 +36,14 @@ export class SidenavNavComponent {
     const key = `nav.module.${group.moduleCode.toLowerCase()}`;
     const translated = this.i18n.t(key);
     return translated === key ? group.moduleLabel : translated;
+  }
+
+  navErrorMessage(): string {
+    if (!this.navLoadError) {
+      return '';
+    }
+    const translated = this.i18n.t(this.navLoadError);
+    return translated === this.navLoadError ? this.navLoadError : translated;
   }
 
   onClick(): void {

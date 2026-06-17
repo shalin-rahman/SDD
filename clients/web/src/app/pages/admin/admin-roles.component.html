@@ -23,13 +23,12 @@
 
 
 @if (loadError) {
-
-  <p class="error">{{ loadError }}</p>
-
-}
-
-
-
+  <app-empty-state
+    [message]="loadError"
+    [actionLabel]="i18n.t('common.retry')"
+    (action)="reload()"
+  />
+} @else {
 <app-master-detail-layout [detailOpen]="detailOpen">
 
   <div listPane class="admin-list-pane">
@@ -44,7 +43,9 @@
 
     </mat-form-field>
 
-    @if (filteredRoles.length === 0 && !loadError) {
+    @if (loading) {
+      <app-loading-panel [message]="i18n.t('common.loading')" />
+    } @else if (filteredRoles.length === 0 && !loadError) {
 
       <app-empty-state
 
@@ -80,7 +81,7 @@
 
         <ng-container matColumnDef="permissions">
 
-          <th mat-header-cell *matHeaderCellDef>Permissions</th>
+          <th mat-header-cell *matHeaderCellDef>{{ i18n.t('admin.roles.permissionsTitle') }}</th>
 
           <td mat-cell *matCellDef="let row">
 
@@ -229,5 +230,4 @@
   </div>
 
 </app-master-detail-layout>
-
-
+}

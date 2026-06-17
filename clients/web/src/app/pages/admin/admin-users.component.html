@@ -11,9 +11,12 @@
 </app-page-header>
 
 @if (loadError) {
-  <p class="error">{{ loadError }}</p>
-}
-
+  <app-empty-state
+    [message]="loadError"
+    [actionLabel]="i18n.t('common.retry')"
+    (action)="reload()"
+  />
+} @else {
 <app-master-detail-layout [detailOpen]="detailOpen">
   <div listPane class="admin-list-pane">
     <app-admin-list-toolbar [newLabel]="i18n.t('admin.users.new')" (create)="startCreate()" />
@@ -21,7 +24,9 @@
       <mat-label>{{ i18n.t('admin.users.search') }}</mat-label>
       <input matInput [(ngModel)]="searchTerm" autocomplete="off" />
     </mat-form-field>
-    @if (filteredUsers.length === 0 && !loadError) {
+    @if (loading) {
+      <app-loading-panel [message]="i18n.t('common.loading')" />
+    } @else if (filteredUsers.length === 0 && !loadError) {
       <app-empty-state
         [message]="i18n.t('admin.users.empty')"
         [actionLabel]="i18n.t('admin.users.new')"
@@ -86,6 +91,10 @@
           </button>
         </div>
 
+        @if (saveError) {
+          <p class="error">{{ saveError }}</p>
+        }
+
         <div class="admin-form-grid">
           @if (!selected) {
             <mat-form-field appearance="outline">
@@ -117,3 +126,4 @@
     }
   </div>
 </app-master-detail-layout>
+}

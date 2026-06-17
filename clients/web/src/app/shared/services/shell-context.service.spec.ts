@@ -84,4 +84,20 @@ describe('ShellContextService', () => {
     expect(auth.setSession).toHaveBeenCalledWith('token', 'tenant-b');
     expect(service.selectedTenant()).toBe('tenant-b');
   });
+
+  it('sets navLoadError when menus fail to load', async () => {
+    const api = TestBed.inject(EmcapApiService);
+    (api.client.getMenus as jasmine.Spy).and.rejectWith(new Error('menus down'));
+    await service.load();
+    expect(service.navLoadError()).toBe('shell.nav.loadFailed');
+    expect(service.navGroups()).toEqual([]);
+  });
+
+  it('sets navEmpty when filtered menus are empty', async () => {
+    const api = TestBed.inject(EmcapApiService);
+    (api.client.getMenus as jasmine.Spy).and.resolveTo({ menus: [] });
+    await service.load();
+    expect(service.navEmpty()).toBeTrue();
+    expect(service.navLoadError()).toBe('');
+  });
 });

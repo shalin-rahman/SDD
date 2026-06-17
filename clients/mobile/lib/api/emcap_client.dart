@@ -22,6 +22,15 @@ class EmcapClient {
   final String baseUrl;
   String? _token;
   String _tenantId = 'default';
+  void Function()? _onUnauthorized;
+
+  void setOnUnauthorized(void Function() handler) {
+    _onUnauthorized = handler;
+  }
+
+  void clearSession() {
+    _token = null;
+  }
 
   void setToken(String token, String tenantId) {
     _token = token;
@@ -56,6 +65,10 @@ class EmcapClient {
     final streamed = await response.send();
     final text = await streamed.stream.bytesToString();
     if (streamed.statusCode >= 400) {
+      if (streamed.statusCode == 401 && _token != null) {
+        _token = null;
+        _onUnauthorized?.call();
+      }
       throw Exception('${streamed.statusCode}: $text');
     }
     if (streamed.statusCode == 204 || text.isEmpty) {

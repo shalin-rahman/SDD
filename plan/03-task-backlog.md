@@ -31,7 +31,7 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-16 (P18-T12 settings i18n + P18-T14 e2e smoke; Karma 417 specs) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
+**Last updated:** 2026-06-17 (P18-T21 admin users/roles/security Product-ready DoD) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
 
 **Current focus:** **CC-1 M2 mobile PNG** (Flutter SDK) · **P18-T06** CRM device sign-off · See `Crash course` + `07-product-readiness-matrix.md`.
 
@@ -438,7 +438,7 @@ Playbook: `plan/15-entity-page-redesign.md` · `plan/17-standard-product-executi
 | EMCAP-P16-T06 | Mobile component standardization | T03 | Done — settings `EmcapThemeTokens` padding + `EmcapBadge`; grid `DataTableTheme` density; shell density toggle |
 | EMCAP-P16-T07 | Density comfortable/compact | T05–T06 | Done — `ThemeService` + `data-density` tokens; Account toggle; EN/FR/BN |
 | EMCAP-P16-T08 | Dark mode contrast audit | T02–T03 | Done — audit table in `design-system.md`; dark token + badge fixes |
-| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — `PageHeaderComponent` breadcrumbs on entity-list/record + admin users/roles/security/permissions; Karma breadcrumb specs on all four admin pages |
+| EMCAP-P16-T09 | Shell breadcrumbs + nav polish | T05 | Done — breadcrumbs on entity/admin/settings; i18n page titles + sidenav load retry/empty (M6) |
 
 Playbook: `plan/16-standard-product-system.md` § W3 · ADR-006
 
@@ -486,10 +486,12 @@ Playbook: `plan/18-reference-modules-product.md`
 | ID | Task | Depends | Status |
 |----|------|---------|--------|
 | EMCAP-P18-PLAN | Standard professional app gap analysis | — | Done — `plan/18-standard-professional-app-gap-plan.md` |
-| EMCAP-P18-T11 | Enterprise auth UX (OAuth cards, MFA steps, session expiry) | P19-T02 | Partial — web login i18n + provider picker + 401 redirect; account MFA steps; mobile mirror pending |
+| EMCAP-P18-T11 | Enterprise auth UX (OAuth cards, MFA steps, session expiry) | P19-T02 | Partial — web Done (provider picker, 401 redirect, account MFA steps); mobile provider chips + session expiry (M6); PNG open |
 | EMCAP-P18-T13 | Grid bulk actions (select, export, soft-delete) | P14 entity platform | Partial — `EntityOptions.bulk_actions` + PRODUCT enabled; web grid toolbar; mobile deferred |
-| EMCAP-P18-T12 | App i18n depth (entity, admin, settings bodies) | P16 shell i18n | Partial — admin users + entity record errors; settings payment/storage labels + template aria; mobile parity pending |
+| EMCAP-P18-T12 | App i18n depth (entity, admin, settings bodies) | P16 shell i18n | Partial — shell nav/toolbar i18n, settings breadcrumbs + report labels EN/FR/BN; entity/admin mostly keyed; mobile login bundle sync |
 | EMCAP-P18-T14 | Playwright E2E smoke + CI hook | Local stack recipe | Partial — `scripts/e2e-smoke.mjs` + `.github/workflows/e2e-smoke.yml` (manual/weekly); CRM LEAD list in smoke |
+| EMCAP-P18-T15 | M6 admin/settings Product-ready screenshot batch | P19-T01–T12 | Done — `node scripts/capture-screenshot-sprint.mjs --only=admin-settings` (8 PNGs); matrix 07 §12; README § P18-T15 (2026-06-17) |
+| EMCAP-P18-T21 | Admin users/roles/security Product-ready elevation | P18-T15 | Done — `plan/16-product-ready-dod.md` §3 applied (load retry, saveError, deactivate confirm, ABAC empty/retry); Karma specs; matrix 07 §12 + 06 §7 (2026-06-17) |
 
 ---
 

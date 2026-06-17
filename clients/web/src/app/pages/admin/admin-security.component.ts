@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 
@@ -9,8 +10,11 @@ import { EmcapApiService } from '../../services/emcap-api.service';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
 import { PermissionPickerComponent } from '../../shared/admin/permission-picker.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
+import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
+import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
 import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
+import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { hasPermission } from '../../services/shell-nav.util';
 import { extractUserPermissions } from '../../shared/utils/tenant.util';
@@ -26,15 +30,19 @@ import { extractUserPermissions } from '../../shared/utils/tenant.util';
     PageHeaderComponent,
     MasterDetailLayoutComponent,
     DetailPlaceholderComponent,
+    EmptyStateComponent,
+    LoadingPanelComponent,
     AdminFormPanelComponent,
     PermissionPickerComponent,
   ],
   templateUrl: './admin-security.component.html',
   styleUrl: './admin-security.component.scss',
 })
-export class AdminSecurityComponent implements OnInit {
+export class AdminSecurityComponent implements OnInit, OnDestroy {
   private readonly api = inject(EmcapApiService);
+  private readonly layout = inject(LayoutService);
   readonly i18n = inject(I18nService);
+  private readonly destroy$ = new Subject<void>();
 
   adminBreadcrumbs(): PageBreadcrumb[] {
     return [
@@ -48,10 +56,13 @@ export class AdminSecurityComponent implements OnInit {
   abacPolicies: AbacPolicyRow[] = [];
   allPermissions: string[] = [];
   selectedCode: string | null = null;
+  loading = true;
   loadError = '';
   abacError = '';
   abacSaved = false;
   canEditSecurity = false;
+  mobileDetailOpen = false;
+  isMobile = false;
 
   editingFieldName: string | null = null;
   draftReadRoles: string[] = [];
@@ -65,10 +76,21 @@ export class AdminSecurityComponent implements OnInit {
   abacTestError = '';
 
   ngOnInit(): void {
+    this.layout.isMobile$.pipe(takeUntil(this.destroy$)).subscribe((mobile) => {
+      this.isMobile = mobile;
+      if (!mobile) {
+        this.mobileDetailOpen = false;
+      }
+    });
     void this.reload();
     void this.loadAbac();
     void this.loadPermissions();
     void this.resolveEditAccess();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get selectedEntity(): SecurityPolicyEntity | null {
@@ -77,6 +99,10 @@ export class AdminSecurityComponent implements OnInit {
 
   get fieldEditOpen(): boolean {
     return this.editingFieldName !== null;
+  }
+
+  get detailOpen(): boolean {
+    return this.isMobile && this.mobileDetailOpen;
   }
 
   async resolveEditAccess(): Promise<void> {
@@ -102,6 +128,7 @@ export class AdminSecurityComponent implements OnInit {
   }
 
   async reload(): Promise<void> {
+    this.loading = true;
     this.loadError = '';
     try {
       const payload = await this.api.client.getAdminSecurityPolicies();
@@ -113,6 +140,8 @@ export class AdminSecurityComponent implements OnInit {
       this.syncEditingField();
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.security.loadFailed');
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -195,6 +224,14 @@ export class AdminSecurityComponent implements OnInit {
 
   selectEntity(code: string): void {
     this.selectedCode = code;
+    this.closeFieldEdit();
+    if (this.isMobile) {
+      this.mobileDetailOpen = true;
+    }
+  }
+
+  closeDetail(): void {
+    this.mobileDetailOpen = false;
     this.closeFieldEdit();
   }
 

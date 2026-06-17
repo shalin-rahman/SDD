@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
@@ -17,8 +15,6 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   late Future<_AccountData> _future;
   final _mfaCode = TextEditingController();
-  final _dispatchUrl = TextEditingController(text: 'https://httpbin.org/post');
-  final _dispatchPayload = TextEditingController(text: '{"ping":true}');
   String? _mfaSecret;
 
   @override
@@ -30,8 +26,6 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void dispose() {
     _mfaCode.dispose();
-    _dispatchUrl.dispose();
-    _dispatchPayload.dispose();
     super.dispose();
   }
 
@@ -65,7 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
             );
           }
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: Text(EmcapLocale.t('common.loading')));
           }
           final data = snapshot.data!;
           return ListView(
@@ -122,73 +116,11 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               ...data.roles.map((r) => ListTile(dense: true, title: Text('${r['code'] ?? r['name'] ?? r}'))),
               const SizedBox(height: 12),
-              Text(EmcapLocale.t('account.integrations.title'), style: Theme.of(context).textTheme.titleMedium),
-              Text(EmcapLocale.t('account.integrations.hint'), style: Theme.of(context).textTheme.bodySmall),
-              TextField(
-                controller: _dispatchUrl,
-                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.restUrl')),
+              Text(
+                EmcapLocale.t('platform.account.integrationsMoved'),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              TextField(
-                controller: _dispatchPayload,
-                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.jsonPayload')),
-                maxLines: 2,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    final payload = _dispatchPayload.text.trim().isEmpty
-                        ? <String, dynamic>{}
-                        : Map<String, dynamic>.from(jsonDecode(_dispatchPayload.text) as Map);
-                    final result = await widget.client.dispatchRestIntegration(_dispatchUrl.text, payload);
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
-                  } catch (err) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$err')));
-                  }
-                },
-                child: Text(EmcapLocale.t('platform.account.restDispatch')),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await widget.client.publishKafkaIntegration('emcap.events', {'ping': true});
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
-                },
-                child: Text(EmcapLocale.t('platform.account.kafkaPublish')),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await widget.client.invokeSoapIntegration(
-                    'https://example.com/soap',
-                    'Ping',
-                    {},
-                  );
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
-                },
-                child: Text(EmcapLocale.t('platform.account.soapInvoke')),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await widget.client.uploadSftpIntegration(
-                    'sftp.example.com',
-                    '/inbound/data.json',
-                    {'ok': true},
-                  );
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
-                },
-                child: Text(EmcapLocale.t('platform.account.sftpUpload')),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await widget.client.graphqlQuery('{ health { status } }');
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$result')));
-                },
-                child: Text(EmcapLocale.t('platform.account.graphqlHealth')),
-              ),
+              const SizedBox(height: 12),
               Text(EmcapLocale.t('platform.account.admin'), style: const TextStyle(fontWeight: FontWeight.bold)),
               FutureBuilder<Map<String, dynamic>>(
                 future: widget.client.getMe(),

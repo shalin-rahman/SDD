@@ -78,6 +78,12 @@ describe('AdminRolesComponent', () => {
 
 
 
+  it('shows loading panel while fetching', () => {
+    fixture.detectChanges();
+    expect(fixture.componentInstance.loading).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Loading');
+  });
+
   it('renders empty state when no roles', async () => {
 
     fixture.detectChanges();
@@ -158,7 +164,9 @@ describe('AdminRolesComponent', () => {
     listAdminRoles.and.rejectWith(new Error('load failed'));
     fixture.detectChanges();
     await fixture.whenStable();
+    fixture.detectChanges();
     expect(fixture.componentInstance.loadError).toContain('load failed');
+    expect(fixture.nativeElement.textContent).toContain('Retry');
 
     listAdminRoles.and.resolveTo({
       roles: [{ id: 'r1', code: 'viewer', name: 'Viewer', permissions: ['customer.read'] }],

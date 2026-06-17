@@ -10,8 +10,8 @@
 .permission-matrix__scroll {
   overflow-x: auto;
   border: 1px solid var(--emcap-border);
-  border-radius: 4px;
-  background: #fff;
+  border-radius: var(--emcap-radius-sm);
+  background: var(--emcap-surface);
 }
 
 .permission-matrix__table {
@@ -28,18 +28,22 @@
   thead th {
     position: sticky;
     top: 0;
-    background: #f5f5f5;
+    background: var(--emcap-surface-elevated, var(--emcap-surface));
     z-index: 1;
   }
 }
 
 .permission-matrix__cell {
   text-align: center;
-  color: #1b5e20;
+  color: var(--emcap-success, #2e7d32);
 
   mat-icon {
     font-size: 1.1rem;
     width: 1.1rem;
     height: 1.1rem;
   }
+}
+
+.error {
+  color: var(--emcap-error, #c62828);
 }

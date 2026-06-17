@@ -12,7 +12,7 @@
 }
 
 .security-entity-list .admin-table__row--selected {
-  background: #e8eaf6;
+  background: color-mix(in srgb, var(--emcap-primary) 10%, var(--emcap-surface));
 }
 
 .security-detail h3 {
@@ -20,13 +20,13 @@
 }
 
 .security-summary {
-  color: #444;
+  color: var(--emcap-text-muted);
   font-size: 0.9rem;
 }
 
 .security-rules {
   margin-top: 1.5rem;
-  color: #666;
+  color: var(--emcap-text-muted);
   font-size: 0.875rem;
 }
 
@@ -44,12 +44,41 @@
 }
 
 .input-error {
-  border-color: #c62828;
+  border-color: var(--emcap-error, #c62828);
 }
 
 .field-error {
   display: block;
-  color: #c62828;
+  color: var(--emcap-error, #c62828);
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+
+.success-hint {
+  color: var(--emcap-success, #2e7d32);
+  font-size: 0.875rem;
+}
+
+.error {
+  color: var(--emcap-error, #c62828);
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--emcap-border);
+  border-radius: var(--emcap-radius-sm);
+  background: var(--emcap-surface);
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 520px;
+}
+
+.admin-table__row {
+  cursor: pointer;
+}
+
+.admin-table__row--selected {
+  background: color-mix(in srgb, var(--emcap-primary) 10%, var(--emcap-surface));
 }

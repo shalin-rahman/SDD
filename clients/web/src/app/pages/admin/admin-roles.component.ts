@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
+import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { AdminListToolbarComponent } from '../../shared/admin/admin-list-toolbar.component';
 import { PermissionPickerComponent } from '../../shared/admin/permission-picker.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
@@ -41,6 +42,7 @@ interface AdminRole {
     AdminListToolbarComponent,
     AdminFormPanelComponent,
     EmptyStateComponent,
+    LoadingPanelComponent,
     PermissionPickerComponent,
     DetailPlaceholderComponent,
   ],
@@ -62,6 +64,7 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
 
   roles: AdminRole[] = [];
   allPermissions: string[] = [];
+  loading = true;
   loadError = '';
   saveError = '';
   fieldErrors: { code?: string; name?: string; permissions?: string } = {};
@@ -117,6 +120,7 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
   }
 
   async reload(): Promise<void> {
+    this.loading = true;
     this.loadError = '';
     try {
       const [rolesPayload, permissionsPayload] = await Promise.all([
@@ -127,6 +131,8 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
       this.allPermissions = permissionsPayload.permissions;
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.roles.loadFailed');
+    } finally {
+      this.loading = false;
     }
   }
 

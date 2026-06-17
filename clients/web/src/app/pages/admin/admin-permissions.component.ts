@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
+import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { I18nService } from '../../shared/services/i18n.service';
 import {
@@ -22,7 +24,7 @@ interface AdminRole {
 @Component({
   selector: 'app-admin-permissions',
   standalone: true,
-  imports: [RouterModule, MatButtonModule, MatIconModule, PageHeaderComponent],
+  imports: [RouterModule, MatButtonModule, MatIconModule, PageHeaderComponent, EmptyStateComponent, LoadingPanelComponent],
   templateUrl: './admin-permissions.component.html',
   styleUrl: './admin-permissions.component.scss',
 })
@@ -39,6 +41,7 @@ export class AdminPermissionsComponent implements OnInit {
 
   roles: AdminRole[] = [];
   groups: PermissionGroup[] = [];
+  loading = true;
   loadError = '';
 
   ngOnInit(): void {
@@ -46,6 +49,7 @@ export class AdminPermissionsComponent implements OnInit {
   }
 
   async reload(): Promise<void> {
+    this.loading = true;
     this.loadError = '';
     try {
       const [rolesPayload, permissionsPayload] = await Promise.all([
@@ -56,6 +60,8 @@ export class AdminPermissionsComponent implements OnInit {
       this.groups = groupPermissions(permissionsPayload.permissions);
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.permissions.loadFailed');
+    } finally {
+      this.loading = false;
     }
   }
 

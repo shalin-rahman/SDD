@@ -31,3 +31,16 @@
     }
   </mat-nav-list>
 }
+
+@if (navLoadError) {
+  <div class="sidenav-nav__status">
+    <p>{{ navErrorMessage() }}</p>
+    <button type="button" class="sidenav-nav__retry" (click)="retryNav.emit()">
+      {{ i18n.t('common.retry') }}
+    </button>
+  </div>
+} @else if (navEmpty) {
+  <div class="sidenav-nav__status">
+    <p>{{ i18n.t('shell.nav.empty') }}</p>
+  </div>
+}

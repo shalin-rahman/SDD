@@ -1,15 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
+import { of, BehaviorSubject } from 'rxjs';
+
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { I18nService } from '../../shared/services/i18n.service';
+import { LayoutService } from '../../shared/services/layout.service';
 import { AdminSecurityComponent } from './admin-security.component';
 
 describe('AdminSecurityComponent', () => {
   let fixture: ComponentFixture<AdminSecurityComponent>;
   let getAdminSecurityPolicies: jasmine.Spy;
+  let isMobile$: BehaviorSubject<boolean>;
 
   beforeEach(async () => {
+    isMobile$ = new BehaviorSubject(false);
     getAdminSecurityPolicies = jasmine.createSpy('getAdminSecurityPolicies').and.resolveTo({
       entities: [
         {
@@ -40,10 +45,24 @@ describe('AdminSecurityComponent', () => {
             },
           },
         },
+        {
+          provide: LayoutService,
+          useValue: { isMobile$: isMobile$.asObservable() },
+        },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminSecurityComponent);
+  });
+
+  it('shows loading then entity list', async () => {
+    expect(fixture.componentInstance.loading).toBeTrue();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.loading).toBeFalse();
+    expect(getAdminSecurityPolicies).toHaveBeenCalled();
   });
 
   it('renders field matrix for selected entity', async () => {
@@ -63,6 +82,41 @@ describe('AdminSecurityComponent', () => {
 
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.page-header__breadcrumbs')?.textContent).toContain('Admin');
+  });
+
+  it('supports mobile detail panel and closeDetail', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    isMobile$.next(true);
+    const cmp = fixture.componentInstance;
+    cmp.selectEntity('PRODUCT');
+    expect(cmp.mobileDetailOpen).toBeTrue();
+    expect(cmp.detailOpen).toBeTrue();
+    cmp.closeDetail();
+    expect(cmp.mobileDetailOpen).toBeFalse();
+  });
+
+  it('shows read-only hint when user cannot edit', async () => {
+    TestBed.inject(EmcapApiService).client.getMe = jasmine
+      .createSpy('getMe')
+      .and.resolveTo({ permissions: ['inventory.read'] });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.canEditSecurity).toBeFalse();
+    expect(fixture.nativeElement.textContent).toContain('read-only access');
+  });
+
+  it('renders empty entity state when no policies', async () => {
+    getAdminSecurityPolicies.and.resolveTo({ entities: [], rules: {} });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No entity security policies');
   });
 
   it('saves ABAC policies when user can edit', async () => {
@@ -163,9 +217,28 @@ describe('AdminSecurityComponent', () => {
 
     fixture.detectChanges();
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(fixture.componentInstance.loadError).toContain('policies down');
+    expect(fixture.nativeElement.textContent).toContain('Retry');
+
+    getAdminSecurityPolicies.and.resolveTo({
+      entities: [
+        {
+          code: 'PRODUCT',
+          read_permission: 'inventory.read',
+          row_access: 'tenant',
+          fields: [{ name: 'unit_price', read_roles: ['inventory.access'], access: 'restricted' }],
+        },
+      ],
+      rules: {},
+    });
+    await fixture.componentInstance.reload();
+    fixture.detectChanges();
+    await fixture.componentInstance.loadAbac();
+    fixture.detectChanges();
     expect(fixture.componentInstance.abacError).toContain('abac down');
+    expect(fixture.nativeElement.textContent).toContain('Retry');
   });
 
   it('clears ABAC field errors on permission change and blocks delete confirm', async () => {

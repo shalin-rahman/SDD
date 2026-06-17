@@ -38,6 +38,8 @@ export class ShellContextService {
   readonly navGroups = signal<ModuleNavGroup[]>([]);
   readonly platformLinks = signal<PlatformNavLink[]>([]);
   readonly menus = signal<MenuItem[]>([]);
+  readonly navLoadError = signal('');
+  readonly navEmpty = signal(false);
 
   async load(): Promise<ShellContextState> {
     let modules: Record<string, { enabled?: boolean }> | undefined;
@@ -96,6 +98,8 @@ export class ShellContextService {
       filteredMenus = filterMenus(menus, userPermissions, modules);
       this.menus.set(filteredMenus);
       this.navGroups.set(groupMenusByModule(filteredMenus));
+      this.navLoadError.set('');
+      this.navEmpty.set(filteredMenus.length === 0);
 
       const url = this.router.url.replace(/\/$/, '');
       if (filteredMenus.length > 0 && (url === '/app' || url.endsWith('/app'))) {
@@ -104,6 +108,8 @@ export class ShellContextService {
     } catch {
       this.menus.set([]);
       this.navGroups.set([]);
+      this.navLoadError.set('shell.nav.loadFailed');
+      this.navEmpty.set(false);
     }
 
     return {

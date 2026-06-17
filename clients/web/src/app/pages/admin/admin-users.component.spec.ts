@@ -37,6 +37,12 @@ describe('AdminUsersComponent', () => {
     fixture = TestBed.createComponent(AdminUsersComponent);
   });
 
+  it('shows loading panel while fetching', () => {
+    fixture.detectChanges();
+    expect(fixture.componentInstance.loading).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Loading');
+  });
+
   it('renders empty state when no users', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -104,7 +110,9 @@ describe('AdminUsersComponent', () => {
     listAdminUsers.and.rejectWith(new Error('users down'));
     fixture.detectChanges();
     await fixture.whenStable();
+    fixture.detectChanges();
     expect(fixture.componentInstance.loadError).toContain('users down');
+    expect(fixture.nativeElement.textContent).toContain('Retry');
 
     listAdminUsers.and.resolveTo({
       users: [
@@ -122,12 +130,42 @@ describe('AdminUsersComponent', () => {
     const cmp = fixture.componentInstance;
     cmp.searchTerm = 'alice';
     expect(cmp.filteredUsers.length).toBe(1);
+
+    cmp.selectUser(cmp.users[0]);
+    spyOn(window, 'confirm').and.returnValue(true);
+    const deactivate = jasmine.createSpy('deactivateAdminUser').and.resolveTo({});
+    TestBed.inject(EmcapApiService).client.deactivateAdminUser = deactivate;
     await cmp.deactivateSelected();
+    expect(deactivate).toHaveBeenCalled();
 
     cmp.selectUser(cmp.users[0]);
     const updateUser = jasmine.createSpy('updateAdminUser').and.rejectWith(new Error('save failed'));
     TestBed.inject(EmcapApiService).client.updateAdminUser = updateUser;
     await cmp.save();
-    expect(cmp.loadError).toContain('save failed');
+    expect(cmp.saveError).toContain('save failed');
+  });
+
+  it('skips deactivate when confirm is cancelled', async () => {
+    listAdminUsers.and.resolveTo({
+      users: [
+        {
+          id: 'u1',
+          username: 'alice',
+          tenant_id: 'default',
+          active: true,
+          roles: [{ code: 'admin', name: 'Admin' }],
+        },
+      ],
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    cmp.selectUser(cmp.users[0]);
+    spyOn(window, 'confirm').and.returnValue(false);
+    const deactivate = jasmine.createSpy('deactivateAdminUser');
+    TestBed.inject(EmcapApiService).client.deactivateAdminUser = deactivate;
+    await cmp.deactivateSelected();
+    expect(deactivate).not.toHaveBeenCalled();
   });
 });

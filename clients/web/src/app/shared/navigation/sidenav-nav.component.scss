@@ -2,3 +2,15 @@
   background: color-mix(in srgb, var(--emcap-primary) 8%, transparent);
   font-weight: 600;
 }
+
+.sidenav-nav__status {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--emcap-on-surface-muted, rgba(0, 0, 0, 0.6));
+}
+
+.sidenav-nav__retry {
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}

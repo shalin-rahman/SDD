@@ -12,6 +12,7 @@ import { MatTableModule } from '@angular/material/table';
 import { EmcapApiService } from '../../services/emcap-api.service';
 import { AdminFormPanelComponent } from '../../shared/admin/admin-form-panel.component';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
+import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { AdminListToolbarComponent } from '../../shared/admin/admin-list-toolbar.component';
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
@@ -45,6 +46,7 @@ interface AdminUser {
     AdminListToolbarComponent,
     AdminFormPanelComponent,
     EmptyStateComponent,
+    LoadingPanelComponent,
     DetailPlaceholderComponent,
   ],
   templateUrl: './admin-users.component.html',
@@ -65,7 +67,9 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   users: AdminUser[] = [];
   roles: Array<{ id: string; code: string; name: string }> = [];
+  loading = true;
   loadError = '';
+  saveError = '';
   selectedId: string | null = null;
   creating = false;
   mobileDetailOpen = false;
@@ -119,6 +123,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   async reload(): Promise<void> {
+    this.loading = true;
     this.loadError = '';
     try {
       const [usersPayload, rolesPayload] = await Promise.all([
@@ -129,10 +134,13 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       this.roles = rolesPayload.roles as unknown as Array<{ id: string; code: string; name: string }>;
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.users.loadFailed');
+    } finally {
+      this.loading = false;
     }
   }
 
   selectUser(user: AdminUser): void {
+    this.saveError = '';
     this.creating = false;
     this.selectedId = user.id;
     this.draftUsername = user.username;
@@ -146,6 +154,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   startCreate(): void {
+    this.saveError = '';
     this.creating = true;
     this.selectedId = null;
     this.draftUsername = '';
@@ -165,6 +174,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   async save(): Promise<void> {
+    this.saveError = '';
     try {
       let savedId = this.selectedId;
       if (this.selected) {
@@ -197,12 +207,15 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
         this.mobileDetailOpen = true;
       }
     } catch (err) {
-      this.loadError = err instanceof Error ? err.message : this.i18n.t('admin.users.saveFailed');
+      this.saveError = err instanceof Error ? err.message : this.i18n.t('admin.users.saveFailed');
     }
   }
 
   async deactivateSelected(): Promise<void> {
     if (!this.selected) {
+      return;
+    }
+    if (!window.confirm(this.i18n.t('admin.users.deactivateConfirm'))) {
       return;
     }
     await this.api.client.deactivateAdminUser(this.selected.id);

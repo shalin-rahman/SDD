@@ -29,6 +29,20 @@ describe('AdminPermissionsComponent', () => {
     fixture = TestBed.createComponent(AdminPermissionsComponent);
   });
 
+  it('shows loading panel while fetching', () => {
+    fixture.detectChanges();
+    expect(fixture.componentInstance.loading).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Loading');
+  });
+
+  it('renders empty state when no permission groups', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No permissions are registered');
+  });
+
   it('renders admin breadcrumbs', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -36,5 +50,17 @@ describe('AdminPermissionsComponent', () => {
 
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.page-header__breadcrumbs')?.textContent).toContain('Admin');
+  });
+
+  it('shows retry on load failure', async () => {
+    TestBed.inject(EmcapApiService).client.listAdminRoles = jasmine
+      .createSpy('listAdminRoles')
+      .and.rejectWith(new Error('permissions down'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.loadError).toContain('permissions down');
+    expect(fixture.nativeElement.textContent).toContain('Retry');
   });
 });

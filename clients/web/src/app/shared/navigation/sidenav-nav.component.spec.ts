@@ -86,4 +86,20 @@ describe('SidenavNavComponent', () => {
     const icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
     expect(icon.textContent?.trim()).toBe('description');
   });
+
+  it('shows nav load error with retry action', () => {
+    fixture.componentInstance.navLoadError = 'shell.nav.loadFailed';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Could not load navigation menus');
+    const retry = fixture.nativeElement.querySelector('.sidenav-nav__retry') as HTMLButtonElement;
+    spyOn(fixture.componentInstance.retryNav, 'emit');
+    retry.click();
+    expect(fixture.componentInstance.retryNav.emit).toHaveBeenCalled();
+  });
+
+  it('shows empty nav message when menus are empty', () => {
+    fixture.componentInstance.navEmpty = true;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('No menus available');
+  });
 });

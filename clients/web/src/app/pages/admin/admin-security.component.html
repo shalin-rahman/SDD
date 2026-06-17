@@ -2,38 +2,56 @@
   [title]="i18n.t('admin.security.title')"
   [subtitle]="i18n.t('admin.security.subtitleEditor')"
   [breadcrumbs]="adminBreadcrumbs()"
+  [showBack]="isMobile && detailOpen"
+  (back)="closeDetail()"
 >
-  <a mat-button routerLink="/app/admin/users">Users</a>
-  <a mat-button routerLink="/app/admin/roles">Roles</a>
-  <a mat-button routerLink="/app/admin/permissions">Permissions</a>
+  <a mat-button routerLink="/app/admin/users">{{ i18n.t('admin.nav.users') }}</a>
+  <a mat-button routerLink="/app/admin/roles">{{ i18n.t('admin.nav.roles') }}</a>
+  <a mat-button routerLink="/app/admin/permissions">{{ i18n.t('admin.nav.permissions') }}</a>
 </app-page-header>
 
 @if (loadError) {
-  <p class="error">{{ loadError }}</p>
+  <app-empty-state
+    [message]="loadError"
+    [actionLabel]="i18n.t('common.retry')"
+    (action)="reload()"
+  />
+} @else {
+@if (!canEditSecurity && !loading) {
+  <p class="settings-hint">{{ i18n.t('admin.security.readOnlyHint') }}</p>
 }
 
-<app-master-detail-layout [detailOpen]="!!selectedEntity">
+@if (loading) {
+  <app-loading-panel [message]="i18n.t('common.loading')" />
+} @else {
+<app-master-detail-layout [detailOpen]="detailOpen">
   <div listPane class="security-entity-list">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>{{ i18n.t('admin.security.entity') }}</th>
-          <th>{{ i18n.t('admin.security.rowAccess') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (entity of entities; track entity.code) {
-          <tr
-            class="admin-table__row"
-            [class.admin-table__row--selected]="entity.code === selectedCode"
-            (click)="selectEntity(entity.code)"
-          >
-            <td>{{ entity.code }}</td>
-            <td>{{ entity.row_access }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    @if (entities.length === 0) {
+      <app-empty-state [message]="i18n.t('admin.security.emptyEntities')" />
+    } @else {
+      <div class="admin-table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ i18n.t('admin.security.entity') }}</th>
+              <th>{{ i18n.t('admin.security.rowAccess') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entity of entities; track entity.code) {
+              <tr
+                class="admin-table__row"
+                [class.admin-table__row--selected]="entity.code === selectedCode"
+                (click)="selectEntity(entity.code)"
+              >
+                <td>{{ entity.code }}</td>
+                <td>{{ entity.row_access }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 
   @if (selectedEntity; as entity) {
@@ -68,7 +86,7 @@
                   @if (field.read_roles.length) {
                     {{ field.read_roles.join(', ') }}
                   } @else {
-                    —
+                    {{ i18n.t('common.emptyValue') }}
                   }
                 </td>
                 @if (canEditSecurity) {
@@ -107,7 +125,7 @@
             <p class="error">{{ fieldSaveError }}</p>
           }
           @if (fieldAccessSaved) {
-            <p>{{ i18n.t('admin.security.fieldAccessSaved') }}</p>
+            <p class="success-hint">{{ i18n.t('admin.security.fieldAccessSaved') }}</p>
           }
 
           <app-permission-picker
@@ -135,11 +153,22 @@
   <h3>{{ i18n.t('admin.security.abacTitle') }}</h3>
   <p class="settings-hint">{{ i18n.t('admin.security.abacHint') }}</p>
   @if (abacError) {
-    <p class="error">{{ abacError }}</p>
-  }
+    <app-empty-state
+      [message]="abacError"
+      [actionLabel]="i18n.t('common.retry')"
+      (action)="loadAbac()"
+    />
+  } @else {
   @if (abacSaved) {
-    <p>{{ i18n.t('admin.security.abacSaved') }}</p>
+    <p class="success-hint">{{ i18n.t('admin.security.abacSaved') }}</p>
   }
+  @if (abacPolicies.length === 0) {
+    <app-empty-state
+      [message]="i18n.t('admin.security.abacEmpty')"
+      [actionLabel]="canEditSecurity ? i18n.t('admin.security.addPolicy') : ''"
+      (action)="addAbacPolicy()"
+    />
+  } @else {
   <div class="admin-table-scroll">
     <table class="admin-table">
       <thead>
@@ -163,9 +192,9 @@
                   [(ngModel)]="policy.permission"
                   [name]="'perm' + idx"
                   (ngModelChange)="onAbacPermissionChange(idx)"
-                  [class.input-error]="abacFieldErrors[idx].permission"
+                  [class.input-error]="abacFieldErrors[idx]?.permission"
                 />
-                @if (abacFieldErrors[idx].permission) {
+                @if (abacFieldErrors[idx]?.permission) {
                   <span class="field-error">{{ abacFieldErrors[idx].permission }}</span>
                 }
               } @else {
@@ -212,7 +241,8 @@
       </tbody>
     </table>
   </div>
-  @if (canEditSecurity) {
+  }
+  @if (canEditSecurity && abacPolicies.length > 0) {
     <button type="button" mat-button (click)="addAbacPolicy()">
       {{ i18n.t('admin.security.addPolicy') }}
     </button>
@@ -239,4 +269,7 @@
       </p>
     }
   </div>
+  }
 </section>
+}
+}

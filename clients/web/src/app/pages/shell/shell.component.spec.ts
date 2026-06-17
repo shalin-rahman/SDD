@@ -37,6 +37,8 @@ describe('ShellComponent', () => {
             platformLinks: () => [],
             navGroups: () => [],
             menus: () => [],
+            navLoadError: () => '',
+            navEmpty: () => false,
             selectTenant: jasmine.createSpy('selectTenant'),
           },
         },

@@ -1,11 +1,16 @@
 <app-page-header
   [title]="i18n.t('settings.title')"
   [subtitle]="i18n.t('settings.subtitle')"
+  [breadcrumbs]="settingsBreadcrumbs()"
 />
 
 @if (loadError) {
-  <p class="error">{{ loadError }}</p>
-}
+  <app-empty-state
+    [message]="loadError"
+    [actionLabel]="i18n.t('common.retry')"
+    (action)="reload()"
+  />
+} @else {
 @if (status) {
   <p class="status">{{ status }}</p>
 }
@@ -602,3 +607,4 @@
     {{ i18n.t('settings.save') }}
   </button>
 </div>
+}

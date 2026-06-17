@@ -16,26 +16,26 @@ docs/product/screenshots/
 
 Reference paths in PRs, `spec/sdd/07-product-readiness-matrix.md`, and phase playbooks — not external attachments.
 
-**Inventory:** 25+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + P19 admin security field-access + account profile. **Sprint 13 pending:** branding, documents (editable), layout editor, isolation ops — see § Sprint 13 below.
+**Inventory:** 28+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + **P18-T15** M6 admin/settings batch (8 PNGs, 2026-06-17).
 
 ---
 
-## Sprint 13 — Settings Product-ready pack (web)
+## P18-T15 — M6 admin/settings Product-ready batch (8 PNGs)
 
-Capture after local stack (`docs/dev/recipes/run-emcap-local-stack.md`), login `admin` / `admin123`:
+Captured 2026-06-17 via `scripts/capture-screenshot-sprint.mjs --only=admin-settings` after local stack (`docs/dev/recipes/run-emcap-local-stack.md`), login `admin` / `admin123`:
 
-```bat
-node scripts/capture-screenshot-sprint.mjs --only=admin-settings
-```
+| # | File | Route / panel | Task |
+|---|------|---------------|------|
+| 1 | `phase19-settings-ia-web.png` | `/app/settings` — mat-tab IA (Modules \| Identity \| Platform \| Integrations) | P19-T01 |
+| 2 | `phase19-admin-users-web.png` | `/app/admin/users` — search, active chips, table or empty state | P19-T02 |
+| 3 | `phase19-admin-roles-web.png` | `/app/admin/roles` — search, permission chips, empty state | P19-T02 |
+| 4 | `phase19-admin-security-field-access-web.png` | `/app/admin/security` — field matrix + edit panel | P19-T03 |
+| 5 | `phase19-settings-branding-web.png` | Settings → Integrations → Branding + live preview | P19-T05 |
+| 6 | `phase19-settings-documents-web.png` | Settings → Platform → Documents (editable cards + badge chips) | P19-T06 |
+| 7 | `phase19-settings-layout-editor-web.png` | Settings → Platform → Entity layouts | P13-T31 / ADR-007 |
+| 8 | `phase19-settings-isolation-web.png` | Settings → Identity → Tenant isolation | P19-T07 |
 
-| File | Route / panel |
-|------|----------------|
-| `phase19-settings-branding-web.png` | Settings → Integrations → Branding (existing; refresh after Sprint 12) |
-| `phase19-settings-documents-web.png` | Settings → Platform → Documents (editable form) |
-| `phase19-settings-layout-editor-web.png` | Settings → Platform → Entity layouts |
-| `phase19-settings-isolation-web.png` | Settings → Platform → Tenant isolation |
-
-Matrix 07 §12 rows move **Demo → Product-ready** when PNG + DoD checklist pass.
+**Note:** Roles screenshot uses `phase19-admin-roles-web.png` (not legacy `phase19-admin-roles` variants). Matrix 07 §12 rows elevated **Demo/Partial → Product-ready (web)** where PNG + DoD pass.
 
 ---
 
@@ -113,7 +113,7 @@ Captured 2026-06-14 via `scripts/capture-screenshot-sprint.mjs` after parallel a
 | 13 | `phase18-crm-contact-grid-web.png` | `/app/entity/CONTACT` — grid | P18-T06 |
 | 14 | `phase18-crm-contact-detail-web.png` | CONTACT selected row | P18-T06 |
 
-### P19 — Admin / settings (5)
+### P19 — Admin / settings (wave2 subset; full batch → § P18-T15)
 
 | # | Filename | Route / scene | Task |
 |---|----------|---------------|------|
@@ -122,6 +122,8 @@ Captured 2026-06-14 via `scripts/capture-screenshot-sprint.mjs` after parallel a
 | 17 | `phase19-admin-security-field-access-web.png` | `/app/admin/security` — field matrix + edit panel | P19-T03 |
 | 18 | `phase19-settings-branding-web.png` | `/app/settings` → Integrations tab → Branding panel + live preview | P19-T05 |
 | 19 | `phase19-settings-documents-web.png` | `/app/settings` → Platform tab → Documents cards + badge chips | P19-T06 |
+
+**P18-T15 adds:** `phase19-admin-roles-web.png`, `phase19-settings-layout-editor-web.png`, `phase19-settings-isolation-web.png` — see § P18-T15 above.
 
 ### P18 — PRODUCT workflow (1)
 

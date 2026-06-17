@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-16 (Sprint 12–13: editable document settings, report schedule admin, workflow engine tests, Karma ~59% / API 92%)
+**Last updated:** 2026-06-17 (M6 remainder — shell nav i18n/error states, report schedule validation, mobile auth parity, integrations UX pivot)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -30,7 +30,7 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — 14A-S2 Done; field-type API Done; **ADR-007 layout editor web + mobile** (P13-T31/T32); M2 PNG still open |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
 | **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM screenshots; menu icons; **workflow state i18n** (web + mobile) |
-| **M6** | Admin/settings product depth | — | **Partial** — P19 Demo+ PNGs; mobile tokens, isolation ops, field access, layout editor; P15-T32 axe; P21-T03 migration CI |
+| **M6** | Admin/settings product depth | — | **Partial** — P18-T21 users/roles/security Product-ready; shell nav i18n + load retry; report schedules UX; mobile login/MFA mirror; M2 PNG blocked |
 
 ---
 
@@ -118,16 +118,16 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Area | Backlog says | Product readiness | Plan |
 |------|--------------|-------------------|------|
-| Enterprise shell / nav | Many Done | **Demo** | P16-T09 breadcrumbs; P18-T07 Material menu icons (web sidenav + mobile shell `material_icon_util.dart`) |
-| Admin users/roles | Done | **Demo** | `phase19-admin-users-web.png` — P19-T02; `.emcap-badge--on`/`--off` active chips |
+| Enterprise shell / nav | Many Done | **Partial (web)** | P16-T09 breadcrumbs + **M6** i18n page titles (`resolvePageTitle` + `labelKey`), sidenav nav load retry/empty, settings breadcrumbs; shell PNG still open |
+| Admin users/roles/security | Done | **Product-ready (web)** | P18-T15 PNGs + **P18-T21** DoD (load retry, saveError, deactivate confirm, ABAC empty/retry); `phase19-admin-users-web.png`, `phase19-admin-roles-web.png`, `phase19-admin-security-field-access-web.png` |
 | Entity record header | Done | **Demo** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` status (ADR-006) |
-| Settings hub | Partial/Done | **Demo** | P19-T01 mat-tab IA; P13 layout/workflow toggles/isolation; **Sprint 12** document + report schedule edit |
-| Layout designer (ADR-007) | Done | **Demo** | Web `LayoutEditorPanelComponent` + mobile `layout_editor_panel.dart`; `layout_editor_panel_test.dart` |
-| Tenant branding preview | Done | **Demo** | P19-T05 — `phase19-settings-branding-web.png`; capture runbook § Sprint 13 |
-| Document platform settings | Done | **Partial** | **Sprint 12** editable admin settings (was read-only cards); screenshot runbook pending refresh |
-| Report schedules | Done | **Partial** | **Sprint 12** admin cron MVP in settings; `test_report_schedule_admin.py` |
-| ABAC editor (P13) | Done | **Wired** | P19-T04 |
-| Integrations on Account | Done | **Wired** (wrong place) | P19-T10, P17-T08 |
+| Settings hub + isolation | Partial/Done | **Product-ready (web)** | `phase19-settings-ia-web.png`, `phase19-settings-isolation-web.png` — P19-T01/T07; P18-T15 |
+| Layout designer (ADR-007) | Done | **Product-ready (web)** | `phase19-settings-layout-editor-web.png` — P13-T31; P18-T15 |
+| Tenant branding preview | Done | **Product-ready (web)** | `phase19-settings-branding-web.png` — P19-T05; P18-T15 refresh |
+| Document platform settings | Done | **Product-ready (web)** | `phase19-settings-documents-web.png` — P19-T06; Sprint 12 editable admin; P18-T15 |
+| Report schedules | Done | **Partial (web)** | Settings cron editor: i18n empty/save feedback, client cron validation, load retry; `test_report_schedule_admin.py`; dedicated PNG open |
+| ABAC editor (P13) | Done | **Demo** | P19-T04 + P18-T21 empty/retry UX; screenshot in security PNG |
+| Integrations (settings hub) | Done | **Product-ready (web)** | P19-T10 registry cards + REST test; Account/mobile account no dispatch buttons |
 
 ---
 

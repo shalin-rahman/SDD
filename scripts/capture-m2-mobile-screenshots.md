@@ -143,3 +143,9 @@ After PNG is in repo:
 3. Update `plan/15-entity-page-redesign.md` P15-T13 status
 
 **Related:** `docs/product/screenshots/README.md` · `clients/mobile/lib/app/entity_list_screen.dart` · `plan/17-standard-product-execution-playbook.md` § S2
+
+---
+
+## M6 note (2026-06-17)
+
+Mobile **login** (provider chips, session-expiry banner) and **account** (integrations removed — settings hint only) are covered by `clients/mobile/test/login_screen_test.dart` without device PNG. Capture optional: `phase18-mobile-login-providers.png` after Flutter SDK install.

@@ -863,3 +863,57 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 | **Cause** | Status value `'missing'` is wrong; API/settings use `'not_configured'` |
 | **Fix** | Use `'not_configured'` in integration status fixtures |
 | **Test** | `settings.component.spec.ts` integrations tab |
+
+### Settings report schedule spec — client cron blocks API path
+
+| | |
+|--|--|
+| **Symptom** | `saveReportSchedule` test expects API error `'cron invalid'` but gets i18n `settings.reports.invalidCron` |
+| **Cause** | `saveReportSchedule` validates cron client-side first (`isValidCronExpression` = exactly 5 whitespace-separated fields); invalid cron never reaches API |
+| **Fix** | Use a **valid** 5-field cron (e.g. `0 7 * * *`) in the schedule row when testing API rejection; reserve invalid cron (`bad-cron`) for client-side validation spec |
+| **Test** | `settings.component.spec.ts` — `handles reload errors and report schedule save failure` |
+
+### `resolvePageTitle` — default title needs translate mock
+
+| | |
+|--|--|
+| **Symptom** | Spec expects `'EMCAP'` but gets `'shell.pageTitle.default'` |
+| **Cause** | `resolvePageTitle` returns `t('shell.pageTitle.default')`; without `translate` arg, fallback is identity `(key) => key` |
+| **Fix** | Pass `translate: (key) => key === 'shell.pageTitle.default' ? 'EMCAP' : key` in tests for default/fallback paths |
+| **Test** | `page-title.util.spec.ts` — `falls back to entity code or translated default title` |
+
+### Admin load errors — use EmptyState + retry (Product-ready DoD)
+
+| | |
+|--|--|
+| **Symptom** | Admin pages show plain `<p class="error">` with no retry; toolbar still visible on failed load |
+| **Cause** | Pre–P18-T21 pattern; inconsistent with workflow/reports/settings |
+| **Fix** | `@if (loadError)` → `app-empty-state` + `common.retry`; hide list pane until reload succeeds; users: separate `saveError` from `loadError` |
+| **Test** | `admin-users.component.spec.ts`, `admin-roles.component.spec.ts`, `admin-security.component.spec.ts` |
+
+### Web vs mobile i18n bundle drift
+
+| | |
+|--|--|
+| **Symptom** | Mobile shows raw keys or English fallbacks for new web strings |
+| **Cause** | Web `en.json` ~596 lines vs mobile ~367 (~229 keys behind after M6 shell/settings/auth work) |
+| **Fix** | When adding web i18n keys for P18-T12, sync matching keys to `clients/mobile/assets/i18n/{en,fr,bn}.json` in same change |
+| **Test** | Line-count compare or key diff; mobile widget tests for login/settings |
+
+### Playwright screenshot capture on Windows
+
+| | |
+|--|--|
+| **Symptom** | `capture-screenshot-sprint.mjs` fails — Chromium not found; or sandbox error on `npx playwright install` |
+| **Cause** | Playwright browsers not installed; some Cursor sandboxes block install/start scripts |
+| **Fix** | Run `npx --yes playwright@1.49.1 install chromium` outside sandbox; stack up via `scripts/start-emcap-local.bat` (API `:8000`, web `:4200`); then `node scripts/capture-screenshot-sprint.mjs --only=admin-settings` |
+| **Test** | 8 PNGs in `docs/product/screenshots/phase19-*.png` |
+
+### PowerShell nested health-check quoting
+
+| | |
+|--|--|
+| **Symptom** | `powershell -Command "… $_.Exception.Message …"` → parser error on `$_.` |
+| **Cause** | Outer shell strips `$` from `$_` when nested |
+| **Fix** | Use single-level PowerShell or escape `$`; prefer simple `Invoke-WebRequest` without nested catch string concat |
+| **Test** | Manual stack health check |

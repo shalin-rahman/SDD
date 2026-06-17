@@ -56,7 +56,19 @@ class _EmcapShellState extends State<EmcapShell> {
   @override
   void initState() {
     super.initState();
+    widget.client.setOnUnauthorized(_handleSessionExpired);
     _bootstrap();
+  }
+
+  void _handleSessionExpired() {
+    if (!mounted) return;
+    widget.client.clearSession();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(client: widget.client, sessionExpired: true),
+      ),
+      (_) => false,
+    );
   }
 
   Future<void> _bootstrap() async {
@@ -438,9 +450,10 @@ class _EmcapShellState extends State<EmcapShell> {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required this.client});
+  const LoginScreen({super.key, required this.client, this.sessionExpired = false});
 
   final EmcapClient client;
+  final bool sessionExpired;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -450,11 +463,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController(text: 'admin');
   final _password = TextEditingController(text: 'admin123');
   String? _error;
-  bool _oauthAvailable = false;
+  List<String> _providers = const ['username_password'];
+  String _selectedProvider = 'username_password';
+  bool _loadingProviders = true;
 
   @override
   void initState() {
     super.initState();
+    if (widget.sessionExpired) {
+      _error = EmcapLocale.t('platform.login.sessionExpired');
+    }
     _loadProviders();
   }
 
@@ -462,8 +480,20 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final providers = await widget.client.getAuthProviders();
       if (!mounted) return;
-      setState(() => _oauthAvailable = providers.contains('oauth'));
-    } catch (_) {}
+      setState(() {
+        _providers = providers;
+        _loadingProviders = false;
+        if (!_providers.contains(_selectedProvider)) {
+          _selectedProvider = _providers.first;
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _providers = const ['username_password'];
+        _loadingProviders = false;
+      });
+    }
   }
 
   @override
@@ -473,57 +503,112 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  String _providerLabel(String provider) {
+    final key = 'platform.login.provider.$provider';
+    final label = EmcapLocale.t(key);
+    return label == key ? provider : label;
+  }
+
   void _enterShell(Map<String, dynamic> result) {
     widget.client.setToken(
       result['access_token'] as String,
       (result['tenant_id'] as String?) ?? 'default',
     );
+    widget.client.setOnUnauthorized(_handleSessionExpired);
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => EmcapShell(client: widget.client)),
     );
   }
 
+  void _handleSessionExpired() {
+    if (!mounted) return;
+    widget.client.clearSession();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => LoginScreen(client: widget.client, sessionExpired: true),
+      ),
+      (_) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('EMCAP Mobile')),
+      appBar: AppBar(title: Text(EmcapLocale.t('platform.login.title'))),
       body: Padding(
         padding: EdgeInsets.all(context.emcapTokens.spaceLg),
-        child: Column(
+        child: ListView(
           children: [
-            TextField(controller: _username, decoration: const InputDecoration(labelText: 'Username')),
-            TextField(
-              controller: _password,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            Text(
+              EmcapLocale.t('platform.login.subtitle'),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  final result = await widget.client.login(_username.text, _password.text);
-                  _enterShell(result);
-                } catch (err) {
-                  setState(() => _error = err.toString());
-                }
-              },
-              child: const Text('Sign in'),
-            ),
-            if (_oauthAvailable) ...[
-              const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    final result = await widget.client.loginOAuth('emcap-client', 'emcap-secret');
-                    _enterShell(result);
-                  } catch (err) {
-                    setState(() => _error = err.toString());
-                  }
-                },
-                child: const Text('OAuth (client credentials)'),
+            if (_loadingProviders)
+              Text(EmcapLocale.t('common.loading'))
+            else ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final provider in _providers)
+                    ChoiceChip(
+                      label: Text(_providerLabel(provider)),
+                      selected: _selectedProvider == provider,
+                      onSelected: (_) => setState(() {
+                        _selectedProvider = provider;
+                        _error = null;
+                      }),
+                    ),
+                ],
               ),
+              const SizedBox(height: 16),
+              if (_selectedProvider == 'username_password') ...[
+                TextField(
+                  controller: _username,
+                  decoration: InputDecoration(labelText: EmcapLocale.t('platform.login.username')),
+                ),
+                TextField(
+                  controller: _password,
+                  decoration: InputDecoration(labelText: EmcapLocale.t('platform.login.password')),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final result = await widget.client.login(_username.text, _password.text);
+                      _enterShell(result);
+                    } catch (_) {
+                      setState(() => _error = EmcapLocale.t('platform.login.loginFailed'));
+                    }
+                  },
+                  child: Text(EmcapLocale.t('platform.login.signIn')),
+                ),
+              ] else if (_selectedProvider == 'oauth') ...[
+                Text(EmcapLocale.t('platform.login.oauthHint')),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: () async {
+                    try {
+                      if (!_providers.contains('oauth')) {
+                        setState(() => _error = EmcapLocale.t('platform.login.oauthDisabled'));
+                        return;
+                      }
+                      final result = await widget.client.loginOAuth('emcap-client', 'emcap-secret');
+                      _enterShell(result);
+                    } catch (_) {
+                      setState(() => _error = EmcapLocale.t('platform.login.oauthFailed'));
+                    }
+                  },
+                  child: Text(EmcapLocale.t('platform.login.oauth')),
+                ),
+              ],
+            ],
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ],
           ],
         ),

@@ -115,7 +115,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `scripts/apply-seed.py` | Apply JSON seed to running Postgres |
 | `scripts/capture-m1-screenshots.mjs` | Playwright M1 PRODUCT web screenshot pack (P15-T06 / P20-T02); requires local stack |
 | `scripts/capture-p17-screenshots.mjs` | Playwright P17 platform services pack only |
-| `scripts/capture-screenshot-sprint.mjs` | Combined P17-T10 + P18 M4/M5 + W5 + P19 admin screenshot sprint; `--only=admin-settings` for branding/doc PNGs |
+| `scripts/capture-screenshot-sprint.mjs` | Combined P17-T10 + P18 M4/M5 + W5 + P19 admin screenshot sprint; `--only=admin-settings` → P18-T15 M6 batch (8 PNGs: IA, users, roles, security, branding, documents, layout editor, isolation) |
 | `scripts/e2e-smoke.mjs` | P18-T14 Playwright smoke: login → PRODUCT CRUD → settings save → LEAD list; recipe `docs/dev/recipes/e2e-smoke.md` |
 | `.github/workflows/e2e-smoke.yml` | Weekly + manual E2E smoke (does not gate PRs) |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); requires Flutter SDK |
@@ -154,7 +154,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/app.routes.spec.ts` | P20-T07 lazy route smoke (entity, notifications, account) |
 | `clients/web/src/app/shared/data/dynamic-data-grid.component.spec.ts` | P15-T30 grid keyboard navigation |
 | `platform/api/tests/test_inventory_product_smoke.py` | P18-T08 WAREHOUSE + STOCK_MOVEMENT product smoke |
-| `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Toolbar title resolution |
+| `clients/web/src/app/shared/utils/page-title.util.spec.ts` | Toolbar title resolution + i18n `labelKey` translate (M6) |
 | `clients/web/src/app/shared/utils/document-preview.util.spec.ts` | Document preview mime/version helpers |
 | `clients/web/src/app/shared/documents/document-preview-panel.component.spec.ts` | Document preview panel |
 | `clients/web/src/app/shared/assistant/assistant-chat-panel.component.spec.ts` | P17-T09 assistant chat panel |
@@ -196,7 +196,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/api/emcap-client.http.spec.ts` | EmcapClient fetch mock surface + SSE stream |
 | `clients/web/src/app/guards/guards.spec.ts` | `authGuard`, `adminGuard`, `settingsGuard` |
 | `clients/web/src/app/services/emcap-api.service.spec.ts` | API service token injection + HTTP errors |
-| `clients/web/src/app/shared/services/shell-context.service.spec.ts` | Shell context load + tenant select |
+| `clients/web/src/app/shared/services/shell-context.service.spec.ts` | Shell context load + tenant select + nav load error/empty (M6) |
 | `clients/web/src/app/metadata/dynamic-grid.renderer.spec.ts` | Grid sort/filter/group/paginate |
 | `clients/web/src/app/shared/utils/record-headline.util.spec.ts` | Record hero headline resolver |
 | `scripts/check-flutter-coverage.py` | Flutter lcov **80%** gate (CI mobile job) |
@@ -229,13 +229,15 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/utils/workflow-state.util.spec.ts` | Workflow state label i18n |
 | `clients/mobile/lib/utils/workflow_state_util.dart` | Workflow state label i18n (mobile) |
 | `clients/mobile/test/workflow_state_util_test.dart` | Workflow state label contract |
-| `clients/mobile/test/emcap_client_contract_test.dart` | P20-T04 full `EmcapClient` method contract (mirrors web `REQUIRED_METHODS`) |
+| `clients/mobile/test/emcap_client_contract_test.dart` | P20-T04 full `EmcapClient` method contract (mirrors web `REQUIRED_METHODS`); M6 `setOnUnauthorized`/`clearSession` |
+| `clients/mobile/test/login_screen_test.dart` | M6 mobile login i18n + provider chips + session-expired message (PNG blocked without Flutter SDK) |
 | `clients/mobile/test/mobile_sse_grid_test.dart` | P15-T14 SSE grid realtime + `GridMetadata.realtime`/`offline`/`grouping` contract (6 tests) |
 | `clients/mobile/test/crm_entity_contract_test.dart` | P18-T06 LEAD/CONTACT fixture + hero/grid contract tests |
-| `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P19-T02 admin roles smoke (empty state + API load); P16-T09 breadcrumb spec |
-| `clients/web/src/app/pages/admin/admin-security.component.spec.ts` | P19-T03 admin security field matrix; P16-T09 breadcrumb spec |
-| `clients/web/src/app/pages/admin/admin-permissions.component.spec.ts` | P16-T09 admin permissions breadcrumb spec |
-| `clients/web/src/app/shared/navigation/sidenav-nav.component.spec.ts` | P18-T07 sidenav Material icon rendering + fallback |
+| `clients/web/src/app/pages/admin/admin-users.component.spec.ts` | P18-T21 load retry, saveError, deactivate confirm; P19-T02 CRUD smoke |
+| `clients/web/src/app/pages/admin/admin-roles.component.spec.ts` | P18-T21 load retry; P19-T02 admin roles smoke; P16-T09 breadcrumb spec |
+| `clients/web/src/app/pages/admin/admin-security.component.spec.ts` | P18-T21 ABAC empty/retry + field matrix; P19-T03/T04; P16-T09 breadcrumb spec |
+| `clients/web/src/app/pages/admin/admin-permissions.component.spec.ts` | P18-T21 load retry; P16-T09 admin permissions breadcrumb spec |
+| `clients/web/src/app/shared/navigation/sidenav-nav.component.spec.ts` | P18-T07 sidenav Material icon rendering + nav error/empty retry (M6) |
 | `clients/web/src/app/shared/forms/lookup-field.component.spec.ts` | P14-T24 lookup picker |
 | `clients/web/src/app/shared/forms/currency-field.component.spec.ts` | P14-T24 currency input |
 | `clients/web/src/app/shared/utils/field-display.util.spec.ts` | Currency/textarea formatters |

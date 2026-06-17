@@ -20,7 +20,7 @@ import { LayoutEditorPanelComponent } from '../../shared/admin/layout-editor-pan
 import { DetailPlaceholderComponent } from '../../shared/layout/detail-placeholder.component';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { MasterDetailLayoutComponent } from '../../shared/layout/master-detail-layout.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header.component';
+import { PageHeaderComponent, type PageBreadcrumb } from '../../shared/layout/page-header.component';
 import { ShellContextService } from '../../shared/services/shell-context.service';
 import { ThemeService } from '../../shared/services/theme.service';
 import { I18nService } from '../../shared/services/i18n.service';
@@ -158,6 +158,10 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     void this.reload();
+  }
+
+  settingsBreadcrumbs(): PageBreadcrumb[] {
+    return [{ label: this.i18n.t('shell.breadcrumb.settings') }];
   }
 
   get selectedTemplate(): EmailTemplate | null {
@@ -728,6 +732,10 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private isValidCronExpression(cron: string): boolean {
+    return cron.split(/\s+/).length === 5;
+  }
+
   private syncPaymentFields(): void {
     const payments = this.settings['payments'] as Record<string, unknown> | undefined;
     this.paymentProvider = (payments?.['provider'] as string) ?? 'stripe';
@@ -741,6 +749,11 @@ export class SettingsComponent implements OnInit {
 
   async saveReportSchedule(row: ReportScheduleSummary): Promise<void> {
     this.reportScheduleStatus = '';
+    const cron = row.schedule_cron?.trim() ?? '';
+    if (cron && !this.isValidCronExpression(cron)) {
+      this.reportScheduleStatus = this.i18n.t('settings.reports.invalidCron');
+      return;
+    }
     try {
       const updated = await this.api.client.updateAdminReportSchedule(
         row.code,

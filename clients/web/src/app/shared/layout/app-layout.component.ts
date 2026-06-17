@@ -39,10 +39,13 @@ export class AppLayoutComponent {
   @Input() tenants: Record<string, unknown>[] = [];
   @Input() platformLinks: PlatformNavLink[] = [];
   @Input() navGroups: ModuleNavGroup[] = [];
+  @Input() navLoadError = '';
+  @Input() navEmpty = false;
   @Input() isMobile = false;
   @Input() sidenavOpened = true;
 
   @Output() tenantChange = new EventEmitter<string>();
+  @Output() navRetry = new EventEmitter<void>();
   @Output() signOut = new EventEmitter<void>();
 
   @ViewChild('drawer') drawer?: MatSidenav;

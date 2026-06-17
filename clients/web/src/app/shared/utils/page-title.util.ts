@@ -1,10 +1,23 @@
 import type { PlatformNavLink } from '../../services/shell-nav.util';
 
+export type PageTitleTranslate = (key: string) => string;
+
+function platformLinkTitle(link: PlatformNavLink, translate: PageTitleTranslate): string {
+  if (link.labelKey) {
+    const translated = translate(link.labelKey);
+    return translated === link.labelKey ? link.label : translated;
+  }
+  return link.label;
+}
+
 export function resolvePageTitle(
   url: string,
   platformLinks: PlatformNavLink[],
   menus: { entity_code: string; label: string; report_code?: string }[],
+  translate?: PageTitleTranslate,
 ): string {
+  const t = translate ?? ((key: string) => key);
+
   if (url.includes('/app/reports')) {
     const codeMatch = /[?&]code=([^&]+)/.exec(url);
     if (codeMatch) {
@@ -14,14 +27,14 @@ export function resolvePageTitle(
     }
     const platform = platformLinks.find((link) => url.startsWith(link.route));
     if (platform) {
-      return platform.label;
+      return platformLinkTitle(platform, t);
     }
-    return 'Reports';
+    return t('platform.reports.title');
   }
 
   const platform = platformLinks.find((link) => url.startsWith(link.route));
   if (platform) {
-    return platform.label;
+    return platformLinkTitle(platform, t);
   }
 
   const entityMatch = /\/app\/entity\/([^/?]+)/.exec(url);
@@ -31,7 +44,7 @@ export function resolvePageTitle(
     return menu?.label ?? code;
   }
 
-  return 'EMCAP';
+  return t('shell.pageTitle.default');
 }
 
 export function entityRoute(entityCode: string): string[] {

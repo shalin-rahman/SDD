@@ -42,6 +42,8 @@ void main() {
     expect(client.setToken, isA<Function>());
     expect(client.setTenantId, isA<Function>());
     expect(client.getAuthProviders, isA<Function>());
+    expect(client.setOnUnauthorized, isA<Function>());
+    expect(client.clearSession, isA<Function>());
     expect(client.loginOAuth, isA<Function>());
     expect(client.enrollMfa, isA<Function>());
     expect(client.verifyMfa, isA<Function>());

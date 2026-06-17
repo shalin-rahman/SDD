@@ -25,8 +25,20 @@ describe('page-title.util', () => {
     expect(resolvePageTitle('/app/entity/PRODUCT/abc-123', platformLinks, menus)).toBe('Products');
   });
 
-  it('falls back to entity code or EMCAP', () => {
+  it('falls back to entity code or translated default title', () => {
     expect(resolvePageTitle('/app/entity/UNKNOWN', platformLinks, [])).toBe('UNKNOWN');
-    expect(resolvePageTitle('/app', platformLinks, [])).toBe('EMCAP');
+    const translate = (key: string) => (key === 'shell.pageTitle.default' ? 'EMCAP' : key);
+    expect(resolvePageTitle('/app', platformLinks, [], translate)).toBe('EMCAP');
+  });
+
+  it('translates platform link titles via labelKey', () => {
+    const links = [
+      { labelKey: 'platform.reports.title', label: 'Reports', route: '/app/reports', visible: true },
+    ];
+    const translate = (key: string) => (key === 'platform.reports.title' ? 'Rapports' : key);
+    expect(resolvePageTitle('/app/reports', links, [], translate)).toBe('Rapports');
+    expect(resolvePageTitle('/app', links, [], (k) => (k === 'shell.pageTitle.default' ? 'Accueil' : k))).toBe(
+      'Accueil',
+    );
   });
 });

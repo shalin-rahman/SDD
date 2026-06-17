@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-15 (rev. 18 — P15-T32 axe CI; P16-T06 mobile density parity)
+**Last updated:** 2026-06-17 (M6 remainder — shell nav i18n/error, report schedule validation, mobile auth, integrations pivot)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -36,7 +36,7 @@
 
 | Workflow / reports / AI nav when enabled | Partial | Partial | Platform links gated; Admin/Settings when permitted |
 
-| Integrations / payments entry points | Partial | Partial | Settings → Integrations registry, test REST dispatch, provider cards; Account has no integration tests (P19-T10/T11) |
+| Integrations / payments entry points | Partial | Partial | Settings → Integrations registry (Product-ready web); Account has no dispatch UI (web + mobile M6) |
 
 
 
@@ -118,13 +118,13 @@
 
 | Metadata i18n labels | Done | Done | `label_key` + BN sample on PRODUCT |
 
-| **App UI i18n + locale switcher** | Demo | Demo | P18-T12 — login/admin users/settings payment+storage labels; entity errors; settings tabs mostly keyed |
+| **App UI i18n + locale switcher** | Partial | Partial | P18-T12 — shell/page titles, settings breadcrumbs, report schedule labels; EN/FR/BN; mobile login keys added |
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 
 | Layout designer | Partial | Partial | **ADR-007** — web + mobile settings layout editor; override API + merge |
 
-| Breadcrumbs / page titles | Done | Partial | Entity list/record + admin users/roles/security/permissions; Karma specs on all admin pages (`P16-T09`) |
+| Breadcrumbs / page titles | Partial | Partial | Entity + admin + **settings** breadcrumbs; i18n toolbar titles via `resolvePageTitle` + `labelKey` (M6) |
 
 
 
@@ -140,22 +140,22 @@
 
 |------------|-----|-----|--------|-------|
 
-| Login / MFA / OAuth | Done | Partial | Partial | P18-T11 — web provider cards, session-expiry redirect, MFA steps; mobile mirror pending |
+| Login / MFA / OAuth | Done | Partial | Partial | P18-T11 — web provider cards + 401 redirect + account MFA steps; **mobile** provider chips + session expiry + `clearSession`/`setOnUnauthorized` (M6) |
 
-| List roles | Done | Done | Done | Admin roles screen; P19-T02 search, empty state, module permission chips |
+| List roles | Done | Done | Done | P18-T21 load retry + empty state; P19-T02 search, module permission chips |
 
-| Create / edit roles | Done | Done | Done | Master–detail + permission picker; inline save validation |
+| Create / edit roles | Done | Done | Done | Master–detail + permission picker; inline save validation; saveError panel |
 
 | Permission assignment UI | Partial | Partial | Partial | Checkbox picker by module; list shows grouped chips; matrix read-only |
 
-| List / CRUD users | Done | Done | Done | Admin users screen; P19-T02 search; `.emcap-badge` active chips (P16-T05) |
+| List / CRUD users | Done | Done | Done | P18-T21 load retry, saveError, deactivate confirm; P19-T02 search; `.emcap-badge` active chips (P16-T05) |
 
 | Assign role to user | Done | Done | Done | Role multi-select checkboxes |
 
 | Permission-filtered menus | Partial | Partial | Partial | Shell filters via `/auth/me` |
 
-| Row/field security admin | Partial | Partial | Partial | P19-T03 web + P13-T12 mobile field matrix edit; `PUT /admin/security/field-access` + merged policies GET (P13-T10/T11 Done) |
-| ABAC policy admin | Done | Partial | Partial | `GET/PUT /admin/security/abac`; web table editor; P19-T04 delete confirm + empty permission validation |
+| Row/field security admin | Partial | Done | Partial | P18-T21 load retry + field edit panel; P19-T03 web + P13-T12 mobile field matrix edit |
+| ABAC policy admin | Done | Done | Partial | P18-T21 ABAC empty/retry + add CTA; P19-T04 delete confirm + validation + checkAuth test |
 
 | Auth provider config UI | Partial | Partial | Partial | Settings Identity tab auth toggles; override badges (P12B-T09 Done) |
 
