@@ -112,6 +112,14 @@ void main() {
       expect(formatGridCellValue('email', 'sam@globex.com'), 'sam@globex.com');
       expect(formatGridCellValue('lead_id', 'lead-2', fieldType: 'lookup'), 'lead-2');
     });
+    test('LEAD status enum values present in form fixture', () {
+      expect(loadEntityFormFieldNames('LEAD'), contains('status'));
+    });
+
+    test('CONTACT lead lookup column in grid fixture', () {
+      expect(loadEntityGridColumnFields('CONTACT'), contains('lead_id'));
+    });
+
     test('LEAD and CONTACT fixtures align with W1 rollout', () {
       for (final entity in ['LEAD', 'CONTACT']) {
         expect(entityFixtureExists(entity, 'form.keys'), isTrue, reason: entity);

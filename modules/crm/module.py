@@ -34,6 +34,7 @@ MODULE = ModuleDefinition(
                 workflow_enabled=False,
                 notes_enabled=True,
                 document_enabled=True,
+                bulk_actions=True,
                 status_field=_STATUS_FIELD,
             ),
         ),

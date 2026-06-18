@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-16 · **API phase Done** (P13-T31 storage + merge + admin CRUD) · **UI deferred** post-M3 (P13-T32)
+Accepted — 2026-06-16 · **API Done** (P13-T31 storage + merge + admin CRUD) · **Web editor MVP Done** (P13-T31/T32 — Settings Platform tab `LayoutEditorPanelComponent`) · **Mobile:** read-only effective metadata only
 
 ## Context
 
@@ -77,15 +77,15 @@ Request body (PUT) shape:
 3. Run `validate_entity_for_metadata` + existing security filters before GET responses to end users.
 4. Increment `schema_version` patch when override merge semantics change.
 
-### 5. Editor MVP (P13-T31 / P13-T32 — future)
+### 5. Editor MVP (P13-T31 / P13-T32 — Done web)
 
-Web admin page under Settings → **Layouts** (or Admin → Metadata):
+Web admin page under Settings → **Platform** → Layout editor (`LayoutEditorPanelComponent`):
 
 - Entity picker (entities user may admin)
 - **Form tab:** section list + field table (row/col/span/spans); no new fields
 - **Grid tab:** column checklist + order (up/down); width/sortable/filterable toggles
 - Save → PUT override; Reset → DELETE override
-- Uses same merged GET for preview panel (read-only until post-MVP)
+- Screenshot: `phase19-settings-layout-editor-web.png` (P18-T15 batch)
 
 Mobile: **read-only** effective metadata only; no editor.
 

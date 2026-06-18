@@ -47,6 +47,10 @@ class _EntityListScreenState extends State<EntityListScreen> {
   bool _exportCsv = false;
   bool _exportExcel = false;
   bool _exportPdf = false;
+  bool _bulkActions = false;
+  final Set<String> _selectedRecordIds = {};
+  String? _bulkError;
+  bool _realtimeEnabled = false;
 
   @override
   void initState() {
@@ -94,6 +98,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
       }
       if (grid.realtime && !_realtimeStarted) {
         _realtimeStarted = true;
+        _realtimeEnabled = true;
         widget.client.subscribeRecordsStream(widget.entityCode, () {
           if (mounted) _reloadList();
         });
@@ -108,6 +113,11 @@ class _EntityListScreenState extends State<EntityListScreen> {
         _exportCsv = exportMap['csv'] == true;
         _exportExcel = exportMap['excel'] == true;
         _exportPdf = exportMap['pdf'] == true;
+        _bulkActions = grid.bulkActions;
+        if (!_bulkActions) {
+          _selectedRecordIds.clear();
+        }
+        _bulkError = null;
       });
     } catch (err) {
       if (!mounted) return;
@@ -145,6 +155,67 @@ class _EntityListScreenState extends State<EntityListScreen> {
     }
   }
 
+  void _toggleSelectRecord(String recordId) {
+    setState(() {
+      if (_selectedRecordIds.contains(recordId)) {
+        _selectedRecordIds.remove(recordId);
+      } else {
+        _selectedRecordIds.add(recordId);
+      }
+      _bulkError = null;
+    });
+  }
+
+  void _toggleSelectAllPage(List<Map<String, dynamic>> pageRecords) {
+    final pageIds = pageRecords
+        .map((record) => '${record['id'] ?? ''}')
+        .where((id) => id.isNotEmpty)
+        .toList();
+    setState(() {
+      final allSelected = pageIds.isNotEmpty && pageIds.every(_selectedRecordIds.contains);
+      if (allSelected) {
+        _selectedRecordIds.removeAll(pageIds);
+      } else {
+        _selectedRecordIds.addAll(pageIds);
+      }
+      _bulkError = null;
+    });
+  }
+
+  List<Map<String, dynamic>> _selectedRecords(List<Map<String, dynamic>> working) {
+    return working.where((record) => _selectedRecordIds.contains('${record['id'] ?? ''}')).toList();
+  }
+
+  Future<void> _bulkDeleteSelected() async {
+    if (!_bulkActions || _selectedRecordIds.isEmpty) return;
+    setState(() => _bulkError = null);
+    try {
+      for (final id in _selectedRecordIds.toList()) {
+        await widget.client.deleteRecord(widget.entityCode, id);
+      }
+      if (!mounted) return;
+      setState(() => _selectedRecordIds.clear());
+      await _reloadList();
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _bulkError = EmcapLocale.t('entity.bulkDeleteFailed'));
+    }
+  }
+
+  void _exportSelected(String label, DynamicGridRenderer gridRenderer, List<Map<String, dynamic>> working) {
+    final rows = _selectedRecords(working);
+    if (rows.isEmpty) return;
+    _copyExport(_exportText(gridRenderer, rows), label);
+  }
+
+  bool _isPageFullySelected(List<Map<String, dynamic>> pageRecords) {
+    final pageIds = pageRecords
+        .map((record) => '${record['id'] ?? ''}')
+        .where((id) => id.isNotEmpty)
+        .toList();
+    return pageIds.isNotEmpty && pageIds.every(_selectedRecordIds.contains);
+  }
+
   String _exportText(DynamicGridRenderer gridRenderer, List<Map<String, dynamic>> records) {
     final cols = gridRenderer.columnFields();
     final sb = StringBuffer(cols.join(','));
@@ -158,7 +229,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
   Future<void> _copyExport(String text, String label) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$label copied to clipboard')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(label)));
   }
 
   Future<void> _openRecord({String? recordId, bool creatingNew = false}) async {
@@ -336,18 +407,53 @@ class _EntityListScreenState extends State<EntityListScreen> {
                     ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')} · ${EmcapLocale.t('grid.snapshot')} $_syncVersion'
                     : '${EmcapLocale.t('grid.offlineStatus')}: $_syncVersion',
               ),
+              if (_realtimeEnabled)
+                Text(
+                  EmcapLocale.t('settings.grid.realtime'),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+              if (_bulkActions && _selectedRecordIds.isNotEmpty)
+                Text(
+                  '${_selectedRecordIds.length} ${EmcapLocale.t('grid.selectedCount')}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              if (_bulkError != null)
+                Text(_bulkError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
               Wrap(
                 spacing: 8,
                 children: [
+                  if (_bulkActions) ...[
+                    TextButton(
+                      onPressed: pageRecords.isEmpty ? null : () => _toggleSelectAllPage(pageRecords),
+                      child: Text(EmcapLocale.t('grid.selectAll')),
+                    ),
+                    TextButton(
+                      onPressed: _selectedRecordIds.isEmpty ? null : _bulkDeleteSelected,
+                      child: Text(EmcapLocale.t('grid.bulkDelete')),
+                    ),
+                    if (_exportCsv)
+                      TextButton(
+                        onPressed: _selectedRecordIds.isEmpty
+                            ? null
+                            : () => _exportSelected(
+                                  EmcapLocale.t('grid.bulkExport'),
+                                  gridRenderer,
+                                  working,
+                                ),
+                        child: Text(EmcapLocale.t('grid.bulkExport')),
+                      ),
+                  ],
                   if (_exportCsv)
                     TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), 'CSV'),
-                      child: const Text('Export CSV'),
+                      onPressed: () => _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportCsv')),
+                      child: Text(EmcapLocale.t('grid.exportCsv')),
                     ),
                   if (_exportExcel)
                     TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), 'Excel (CSV)'),
-                      child: const Text('Export Excel'),
+                      onPressed: () => _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportExcel')),
+                      child: Text(EmcapLocale.t('grid.exportExcel')),
                     ),
                   if (_exportPdf)
                     TextButton(
@@ -355,21 +461,21 @@ class _EntityListScreenState extends State<EntityListScreen> {
                         showDialog(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text('PDF preview'),
+                            title: Text(EmcapLocale.t('grid.exportPdf')),
                             content: SingleChildScrollView(child: Text(_exportText(gridRenderer, working))),
                             actions: [
                               TextButton(
                                 onPressed: () {
-                                  _copyExport(_exportText(gridRenderer, working), 'PDF text');
+                                  _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportPdf'));
                                   Navigator.pop(ctx);
                                 },
-                                child: const Text('Copy'),
+                                child: Text(EmcapLocale.t('document.preview.download')),
                               ),
                             ],
                           ),
                         );
                       },
-                      child: const Text('Export PDF'),
+                      child: Text(EmcapLocale.t('grid.exportPdf')),
                     ),
                   if (grid.grouping)
                     TextButton(
@@ -404,12 +510,15 @@ class _EntityListScreenState extends State<EntityListScreen> {
                                   _sortAsc = true;
                                 }
                               }),
-                              child: Text('Sort $field'),
+                              child: Text('${EmcapLocale.t('grid.sort')} $field'),
                             ),
                             SizedBox(
                               width: 100,
                               child: TextField(
-                                decoration: InputDecoration(labelText: 'Filter $field', isDense: true),
+                                decoration: InputDecoration(
+                                  labelText: '${EmcapLocale.t('grid.filter')} $field',
+                                  isDense: true,
+                                ),
                                 onChanged: (v) => setState(() {
                                   if (v.isEmpty) {
                                     _filters.remove(field);
@@ -444,30 +553,61 @@ class _EntityListScreenState extends State<EntityListScreen> {
                           ),
                         ),
                         child: DataTable(
-                        columns: gridRenderer
-                            .columnFields()
-                            .map((field) => DataColumn(label: Text(gridRenderer.columnLabel(field))))
-                            .toList(),
+                        columns: [
+                          if (_bulkActions)
+                            DataColumn(
+                              label: Checkbox(
+                                value: _isPageFullySelected(group.value),
+                                tristate: false,
+                                onChanged: group.value.isEmpty
+                                    ? null
+                                    : (_) => _toggleSelectAllPage(group.value),
+                              ),
+                            ),
+                          ...gridRenderer
+                              .columnFields()
+                              .map((field) => DataColumn(label: Text(gridRenderer.columnLabel(field)))),
+                        ],
                         rows: group.value.map((record) {
                           final recordId = '${record['id'] ?? ''}';
+                          final selected = _selectedRecordIds.contains(recordId);
                           return DataRow(
-                            onSelectChanged: recordId.isEmpty ? null : (_) => _openRecord(recordId: recordId),
-                            cells: gridRenderer
-                                .columnFields()
-                                .map(
-                                  (field) => DataCell(
-                                    Text(
-                                      formatGridCellValue(
-                                        field,
-                                        record[field],
-                                        locale: EmcapLocale.locale.value.languageCode,
-                                        fieldType: gridRenderer.columnFieldType(field),
-                                        currencyCode: gridRenderer.columnCurrencyCode(field),
+                            selected: _bulkActions && selected,
+                            onSelectChanged: _bulkActions
+                                ? (checked) {
+                                    if (recordId.isEmpty) return;
+                                    _toggleSelectRecord(recordId);
+                                  }
+                                : recordId.isEmpty
+                                    ? null
+                                    : (_) => _openRecord(recordId: recordId),
+                            cells: [
+                              if (_bulkActions)
+                                DataCell(
+                                  Checkbox(
+                                    value: selected,
+                                    onChanged: recordId.isEmpty
+                                        ? null
+                                        : (_) => _toggleSelectRecord(recordId),
+                                  ),
+                                ),
+                              ...gridRenderer
+                                  .columnFields()
+                                  .map(
+                                    (field) => DataCell(
+                                      Text(
+                                        formatGridCellValue(
+                                          field,
+                                          record[field],
+                                          locale: EmcapLocale.locale.value.languageCode,
+                                          fieldType: gridRenderer.columnFieldType(field),
+                                          currencyCode: gridRenderer.columnCurrencyCode(field),
+                                        ),
                                       ),
+                                      onTap: recordId.isEmpty ? null : () => _openRecord(recordId: recordId),
                                     ),
                                   ),
-                                )
-                                .toList(),
+                            ],
                           );
                         }).toList(),
                       ),

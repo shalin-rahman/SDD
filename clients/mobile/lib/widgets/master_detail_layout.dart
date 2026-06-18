@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/i18n_service.dart';
+
 class MasterDetailLayout extends StatelessWidget {
   const MasterDetailLayout({
     super.key,
@@ -45,7 +47,7 @@ class MasterDetailLayout extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: onBack,
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back to list'),
+                    label: Text(EmcapLocale.t('common.back')),
                   ),
                 ),
               Expanded(child: detailPane),

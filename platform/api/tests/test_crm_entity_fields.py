@@ -18,6 +18,7 @@ def test_lead_status_is_enum_with_options(client: TestClient) -> None:
     assert form_field["field_type"] == "select"
     assert form_field["options"] == expected_options
     assert grid_column["field_type"] == "select"
+    assert grid["bulk_actions"] is True
 
 
 def test_lead_status_field_display_contract(client: TestClient) -> None:

@@ -14,6 +14,7 @@ export class RecordDetailHeaderComponent {
   @Input() subtitle = '';
   @Input() statusLabel = '';
   @Input() statusActive = false;
+  @Input() statusAriaLabel = '';
   @Input() creatingNew = false;
   @Input() canDelete = false;
   @Input() canWorkflow = false;

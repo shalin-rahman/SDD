@@ -1,17 +1,19 @@
-<div class="lookup-field">
-  <div class="lookup-field__value" [class.lookup-field__value--empty]="displayLabel === '—'">
-    @if (loadingLabel) {
-      Loading…
-    } @else {
-      {{ displayLabel }}
-    }
-  </div>
-  <div class="lookup-field__actions">
-    <button mat-stroked-button type="button" [disabled]="disabled" (click)="openPicker()">
-      Choose {{ field.lookup_entity }}
-    </button>
-    @if (value) {
-      <button mat-button type="button" [disabled]="disabled" (click)="clear()">Clear</button>
-    }
-  </div>
-</div>
+<div class="lookup-field">
+  <div class="lookup-field__value" [class.lookup-field__value--empty]="displayLabel === emptyValue">
+    @if (loadingLabel) {
+      {{ i18n.t('field.lookup.loading') }}
+    } @else {
+      {{ displayLabel }}
+    }
+  </div>
+  <div class="lookup-field__actions">
+    <button mat-stroked-button type="button" [disabled]="disabled" (click)="openPicker()">
+      {{ i18n.t('field.lookup.choose') }} {{ field.lookup_entity }}
+    </button>
+    @if (value) {
+      <button mat-button type="button" [disabled]="disabled" (click)="clear()">
+        {{ i18n.t('field.lookup.clear') }}
+      </button>
+    }
+  </div>
+</div>

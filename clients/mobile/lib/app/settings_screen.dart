@@ -593,7 +593,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: EdgeInsets.only(bottom: tokens.spaceLg),
       children: [
         Text(EmcapLocale.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
-        Text(EmcapLocale.t('settings.subtitle'), style: Theme.of(context).textTheme.bodySmall),
+        Text(EmcapLocale.t('settings.reloadHint'), style: Theme.of(context).textTheme.bodySmall),
         if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
         if (_status.isNotEmpty) Text(_status, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
         Align(
@@ -1041,7 +1041,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ),
-        Text('Email templates', style: Theme.of(context).textTheme.titleMedium),
+        Text(EmcapLocale.t('settings.templates.sectionTitle'), style: Theme.of(context).textTheme.titleMedium),
         SizedBox(height: tokens.spaceSm),
         _templateChannelBar(),
         SizedBox(height: tokens.spaceSm),
@@ -1059,7 +1059,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Text('Admin audit (${_audit.length})', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          '${EmcapLocale.t('settings.audit.sectionTitle')} (${_audit.length})',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         ..._audit.take(20).map(
               (entry) => ListTile(
                 dense: true,

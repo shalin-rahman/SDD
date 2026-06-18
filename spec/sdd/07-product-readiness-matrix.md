@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-17 (M6 remainder — shell nav i18n/error states, report schedule validation, mobile auth parity, integrations UX pivot)
+**Last updated:** 2026-06-17 (Sprint 11 — M5/M6 web sign-off; mobile Demo+ batch notes; §9/§10 honest elevations)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -26,11 +26,11 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | Milestone | Scope | Blocking | Status |
 |-----------|--------|----------|--------|
 | **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile open |
-| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo+ (hero tests, tokens, menu icons, settings i18n, layout editor, field access); PNG blocked (Flutter SDK) |
-| **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — 14A-S2 Done; field-type API Done; **ADR-007 layout editor web + mobile** (P13-T31/T32); M2 PNG still open |
+| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — code Demo+ (hero tests, bulk actions, MFA steps, i18n parity, movement post flow); PNG blocked (Flutter SDK) |
+| **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — 14A-S2 Done; mobile lookup/status/soft-delete UX + tests (P18-T16); M2 PNG still open |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
-| **M5** | Platform services UX + CRM reference | M6 | **Partial** — P17-T10 + CRM screenshots; menu icons; **workflow state i18n** (web + mobile) |
-| **M6** | Admin/settings product depth | — | **Partial** — P18-T21 users/roles/security Product-ready; shell nav i18n + load retry; report schedules UX; mobile login/MFA mirror; M2 PNG blocked |
+| **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile Demo+ lanes open |
+| **M6** | Admin/settings product depth | — | **Signed (web)** — 2026-06-17; §12 Product-ready rows + P18-T15/T21 PNG batch (shell, report schedules, header, ABAC); mobile PNG lanes open |
 
 ---
 
@@ -89,8 +89,8 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Header action bar (save/delete/workflow) | Done | Done | `phase15-product-detail-hero.png` | **Product-ready (web)** · Mobile Demo |
 | Grid datetime formatting | Done | Done | `phase14-product-grid-system-columns.png` | **Product-ready (web)** · Mobile Demo |
 | Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo |
-| Loading skeleton + error retry | Done | Partial | — | **Demo (web)** — P15-T22 Partial (entity load + grid reload panel); mobile pending |
-| Empty grid + New CTA | Done | Partial | — | **Product-ready (web)** — P15-T23 Done (`DynamicDataGridComponent` empty + New CTA); mobile pending |
+| Loading skeleton + error retry | Done | Demo | Partial | **Demo (web)** — P15-T22; mobile list load panel + error retry (`entity_list_screen`) |
+| Empty grid + New CTA | Done | Demo | Partial | **Product-ready (web)** — P15-T23; mobile empty grid + `entity.new` CTA |
 | Professional density at 1280px | Done | Partial | `phase15-product-detail-hero-dark.png` | **Product-ready (web)** — P16-T07 compact toggle on Account; Mobile Demo |
 
 **Product-ready** for entity page requires all Demo rows + M1/M2 screenshot pack + `16-product-ready-dod.md` §5.
@@ -105,10 +105,10 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Reports + history | Done | **Product-ready (web)** | `phase17-reports-history-web.png` |
 | Dashboards | Done | **Product-ready (web)** | `phase17-dashboards-web.png` |
 | Notifications | Done | **Product-ready (web)** | `phase17-notifications-web.png` |
-| Document preview | Done | **Demo** | P17-T06 web Done; mobile device verify open |
-| Account / profile | Done | **Product-ready (web)** | `phase17-account-profile-web.png` |
-| Assistant | Flag | **Demo** | P17-T09 — not in minimum pack |
-| Rule evaluate | Done | **Demo** | P17-T11 web Done — screenshot optional |
+| Document preview | Done | **Demo** | **Demo+** | P17-T06 web Done; mobile `document_preview_util_test.dart` (14 tests); device PNG open |
+| Account / profile | Done | **Product-ready (web)** | **Demo+** | `phase17-account-profile-web.png`; mobile MFA step indicator (`account_screen_test.dart`) |
+| Assistant | Flag | **Demo+** | P18-T19 — empty/retry/i18n when `ai.enabled` |
+| Rule evaluate | Done | **Demo+** | P18-T19 — formula gate + empty/retry/i18n |
 | LOW_STOCK report | Done | **Product-ready (web)** | `phase18-inventory-low-stock-report.png` |
 | LOW_STOCK via module nav | Done | **Product-ready (web)** | `phase18-inventory-low-stock-via-nav-web.png` — P18-T05 report menu from sidenav |
 
@@ -118,15 +118,15 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Area | Backlog says | Product readiness | Plan |
 |------|--------------|-------------------|------|
-| Enterprise shell / nav | Many Done | **Partial (web)** | P16-T09 breadcrumbs + **M6** i18n page titles (`resolvePageTitle` + `labelKey`), sidenav nav load retry/empty, settings breadcrumbs; shell PNG still open |
+| Enterprise shell / nav | Many Done | **Product-ready (web)** | P16-T09 + M6 i18n/retry; `phase19-shell-nav-web.png` via `capture-screenshot-sprint.mjs --only=shell-nav` |
 | Admin users/roles/security | Done | **Product-ready (web)** | P18-T15 PNGs + **P18-T21** DoD (load retry, saveError, deactivate confirm, ABAC empty/retry); `phase19-admin-users-web.png`, `phase19-admin-roles-web.png`, `phase19-admin-security-field-access-web.png` |
-| Entity record header | Done | **Demo** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` status (ADR-006) |
+| Entity record header | Done | **Product-ready (web)** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` + `role="status"` aria-label; i18n action labels |
 | Settings hub + isolation | Partial/Done | **Product-ready (web)** | `phase19-settings-ia-web.png`, `phase19-settings-isolation-web.png` — P19-T01/T07; P18-T15 |
 | Layout designer (ADR-007) | Done | **Product-ready (web)** | `phase19-settings-layout-editor-web.png` — P13-T31; P18-T15 |
 | Tenant branding preview | Done | **Product-ready (web)** | `phase19-settings-branding-web.png` — P19-T05; P18-T15 refresh |
 | Document platform settings | Done | **Product-ready (web)** | `phase19-settings-documents-web.png` — P19-T06; Sprint 12 editable admin; P18-T15 |
-| Report schedules | Done | **Partial (web)** | Settings cron editor: i18n empty/save feedback, client cron validation, load retry; `test_report_schedule_admin.py`; dedicated PNG open |
-| ABAC editor (P13) | Done | **Demo** | P19-T04 + P18-T21 empty/retry UX; screenshot in security PNG |
+| Report schedules | Done | **Product-ready (web)** | Cron editor i18n/validation; `phase19-settings-report-schedules-web.png`; `test_report_schedule_admin.py` |
+| ABAC editor (P13) | Done | **Product-ready (web)** | P19-T04 + P18-T21 empty/retry/saveError; security PNG |
 | Integrations (settings hub) | Done | **Product-ready (web)** | P19-T10 registry cards + REST test; Account/mobile account no dispatch buttons |
 
 ---
@@ -140,7 +140,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Movement types: receive, return, bonus, gift, damage, lost, transfer, adjustment, issue | Done | Product-ready | Demo | `modules/inventory/module.py` | **Product-ready (web)** |
 | Transfer single-doc model + source warehouse validation | Done | Demo | Demo | `modules/inventory/stock_movement.py` | Demo |
 | Posted movement updates `quantity_on_hand` | Done | Demo | Demo | `apply_posted_movement()` · P20-T19 | Demo |
-| Stock movement UX + screenshots | Done | Product-ready | Demo | **P20-T18** + sprint 2026-06-14 | **Product-ready (web)** |
+| Stock movement UX + screenshots | Done | Product-ready | Demo+ | **P20-T18** + P18-T17 mobile post/lines UX + `entity_record_movement_test.dart` | **Product-ready (web)** · Mobile Demo+ (PNG blocked) |
 
 ---
 
@@ -151,7 +151,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Entity | Web | Mobile | Screenshot | Status |
 |--------|-----|--------|------------|--------|
 | WAREHOUSE grid + detail | Done | Demo | `phase18-warehouse-grid-web.png`, `phase18-warehouse-detail-web.png` | **Product-ready (web)** |
-| LEAD grid + detail | Done | Demo | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (`crm_entity_contract_test.dart`) |
-| CONTACT grid + detail | Done | Demo | `phase18-crm-contact-grid-web.png`, `phase18-crm-contact-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (`crm_entity_contract_test.dart`) |
+| LEAD grid + detail | Done | Demo | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (P18-T10 contracts) |
+| CONTACT grid + detail | Done | Demo | `phase18-crm-contact-grid-web.png`, `phase18-crm-contact-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (P18-T10 contracts) |
 
 **Related (P18-T04 Done):** `STOCK_ADJUSTMENT` workflow on PRODUCT detail — web + mobile submit/approve path; approval UX only; does not replace movement document (W5).

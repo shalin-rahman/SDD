@@ -1,5 +1,5 @@
 <mat-form-field appearance="outline" class="tenant-select">
-  <mat-label>Tenant</mat-label>
+  <mat-label>{{ i18n.t('toolbar.tenant') }}</mat-label>
   <mat-select [value]="selectedTenant" (selectionChange)="onChange($event.value)">
     @for (tenant of tenants; track tenantId(tenant)) {
       <mat-option [value]="tenantId(tenant)">{{ tenantLabel(tenant) }}</mat-option>

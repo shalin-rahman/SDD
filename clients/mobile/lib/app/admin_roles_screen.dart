@@ -127,7 +127,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
 
   String _permissionSummary(Map<String, dynamic> role) {
     final count = (role['permissions'] as List? ?? []).length;
-    return '$count permission(s)';
+    return '$count ${EmcapLocale.t('admin.permissions.permissionCountSuffix')}';
   }
 
   @override
@@ -184,7 +184,9 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      selected != null ? 'Edit role' : 'Create role',
+                      selected != null
+                          ? EmcapLocale.t('admin.roles.editTitle')
+                          : EmcapLocale.t('admin.roles.createTitle'),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -192,7 +194,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
                     onPressed: _saving ? null : _save,
                     child: _saving
                         ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('Save role'),
+                        : Text(EmcapLocale.t('admin.roles.save')),
                   ),
                 ],
               ),
@@ -200,14 +202,20 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
               if (selected == null)
                 TextField(
                   controller: _codeController,
-                  decoration: const InputDecoration(labelText: 'Role code', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: EmcapLocale.t('admin.roles.codeLabel'),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Display name', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: EmcapLocale.t('admin.roles.nameLabel'),
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 12),
-              Text('Permissions', style: Theme.of(context).textTheme.titleSmall),
+              Text(EmcapLocale.t('admin.roles.permissionsTitle'), style: Theme.of(context).textTheme.titleSmall),
               PermissionPicker(
                 permissions: _allPermissions,
                 selected: _draftPermissions,

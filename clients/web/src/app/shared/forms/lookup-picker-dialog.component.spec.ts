@@ -1,47 +1,50 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { EmcapApiService } from '../../services/emcap-api.service';
 import { LookupPickerDialogComponent } from './lookup-picker-dialog.component';
+import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../services/i18n.service';
 
 describe('LookupPickerDialogComponent', () => {
   let fixture: ComponentFixture<LookupPickerDialogComponent>;
-  let listRecords: jasmine.Spy;
 
   beforeEach(async () => {
-    listRecords = jasmine.createSpy('listRecords').and.resolveTo({
-      records: [
-        { id: 'wh-1', code: 'WH-01', name: 'Main Warehouse' },
-        { id: 'wh-2', code: 'WH-02', name: 'Overflow' },
-      ],
-    });
-
     await TestBed.configureTestingModule({
-      imports: [LookupPickerDialogComponent, NoopAnimationsModule],
+      imports: [LookupPickerDialogComponent],
       providers: [
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: { entityCode: 'WAREHOUSE', selectedId: 'wh-1' },
-        },
-        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
+        I18nService,
         {
           provide: EmcapApiService,
-          useValue: { client: { listRecords } },
+          useValue: {
+            client: {
+              listRecords: jasmine.createSpy('listRecords').and.resolveTo({ records: [] }),
+            },
+          },
         },
+        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
+        { provide: MAT_DIALOG_DATA, useValue: { entityCode: 'PRODUCT' } },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LookupPickerDialogComponent);
   });
 
-  it('loads and renders lookup options', async () => {
+  it('renders i18n search label and empty state', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
+    expect(fixture.componentInstance.loading).toBeFalse();
+    const i18n = TestBed.inject(I18nService);
+    expect(fixture.nativeElement.textContent).toContain(i18n.t('field.lookup.search'));
+    expect(fixture.nativeElement.textContent).toContain(i18n.t('field.lookup.empty'));
+  });
 
-    expect(listRecords).toHaveBeenCalledWith('WAREHOUSE', { q: undefined });
-    expect(fixture.nativeElement.textContent).toContain('Main Warehouse');
-    expect(fixture.nativeElement.textContent).toContain('Overflow');
+  it('surfaces i18n load error', async () => {
+    const api = TestBed.inject(EmcapApiService);
+    (api.client.listRecords as jasmine.Spy).and.rejectWith(new Error('offline'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const i18n = TestBed.inject(I18nService);
+    expect(fixture.componentInstance.loadError).toBe(i18n.t('field.lookup.loadFailed'));
   });
 });

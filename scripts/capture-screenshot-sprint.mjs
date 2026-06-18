@@ -8,6 +8,7 @@
  *   node scripts/capture-screenshot-sprint.mjs --only=product-workflow
  *   node scripts/capture-screenshot-sprint.mjs --only=admin-security
  *   node scripts/capture-screenshot-sprint.mjs --only=admin-settings   # P18-T15 full M6 batch (8 PNGs)
+ *   node scripts/capture-screenshot-sprint.mjs --only=login-auth       # P18-T11 login + account MFA
  */
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -46,9 +47,10 @@ async function login(page) {
 }
 
 async function waitForShell(page) {
-  await page.waitForSelector('app-page-header, .entity-page, .profile-page', {
-    timeout: 45_000,
-  });
+  await page.waitForSelector(
+    'app-page-header, .entity-page, .entity-list-page, .settings-tabs, .profile-page',
+    { timeout: 45_000 },
+  );
   await page.locator('app-loading-panel').waitFor({ state: 'hidden', timeout: 45_000 }).catch(() => {});
   await page.waitForTimeout(300);
 }
@@ -295,6 +297,32 @@ async function expandSettingsPanel(page, titlePattern) {
   }
 }
 
+async function captureShellNav(page) {
+  console.log('\nphase19-shell-nav-web.png…');
+  await page.goto(`${BASE}/app/entity/PRODUCT`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('app-sidenav-nav, mat-sidenav, .sidenav-nav', { timeout: 45_000 });
+  await page.locator('app-sidenav-nav, mat-sidenav').first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-shell-nav-web.png');
+}
+
+async function captureReportSchedules(page) {
+  console.log('\nphase19-settings-report-schedules-web.png…');
+  await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.settings-tabs, mat-tab-group', { timeout: 45_000 });
+  await openSettingsTab(page, /Platform|Plateforme|প্ল্যাটফর্ম/i);
+  await expandSettingsPanel(page, /Reports|Rapports|রিপোর্ট/i);
+  await page.locator('.settings-report-schedules, .settings-hint').first().waitFor({
+    state: 'visible',
+    timeout: 30_000,
+  });
+  await page.locator('mat-expansion-panel').filter({ hasText: /Reports|Rapports|রিপোর্ট/i }).first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await capture(page, 'phase19-settings-report-schedules-web.png');
+}
+
 async function captureAdminSettingsPolish(page) {
   console.log('\nphase19-settings-branding-web.png…');
   await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
@@ -343,6 +371,7 @@ async function captureAdminSettingsPolish(page) {
 
 /** P18-T15 — full M6 admin/settings Product-ready screenshot batch. */
 async function captureAdminProductReadyBatch(page) {
+  await captureShellNav(page);
   console.log('\nphase19-settings-ia-web.png…');
   await page.goto(`${BASE}/app/settings`, { waitUntil: 'networkidle' });
   await waitForShell(page);
@@ -362,7 +391,32 @@ async function captureAdminProductReadyBatch(page) {
   await capture(page, 'phase19-admin-roles-web.png');
 
   await captureAdminSecurity(page);
+  await captureReportSchedules(page);
   await captureAdminSettingsPolish(page);
+}
+
+/** P18-T11 — enterprise auth UX: login provider cards + account MFA panel. */
+async function captureLoginAuth(page, browser) {
+  const loginContext = await browser.newContext();
+  const loginPage = await loginContext.newPage();
+  await loginPage.setViewportSize(VIEWPORT);
+  console.log('\nphase18-login-web.png…');
+  await loginPage.goto(BASE, { waitUntil: 'networkidle' });
+  await loginPage.waitForSelector('.login-page, .login-card', { timeout: 45_000 });
+  await loginPage.waitForSelector('.login-card__providers, .login-form', { timeout: 45_000 });
+  await capture(loginPage, 'phase18-login-web.png');
+  await loginContext.close();
+
+  console.log('Login (account capture)…');
+  await login(page);
+
+  console.log('phase18-account-auth-web.png…');
+  await page.goto(`${BASE}/app/account`, { waitUntil: 'networkidle' });
+  await waitForShell(page);
+  await page.waitForSelector('.profile-page .mfa-steps, app-section-card', { timeout: 45_000 });
+  await page.locator('app-section-card').filter({ hasText: /MFA|2FA|authentification/i }).first().scrollIntoViewIfNeeded().catch(() => {});
+  await page.waitForTimeout(300);
+  await capture(page, 'phase18-account-auth-web.png');
 }
 
 async function captureAdminAndSettings(page) {
@@ -393,6 +447,12 @@ async function main() {
   await page.setViewportSize(VIEWPORT);
 
   try {
+    if (ONLY === 'login-auth') {
+      await captureLoginAuth(page, browser);
+      console.log('\nP18-T11 login/account auth capture complete — see docs/product/screenshots/');
+      return;
+    }
+
     console.log('Login…');
     await login(page);
 
@@ -417,6 +477,18 @@ async function main() {
     if (ONLY === 'admin-settings') {
       await captureAdminProductReadyBatch(page);
       console.log('\nP18-T15 admin/settings Product-ready capture complete — see docs/product/screenshots/');
+      return;
+    }
+
+    if (ONLY === 'shell-nav') {
+      await captureShellNav(page);
+      console.log('\nShell/nav capture complete — see docs/product/screenshots/');
+      return;
+    }
+
+    if (ONLY === 'report-schedules') {
+      await captureReportSchedules(page);
+      console.log('\nReport schedules capture complete — see docs/product/screenshots/');
       return;
     }
 

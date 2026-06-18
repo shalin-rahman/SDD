@@ -13,6 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import type { FormFieldMetadata } from '../../metadata/contract';
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../services/i18n.service';
 import { resolveRecordDisplayLabel } from '../utils/lookup-display.util';
 import {
   LookupPickerDialogComponent,
@@ -29,6 +30,7 @@ import {
 export class LookupFieldComponent implements OnChanges {
   private readonly dialog = inject(MatDialog);
   private readonly api = inject(EmcapApiService);
+  readonly i18n = inject(I18nService);
 
   @Input({ required: true }) field!: FormFieldMetadata;
   @Input() value: unknown;
@@ -37,7 +39,8 @@ export class LookupFieldComponent implements OnChanges {
 
   @Output() valueChange = new EventEmitter<unknown>();
 
-  displayLabel = '—';
+  readonly emptyValue = this.i18n.t('common.emptyValue');
+  displayLabel = this.emptyValue;
   loadingLabel = false;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -49,7 +52,7 @@ export class LookupFieldComponent implements OnChanges {
   async refreshLabel(): Promise<void> {
     const id = this.value === undefined || this.value === null || this.value === '' ? '' : String(this.value);
     if (!id || !this.field.lookup_entity) {
-      this.displayLabel = '—';
+      this.displayLabel = this.emptyValue;
       return;
     }
     this.loadingLabel = true;

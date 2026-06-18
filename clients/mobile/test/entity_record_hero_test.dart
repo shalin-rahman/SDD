@@ -70,6 +70,50 @@ void main() {
     expect(find.byType(EmcapStatusChip), findsOneWidget);
   });
 
+  testWidgets('PRODUCT hero shows subtitle stock and price lines', (tester) async {
+    final view = buildRecordHeadlineView(
+      'PRODUCT',
+      {
+        'sku': 'SKU-DEMO-001',
+        'name': 'Demo Widget',
+        'quantity_on_hand': 42,
+        'unit_price': 19.99,
+        'active': true,
+      },
+      false,
+      'prod-1',
+      (key) => key,
+      statusField: statusField,
+    );
+    expect(view.subtitle, contains('entity.stockLine'));
+    expect(view.subtitle, contains('entity.priceLine'));
+  });
+
+  testWidgets('WAREHOUSE hero uses code em dash name', (tester) async {
+    final view = buildRecordHeadlineView(
+      'WAREHOUSE',
+      {'code': 'WH-01', 'name': 'Main', 'active': true},
+      false,
+      'wh-1',
+      (key) => key,
+      statusField: statusField,
+    );
+    await tester.pumpWidget(heroRow(view));
+    expect(find.text('WH-01 — Main'), findsOneWidget);
+  });
+
+  testWidgets('STOCK_MOVEMENT hero uses movement_number', (tester) async {
+    final view = buildRecordHeadlineView(
+      'STOCK_MOVEMENT',
+      {'movement_number': 'MOV-001', 'status': 'draft'},
+      false,
+      'mov-1',
+      (key) => key,
+    );
+    await tester.pumpWidget(heroRow(view));
+    expect(find.text('MOV-001'), findsOneWidget);
+  });
+
   testWidgets('PRODUCT hero inactive chip uses off variant', (tester) async {
     final view = buildRecordHeadlineView(
       'PRODUCT',

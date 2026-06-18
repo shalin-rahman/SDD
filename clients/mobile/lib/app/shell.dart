@@ -213,7 +213,7 @@ class _EmcapShellState extends State<EmcapShell> {
         onOpenWorkflowInbox: () => _selectKey('workflow'),
       );
     }
-    return const Center(child: Text('Unknown destination'));
+    return Center(child: Text(EmcapLocale.t('shell.nav.unknown')));
   }
 
   void _selectKey(String key) {
@@ -269,7 +269,7 @@ class _EmcapShellState extends State<EmcapShell> {
             decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: Text('EMCAP', style: Theme.of(context).textTheme.titleLarge),
+              child: Text(EmcapLocale.t('shell.pageTitle.default'), style: Theme.of(context).textTheme.titleLarge),
             ),
           ),
           ..._navTiles(rail: false),
@@ -362,10 +362,10 @@ class _EmcapShellState extends State<EmcapShell> {
                 tooltip: EmcapLocale.t('toolbar.locale'),
                 icon: const Icon(Icons.language),
                 onSelected: (code) => EmcapLocale.setLocale(Locale(code)),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'en', child: Text('English')),
-                  PopupMenuItem(value: 'fr', child: Text('Français')),
-                  PopupMenuItem(value: 'bn', child: Text('বাংলা')),
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'en', child: Text(EmcapLocale.t('toolbar.language.en'))),
+                  PopupMenuItem(value: 'fr', child: Text(EmcapLocale.t('toolbar.language.fr'))),
+                  PopupMenuItem(value: 'bn', child: Text(EmcapLocale.t('toolbar.language.bn'))),
                 ],
               ),
               ValueListenableBuilder<ThemeMode>(

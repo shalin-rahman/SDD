@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { EmcapApiService } from '../../services/emcap-api.service';
+import { I18nService } from '../services/i18n.service';
 import { resolveRecordDisplayLabel } from '../utils/lookup-display.util';
 
 export interface LookupPickerDialogData {
@@ -23,6 +24,7 @@ export interface LookupPickerDialogData {
 export class LookupPickerDialogComponent implements OnInit {
   private readonly api = inject(EmcapApiService);
   private readonly dialogRef = inject(MatDialogRef<LookupPickerDialogComponent>);
+  readonly i18n = inject(I18nService);
 
   records: Record<string, unknown>[] = [];
   search = '';
@@ -44,7 +46,7 @@ export class LookupPickerDialogComponent implements OnInit {
       });
       this.records = response.records ?? [];
     } catch {
-      this.loadError = 'Failed to load records';
+      this.loadError = this.i18n.t('field.lookup.loadFailed');
       this.records = [];
     } finally {
       this.loading = false;

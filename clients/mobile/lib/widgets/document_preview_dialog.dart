@@ -113,7 +113,7 @@ class _DocumentPreviewDialogState extends State<_DocumentPreviewDialog> {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(EmcapLocale.t('document.preview.copied'))),
+      SnackBar(content: Text(EmcapLocale.t('settings.saved'))),
     );
   }
 
@@ -233,22 +233,11 @@ class _DocumentPreviewDialogState extends State<_DocumentPreviewDialog> {
         ),
       ),
       actions: [
-        if (!_loading && _loadError == null && _previewView != null) ...[
-          if (_previewView!.mode == DocumentPreviewMode.text &&
-              (_previewView!.textContent?.isNotEmpty ?? false))
-            TextButton(
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: _previewView!.textContent!));
-                if (!context.mounted) return;
-                Navigator.pop(context);
-              },
-              child: Text(EmcapLocale.t('document.preview.copy')),
-            ),
+        if (!_loading && _loadError == null && _previewView != null)
           TextButton(
             onPressed: _download,
             child: Text(EmcapLocale.t('document.preview.download')),
           ),
-        ],
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(EmcapLocale.t('common.cancel')),

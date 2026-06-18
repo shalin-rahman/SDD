@@ -7,6 +7,8 @@
     @if (statusLabel) {
       <span
         class="emcap-badge record-header__status"
+        role="status"
+        [attr.aria-label]="statusAriaLabel || statusLabel"
         [class.emcap-badge--on]="statusActive"
         [class.emcap-badge--off]="!statusActive"
       >

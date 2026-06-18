@@ -439,6 +439,13 @@ export class SettingsComponent implements OnInit {
     ];
   }
 
+  aiBackendSummary(): string {
+    const moduleOn = this.flag('modules', 'ai', 'enabled');
+    const aiOn = this.bool('ai', 'enabled');
+    const status = moduleOn || aiOn ? this.i18n.t('settings.documents.enabled') : this.i18n.t('settings.documents.disabled');
+    return `${this.i18n.t('settings.ai.enabled')}: ${status}`;
+  }
+
   auditItems(): SettingsToggleItem[] {
     return [
       {

@@ -148,6 +148,7 @@ class GridMetadata {
     this.offline = true,
     this.realtime = true,
     this.grouping = false,
+    this.bulkActions = false,
     this.i18n,
   });
 
@@ -158,6 +159,7 @@ class GridMetadata {
   final bool offline;
   final bool realtime;
   final bool grouping;
+  final bool bulkActions;
   final Map<String, dynamic>? i18n;
 
   factory GridMetadata.fromJson(Map<String, dynamic> json) {
@@ -169,6 +171,7 @@ class GridMetadata {
       offline: json['offline'] as bool? ?? true,
       realtime: json['realtime'] as bool? ?? true,
       grouping: json['grouping'] as bool? ?? false,
+      bulkActions: json['bulk_actions'] == true,
       i18n: json['i18n'] as Map<String, dynamic>?,
     );
   }

@@ -6,6 +6,7 @@ import '../services/i18n_service.dart';
 import '../theme/app_tokens.dart';
 import '../utils/field_display.dart';
 import '../utils/record_headline.dart';
+import '../utils/record_lifecycle_util.dart';
 import '../utils/workflow_enabled_util.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/document_preview_dialog.dart';
@@ -66,6 +67,10 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   final Map<String, String?> _lookupValues = {};
   Map<String, dynamic> _recordValues = {};
   bool _listChanged = false;
+  List<Map<String, dynamic>> _movementLines = [];
+  String? _movementLinesError;
+  String? _postMovementError;
+  bool _postingMovement = false;
 
   @override
   void initState() {
@@ -404,11 +409,80 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   }
 
   bool _canRestoreRecord() {
-    return _selectedRecordId != null && _recordValues['deleted_at'] != null;
+    return canRestoreRecord(_selectedRecordId, _recordValues);
   }
 
   bool _canDeleteRecord() {
-    return _selectedRecordId != null && _recordValues['deleted_at'] == null;
+    return canDeleteRecord(_selectedRecordId, _recordValues, _creatingNew);
+  }
+
+  bool _canPostMovement() {
+    return widget.entityCode == 'STOCK_MOVEMENT' &&
+        _selectedRecordId != null &&
+        !_creatingNew &&
+        '${_recordValues['status'] ?? ''}' == 'draft';
+  }
+
+  Future<void> _postMovement() async {
+    if (!_canPostMovement() || _selectedRecordId == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(EmcapLocale.t('entity.postMovementConfirm')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(EmcapLocale.t('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(EmcapLocale.t('entity.postMovement'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() {
+      _postingMovement = true;
+      _postMovementError = null;
+    });
+    try {
+      final version = _recordValues['record_version'];
+      final ifMatch = version is int ? version : int.tryParse('$version');
+      await widget.client.updateRecord(
+        widget.entityCode,
+        _selectedRecordId!,
+        {'status': 'posted'},
+        ifMatch: ifMatch,
+      );
+      _listChanged = true;
+      await _loadRecord(_selectedRecordId!);
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _postMovementError = EmcapLocale.t('entity.postMovementFailed'));
+    } finally {
+      if (mounted) {
+        setState(() => _postingMovement = false);
+      }
+    }
+  }
+
+  Future<void> _loadMovementLines(String recordId) async {
+    if (widget.entityCode != 'STOCK_MOVEMENT') {
+      setState(() {
+        _movementLines = [];
+        _movementLinesError = null;
+      });
+      return;
+    }
+    try {
+      final lines = await widget.client.listRecords('STOCK_MOVEMENT_LINE');
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _movementLines = lines.where((row) => '${row['movement_id'] ?? ''}' == recordId).toList();
+        _movementLinesError = null;
+      });
+    } catch (err) {
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _movementLines = [];
+        _movementLinesError = EmcapLocale.t('entity.movementLinesFailed');
+      });
+    }
   }
 
   bool _canStartWorkflow() {
@@ -441,6 +515,9 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       _selectedDocuments = [];
       _selectedAudit = [];
       _workflowInstances = [];
+      _movementLines = [];
+      _movementLinesError = null;
+      _postMovementError = null;
       _editingId = null;
     });
     try {
@@ -458,6 +535,9 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       });
       if (_showWorkflowSection()) {
         await _loadWorkflowInstances(recordId);
+      }
+      if (widget.entityCode == 'STOCK_MOVEMENT') {
+        await _loadMovementLines(recordId);
       }
     } catch (err) {
       if (!mounted || _selectedRecordId != recordId) return;
@@ -508,7 +588,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(leading: BackButton(onPressed: _popToList)),
-            body: Center(child: Text('Failed to load: ${snapshot.error}')),
+            body: Center(child: Text('${EmcapLocale.t('entity.loadFailed')}: ${snapshot.error}')),
           );
         }
         if (!snapshot.hasData) {
@@ -540,6 +620,33 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
             padding: EdgeInsets.all(context.emcapTokens.spaceMd),
             children: [
               if (_selectedRecordId != null && !_creatingNew) ...[
+                if (isRecordDeleted(_recordValues))
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: context.emcapTokens.spaceSm),
+                    padding: EdgeInsets.all(context.emcapTokens.spaceSm),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(context.emcapTokens.radiusSm),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.onErrorContainer),
+                        SizedBox(width: context.emcapTokens.spaceSm),
+                        Expanded(
+                          child: Text(
+                            '${EmcapLocale.t('entity.record')} · ${_recordValues['deleted_at'] ?? ''}',
+                            style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                          ),
+                        ),
+                        if (_canRestoreRecord())
+                          TextButton(
+                            onPressed: () => _restoreRecord(_selectedRecordId!),
+                            child: Text(EmcapLocale.t('entity.restore')),
+                          ),
+                      ],
+                    ),
+                  ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -579,6 +686,13 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       TextButton(onPressed: () => _deleteRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.delete'))),
                     if (_canRestoreRecord())
                       TextButton(onPressed: () => _restoreRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.restore'))),
+                    if (_canPostMovement())
+                      TextButton(
+                        onPressed: _postingMovement ? null : _postMovement,
+                        child: _postingMovement
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                            : Text(EmcapLocale.t('entity.postMovement')),
+                      ),
                     if (_canStartWorkflow())
                       TextButton(
                         onPressed: () async {
@@ -595,6 +709,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       ),
                   ],
                 ),
+                if (_postMovementError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(_postMovementError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ),
                 if (_loadingDetail)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
@@ -619,6 +738,25 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                     ),
                   ),
                   _buildSystemSection(formRenderer, _recordValues, forceReadOnly: true),
+                  if (widget.entityCode == 'STOCK_MOVEMENT') ...[
+                    const Divider(),
+                    Text(EmcapLocale.t('entity.movementLinesTitle'), style: Theme.of(context).textTheme.titleSmall),
+                    if (_movementLinesError != null)
+                      Text(_movementLinesError!, style: TextStyle(color: Theme.of(context).colorScheme.error))
+                    else if (_movementLines.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(EmcapLocale.t('entity.movementLinesEmpty')),
+                      )
+                    else
+                      ..._movementLines.map(
+                        (line) => ListTile(
+                          dense: true,
+                          title: Text('${EmcapLocale.t('entity.movementLineProduct')}: ${line['product_id'] ?? ''}'),
+                          subtitle: Text('${EmcapLocale.t('entity.movementLineQty')}: ${line['quantity'] ?? ''}'),
+                        ),
+                      ),
+                  ],
                   const Divider(),
                   Text('${EmcapLocale.t('record.notes')} (${_selectedNotes.length})'),
                   ..._selectedNotes.map(
@@ -677,11 +815,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                   ],
                   TextField(
                     controller: _docFilename,
-                    decoration: const InputDecoration(labelText: 'Document filename'),
+                    decoration: InputDecoration(labelText: EmcapLocale.t('record.docFilename')),
                   ),
                   TextField(
                     controller: _docContent,
-                    decoration: const InputDecoration(labelText: 'Document content'),
+                    decoration: InputDecoration(labelText: EmcapLocale.t('record.docContent')),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -694,7 +832,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       _listChanged = true;
                       await _loadRecord(_selectedRecordId!);
                     },
-                    child: const Text('Upload document'),
+                    child: Text(EmcapLocale.t('record.uploadDocument')),
                   ),
                 ],
               ] else if (_creatingNew) ...[
@@ -720,7 +858,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                 if (_creatingNew)
                   TextField(
                     controller: _noteController,
-                    decoration: const InputDecoration(labelText: 'Note (optional)'),
+                    decoration: InputDecoration(labelText: EmcapLocale.t('entity.noteOptional')),
                     maxLines: 2,
                   ),
                 if (_createError != null) ...[
@@ -733,13 +871,17 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       _editingId = null;
                       _clearControllers();
                     }),
-                    child: const Text('Cancel edit'),
+                    child: Text(EmcapLocale.t('entity.cancel')),
                   ),
                 ElevatedButton(
                   onPressed: _creating ? null : _saveRecord,
                   child: _creating
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(_editingId != null || _creatingNew ? 'Save' : 'Create record'),
+                      : Text(
+                          _editingId != null || _creatingNew
+                              ? EmcapLocale.t('entity.save')
+                              : EmcapLocale.t('entity.createRecord'),
+                        ),
                 ),
               ],
             ],

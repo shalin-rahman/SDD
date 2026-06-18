@@ -16,6 +16,8 @@ class _AccountScreenState extends State<AccountScreen> {
   late Future<_AccountData> _future;
   final _mfaCode = TextEditingController();
   String? _mfaSecret;
+  int _mfaStep = 1;
+  String? _mfaError;
 
   @override
   void initState() {
@@ -72,35 +74,60 @@ class _AccountScreenState extends State<AccountScreen> {
                 Text(EmcapLocale.t('platform.account.whiteLabelEnabled')),
               const SizedBox(height: 12),
               Text(EmcapLocale.t('platform.account.mfa'), style: Theme.of(context).textTheme.titleMedium),
+              _MfaStepIndicator(activeStep: _mfaStep),
+              if (_mfaError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(_mfaError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                ),
               if (_mfaSecret != null)
                 Text('${EmcapLocale.t('platform.account.mfaSecret')}: $_mfaSecret'),
-              TextField(
-                controller: _mfaCode,
-                decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.totpCode')),
-              ),
+              if (_mfaStep >= 2)
+                TextField(
+                  controller: _mfaCode,
+                  decoration: InputDecoration(labelText: EmcapLocale.t('platform.account.totpCode')),
+                ),
               Row(
                 children: [
                   TextButton(
                     onPressed: () async {
-                      final result = await widget.client.enrollMfa();
-                      setState(() => _mfaSecret = '${result['secret']}');
+                      setState(() {
+                        _mfaError = null;
+                      });
+                      try {
+                        final result = await widget.client.enrollMfa();
+                        setState(() {
+                          _mfaSecret = '${result['secret']}';
+                          _mfaStep = 2;
+                        });
+                      } catch (err) {
+                        if (!mounted) return;
+                        setState(() => _mfaError = EmcapLocale.t('platform.account.mfaEnrollFailed'));
+                      }
                     },
                     child: Text(EmcapLocale.t('platform.account.enrollMfa')),
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      final result = await widget.client.verifyMfa(_mfaCode.text);
-                      widget.client.setToken(
-                        result['access_token'] as String,
-                        widget.client.getTenantId(),
-                      );
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(EmcapLocale.t('platform.account.mfaVerified'))),
-                      );
-                    },
-                    child: Text(EmcapLocale.t('platform.account.verifyMfa')),
-                  ),
+                  if (_mfaStep >= 2)
+                    TextButton(
+                      onPressed: () async {
+                        setState(() => _mfaError = null);
+                        try {
+                          final result = await widget.client.verifyMfa(_mfaCode.text);
+                          widget.client.setToken(
+                            result['access_token'] as String,
+                            widget.client.getTenantId(),
+                          );
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(EmcapLocale.t('platform.account.mfaVerified'))),
+                          );
+                        } catch (err) {
+                          if (!mounted) return;
+                          setState(() => _mfaError = EmcapLocale.t('platform.account.mfaVerifyFailed'));
+                        }
+                      },
+                      child: Text(EmcapLocale.t('platform.account.verifyMfa')),
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -198,4 +225,56 @@ class _AccountData {
   final List<String> permissions;
   final List<Map<String, dynamic>> roles;
   final bool paymentsEnabled;
+}
+
+class _MfaStepIndicator extends StatelessWidget {
+  const _MfaStepIndicator({required this.activeStep});
+
+  final int activeStep;
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = [
+      EmcapLocale.t('platform.account.mfaStep1'),
+      EmcapLocale.t('platform.account.mfaStep2'),
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < steps.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${i + 1}.',
+                    style: TextStyle(
+                      fontWeight: activeStep == i + 1 ? FontWeight.bold : FontWeight.normal,
+                      color: activeStep == i + 1
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      steps[i],
+                      style: TextStyle(
+                        fontWeight: activeStep == i + 1 ? FontWeight.w600 : FontWeight.normal,
+                        color: activeStep == i + 1
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

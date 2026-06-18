@@ -387,7 +387,8 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
   deleteRecord(): void {
     if (!this.selectedRecordId) return;
     const id = this.selectedRecordId;
-    if (!window.confirm(`Delete record ${id}?`)) return;
+    const confirmMsg = this.i18n.t('entity.deleteConfirm').replace('{id}', id);
+    if (!window.confirm(confirmMsg)) return;
     void this.api.client.deleteRecord(this.entityCode, id).then(() => {
       void this.backToList();
     });

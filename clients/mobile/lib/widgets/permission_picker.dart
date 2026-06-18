@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/i18n_service.dart';
 import '../utils/permission_util.dart';
 
 class PermissionPicker extends StatelessWidget {
@@ -24,10 +25,16 @@ class PermissionPicker extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           child: ExpansionTile(
             title: Text(group.label),
-            subtitle: Text('${group.permissions.length} permission(s)'),
+            subtitle: Text(
+              '${group.permissions.length} ${EmcapLocale.t('admin.permissions.permissionCountSuffix')}',
+            ),
             children: [
               CheckboxListTile(
-                title: Text('All ${group.label} (${group.module}.*)'),
+                title: Text(
+                  EmcapLocale.t('admin.permissions.wildcardAll')
+                      .replaceAll('{label}', group.label)
+                      .replaceAll('{module}', group.module),
+                ),
                 value: selected.contains('${group.module}.*'),
                 onChanged: (checked) {
                   onChanged(toggleWildcard(selected, '${group.module}.*', checked ?? false));

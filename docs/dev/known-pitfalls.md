@@ -907,9 +907,24 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 | **Symptom** | `capture-screenshot-sprint.mjs` fails — Chromium not found; or sandbox error on `npx playwright install` |
 | **Cause** | Playwright browsers not installed; some Cursor sandboxes block install/start scripts |
 | **Fix** | Run `npx --yes playwright@1.49.1 install chromium` outside sandbox; stack up via `scripts/start-emcap-local.bat` (API `:8000`, web `:4200`); then `node scripts/capture-screenshot-sprint.mjs --only=admin-settings` |
-| **Test** | 8 PNGs in `docs/product/screenshots/phase19-*.png` |
+| **Test** | 8+ PNGs in `docs/product/screenshots/phase19-*.png`; `--only=shell-nav`, `--only=report-schedules` |
 
-### PowerShell nested health-check quoting
+### Rule evaluate spec async config load
+
+| | |
+|--|--|
+| **Symptom** | `RuleEvaluateComponent retries config load on failure` expects `Retry` but DOM shows `Loading…` |
+| **Cause** | `ngOnInit` → `loadConfig()` async; first `whenStable()` may resolve before promise settles |
+| **Fix** | Await `fixture.componentInstance.loadConfig()` then re-`detectChanges()`; assert `app-empty-state` not button text |
+| **Test** | `rule-evaluate.component.spec.ts` |
+
+### Entity delete confirm i18n
+
+| | |
+|--|--|
+| **Symptom** | Hardcoded `` `Delete record ${id}?` `` in `entity-record.component.ts` |
+| **Fix** | Use `entity.deleteConfirm` with `{id}` placeholder + `.replace('{id}', id)` |
+| **Test** | Karma entity-record specs; FR/BN keys in `assets/i18n/` |
 
 | | |
 |--|--|

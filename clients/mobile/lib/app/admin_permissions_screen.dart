@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/emcap_client.dart';
+import '../services/i18n_service.dart';
 import '../utils/permission_util.dart';
 
 class AdminPermissionsScreen extends StatefulWidget {
@@ -55,7 +56,7 @@ class _AdminPermissionsScreenState extends State<AdminPermissionsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(_error!),
-            TextButton(onPressed: _reload, child: const Text('Retry')),
+            TextButton(onPressed: _reload, child: Text(EmcapLocale.t('common.retry'))),
           ],
         ),
       );
@@ -66,7 +67,7 @@ class _AdminPermissionsScreenState extends State<AdminPermissionsScreen> {
       padding: const EdgeInsets.all(12),
       children: [
         Text(
-          'Permission catalog (${_permissions.length})',
+          '${EmcapLocale.t('admin.permissions.catalog')} (${_permissions.length})',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -75,7 +76,9 @@ class _AdminPermissionsScreenState extends State<AdminPermissionsScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: ExpansionTile(
               title: Text(group.label),
-              subtitle: Text('${group.permissions.length} permission(s)'),
+              subtitle: Text(
+                '${group.permissions.length} ${EmcapLocale.t('admin.permissions.permissionCountSuffix')}',
+              ),
               children: group.permissions
                   .map(
                     (permission) => ListTile(

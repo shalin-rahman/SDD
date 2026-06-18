@@ -1,4 +1,5 @@
-# P18-T14 — Playwright E2E smoke (manual + weekly). Does not gate PR merges.
+# P18-T14 — Playwright E2E smoke (manual + weekly authoritative run).
+# PRs: optional non-blocking job in ci.yml (`e2e-smoke-optional`).
 name: E2E Smoke
 
 on:

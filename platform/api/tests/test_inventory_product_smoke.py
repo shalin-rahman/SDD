@@ -55,6 +55,10 @@ def test_inventory_product_smoke_warehouse_and_movement(client: TestClient) -> N
 
     wh_grid = client.get("/api/v1/metadata/grids/WAREHOUSE").json()
     assert any(col["field"] == "code" for col in wh_grid["columns"])
+    assert wh_grid["bulk_actions"] is True
+
+    product_grid = client.get("/api/v1/metadata/grids/PRODUCT").json()
+    assert product_grid["bulk_actions"] is True
 
     movement_detail = client.get(f"/api/v1/entities/STOCK_MOVEMENT/records/{movement_id}").json()
     assert movement_detail["status"] == "draft"

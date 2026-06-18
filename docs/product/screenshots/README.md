@@ -16,7 +16,7 @@ docs/product/screenshots/
 
 Reference paths in PRs, `spec/sdd/07-product-readiness-matrix.md`, and phase playbooks — not external attachments.
 
-**Inventory:** 28+ PNG files — 5 M1 PRODUCT + sprint wave2 pack + **P18-T15** M6 admin/settings batch (8 PNGs, 2026-06-17).
+**Inventory:** 28+ PNG files — M1 PRODUCT + sprint packs + **P18-T15** M6 batch + **shell-nav** + **report-schedules** (capture when stack up).
 
 ---
 
@@ -36,6 +36,32 @@ Captured 2026-06-17 via `scripts/capture-screenshot-sprint.mjs --only=admin-sett
 | 8 | `phase19-settings-isolation-web.png` | Settings → Identity → Tenant isolation | P19-T07 |
 
 **Note:** Roles screenshot uses `phase19-admin-roles-web.png` (not legacy `phase19-admin-roles` variants). Matrix 07 §12 rows elevated **Demo/Partial → Product-ready (web)** where PNG + DoD pass.
+
+### M6 — additional Product-ready captures
+
+| File | Route / panel | Task |
+|------|---------------|------|
+| `phase19-shell-nav-web.png` | `/app/entity/PRODUCT` — sidenav module groups + page header | M6 shell/nav |
+| `phase19-settings-report-schedules-web.png` | Settings → Platform → Reports cron editor | M6 report schedules |
+
+Capture: `node scripts/capture-screenshot-sprint.mjs --only=shell-nav` or `--only=report-schedules` (included in `--only=admin-settings` batch).
+
+---
+
+## P18-T11 — Enterprise auth UX (login + account MFA)
+
+Requires stack at `:4200` (`scripts\start-emcap-local.bat`), demo login `admin` / `admin123`.
+
+```bat
+node scripts/capture-screenshot-sprint.mjs --only=login-auth
+```
+
+| File | Route / scene | Task |
+|------|---------------|------|
+| `phase18-login-web.png` | `/` — provider chips + username/password form (unauthenticated) | P18-T11 |
+| `phase18-account-auth-web.png` | `/app/account` — MFA step indicator + enroll controls | P18-T11 |
+
+**Manual fallback** (when stack cannot start): Chrome 1280×800, light theme, EN locale — capture login before sign-in, then account MFA section after login. Save filenames exactly as above.
 
 ---
 

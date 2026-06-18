@@ -23,7 +23,7 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 | Delete record | Done | Done | — |
 | Search records (`?q=`) | Done | Done | — |
 | Pagination | Done | Done | — |
-| Grid bulk select / export / soft-delete | Partial | No | P18-T13 — PRODUCT `bulk_actions` metadata; web checkbox toolbar |
+| Grid bulk select / export / soft-delete | Partial | No | P18-T13 — PRODUCT/WAREHOUSE/LEAD `bulk_actions`; web checkbox toolbar + e2e bulk delete |
 | Record detail (notes, docs, audit) | Done | Done | — |
 
 ---

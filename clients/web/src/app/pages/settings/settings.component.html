@@ -187,6 +187,9 @@
           [customBadgeLabel]="i18n.t('settings.override.badge')"
           (itemChange)="onAiChange($event)"
         />
+        <p class="settings-readonly">{{ aiBackendSummary() }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.ai.backendReadOnly') }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.ai.moduleHint') }}</p>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -194,6 +197,7 @@
         </mat-expansion-panel-header>
         <p class="settings-readonly">{{ i18n.t('settings.observability.metrics') }}</p>
         <p class="settings-hint">{{ i18n.t('settings.observability.grafanaHint') }}</p>
+        <p class="settings-hint">{{ i18n.t('settings.observability.runbookHint') }}</p>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>

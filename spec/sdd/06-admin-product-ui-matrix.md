@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-17 (M6 remainder — shell nav i18n/error, report schedule validation, mobile auth, integrations pivot)
+**Last updated:** 2026-06-17 (Sprint 11 — M5/M6 web sign-off in `07`; shell/report schedules Product-ready)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -118,13 +118,13 @@
 
 | Metadata i18n labels | Done | Done | `label_key` + BN sample on PRODUCT |
 
-| **App UI i18n + locale switcher** | Partial | Partial | P18-T12 — shell/page titles, settings breadcrumbs, report schedule labels; EN/FR/BN; mobile login keys added |
+| **App UI i18n + locale switcher** | Done | Partial | P18-T12 Done — lookup picker/field, tenant select, mobile admin/settings section titles; `audit-i18n.mjs` for remaining low-priority labels |
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 
 | Layout designer | Partial | Partial | **ADR-007** — web + mobile settings layout editor; override API + merge |
 
-| Breadcrumbs / page titles | Partial | Partial | Entity + admin + **settings** breadcrumbs; i18n toolbar titles via `resolvePageTitle` + `labelKey` (M6) |
+| Breadcrumbs / page titles | Partial | Partial | Entity + admin + settings breadcrumbs; i18n toolbar titles; **shell/nav Product-ready** with `phase19-shell-nav-web.png` |
 
 
 
@@ -140,7 +140,7 @@
 
 |------------|-----|-----|--------|-------|
 
-| Login / MFA / OAuth | Done | Partial | Partial | P18-T11 — web provider cards + 401 redirect + account MFA steps; **mobile** provider chips + session expiry + `clearSession`/`setOnUnauthorized` (M6) |
+| Login / MFA / OAuth | Done | Partial | Partial | P18-T11 Done (web) — `phase18-login-web.png`, `phase18-account-auth-web.png`; mobile provider chips + session expiry (M6) |
 
 | List roles | Done | Done | Done | P18-T21 load retry + empty state; P19-T02 search, module permission chips |
 
@@ -155,7 +155,7 @@
 | Permission-filtered menus | Partial | Partial | Partial | Shell filters via `/auth/me` |
 
 | Row/field security admin | Partial | Done | Partial | P18-T21 load retry + field edit panel; P19-T03 web + P13-T12 mobile field matrix edit |
-| ABAC policy admin | Done | Done | Partial | P18-T21 ABAC empty/retry + add CTA; P19-T04 delete confirm + validation + checkAuth test |
+| ABAC policy admin | Done | Done | Partial | **Product-ready (web)** — P18-T21 empty/retry/saveError + P19-T04 validation; security PNG |
 
 | Auth provider config UI | Partial | Partial | Partial | Settings Identity tab auth toggles; override badges (P12B-T09 Done) |
 
@@ -178,7 +178,7 @@
 | Workflow settings UI (escalation, SLA) | Partial | Partial | Partial | Settings workflow toggles |
 
 | Rule engine toggle UI | Partial | Partial | Partial | Settings rules toggles |
-| Rule evaluate panel | Done | Partial | No | Settings `/app/settings/rules`; P17-T11 web |
+| Rule evaluate panel | Done | **Demo+** | No | P18-T19 — formula gate, empty/retry/i18n; `/app/settings/rules` |
 
 
 
@@ -198,7 +198,7 @@
 
 | Dashboards / KPI widgets | Partial | Partial | Overview dashboard |
 
-| **Report schedule admin UI** | Partial | Partial | No | **Sprint 12** — `GET/PUT /admin/reports/schedules`; settings Platform tab; `test_report_schedule_admin.py` |
+| **Report schedule admin UI** | Partial | Partial | No | **Product-ready (web)** — cron editor + `phase19-settings-report-schedules-web.png`; `test_report_schedule_admin.py` |
 
 
 
@@ -244,9 +244,9 @@
 
 | Payment gateway config UI | Partial | Partial | Partial | Provider + publishable key + masked secret rotate (P12F-T20–T27) |
 
-| AI config UI | No | Partial | Partial | Settings AI toggle |
+| AI config UI | No | Partial | Partial | P18-T22 — `ai.enabled` toggle + read-only backend/runbook hints |
 
-| AI chat when enabled | Done | **Demo** | Done | P17-T09: `AssistantChatPanelComponent`; flag-gated; no `alert()` |
+| AI chat when enabled | Done | **Demo+** | Done | P18-T19 — `AssistantChatPanelComponent`; flag-gated empty/retry/i18n |
 
 
 
@@ -264,7 +264,7 @@
 
 | In-app observability dashboard | No | No | Grafana external |
 
-| Observability links in settings | Partial | No | Web read-only section |
+| Observability links in settings | Partial | Partial | P18-T22 read-only metrics + Grafana/runbook hints |
 
 | Record audit viewer | Done | Done | Entity detail |
 
@@ -316,11 +316,11 @@
 
 | End-user CRUD shell (05) | **Partial** |
 
-| Product shell (nav, layout, i18n, theme) | **Partial** (12F closed major gaps) |
+| Product shell (nav, layout, i18n, theme) | **Product-ready (web)** | Shell/nav PNG + i18n page titles + nav retry |
 
 | Admin & settings consoles | **Partial** (web + mobile parity on core flows) |
 
-| Phase 13 ABAC builder | **Partial** (Slice 1 done) |
+| Phase 13 ABAC builder | **Product-ready (web)** | P18-T21 + security PNG |
 | Phase 13 (field override editor, layout designer, isolation write) | **Partial** (P13-T10–T12/T20/T21/T30–T32 web+mobile Done) |
 
 

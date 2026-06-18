@@ -73,6 +73,39 @@ void main() {
     expect(isTextMimeType('application/pdf'), isFalse);
   });
 
+  test('buildDocumentPreviewView falls back to download mode for unknown binary', () {
+    final view = buildDocumentPreviewView({
+      'filename': 'archive.bin',
+      'content_base64': base64Encode(Uint8List.fromList([1, 2, 3])),
+    });
+    expect(view.mode, DocumentPreviewMode.download);
+  });
+
+  test('parseDocumentVersions falls back to single version', () {
+    final versions = parseDocumentVersions({'version': 3}, 'doc-1');
+    expect(versions.length, 1);
+    expect(versions.first.id, 'doc-1');
+    expect(versions.first.version, '3');
+  });
+
+  test('buildDocumentPreviewView prefers ocr_text over empty bytes', () {
+    final view = buildDocumentPreviewView({
+      'filename': 'scan.pdf',
+      'ocr_text': 'Extracted text',
+    });
+    expect(view.mode, DocumentPreviewMode.text);
+    expect(view.textContent, 'Extracted text');
+  });
+
+  test('virusScanBadgeKind handles passed alias', () {
+    expect(virusScanBadgeKind('passed'), VirusScanBadgeKind.clean);
+  });
+
+  test('decodeDocumentContent returns null for empty payload', () {
+    expect(decodeDocumentContent({}), isNull);
+    expect(decodeDocumentContent({'content': ''}), isNull);
+  });
+
   test('documentDownloadFallbackText prefers text content', () {
     final view = buildDocumentPreviewView({
       'filename': 'notes.txt',

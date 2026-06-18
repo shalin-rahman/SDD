@@ -190,7 +190,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   selected: _selectedId == id,
                   title: Text('${user['username']}'),
                   subtitle: Text('${user['tenant_id']} · ${formatRoleSummary(roles)}'),
-                  trailing: user['active'] == false ? const Text('Inactive') : null,
+                  trailing: user['active'] == false ? Text(EmcapLocale.t('admin.users.inactive')) : null,
                   onTap: () => _selectUser(user),
                 );
               },
@@ -210,17 +210,22 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      selected != null ? 'Edit user' : 'Create user',
+                      selected != null
+                          ? EmcapLocale.t('admin.users.editTitle')
+                          : EmcapLocale.t('admin.users.createTitle'),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                   if (selected != null && _draftActive)
-                    TextButton(onPressed: _saving ? null : _deactivate, child: const Text('Deactivate')),
+                    TextButton(
+                      onPressed: _saving ? null : _deactivate,
+                      child: Text(EmcapLocale.t('admin.users.deactivate')),
+                    ),
                   FilledButton(
                     onPressed: _saving ? null : _save,
                     child: _saving
                         ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('Save'),
+                        : Text(EmcapLocale.t('admin.users.save')),
                   ),
                 ],
               ),
@@ -228,26 +233,34 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               if (selected == null)
                 TextField(
                   controller: _usernameController,
-                  decoration: const InputDecoration(labelText: 'Username', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: EmcapLocale.t('admin.users.colUsername'),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: selected != null ? 'New password (optional)' : 'Password',
+                  labelText: selected != null
+                      ? EmcapLocale.t('admin.users.passwordOptionalLabel')
+                      : EmcapLocale.t('admin.users.passwordLabel'),
                   border: const OutlineInputBorder(),
                 ),
               ),
               TextField(
                 controller: _tenantController,
-                decoration: const InputDecoration(labelText: 'Tenant', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: EmcapLocale.t('admin.users.colTenant'),
+                  border: const OutlineInputBorder(),
+                ),
               ),
               SwitchListTile(
-                title: const Text('Account active'),
+                title: Text(EmcapLocale.t('admin.users.accountActive')),
                 value: _draftActive,
                 onChanged: (v) => setState(() => _draftActive = v),
               ),
-              Text('Roles', style: Theme.of(context).textTheme.titleSmall),
+              Text(EmcapLocale.t('admin.users.colRoles'), style: Theme.of(context).textTheme.titleSmall),
               ..._roles.map(
                 (role) => CheckboxListTile(
                   title: Text('${role['name'] ?? role['code']}'),
