@@ -107,21 +107,32 @@ void main() {
     await initMobileScreenTests();
   });
 
+  Future<void> pumpSettings(WidgetTester tester, SettingsScreen screen) async {
+    await tester.binding.setSurfaceSize(const Size(800, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
+        home: Scaffold(body: screen),
+      ),
+    );
+    await settleSettingsScreen(tester);
+  }
+
   Future<void> openOrganizationPanel(WidgetTester tester) async {
     final orgSection = find.text(EmcapLocale.t('settings.sections.organization'));
-    await tester.ensureVisible(orgSection);
+    await pumpUntilFound(tester, find.text(EmcapLocale.t('settings.title')));
+    final mainScroll = find.descendant(
+      of: find.byType(SettingsScreen),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(orgSection, 500, scrollable: mainScroll.first);
     await tester.tap(orgSection);
     await tester.pumpAndSettle();
   }
 
   testWidgets('SettingsScreen organization panel loads org profile and org.* labels', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
-        home: SettingsScreen(client: _OrgSettingsClient()),
-      ),
-    );
-    await settleSettingsScreen(tester);
+    await pumpSettings(tester, SettingsScreen(client: _OrgSettingsClient()));
     await openOrganizationPanel(tester);
 
     expect(find.text(EmcapLocale.t('org.displayName.label')), findsOneWidget);
@@ -133,13 +144,7 @@ void main() {
   });
 
   testWidgets('SettingsScreen shows logo preview for https logo URL', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
-        home: SettingsScreen(client: _OrgSettingsClient()),
-      ),
-    );
-    await settleSettingsScreen(tester);
+    await pumpSettings(tester, SettingsScreen(client: _OrgSettingsClient()));
     await openOrganizationPanel(tester);
 
     expect(find.byType(Image), findsOneWidget);
@@ -147,20 +152,19 @@ void main() {
 
   testWidgets('SettingsScreen save sends organization profile with templates', (tester) async {
     final client = _OrgSettingsClient();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
-        home: SettingsScreen(client: client),
-      ),
-    );
-    await settleSettingsScreen(tester);
+    await pumpSettings(tester, SettingsScreen(client: client));
     await openOrganizationPanel(tester);
 
-    await tester.enterText(
-      find.widgetWithText(TextField, EmcapLocale.t('org.invoice.header')),
-      'Updated header',
+    await tester.enterText(find.byKey(const Key('org-invoice-header')), 'Updated header');
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('settings-save')),
+      500,
+      scrollable: find.descendant(
+        of: find.byType(SettingsScreen),
+        matching: find.byType(Scrollable),
+      ).first,
     );
-    await tester.tap(find.text(EmcapLocale.t('settings.save')));
+    await tester.tap(find.byKey(const Key('settings-save')));
     await tester.pumpAndSettle();
 
     expect(client.lastOrgProfilePayload, isNotNull);
@@ -172,13 +176,7 @@ void main() {
   testWidgets('SettingsScreen organization panel resolves org.* labels in fr-FR', (tester) async {
     await EmcapLocale.setLocaleTag('fr-FR');
     addTearDown(() => EmcapLocale.setLocaleTag('en-US'));
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
-        home: SettingsScreen(client: _OrgSettingsClient()),
-      ),
-    );
-    await settleSettingsScreen(tester);
+    await pumpSettings(tester, SettingsScreen(client: _OrgSettingsClient()));
     await openOrganizationPanel(tester);
 
     expect(find.text(EmcapLocale.t('org.displayName.label')), findsOneWidget);
@@ -187,14 +185,18 @@ void main() {
 
   testWidgets('SettingsScreen uploads logo via injectable picker', (tester) async {
     final client = _OrgSettingsClient();
+    await tester.binding.setSurfaceSize(const Size(800, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.indigo, brightness: Brightness.light),
-        home: SettingsScreen(
-          client: client,
-          logoPicker: () async => OrganizationLogoPick(
-            filename: 'logo.png',
-            bytes: Uint8List.fromList([137, 80, 78, 71]),
+        home: Scaffold(
+          body: SettingsScreen(
+            client: client,
+            logoPicker: () async => OrganizationLogoPick(
+              filename: 'logo.png',
+              bytes: Uint8List.fromList([137, 80, 71]),
+            ),
           ),
         ),
       ),

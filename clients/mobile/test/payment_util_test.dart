@@ -32,8 +32,27 @@ void main() {
       expect(summary.balance, 150);
     });
 
+    test('INVOICE computes balance when balance_due absent', () {
+      final summary = buildPaymentSummary('INVOICE', {
+        'amount': 200,
+        'amount_paid': 50,
+      });
+      expect(summary!.balance, 150);
+    });
+
     test('returns null for unsupported entity', () {
       expect(buildPaymentSummary('PRODUCT', {}), isNull);
+    });
+
+    test('parses non-numeric amounts as zero', () {
+      final summary = buildPaymentSummary('PURCHASE_ORDER', {
+        'total_amount': 'bad',
+        'amount_paid': null,
+        'balance_due': 'n/a',
+      });
+      expect(summary!.total, 0);
+      expect(summary.paid, 0);
+      expect(summary.balance, 0);
     });
   });
 
@@ -73,6 +92,17 @@ void main() {
           'status': 'received',
           'balance_due': 25,
         }),
+        isTrue,
+      );
+    });
+
+    test('uses recordId parameter when id absent on record', () {
+      expect(
+        canRecordVendorPayment(
+          'PURCHASE_ORDER',
+          {'status': 'received', 'balance_due': 10},
+          recordId: 'po-2',
+        ),
         isTrue,
       );
     });
@@ -116,6 +146,17 @@ void main() {
         isTrue,
       );
     });
+
+    test('rejects creatingNew invoice even with balance', () {
+      expect(
+        canCollectCustomerPayment(
+          'INVOICE',
+          {'status': 'sent', 'balance_due': 10},
+          creatingNew: true,
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('payment prefill helpers', () {
@@ -133,6 +174,11 @@ void main() {
         'customer_id': 'cust-1',
       });
       expect(customerPaymentPrefill({}, 'inv-9'), {'invoice_id': 'inv-9'});
+    });
+
+    test('prefill skips empty supplier and customer ids', () {
+      expect(vendorPaymentPrefill({'supplier_id': ''}, 'po-9'), {'po_id': 'po-9'});
+      expect(customerPaymentPrefill({'customer_id': ''}, 'inv-9'), {'invoice_id': 'inv-9'});
     });
   });
 }

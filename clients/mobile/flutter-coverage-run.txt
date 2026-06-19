@@ -1,0 +1,633 @@
+﻿00:00 +0: loading C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: (setUpAll)
+00:01 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: (setUpAll)
+00:02 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen loading exposes screen reader semantics
+00:05 +1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows MFA step indicator and advances on enroll
+00:05 +2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows MFA step indicator and advances on enroll
+00:05 +3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:07 +4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:07 +5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_i18n_strings_test.dart: admin i18n keys resolve for en-US
+00:10 +6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows payments disabled and white label banner
+00:10 +7: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows payments disabled and white label banner
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Payments disabled in platform config.": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart:136:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart line 136
+The test description was:
+  AccountScreen shows payments disabled and white label banner
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:10 +7 -1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_i18n_strings_test.dart: admin i18n keys resolve for fr-FR
+00:10 +7 -1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows payments disabled and white label banner [E]
+  Test failed. See exception logs above.
+  The test description was: AccountScreen shows payments disabled and white label banner
+  
+00:10 +8 -1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+00:11 +9 -1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+00:11 +9 -1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen payment flow and admin actions
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "User": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart:147:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart line 147
+The test description was:
+  AccountScreen payment flow and admin actions
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:11 +9 -2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+00:11 +9 -2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen payment flow and admin actions [E]
+  Test failed. See exception logs above.
+  The test description was: AccountScreen payment flow and admin actions
+  
+00:11 +10 -2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows load and MFA errors
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Enroll MFA": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart:174:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  AccountScreen shows load and MFA errors
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+00:12 +10 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: (setUpAll)
+00:12 +10 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows load and MFA errors [E]
+  Test failed. See exception logs above.
+  The test description was: AccountScreen shows load and MFA errors
+  
+00:12 +10 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: (setUpAll)
+00:13 +10 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen loading exposes screen reader semantics
+00:13 +11 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminUsersScreen loads users and opens create form
+00:14 +12 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminUsersScreen loads users and opens create form
+00:14 +13 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminUsersScreen loads users and opens create form
+00:14 +14 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminUsersScreen loads users and opens create form
+00:17 +15 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminRolesScreen loads roles
+00:18 +16 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminPermissionsScreen lists permissions
+00:18 +17 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AdminSecurityScreen loads policies
+00:19 +18 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: AssistantScreen sends chat message when enabled
+00:21 +19 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: (setUpAll)
+00:22 +20 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: (setUpAll)
+00:22 +20 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:23 +21 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:25 +22 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:25 +23 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:25 +24 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: CurrencyField and layout widgets render
+00:25 +25 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_screens_test.dart: CurrencyField and layout widgets render
+00:25 +26 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +27 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +28 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +29 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +30 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +31 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +32 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:25 +33 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen chat and summarize populate response
+00:27 +34 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: (tearDownAll)
+00:27 +34 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract form and grid fixtures include CRM profile fields
+00:27 +35 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +36 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +37 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +38 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +39 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +40 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +41 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +42 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +43 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +44 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +45 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +46 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/assistant_screen_test.dart: AssistantScreen shows chat error
+00:27 +47 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: CONTACT CRM contract LEAD and CONTACT fixtures align with W1 rollout
+00:31 +48 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:31 +48 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:33 +49 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:35 +50 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/currency_field_test.dart: CurrencyField shows currency prefix from field metadata
+00:36 +51 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD record screen shows main section fields
+00:37 +52 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD record screen shows main section fields
+00:37 +53 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (tearDownAll)
+00:39 +53 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: (setUpAll)
+00:41 +53 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_platform_settings_util_test.dart: returns defaults when documents section is missing
+00:41 +54 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: debug entity record loaded tree
+00:41 +55 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: debug entity record loaded tree
+TEXTS: [SKU-A ΓÇö Alpha, ACTIVE, Edit, Delete, Start STOCK_ADJUSTMENT, Main, SKU, SKU-A, Name, Alpha, Active, Yes, Notes (0), Documents (0), Audit (0), Workflow (0), No workflow instances for this record yet., Document filename, Document content, Upload document, SKU-A ΓÇö Alpha]
+CPI count: 0
+Main semantics: 1
+00:45 +56 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: (tearDownAll)
+00:45 +56 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: (setUpAll)
+00:45 +56 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +57 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +58 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +59 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +60 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +61 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:47 +62 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: decodes hex document content
+00:47 +63 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: builds pdf preview for large pdf payload
+00:47 +64 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +65 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +66 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +67 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +68 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +69 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +70 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:48 +71 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:49 +72 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:49 +73 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: decodeBase64Content rejects invalid padding
+00:49 +74 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows download-only for pdf
+00:49 +75 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows download-only for pdf
+00:49 +76 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows download-only for pdf
+00:49 +77 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows download-only for pdf
+00:51 +78 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: virusScanBadgeKind covers scanning and blocked aliases
+00:51 +79 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: virusScanBadgeKind covers scanning and blocked aliases
+00:53 +80 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract on variant uses success badge tokens
+00:54 +81 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: documentDownloadFallbackText falls back to base64 bytes
+00:54 +82 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract off variant uses muted surface container
+00:54 +83 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract off variant uses muted surface container
+00:54 +84 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract off variant uses muted surface container
+00:54 +85 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract off variant uses muted surface container
+00:54 +86 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_contract_test.dart: EmcapClient exposes SDD platform API methods
+00:54 +87 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract warn variant uses warn badge tokens
+00:54 +88 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract status chip maps active to on variant
+00:55 +89 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract status chip maps inactive to off variant
+00:55 +90 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract badge radius uses token radiusSm
+00:57 +91 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: session helpers set token and tenant
+00:58 +92 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: MaskedSecretView parses json
+00:58 +93 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: login and auth endpoints
+00:58 +94 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: metadata and entity CRUD endpoints
+00:58 +95 -3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: notes documents sync endpoints
+00:58 +95 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: notes documents sync endpoints [E]
+  type 'Null' is not a subtype of type 'List<dynamic>' in type cast
+  package:emcap_mobile/api/emcap_client.dart 251:62  EmcapClient.listDocuments
+  
+00:58 +95 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: workflow endpoints
+00:58 +96 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: reports dashboards notifications endpoints
+00:58 +97 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: platform config health tenants permissions
+01:00 +98 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: GridMetadata bulk_actions contract parses bulk_actions flag
+01:01 +99 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: payments and integrations endpoints
+01:01 +100 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: payments and integrations endpoints
+01:01 +101 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: payments and integrations endpoints
+01:01 +102 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection recordIdsFromPage skips empty ids
+01:01 +103 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: ai endpoints
+01:01 +104 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection toggleRecordSelection adds and removes ids
+01:01 +105 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +106 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +107 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +108 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +109 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +110 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: admin endpoints
+01:01 +111 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: 401 clears token and invokes unauthorized handler
+01:01 +112 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: 204 responses decode to empty map
+01:01 +113 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: 400 errors throw without clearing session when no token
+01:01 +114 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: subscribeRecordsStream invokes callback on SSE chunk
+01:05 +115 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: (setUpAll)
+01:06 +115 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: EntityListScreen shows bulk toolbar when bulk_actions enabled
+01:11 +116 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_platform_mobile_test.dart: lookup field contract FormMetadata parses lookup field with lookup_entity
+01:11 +117 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +118 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +119 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +120 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +121 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +122 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +123 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +124 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:11 +125 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:12 +126 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:14 +127 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+01:15 +128 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:17 +129 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero shows SKU ΓÇö Name em dash headline
+01:17 +130 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero shows SKU ΓÇö Name em dash headline
+01:18 +131 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: (tearDownAll)
+01:18 +131 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +132 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +133 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +134 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +135 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +136 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +137 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +138 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:18 +139 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:19 +140 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:19 +141 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT lines filter contract filters lines by movement_id
+01:19 +142 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero inactive chip uses off variant
+01:19 +143 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero inactive chip uses off variant
+01:19 +144 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero inactive chip uses off variant
+01:19 +145 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: new PRODUCT record shows create headline
+01:22 +146 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: (setUpAll)
+01:22 +146 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: (setUpAll)
+01:22 +146 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+01:26 +147 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+01:26 +148 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen restore action calls client restoreRecord
+01:28 +149 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen restore action calls client restoreRecord
+01:28 +150 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: (tearDownAll)
+01:29 +150 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: (tearDownAll)
+01:31 +150 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+01:33 +151 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+01:33 +152 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: PRODUCT metadata fixture contract grid.keys includes system columns after business fields
+01:33 +153 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +154 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +155 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +156 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +157 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +158 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +159 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +160 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +161 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:33 +162 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:34 +163 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:34 +164 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:34 +165 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:34 +166 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:34 +167 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:36 +168 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: ACCOUNT metadata fixture contract form.keys lists business fields only
+01:36 +169 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +170 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +171 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +172 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +173 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +174 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +175 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +176 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +177 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +178 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +179 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +180 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +181 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +182 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +183 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +184 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +185 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +186 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +187 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +188 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +189 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +190 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +191 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +192 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +193 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +194 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +195 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +196 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +197 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +198 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +199 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +200 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +201 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +202 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +203 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +204 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:36 +205 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:38 +206 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:38 +207 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+01:38 +208 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: CONTACT CRM fixture contract form.keys lists name email and lead lookup
+01:39 +209 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: parses all fixture field types into FormFieldMetadata
+01:39 +210 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+01:39 +211 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+01:39 +212 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+01:39 +213 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+01:40 +214 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen SO add line navigates with sales_order_id prefill
+01:41 +215 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies sales_order_id query param
+01:43 +216 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+01:43 +217 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:44 +218 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:44 +219 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:44 +220 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:44 +221 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:44 +222 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+01:46 +223 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: (tearDownAll)
+01:47 +223 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: (setUpAll)
+01:47 +223 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile en-US contains every web key
+01:47 +224 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile bn-BD contains every web key
+01:47 +225 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile fr-FR contains every web key
+01:48 +226 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile-only drift is limited to known keys
+01:48 +227 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: bn-BD settings.organization.* parity with web
+01:48 +228 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: (tearDownAll)
+01:50 +228 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: (setUpAll)
+01:50 +228 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: t resolves known key from default locale
+01:50 +229 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: t substitutes params in template
+01:50 +230 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: t falls back to key when missing
+01:50 +231 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: plural selects category and injects count
+01:50 +232 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_service_test.dart: bundle returns map for supported locale
+01:52 +233 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +234 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +235 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +236 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +237 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +238 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:52 +238 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: LayoutEditorPanel loads entity metadata tabs
+01:56 +239 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: (setUpAll)
+01:57 +239 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: resolvePluralCategory follows CLDR one/other
+01:57 +240 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatInteger uses Western Arabic numerals for en-US
+01:57 +241 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatInteger uses Bengali digits for bn-BD
+01:57 +242 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatCurrency localizes symbol and digits
+01:57 +243 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatDate formats with locale tag
+01:57 +244 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: canonicalLocaleTag resolves legacy aliases
+01:57 +245 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatDate accepts custom pattern
+01:58 +246 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: (setUpAll)
+01:58 +246 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +247 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +248 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +249 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +250 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +251 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +252 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:00 +253 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:04 +254 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows session expired message when flagged
+02:05 +255 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: (tearDownAll)
+02:08 +255 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: (setUpAll)
+02:08 +255 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/material_icon_util_test.dart: iconFromMaterialName resolves module menu icons
+02:08 +256 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField resolves selected record label
+02:08 +257 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField resolves selected record label
+02:11 +258 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:12 +259 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:12 +260 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:12 +261 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:12 +262 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:15 +263 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:15 +264 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/metadata_contract_test.dart: validates required field
+02:15 +265 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:15 +266 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:15 +267 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:15 +268 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:15 +269 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:15 +270 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:16 +271 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:16 +272 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:16 +273 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:16 +274 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:16 +275 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog shows load failure message
+02:18 +276 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: EmcapClient exposes subscribeRecordsStream for grid realtime
+02:19 +277 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: (tearDownAll)
+02:19 +277 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses realtime flag from API payload
+02:19 +278 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata defaults realtime to true when omitted
+02:19 +279 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses offline and grouping flags
+02:19 +280 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses bulk_actions alongside realtime flags
+02:19 +281 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: realtime-disabled grid should not require stream subscription at contract level
+02:19 +282 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: subscribeRecordsStream targets entity records stream endpoint
+02:19 +283 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: offline-enabled grid pairs with sync contract defaults
+02:21 +284 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile accepts png within size limit
+02:22 +285 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile rejects empty file
+02:22 +286 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile rejects bad extension
+02:22 +287 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile rejects oversize file
+02:22 +288 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:22 +289 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: isOrganizationLogoPreviewAllowed accepts http(s) and document content paths
+02:22 +290 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: resolveOrganizationLogoPreviewUrl prefixes API base for document paths
+02:22 +291 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: resolveOrganizationLogoPreviewUrl passes through https unchanged
+02:22 +292 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: resolveOrganizationLogoPreviewUrl strips trailing slash from base
+02:22 +293 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: resolveOrganizationLogoPreviewUrl returns empty for disallowed urls
+02:22 +294 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: isOrganizationLogoPreviewAllowed rejects blank url
+02:22 +295 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile accepts common image extensions
+02:24 +296 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart: parseOrganizationProfile reads platform defaults
+02:24 +297 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart: formatOrganizationAddressLine joins non-empty parts
+02:24 +298 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart: resolveDocumentHeaderFooter interpolates tokens
+02:24 +299 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart: isOrganizationLogoPreviewAllowed accepts http(s) only
+02:24 +300 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart: buildOrganizationProfilePayload trims strings
+02:26 +301 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: showPaymentSummaryCard returns true for PO and INVOICE
+02:26 +302 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: buildPaymentSummary PO computes balance when balance_due absent
+02:26 +303 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: buildPaymentSummary INVOICE uses amount field
+02:26 +304 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: buildPaymentSummary INVOICE computes balance when balance_due absent
+02:26 +305 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: buildPaymentSummary returns null for unsupported entity
+02:26 +306 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: canRecordVendorPayment rejects wrong entity, new record, cancelled, zero balance
+02:26 +307 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: canRecordVendorPayment allows PO with outstanding balance
+02:26 +308 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: canRecordVendorPayment uses recordId parameter when id absent on record
+02:26 +309 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: canCollectCustomerPayment rejects paid, void, and zero balance invoices
+02:26 +310 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: canCollectCustomerPayment allows open invoice with balance
+02:26 +311 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: payment prefill helpers vendorPaymentPrefill includes supplier when present
+02:26 +312 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/payment_util_test.dart: payment prefill helpers customerPaymentPrefill includes customer when present
+02:29 +313 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: groupPermissions sorts by module
+02:29 +314 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: hasSelectedPermission respects wildcards
+02:29 +315 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: togglePermission adds and removes entries
+02:29 +316 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: toggleWildcard replaces module permissions
+02:29 +317 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: formatRoleSummary joins role names
+02:29 +318 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: permissionModule maps wildcards and bare codes to platform
+02:31 +319 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: (setUpAll)
+02:32 +319 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:33 +320 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:33 +321 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:33 +322 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:33 +323 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:33 +324 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:34 +325 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows empty state
+02:34 +326 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +327 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +328 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +329 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +330 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +331 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +332 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +333 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +334 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +335 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +336 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +337 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +338 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +339 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +340 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:35 +341 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen lists reports and runs with rows
+02:37 +342 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows error when list fails
+02:37 +343 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +344 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +345 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +346 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +347 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +348 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +349 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +350 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +351 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +352 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +353 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +354 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +355 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +356 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: ReportScreen shows no rows after successful run
+02:37 +357 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView STOCK_MOVEMENT movement_number
+02:37 +358 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:37 +359 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:37 +360 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:37 +361 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:37 +362 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:37 +363 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows empty state
+02:39 +364 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView CUSTOMER name-only headline
+02:39 +365 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen renders dashboard cards
+02:39 +366 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen renders dashboard cards
+02:39 +367 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen renders dashboard cards
+02:39 +368 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen renders dashboard cards
+02:39 +369 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: DashboardScreen shows error when load fails
+02:39 +370 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: NotificationScreen loads channels and sends notification
+02:42 +371 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/sales_order_util_test.dart: canAddSalesOrderLine allows draft and confirmed SO
+02:42 +372 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: NotificationScreen shows send error
+02:42 +373 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: NotificationScreen shows send error
+02:42 +374 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: NotificationScreen shows send error
+02:43 +375 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/platform_screens_test.dart: (tearDownAll)
+02:45 +375 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/security_platform_settings_util_test.dart: parseSecurityPlatformSettings reads ABAC policy count
+02:45 +376 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/security_platform_settings_util_test.dart: parseSecurityPlatformSettings defaults when security section missing
+02:48 +377 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: (setUpAll)
+02:49 +377 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +378 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +379 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +380 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +381 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +382 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:51 +383 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:53 +384 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +385 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +386 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +387 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +388 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +389 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:54 +390 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+02:56 +391 -4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with key [<'settings-save'>]: []" (used in a call to "tap()") could not
+find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:172:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen save sends organization profile with templates
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+02:58 +391 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: (setUpAll)
+02:58 +391 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen save sends organization profile with templates
+  
+02:58 +391 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/status_chip_util_test.dart: buildStatusChipView uses metadata labels
+02:59 +392 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel resolves org.* labels in fr-FR
+02:59 +393 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel resolves org.* labels in fr-FR
+02:59 +394 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel resolves org.* labels in fr-FR
+03:02 +395 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +396 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +397 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +398 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +399 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +400 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell loads nav and shows workflow inbox by default
+03:03 +401 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen uploads logo via injectable picker
+03:03 +402 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to entity list via rail
+03:05 +403 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: (tearDownAll)
+03:05 +403 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:05 +404 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:05 +405 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:05 +406 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:05 +407 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:09 +408 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:09 +409 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:09 +410 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to settings reports dashboards notifications account
+03:10 +411 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell navigates to admin screens
+03:12 +412 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +413 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +414 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +415 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +416 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +417 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +418 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +419 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +420 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +421 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:13 +422 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell toggles theme locale and density from app bar
+03:16 +423 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell drawer navigation on narrow layout
+03:18 +424 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_detail_util_test.dart: workflowRowActions draft returns submit
+03:18 +425 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +426 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +427 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +428 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +429 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +430 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +431 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +432 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:18 +433 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: EmcapShell tenant dropdown updates client tenant
+03:21 +434 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/shell_test.dart: (tearDownAll)
+03:22 +434 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: (setUpAll)
+03:22 +434 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+03:23 +435 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+03:23 +436 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+03:23 +437 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+03:25 +438 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+03:25 +439 -5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters
+ΓòÉΓòÉΓòí EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK Γò₧ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.last (dart:core/iterable.dart:679:7)
+#1      _LastFinderMixin.filter (package:flutter_test/src/finders.dart:1410:28)
+#3      _AncestorFinderMixin.allCandidates (package:flutter_test/src/finders.dart:1857:49)
+#4      FinderBase.evaluate (package:flutter_test/src/finders.dart:1030:76)
+#5      WidgetController.widgetList (package:flutter_test/src/controller.dart:848:19)
+#6      WidgetController._maybeViewOf (package:flutter_test/src/controller.dart:795:34)
+#7      WidgetController.tap (package:flutter_test/src/controller.dart:1078:31)
+#8      main.<anonymous closure> (file:///C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart:57:18)
+<asynchronous suspension>
+#9      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#10     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 2 frames from dart:async-patch and package:stack_trace)
+
+The test description was:
+  WorkflowInboxScreen lists instances and filters
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+03:26 +439 -6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen lists instances and filters [E]
+  Test failed. See exception logs above.
+  The test description was: WorkflowInboxScreen lists instances and filters
+  
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+03:26 +439 -6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen shows detail escalate transition delegate
+03:28 +440 -6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen shows error on load failure
+03:28 +441 -6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: WorkflowInboxScreen open entity callback fires
+03:29 +442 -6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_inbox_screen_test.dart: (tearDownAll)
+03:30 +442 -6: Some tests failed.
+
+Failing tests:
+  C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen payment flow and admin actions
+  C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows load and MFA errors
+  C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows payments disabled and white label banner
+  C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_http_test.dart: notes documents sync endpoints
+  ... and 2 more

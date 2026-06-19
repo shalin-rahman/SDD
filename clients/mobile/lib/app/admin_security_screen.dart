@@ -265,28 +265,30 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
               Text('${EmcapLocale.t('admin.security.readPermission')}: ${entity['read_permission']}'),
               Text('${EmcapLocale.t('admin.security.rowAccess')}: ${entity['row_access']}'),
               const SizedBox(height: 16),
-              DataTable(
-                columns: [
-                  DataColumn(label: Text(EmcapLocale.t('admin.security.field'))),
-                  DataColumn(label: Text(EmcapLocale.t('admin.security.access'))),
-                  DataColumn(label: Text(EmcapLocale.t('admin.security.requiredPermissions'))),
-                ],
-                rows: [
-                  for (final field in List<Map<String, dynamic>>.from(entity['fields'] as List? ?? []))
-                    DataRow(
-                      onSelectChanged: _canEditSecurity
-                          ? (_) => _editFieldAccess(
-                                '${field['name']}',
-                                List<String>.from(field['read_roles'] as List? ?? []),
-                              )
-                          : null,
-                      cells: [
-                        DataCell(Text('${field['name']}')),
-                        DataCell(Text(_accessLabel('${field['access']}'))),
-                        DataCell(Text((field['read_roles'] as List?)?.join(', ') ?? '—')),
-                      ],
-                    ),
-                ],
+              Material(
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text(EmcapLocale.t('admin.security.field'))),
+                    DataColumn(label: Text(EmcapLocale.t('admin.security.access'))),
+                    DataColumn(label: Text(EmcapLocale.t('admin.security.requiredPermissions'))),
+                  ],
+                  rows: [
+                    for (final field in List<Map<String, dynamic>>.from(entity['fields'] as List? ?? []))
+                      DataRow(
+                        onSelectChanged: _canEditSecurity
+                            ? (_) => _editFieldAccess(
+                                  '${field['name']}',
+                                  List<String>.from(field['read_roles'] as List? ?? []),
+                                )
+                            : null,
+                        cells: [
+                          DataCell(Text('${field['name']}')),
+                          DataCell(Text(_accessLabel('${field['access']}'))),
+                          DataCell(Text((field['read_roles'] as List?)?.join(', ') ?? '—')),
+                        ],
+                      ),
+                  ],
+                ),
               ),
               if (_rules['row_access'] != null) ...[
                 const SizedBox(height: 16),
@@ -328,7 +330,8 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
               if (_abacError != null) Text(_abacError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: DataTable(
+                child: Material(
+                  child: DataTable(
                   columns: [
                     DataColumn(label: Text(EmcapLocale.t('admin.security.colPermission'))),
                     DataColumn(label: Text(EmcapLocale.t('admin.security.colAttribute'))),
@@ -346,6 +349,7 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
                       ],
                     );
                   }).toList(),
+                ),
                 ),
               ),
               Row(

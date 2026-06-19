@@ -666,7 +666,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return Semantics(
         label: EmcapLocale.t('a11y.screenReader.loading'),
         liveRegion: true,
-        child: const Center(child: CircularProgressIndicator()),
+        container: true,
+        child: ExcludeSemantics(
+          child: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
@@ -773,7 +776,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         Align(
           alignment: Alignment.centerRight,
-          child: FilledButton(onPressed: _saveSettings, child: Text(EmcapLocale.t('settings.save'))),
+          child: FilledButton(
+            key: const Key('settings-save'),
+            onPressed: _saveSettings,
+            child: Text(EmcapLocale.t('settings.save')),
+          ),
         ),
         SizedBox(height: tokens.spaceSm),
         SettingsToggleGroup(
@@ -1301,6 +1308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SizedBox(height: tokens.spaceSm),
                     TextField(
+                      key: const Key('org-invoice-header'),
                       controller: _orgInvoiceHeaderController,
                       maxLines: 2,
                       decoration: InputDecoration(

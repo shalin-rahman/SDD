@@ -8,7 +8,9 @@ import 'package:emcap_mobile/theme.dart';
 import 'package:emcap_mobile/widgets/lookup_field.dart';
 
 class _LookupClient extends EmcapClient {
-  _LookupClient() : super('http://localhost:8000');
+  _LookupClient({this.failList = false}) : super('http://localhost:8000');
+
+  final bool failList;
 
   @override
   Future<Map<String, dynamic>> getRecord(String entityCode, String recordId) async {
@@ -19,10 +21,13 @@ class _LookupClient extends EmcapClient {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
-        {'id': 'wh-1', 'code': 'WH-01', 'name': 'Main'},
-        {'id': 'wh-2', 'code': 'WH-02', 'name': 'Secondary'},
-      ];
+  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+    if (failList) throw Exception('list failed');
+    return [
+      {'id': 'wh-1', 'code': 'WH-01', 'name': 'Main'},
+      {'id': 'wh-2', 'code': 'WH-02', 'name': 'Secondary'},
+    ];
+  }
 }
 
 final _warehouseLookupField = FormFieldMetadata(
@@ -108,5 +113,26 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(value, isNull);
+  });
+
+  testWidgets('LookupPickerDialog shows load failure message', (tester) async {
+    final failingClient = _LookupClient(failList: true);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
+        home: Scaffold(
+          body: LookupField(
+            client: failingClient,
+            field: _warehouseLookupField,
+            label: 'Warehouse',
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('${EmcapLocale.t('field.lookup.choose')} WAREHOUSE'));
+    await tester.pumpAndSettle();
+    expect(find.text(EmcapLocale.t('field.lookup.loadFailed')), findsOneWidget);
   });
 }

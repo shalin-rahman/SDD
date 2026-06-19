@@ -58,9 +58,9 @@ void main() {
     );
     await settleEntityScreen(tester);
 
-    expect(find.text('Globex — Pat'), findsOneWidget);
+    expect(find.text('Globex — Pat'), findsNWidgets(2));
     expect(find.byType(EmcapStatusChip), findsOneWidget);
-    expect(find.text('Active'), findsOneWidget);
+    expect(find.text('ACTIVE'), findsOneWidget);
   });
 
   testWidgets('LEAD record screen shows main section fields', (tester) async {

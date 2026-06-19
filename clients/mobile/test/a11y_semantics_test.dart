@@ -14,10 +14,10 @@ import 'support/screen_metadata_fixtures.dart';
 import 'support/screen_test_harness.dart';
 
 class _SlowSettingsClient extends EmcapClient {
-  final _gate = Completer<Map<String, dynamic>>();
+  final gate = Completer<Map<String, dynamic>>();
 
   @override
-  Future<Map<String, dynamic>> getAdminSettings() => _gate.future;
+  Future<Map<String, dynamic>> getAdminSettings() => gate.future;
 }
 
 class _ImmediateSettingsClient extends EmcapClient {
@@ -65,10 +65,10 @@ class _ImmediateSettingsClient extends EmcapClient {
 }
 
 class _SlowEntityListClient extends EmcapClient {
-  final _gate = Completer<Map<String, dynamic>>();
+  final gate = Completer<Map<String, dynamic>>();
 
   @override
-  Future<Map<String, dynamic>> getFormMetadata(String entityCode) => _gate.future;
+  Future<Map<String, dynamic>> getFormMetadata(String entityCode) => gate.future;
 
   @override
   Future<Map<String, dynamic>> getGridMetadata(String entityCode) async =>
@@ -99,10 +99,10 @@ class _ImmediateEntityListClient extends EmcapClient {
 }
 
 class _SlowEntityRecordClient extends EmcapClient {
-  final _gate = Completer<Map<String, dynamic>>();
+  final gate = Completer<Map<String, dynamic>>();
 
   @override
-  Future<Map<String, dynamic>> getFormMetadata(String entityCode) => _gate.future;
+  Future<Map<String, dynamic>> getFormMetadata(String entityCode) => gate.future;
 }
 
 class _ImmediateEntityRecordClient extends EmcapClient {
@@ -142,13 +142,19 @@ void main() {
   });
 
   testWidgets('SettingsScreen loading exposes screen reader semantics', (tester) async {
+    final client = _SlowSettingsClient();
+    addTearDown(() {
+      if (!client.gate.isCompleted) {
+        client.gate.completeError(StateError('test finished'));
+      }
+    });
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
-        home: SettingsScreen(client: _SlowSettingsClient()),
+        home: SettingsScreen(client: client),
       ),
     );
-    await tester.pump();
+    await settleLoadingSemantics(tester);
 
     expect(
       find.bySemanticsLabel(EmcapLocale.t('a11y.screenReader.loading')),
@@ -172,19 +178,25 @@ void main() {
   });
 
   testWidgets('EntityListScreen loading exposes screen reader semantics', (tester) async {
+    final client = _SlowEntityListClient();
+    addTearDown(() {
+      if (!client.gate.isCompleted) {
+        client.gate.completeError(StateError('test finished'));
+      }
+    });
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
         home: Scaffold(
           body: EntityListScreen(
-            client: _SlowEntityListClient(),
+            client: client,
             entityCode: 'PRODUCT',
             title: 'Products',
           ),
         ),
       ),
     );
-    await tester.pump();
+    await settleLoadingSemantics(tester);
 
     expect(
       find.bySemanticsLabel(EmcapLocale.t('a11y.screenReader.loading')),
@@ -214,18 +226,24 @@ void main() {
   });
 
   testWidgets('EntityRecordScreen loading exposes screen reader semantics', (tester) async {
+    final client = _SlowEntityRecordClient();
+    addTearDown(() {
+      if (!client.gate.isCompleted) {
+        client.gate.completeError(StateError('test finished'));
+      }
+    });
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
         home: EntityRecordScreen(
-          client: _SlowEntityRecordClient(),
+          client: client,
           entityCode: 'PRODUCT',
           title: 'Products',
           recordId: 'prod-1',
         ),
       ),
     );
-    await tester.pump();
+    await settleLoadingSemantics(tester);
 
     expect(
       find.bySemanticsLabel(EmcapLocale.t('a11y.screenReader.loading')),

@@ -52,4 +52,15 @@ void main() {
     expect(shouldRunBulkDelete(bulkActionsEnabled: false, selected: {'a'}), isFalse);
     expect(shouldRunBulkDelete(bulkActionsEnabled: true, selected: {}), isFalse);
   });
+
+  test('buildGridExportCsv handles missing column values', () {
+    final csv = buildGridExportCsv(['id', 'name'], [
+      {'id': 'a'},
+    ]);
+    expect(csv.split('\n').last, 'a,');
+  });
+
+  test('toggleSelectAllOnPage no-op when page has no ids', () {
+    expect(toggleSelectAllOnPage({'a'}, [{'name': 'No id'}]), {'a'});
+  });
 }

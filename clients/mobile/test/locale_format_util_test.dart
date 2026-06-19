@@ -1,6 +1,6 @@
 import 'package:emcap_mobile/utils/locale_format_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:intl/intl.dart';
 import 'support/screen_test_harness.dart';
 
 void main() {
@@ -34,5 +34,20 @@ void main() {
     final date = DateTime.utc(2026, 6, 19);
     expect(formatDate(date, 'en-US'), isNotEmpty);
     expect(formatDate(date, 'bn-BD'), isNotEmpty);
+  });
+
+  test('canonicalLocaleTag resolves legacy aliases', () {
+    expect(canonicalLocaleTag('en'), 'en-US');
+    expect(canonicalLocaleTag('fr-FR'), 'fr-FR');
+    expect(canonicalLocaleTag('bn'), 'bn-BD');
+  });
+
+  test('supportedLocaleTags includes primary locales', () {
+    expect(supportedLocaleTags, containsAll(['en-US', 'bn-BD', 'fr-FR']));
+  });
+
+  test('formatDate accepts custom pattern', () {
+    final date = DateTime.utc(2026, 6, 19);
+    expect(formatDate(date, 'en-US', pattern: DateFormat('yyyy-MM-dd')), '2026-06-19');
   });
 }

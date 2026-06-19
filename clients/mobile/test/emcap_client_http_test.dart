@@ -23,7 +23,11 @@ http.Client _mockHttpClient() {
     if (path.startsWith('/api/v1/metadata/forms/')) return _json({'sections': []});
     if (path.startsWith('/api/v1/metadata/grids/')) return _json({'columns': []});
     if (path.contains('/records/stream')) {
-      return http.StreamedResponse(Stream.value(utf8.encode('data: {}\n\n')), 200);
+      return http.Response('data: {}\n\n', 200);
+    }
+    if (path.contains('/notes')) {
+      if (method == 'GET') return _json({'notes': []});
+      return _json({'id': 'n1'});
     }
     if (path.contains('/records') && method == 'GET' && !path.contains('/notes')) {
       if (path.endsWith('/records')) return _json({'records': []});
@@ -35,10 +39,6 @@ http.Client _mockHttpClient() {
     if (path.contains('/records') && method == 'POST') return _json({'id': 'new'});
     if (path.contains('/records') && method == 'PUT') return _json({'id': 'r1'});
     if (path.contains('/records') && method == 'DELETE') return http.Response('', 204);
-    if (path.contains('/notes')) {
-      if (method == 'GET') return _json({'notes': []});
-      return _json({'id': 'n1'});
-    }
     if (path.startsWith('/api/v1/workflows/instances') && method == 'GET') {
       if (path == '/api/v1/workflows/instances') return _json({'instances': []});
       return _json({'id': 'wf1'});
@@ -49,9 +49,14 @@ http.Client _mockHttpClient() {
     if (path == '/api/v1/workflows/escalate') return _json({'escalated': 0});
     if (path == '/api/v1/workflows/rules/evaluate') return _json({'result': true});
     if (path.startsWith('/api/v1/documents')) {
-      if (path.contains('/upload')) return _json({'id': 'd1'});
-      if (path.contains('/content')) return _json({'id': 'd1'});
-      return _json({'documents': []});
+      if (path.contains('/upload') && method == 'POST') return _json({'id': 'd1'});
+      if (path == '/api/v1/documents' && method == 'GET') {
+        return _json({'documents': []});
+      }
+      if (method == 'GET') {
+        final id = path.split('/').last;
+        return _json({'id': id});
+      }
     }
     if (path.startsWith('/api/v1/sync/')) {
       if (path.contains('/snapshot')) return _json({'records': []});
@@ -155,6 +160,9 @@ void main() {
     final view = MaskedSecretView.fromJson({'masked': '***', 'configured': true});
     expect(view.masked, '***');
     expect(view.configured, isTrue);
+    final unset = MaskedSecretView.fromJson({});
+    expect(unset.masked, '');
+    expect(unset.configured, isFalse);
   });
 
   test('login and auth endpoints', () async {
@@ -293,6 +301,27 @@ void main() {
     failingClient.setOnUnauthorized(() => called = true);
     await expectLater(failingClient.getHealth(), throwsException);
     expect(called, isTrue);
+  });
+
+  test('204 responses decode to empty map', () async {
+    final emptyClient = EmcapClient(
+      'http://localhost:8000',
+      MockClient((request) async {
+        if (request.method == 'DELETE') {
+          return http.Response('', 204);
+        }
+        return _json({'status': 'ok'});
+      }),
+    );
+    await expectLater(emptyClient.deleteRecord('PRODUCT', 'r1'), completes);
+  });
+
+  test('400 errors throw without clearing session when no token', () async {
+    final clientNoToken = EmcapClient(
+      'http://localhost:8000',
+      MockClient((_) async => http.Response('bad request', 400)),
+    );
+    await expectLater(clientNoToken.getHealth(), throwsA(isA<Exception>()));
   });
 
   test('subscribeRecordsStream invokes callback on SSE chunk', () async {

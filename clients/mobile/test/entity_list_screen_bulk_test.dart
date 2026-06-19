@@ -54,7 +54,7 @@ void main() {
         home: Scaffold(body: EntityListScreen(client: _BulkListClient(), entityCode: 'PRODUCT', title: 'Products')),
       ),
     );
-    await tester.pumpAndSettle();
+    await settleEntityScreen(tester);
 
     expect(find.text(EmcapLocale.t('grid.selectAll')), findsOneWidget);
     expect(find.text(EmcapLocale.t('grid.bulkDelete')), findsOneWidget);
@@ -70,7 +70,7 @@ void main() {
         home: Scaffold(body: EntityListScreen(client: client, entityCode: 'PRODUCT', title: 'Products')),
       ),
     );
-    await tester.pumpAndSettle();
+    await settleEntityScreen(tester);
 
     final deleteFinder = find.widgetWithText(TextButton, EmcapLocale.t('grid.bulkDelete'));
     final deleteButton = tester.widget<TextButton>(deleteFinder);
@@ -86,17 +86,18 @@ void main() {
         home: Scaffold(body: EntityListScreen(client: client, entityCode: 'PRODUCT', title: 'Products')),
       ),
     );
-    await tester.pumpAndSettle();
+    await settleEntityScreen(tester);
 
     await tester.tap(find.byType(Checkbox).at(1));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     final deleteFinder = find.widgetWithText(TextButton, EmcapLocale.t('grid.bulkDelete'));
     final deleteButton = tester.widget<TextButton>(deleteFinder);
     expect(deleteButton.onPressed, isNotNull);
 
     await tester.tap(find.text(EmcapLocale.t('grid.bulkDelete')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(client.deletedIds, isNotEmpty);
   });
@@ -117,12 +118,13 @@ void main() {
         home: Scaffold(body: EntityListScreen(client: _BulkListClient(), entityCode: 'PRODUCT', title: 'Products')),
       ),
     );
-    await tester.pumpAndSettle();
+    await settleEntityScreen(tester);
 
     await tester.tap(find.byType(Checkbox).at(1));
-    await tester.pumpAndSettle();
+    await tester.pump();
     await tester.tap(find.text(EmcapLocale.t('grid.bulkExport')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(clipboardText, isNotNull);
     expect(clipboardText, contains('sku,name'));

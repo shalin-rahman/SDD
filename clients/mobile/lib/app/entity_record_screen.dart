@@ -83,6 +83,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   bool _receivingPo = false;
   String? _receivePoError;
   bool _recordLoaded = false;
+  int _loadGeneration = 0;
 
   @override
   void initState() {
@@ -462,12 +463,14 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     try {
       final version = _recordValues['record_version'];
       final ifMatch = version is int ? version : int.tryParse('$version');
-      await widget.client.updateRecord(
+      final updated = await widget.client.updateRecord(
         widget.entityCode,
         _selectedRecordId!,
         {'status': 'posted'},
         ifMatch: ifMatch,
       );
+      if (!mounted) return;
+      setState(() => _recordValues = Map<String, dynamic>.from(updated));
       _listChanged = true;
       await _loadRecord(_selectedRecordId!);
     } catch (err) {
@@ -798,6 +801,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   }
 
   Future<void> _loadRecord(String recordId) async {
+    final generation = ++_loadGeneration;
     setState(() {
       _selectedRecordId = recordId;
       _creatingNew = false;
@@ -813,6 +817,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       _orderLines = [];
       _orderLinesError = null;
       _receivePoError = null;
+      _createError = null;
       _editingId = null;
     });
     try {
@@ -821,7 +826,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       final documents = await widget.client.listDocuments(widget.entityCode, recordId);
       final auditAll = await widget.client.listAudit(widget.entityCode);
       final audit = auditAll.where((e) => '${e['record_id']}' == recordId).toList();
-      if (!mounted || _selectedRecordId != recordId) return;
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
       setState(() {
         _recordValues = Map<String, dynamic>.from(record);
         _selectedNotes = notes;
@@ -831,17 +836,19 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       if (_showWorkflowSection()) {
         await _loadWorkflowInstances(recordId);
       }
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
       if (widget.entityCode == 'STOCK_MOVEMENT') {
         await _loadMovementLines(recordId);
       }
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
       if (_showOrderLinesSection()) {
         await _loadOrderLines(recordId);
       }
     } catch (err) {
-      if (!mounted || _selectedRecordId != recordId) return;
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
       setState(() => _createError = err.toString());
     } finally {
-      if (mounted && _selectedRecordId == recordId) {
+      if (mounted && _selectedRecordId == recordId && generation == _loadGeneration) {
         setState(() {
           _loadingDetail = false;
           _recordLoaded = true;
@@ -901,7 +908,10 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
             body: Semantics(
               label: EmcapLocale.t('a11y.screenReader.loading'),
               liveRegion: true,
-              child: const Center(child: CircularProgressIndicator()),
+              container: true,
+              child: ExcludeSemantics(
+                child: const Center(child: CircularProgressIndicator()),
+              ),
             ),
           );
         }
@@ -928,7 +938,10 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
             body: Semantics(
               label: EmcapLocale.t('a11y.screenReader.loading'),
               liveRegion: true,
-              child: const Center(child: CircularProgressIndicator()),
+              container: true,
+              child: ExcludeSemantics(
+                child: const Center(child: CircularProgressIndicator()),
+              ),
             ),
           );
         }
@@ -940,10 +953,22 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
           ),
           body: Semantics(
             label: EmcapLocale.t('a11y.landmark.main'),
+            container: true,
+            explicitChildNodes: true,
             child: ListView(
               padding: EdgeInsets.all(context.emcapTokens.spaceMd),
               children: [
               if (_selectedRecordId != null && !_creatingNew) ...[
+                if (_createError != null && _editingId == null) ...[
+                  Text(
+                    _createError!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                  TextButton(
+                    onPressed: () => _loadRecord(_selectedRecordId!),
+                    child: Text(EmcapLocale.t('common.retry')),
+                  ),
+                ],
                 if (isRecordDeleted(_recordValues))
                   Container(
                     width: double.infinity,
@@ -1002,59 +1027,60 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       EmcapStatusChip(label: statusLabel, active: statusActive),
                   ],
                 ),
-                Row(
-                  children: [
-                    if (_canDeleteRecord())
-                      TextButton(onPressed: () => _startEdit(_selectedRecordId!), child: Text(EmcapLocale.t('entity.edit'))),
-                    if (_canDeleteRecord())
-                      TextButton(onPressed: () => _deleteRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.delete'))),
-                    if (_canRestoreRecord())
-                      TextButton(onPressed: () => _restoreRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.restore'))),
-                    if (_canPostMovement())
-                      TextButton(
-                        onPressed: _postingMovement ? null : _postMovement,
-                        child: _postingMovement
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Text(EmcapLocale.t('entity.postMovement')),
-                      ),
-                    if (_canReceivePurchaseOrder())
-                      TextButton(
-                        onPressed: _receivingPo ? null : _receivePurchaseOrder,
-                        child: _receivingPo
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Text(EmcapLocale.t('procurement.po.receive')),
-                      ),
-                    if (_canRecordVendorPayment())
-                      TextButton(
-                        onPressed: _recordVendorPayment,
-                        child: Text(EmcapLocale.t('procurement.payment.record')),
-                      ),
-                    if (_canCollectCustomerPayment())
-                      TextButton(
-                        onPressed: _collectCustomerPayment,
-                        child: Text(EmcapLocale.t('sales.invoice.collect')),
-                      ),
-                    if (_canAddOrderLine())
-                      TextButton(
-                        onPressed: _addOrderLine,
-                        child: Text(EmcapLocale.t('entity.addLine')),
-                      ),
-                    if (_canStartWorkflow())
-                      TextButton(
-                        onPressed: () async {
-                          final workflowCode = entityStartWorkflowCode(widget.entityCode)!;
-                          await widget.client.startWorkflow(workflowCode, _selectedRecordId!);
-                          if (!context.mounted) return;
-                          await _loadWorkflowInstances(_selectedRecordId!);
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(EmcapLocale.t('entity.workflowStarted'))),
-                          );
-                        },
-                        child: Text(EmcapLocale.t('entity.startWorkflow')),
-                      ),
-                  ],
-                ),
+                if (!_loadingDetail)
+                  Row(
+                    children: [
+                      if (_canDeleteRecord())
+                        TextButton(onPressed: () => _startEdit(_selectedRecordId!), child: Text(EmcapLocale.t('entity.edit'))),
+                      if (_canDeleteRecord())
+                        TextButton(onPressed: () => _deleteRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.delete'))),
+                      if (_canRestoreRecord())
+                        TextButton(onPressed: () => _restoreRecord(_selectedRecordId!), child: Text(EmcapLocale.t('entity.restore'))),
+                      if (_canPostMovement())
+                        TextButton(
+                          onPressed: _postingMovement ? null : _postMovement,
+                          child: _postingMovement
+                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              : Text(EmcapLocale.t('entity.postMovement')),
+                        ),
+                      if (_canReceivePurchaseOrder())
+                        TextButton(
+                          onPressed: _receivingPo ? null : _receivePurchaseOrder,
+                          child: _receivingPo
+                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              : Text(EmcapLocale.t('procurement.po.receive')),
+                        ),
+                      if (_canRecordVendorPayment())
+                        TextButton(
+                          onPressed: _recordVendorPayment,
+                          child: Text(EmcapLocale.t('procurement.payment.record')),
+                        ),
+                      if (_canCollectCustomerPayment())
+                        TextButton(
+                          onPressed: _collectCustomerPayment,
+                          child: Text(EmcapLocale.t('sales.invoice.collect')),
+                        ),
+                      if (_canAddOrderLine())
+                        TextButton(
+                          onPressed: _addOrderLine,
+                          child: Text(EmcapLocale.t('entity.addLine')),
+                        ),
+                      if (_canStartWorkflow())
+                        TextButton(
+                          onPressed: () async {
+                            final workflowCode = entityStartWorkflowCode(widget.entityCode)!;
+                            await widget.client.startWorkflow(workflowCode, _selectedRecordId!);
+                            if (!context.mounted) return;
+                            await _loadWorkflowInstances(_selectedRecordId!);
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(EmcapLocale.t('entity.workflowStarted'))),
+                            );
+                          },
+                          child: Text(EmcapLocale.t('entity.startWorkflow')),
+                        ),
+                    ],
+                  ),
                 if (_postMovementError != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),

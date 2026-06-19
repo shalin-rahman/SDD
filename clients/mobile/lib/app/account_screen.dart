@@ -37,7 +37,8 @@ class _AccountScreenState extends State<AccountScreen> {
     final permissions = await widget.client.getPermissions();
     final roles = await widget.client.getRoles();
     final config = await widget.client.getPlatformConfig();
-    final modules = config['modules'] as Map<String, dynamic>? ?? {};
+    final modulesRaw = config['modules'];
+    final modules = modulesRaw is Map ? Map<String, dynamic>.from(modulesRaw) : <String, dynamic>{};
     final paymentsEnabled = (modules['payments'] as Map?)?['enabled'] == true;
     return _AccountData(
       health: health,
@@ -61,7 +62,13 @@ class _AccountScreenState extends State<AccountScreen> {
             );
           }
           if (!snapshot.hasData) {
-            return Center(child: Text(EmcapLocale.t('common.loading')));
+            return Semantics(
+              label: EmcapLocale.t('a11y.screenReader.loading'),
+              liveRegion: true,
+              child: ExcludeSemantics(
+                child: Center(child: Text(EmcapLocale.t('common.loading'))),
+              ),
+            );
           }
           final data = snapshot.data!;
           return ListView(
@@ -246,31 +253,14 @@ class _MfaStepIndicator extends StatelessWidget {
           for (var i = 0; i < steps.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${i + 1}.',
-                    style: TextStyle(
-                      fontWeight: activeStep == i + 1 ? FontWeight.bold : FontWeight.normal,
-                      color: activeStep == i + 1
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      steps[i],
-                      style: TextStyle(
-                        fontWeight: activeStep == i + 1 ? FontWeight.w600 : FontWeight.normal,
-                        color: activeStep == i + 1
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                steps[i],
+                style: TextStyle(
+                  fontWeight: activeStep == i + 1 ? FontWeight.w600 : FontWeight.normal,
+                  color: activeStep == i + 1
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
         ],

@@ -32,5 +32,24 @@ void main() {
       ]),
       'Administrator, Viewer',
     );
+    expect(formatRoleSummary([]), '—');
+    expect(formatRoleSummary([{'code': 'viewer'}]), 'viewer');
+  });
+
+  test('permissionModule maps wildcards and bare codes to platform', () {
+    final groups = groupPermissions(['*.*', 'inventory.read', 'bare']);
+    expect(groups.any((g) => g.module == 'platform'), isTrue);
+    expect(hasSelectedPermission(['*.*'], 'anything.here'), isTrue);
+    expect(hasSelectedPermission(['inventory.*'], 'inventory.write'), isTrue);
+  });
+
+  test('hasSelectedPermission matches prefix wildcard entries', () {
+    expect(hasSelectedPermission(['product.*'], 'product.write'), isTrue);
+    expect(hasSelectedPermission(['product.*'], 'inventory.read'), isFalse);
+  });
+
+  test('permissionModule returns platform for wildcard permissions', () {
+    expect(permissionModule('*.*'), 'platform');
+    expect(permissionModule('inventory.*'), 'platform');
   });
 }

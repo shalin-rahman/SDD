@@ -1,0 +1,38 @@
+﻿00:00 +0: loading C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_coverage_test.dart
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_coverage_test.dart: (setUpAll)
+00:01 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_coverage_test.dart: EntityRecordScreen create prefill applies queryParams
+00:06 +1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+00:08 +2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +7: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +8: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +9: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +10: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +11: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:08 +12: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:10 +13: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen post movement confirms and updates status
+00:10 +14: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen post movement confirms and updates status
+00:10 +15: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:10 +16: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:11 +17: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen restore action calls client restoreRecord
+00:11 +18: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero shows SKU ΓÇö Name em dash headline
+00:12 +19: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+00:12 +20: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+00:12 +21: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:12 +21: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: WAREHOUSE hero uses code em dash name
+00:12 +22: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+00:12 +23: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+00:13 +24: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+00:13 +25: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+00:13 +26: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:13 +27: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:14 +28: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:14 +29: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:15 +30: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+00:15 +31: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+00:15 +32: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD record screen shows main section fields
+00:15 +33: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (tearDownAll)
+00:17 +33: All tests passed!

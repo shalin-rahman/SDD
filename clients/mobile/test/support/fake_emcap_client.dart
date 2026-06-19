@@ -1,5 +1,7 @@
 import 'package:emcap_mobile/api/emcap_client.dart';
 
+import 'screen_metadata_fixtures.dart';
+
 /// Default fake client for shell and admin screen widget tests.
 class FakeEmcapClient extends EmcapClient {
   FakeEmcapClient() : super('http://localhost:8000');
@@ -156,7 +158,12 @@ class FakeEmcapClient extends EmcapClient {
 
   @override
   Future<Map<String, dynamic>> getAdminSecurityPolicies() async => {
-        'policies': {'password_min_length': 8},
+        'entities': [
+          {'code': 'PRODUCT', 'name': 'Product'},
+        ],
+        'rules': {
+          'PRODUCT': {'read': ['*.*']},
+        },
       };
 
   @override
@@ -192,17 +199,24 @@ class FakeEmcapClient extends EmcapClient {
       };
 
   @override
-  Future<Map<String, dynamic>> getFormMetadata(String entityCode) async => {
-        'entity_code': entityCode,
-        'sections': [],
-        'conditions': [],
-      };
+  Future<Map<String, dynamic>> getFormMetadata(String entityCode) async {
+    final json = Map<String, dynamic>.from(productFormMetadataJson());
+    json['entity_code'] = entityCode;
+    return json;
+  }
 
   @override
-  Future<Map<String, dynamic>> getGridMetadata(String entityCode) async => {
-        'entity_code': entityCode,
-        'columns': [],
-      };
+  Future<Map<String, dynamic>> getGridMetadata(String entityCode) async {
+    final json = Map<String, dynamic>.from(productGridMetadataJson());
+    json['entity_code'] = entityCode;
+    return json;
+  }
+
+  @override
+  Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {'sync_version': ''};
+
+  @override
+  Future<Map<String, dynamic>> syncChanges(String entityCode, String since) async => {'count': 0};
 
   @override
   Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [

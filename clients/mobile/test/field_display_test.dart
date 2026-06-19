@@ -25,4 +25,35 @@ void main() {
     expect(formatGridCellValue('email', 'bob@example.com'), 'bob@example.com');
     expect(formatGridCellValue('lead_id', 'lead-1', fieldType: 'lookup'), 'lead-1');
   });
+
+  test('formatRecordFieldValue handles null empty datetime and checkbox', () {
+    expect(formatRecordFieldValue('name', 'text', null), '—');
+    expect(formatRecordFieldValue('name', 'text', ''), '—');
+    expect(formatRecordFieldValue('active', 'checkbox', true), 'Yes');
+    expect(formatRecordFieldValue('active', 'checkbox', false), 'No');
+    expect(
+      formatRecordFieldValue('created_at', 'datetime', '2026-06-19T12:00:00Z', locale: 'en_US'),
+      isNotEmpty,
+    );
+    expect(formatRecordFieldValue('notes', 'textarea', 'long text'), 'long text');
+    expect(formatRecordFieldValue('warehouse_id', 'lookup', 'wh-1'), 'wh-1');
+  });
+
+  test('formatGridCellValue formats datetime system fields', () {
+    expect(
+      formatGridCellValue('updated_at', '2026-06-19T12:00:00Z', locale: 'en_US'),
+      isNotEmpty,
+    );
+  });
+
+  test('formatGridCellValue delegates currency formatting', () {
+    expect(
+      formatGridCellValue('amount', 99.5, fieldType: 'currency', currencyCode: 'USD', locale: 'en_US'),
+      contains('99.50'),
+    );
+  });
+
+  test('formatRecordFieldValue returns raw value for unparseable currency', () {
+    expect(formatRecordFieldValue('amount', 'currency', 'not-a-number'), 'not-a-number');
+  });
 }

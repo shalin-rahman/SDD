@@ -27,4 +27,18 @@ void main() {
     expect(view.label, isEmpty);
     expect(view.active, isFalse);
   });
+
+  test('buildStatusChipView falls back to i18n keys when labels missing', () {
+    const field = StatusFieldMetadata(
+      field: 'active',
+      activeValues: [true],
+      labels: {},
+    );
+    final inactive = buildStatusChipView({'active': false}, field, 'fr', (key) => '[$key]');
+    expect(inactive.label, '[entity.statusInactive]');
+    expect(inactive.active, isFalse);
+
+    final missing = buildStatusChipView({}, field, 'en', (key) => key);
+    expect(missing.label, isEmpty);
+  });
 }

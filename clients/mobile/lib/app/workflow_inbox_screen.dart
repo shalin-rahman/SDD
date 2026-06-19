@@ -408,17 +408,19 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                                   Text('$entityCode · $recordId'),
                                 if (item['assignee'] != null)
                                   Text('${EmcapLocale.t('platform.workflow.colAssignee')}: ${item['assignee']}'),
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
-                                    Text('${EmcapLocale.t('platform.workflow.colDueAt')}: ${_formatDue(item['due_at'], item['sla_hours'])}'),
-                                    if (slaLabel.isNotEmpty) ...[
-                                      const SizedBox(width: 8),
+                                    Text(
+                                      '${EmcapLocale.t('platform.workflow.colDueAt')}: ${_formatDue(item['due_at'], item['sla_hours'])}',
+                                    ),
+                                    if (slaLabel.isNotEmpty)
                                       Chip(
                                         label: Text(slaLabel, style: const TextStyle(fontSize: 11)),
                                         backgroundColor: _slaColor(dueAt),
                                         visualDensity: VisualDensity.compact,
                                       ),
-                                    ],
                                   ],
                                 ),
                                 Wrap(spacing: 4, children: _actionsFor(state, id)),

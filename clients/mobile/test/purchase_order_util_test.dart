@@ -76,6 +76,67 @@ void main() {
     });
   });
 
+  group('PURCHASE_ORDER add line contract', () {
+    test('canAddPurchaseOrderLine for draft and submitted PO', () {
+      expect(
+        canAddPurchaseOrderLine('PURCHASE_ORDER', {'id': 'po-1', 'status': 'draft'}),
+        isTrue,
+      );
+      expect(
+        canAddPurchaseOrderLine('PURCHASE_ORDER', {'id': 'po-1', 'status': 'submitted'}),
+        isTrue,
+      );
+      expect(
+        canAddPurchaseOrderLine('PURCHASE_ORDER', {'id': 'po-1', 'status': 'received'}),
+        isFalse,
+      );
+      expect(canAddPurchaseOrderLine('PRODUCT', {'id': 'po-1', 'status': 'draft'}), isFalse);
+    });
+
+    test('line quantity and unit price parse invalid values as zero', () {
+      expect(purchaseOrderLineQuantity({'quantity': 'bad'}), 0);
+      expect(purchaseOrderLineUnitPrice({'unit_price': ''}), 0);
+    });
+
+    test('canReceivePurchaseOrderStatus allows draft and submitted only', () {
+      expect(canReceivePurchaseOrderStatus({'status': 'draft'}), isTrue);
+      expect(canReceivePurchaseOrderStatus({'status': 'submitted'}), isTrue);
+      expect(canReceivePurchaseOrderStatus({'status': 'received'}), isFalse);
+    });
+
+    test('canReceivePurchaseOrder uses recordId when id absent', () {
+      expect(
+        canReceivePurchaseOrder(
+          'PURCHASE_ORDER',
+          {'status': 'draft'},
+          recordId: 'po-9',
+          orderLineCount: 2,
+        ),
+        isTrue,
+      );
+    });
+
+    test('canAddPurchaseOrderLine rejects creatingNew records', () {
+      expect(
+        canAddPurchaseOrderLine(
+          'PURCHASE_ORDER',
+          {'status': 'draft'},
+          creatingNew: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('filterPurchaseOrderLines ignores rows with mismatched po_id', () {
+      expect(
+        filterPurchaseOrderLines([
+          {'id': 'l1', 'po_id': 'other'},
+        ], 'po-1'),
+        isEmpty,
+      );
+    });
+  });
+
   group('SALES_ORDER line contract', () {
     test('draft SO allows add line', () {
       expect(

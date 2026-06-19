@@ -88,7 +88,7 @@ void main() {
     );
     await settleEntityScreen(tester);
 
-    expect(find.text('MOV-001'), findsOneWidget);
+    expect(find.text('MOV-001'), findsWidgets);
     expect(find.text(EmcapLocale.t('entity.postMovement')), findsOneWidget);
     expect(find.text(EmcapLocale.t('entity.movementLinesTitle')), findsOneWidget);
   });
@@ -118,10 +118,18 @@ void main() {
     await settleEntityScreen(tester);
 
     expect(find.text(EmcapLocale.t('entity.postMovementConfirm')), findsOneWidget);
-    await tester.tap(find.text(EmcapLocale.t('entity.postMovement')).last);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text(EmcapLocale.t('entity.postMovement')),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     await settleEntityScreen(tester);
 
+    expect(find.byType(AlertDialog), findsNothing);
     expect(client.lastUpdate, {'status': 'posted'});
-    expect(find.text(EmcapLocale.t('entity.postMovement')), findsNothing);
+    expect(find.widgetWithText(TextButton, EmcapLocale.t('entity.postMovement')), findsNothing);
   });
 }

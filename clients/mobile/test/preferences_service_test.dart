@@ -37,4 +37,22 @@ void main() {
     await service.saveThemeMode(ThemeMode.system);
     expect(service.loadThemeMode(), ThemeMode.system);
   });
+
+  test('persists compact density preference', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = await PreferencesService.create();
+    expect(service.loadCompactDensity(), isFalse);
+    await service.saveCompactDensity(true);
+    expect(service.loadCompactDensity(), isTrue);
+    await service.saveCompactDensity(false);
+    expect(service.loadCompactDensity(), isFalse);
+  });
+
+  test('loadLocaleTag defaults and canonicalizes stored tag', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = await PreferencesService.create();
+    expect(service.loadLocaleTag(), 'en-US');
+    await service.saveLocaleTag('fr');
+    expect(service.loadLocaleTag(), 'fr-FR');
+  });
 }

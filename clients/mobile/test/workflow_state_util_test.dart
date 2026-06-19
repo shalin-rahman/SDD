@@ -23,4 +23,9 @@ void main() {
   test('workflowStateLabel falls back to raw code', () {
     expect(workflowStateLabel('custom_state'), 'custom_state');
   });
+
+  test('workflowStateLabel returns empty value label for blank state', () {
+    expect(workflowStateLabel(''), EmcapLocale.t('common.emptyValue'));
+    expect(workflowStateLabel('   '), EmcapLocale.t('common.emptyValue'));
+  });
 }

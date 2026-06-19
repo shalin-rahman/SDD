@@ -1,0 +1,26 @@
+﻿00:00 +0: loading C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: (setUpAll)
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+00:03 +1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:05 +2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+00:06 +3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:07 +4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:07 +5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:07 +6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:07 +7: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:08 +8: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:08 +9: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:08 +10: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+00:08 +11: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: debug entity record loaded tree
+00:09 +12: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: debug entity record loaded tree
+00:10 +13: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/debug_record_tree_test.dart: debug entity record loaded tree
+TEXTS: [SKU-A ΓÇö Alpha, ACTIVE, Edit, Delete, Start STOCK_ADJUSTMENT, Main, SKU, SKU-A, Name, Alpha, Active, Yes, Notes (0), Documents (0), Audit (0), Workflow (0), No workflow instances for this record yet., Document filename, Document content, Upload document, SKU-A ΓÇö Alpha]
+CPI count: 0
+Main semantics: 1
+00:10 +14: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+00:11 +15: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen SO add line navigates with sales_order_id prefill
+00:12 +16: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies sales_order_id query param
+00:12 +17: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+00:13 +18: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+00:13 +19: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: (tearDownAll)
+00:13 +19: All tests passed!

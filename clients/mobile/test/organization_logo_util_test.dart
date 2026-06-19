@@ -70,4 +70,45 @@ void main() {
       'http://localhost:8000/api/v1/documents/doc-1/content',
     );
   });
+
+  test('resolveOrganizationLogoPreviewUrl passes through https unchanged', () {
+    expect(
+      resolveOrganizationLogoPreviewUrl('https://cdn.example/logo.png', 'http://localhost:8000'),
+      'https://cdn.example/logo.png',
+    );
+  });
+
+  test('resolveOrganizationLogoPreviewUrl strips trailing slash from base', () {
+    expect(
+      resolveOrganizationLogoPreviewUrl(
+        '/api/v1/documents/doc-1/content',
+        'http://localhost:8000/',
+      ),
+      'http://localhost:8000/api/v1/documents/doc-1/content',
+    );
+  });
+
+  test('resolveOrganizationLogoPreviewUrl returns empty for disallowed urls', () {
+    expect(resolveOrganizationLogoPreviewUrl('', 'http://localhost:8000'), '');
+    expect(resolveOrganizationLogoPreviewUrl('file:///tmp/x.png', 'http://localhost:8000'), '');
+  });
+
+  test('isOrganizationLogoPreviewAllowed rejects blank url', () {
+    expect(isOrganizationLogoPreviewAllowed(''), isFalse);
+    expect(isOrganizationLogoPreviewAllowed('   '), isFalse);
+  });
+
+  test('isOrganizationLogoPreviewAllowed accepts http URLs case-insensitively', () {
+    expect(isOrganizationLogoPreviewAllowed('HTTP://CDN.EXAMPLE/logo.PNG'), isTrue);
+  });
+
+  test('resolveOrganizationLogoPreviewUrl trims whitespace before resolving', () {
+    expect(
+      resolveOrganizationLogoPreviewUrl(
+        '  https://cdn.example/logo.png  ',
+        'http://localhost:8000',
+      ),
+      'https://cdn.example/logo.png',
+    );
+  });
 }

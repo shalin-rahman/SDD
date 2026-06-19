@@ -231,4 +231,65 @@ void main() {
     );
     expect(view.headline, 'EMP-001 — Jane Doe');
   });
+
+  test('buildRecordHeadlineView falls back to record id when fields empty', () {
+    expect(
+      buildRecordHeadlineView('PRODUCT', {}, false, 'prod-x', _t).headline,
+      'entity.record prod-x',
+    );
+    expect(
+      buildRecordHeadlineView('CUSTOMER', {}, false, 'cust-x', _t).headline,
+      'entity.record cust-x',
+    );
+    expect(
+      buildRecordHeadlineView('JOURNAL_ENTRY', {}, false, 'je-x', _t).headline,
+      'entity.record je-x',
+    );
+    expect(
+      buildRecordHeadlineView('CONTACT', {}, false, 'c-x', _t).headline,
+      'entity.record c-x',
+    );
+  });
+
+  test('buildRecordHeadlineView CUSTOMER name-only headline', () {
+    final view = buildRecordHeadlineView(
+      'CUSTOMER',
+      {'name': 'Acme Corp'},
+      false,
+      'cust-1',
+      _t,
+    );
+    expect(view.headline, 'Acme Corp');
+  });
+
+  test('buildRecordHeadlineView CUSTOMER code and name dual headline', () {
+    final view = buildRecordHeadlineView(
+      'CUSTOMER',
+      {'code': 'C-01', 'name': 'Acme Corp'},
+      false,
+      'cust-1',
+      _t,
+    );
+    expect(view.headline, 'C-01 — Acme Corp');
+  });
+
+  test('buildRecordHeadlineView uses single side of dual headline when other empty', () {
+    expect(
+      buildRecordHeadlineView('PRODUCT', {'sku': 'SKU-1'}, false, 'p-1', _t).headline,
+      'SKU-1',
+    );
+    expect(
+      buildRecordHeadlineView('WAREHOUSE', {'name': 'Main'}, false, 'w-1', _t).headline,
+      'Main',
+    );
+    expect(
+      buildRecordHeadlineView('LEAD', {'company': 'Acme'}, false, 'l-1', _t).headline,
+      'Acme',
+    );
+  });
+
+  test('buildRecordHeadlineView generic entity uses record id subtitle', () {
+    final view = buildRecordHeadlineView('PRODUCT', {'sku': 'X'}, false, 'rec-9', _t);
+    expect(view.subtitle, 'rec-9');
+  });
 }

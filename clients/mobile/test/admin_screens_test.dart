@@ -31,7 +31,7 @@ void main() {
         home: home,
       ),
     );
-    await settleEntityScreen(tester);
+    await settleAdminScreen(tester);
   }
 
   testWidgets('AdminUsersScreen loads users and opens create form', (tester) async {
@@ -44,7 +44,7 @@ void main() {
 
   testWidgets('AdminRolesScreen loads roles', (tester) async {
     await pump(tester, AdminRolesScreen(client: FakeEmcapClient()));
-    expect(find.text('admin'), findsOneWidget);
+    expect(find.text('Admin'), findsOneWidget);
   });
 
   testWidgets('AdminPermissionsScreen lists permissions', (tester) async {
@@ -53,15 +53,18 @@ void main() {
   });
 
   testWidgets('AdminSecurityScreen loads policies', (tester) async {
-    await pump(tester, AdminSecurityScreen(client: FakeEmcapClient()));
+    await pump(
+      tester,
+      Scaffold(body: AdminSecurityScreen(client: FakeEmcapClient())),
+    );
     expect(find.text(EmcapLocale.t('admin.security.title')), findsOneWidget);
   });
 
   testWidgets('AssistantScreen sends chat message when enabled', (tester) async {
     await pump(tester, AssistantScreen(client: FakeEmcapClient(), enabled: true));
     await tester.enterText(find.byType(TextField), 'hello');
-    await tester.tap(find.byIcon(Icons.send));
-    await settleEntityScreen(tester);
+    await tester.tap(find.text(EmcapLocale.t('platform.assistant.chat')));
+    await settleAdminScreen(tester);
     expect(find.textContaining('echo: hello'), findsOneWidget);
   });
 
@@ -80,18 +83,21 @@ void main() {
     await pump(tester, ReportScreen(client: FakeEmcapClient()));
     expect(find.text('Sales Report'), findsOneWidget);
     await tester.tap(find.text(EmcapLocale.t('platform.reports.run')));
-    await settleEntityScreen(tester);
+    await settleAdminScreen(tester);
     expect(find.text('100'), findsOneWidget);
   });
 
   testWidgets('CurrencyField and layout widgets render', (tester) async {
     final controller = TextEditingController(text: '10.00');
     addTearDown(controller.dispose);
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: SizedBox(
             width: 1200,
+            height: 800,
             child: MasterDetailLayout(
               listPane: const Text('master'),
               detailPane: DetailPlaceholder(message: 'Select item'),
@@ -100,7 +106,8 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('master'), findsOneWidget);
     expect(find.text('Select item'), findsOneWidget);
 

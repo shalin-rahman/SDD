@@ -1,0 +1,90 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter test --name EntityRecordScreen|LEAD|debug entity|PRODUCT hero|STOCK_MOVEMENT hero|WAREHOUSE hero
+
+## exception
+
+PathExistsException: PathExistsException: Cannot copy file to 'C:\Users\u1074139\workstation\Study\SDD\clients\mobile\build\unit_test_assets\NativeAssetsManifest.json', path = 'C:\Users\u1074139\workstation\Study\SDD\clients\mobile\build\native_assets\windows\native_assets.json' (OS Error: Cannot create a file when that file already exists, errno = 183)
+
+```
+#0      _checkForErrorResponse (dart:io/common.dart:58:9)
+#1      _File.copy.<anonymous closure> (dart:io/file_impl.dart:406:7)
+#2      _rootRunUnary (dart:async/zone_root.dart:48:47)
+#3      _CustomZone.runUnary (dart:async/zone.dart:733:19)
+<asynchronous suspension>
+#4      ForwardingFile.copy (package:file/src/forwarding/forwarding_file.dart:29:51)
+<asynchronous suspension>
+#5      ForwardingFile.copy (package:file/src/forwarding/forwarding_file.dart:29:51)
+<asynchronous suspension>
+#6      TestCommand.runCommand (package:flutter_tools/src/commands/test.dart:517:7)
+<asynchronous suspension>
+#7      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1630:27)
+<asynchronous suspension>
+#8      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#9      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#10     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+<asynchronous suspension>
+#11     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#12     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#13     FlutterCommandRunner.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:307:33)
+<asynchronous suspension>
+#14     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:104:11)
+<asynchronous suspension>
+#15     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#16     main (package:flutter_tools/executable.dart:103:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.44.2, on Microsoft Windows [Version 10.0.26100.8457], locale en-US) [7.6s]
+    • Flutter version 3.44.2 on channel stable at C:\Users\u1074139\flutter\flutter_windows_3.44.2-stable\flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision c9a6c48423 (9 days ago), 2026-06-10 15:52:41 -0700
+    • Engine revision 77e2e94772
+    • Dart version 3.12.2
+    • DevTools version 2.57.0
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, enable-swift-package-manager, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+
+[✓] Windows Version (11 Enterprise 64-bit, 24H2, 2009) [16.0s]
+
+[✗] Android toolchain - develop for Android devices [4.5s]
+    ✗ Unable to locate Android SDK.
+      Install Android Studio from: https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK components.
+      (or visit https://flutter.dev/to/windows-android-setup for detailed instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+
+[✓] Chrome - develop for the web [4.4s]
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[!] Visual Studio - develop Windows apps (Visual Studio Community 2026 18.5.3) [4.4s]
+    • Visual Studio at C:\Program Files\Microsoft Visual Studio\18\Community
+    • Visual Studio Community 2026 version 18.5.11801.241
+    ✗ Visual Studio is missing necessary components. Please re-run the Visual Studio installer for the "Desktop development with C++" workload, and include these components:
+        MSVC v142 - VS 2019 C++ x64/x86 build tools
+         - If there are multiple build tool versions available, install the latest
+        C++ CMake tools for Windows
+        Windows 10 SDK
+
+[✓] Connected device (3 available) [2.0s]
+    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.26100.8457]
+    • Chrome (web)      • chrome  • web-javascript • Google Chrome 149.0.7827.115
+    • Edge (web)        • edge    • web-javascript • Microsoft Edge 149.0.4022.69
+
+[✓] Network resources [2.4s]
+    • All expected network resources are available.
+
+! Doctor found issues in 2 categories.
+```

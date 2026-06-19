@@ -254,18 +254,21 @@ class _EntityListScreenState extends State<EntityListScreen> {
     final panel = Semantics(
       label: EmcapLocale.t('a11y.screenReader.loading'),
       liveRegion: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 12),
-          Text(
-            EmcapLocale.t('common.loading'),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-        ],
+      container: true,
+      child: ExcludeSemantics(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 12),
+            Text(
+              EmcapLocale.t('common.loading'),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
     if (inline) {
@@ -363,6 +366,8 @@ class _EntityListScreenState extends State<EntityListScreen> {
 
     return Semantics(
       label: EmcapLocale.t('a11y.landmark.main'),
+      container: true,
+      explicitChildNodes: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -126,13 +126,20 @@ class FormMetadata {
   final DisplayMetadata? display;
 
   factory FormMetadata.fromJson(Map<String, dynamic> json) {
+    final displayRaw = json['display'];
     return FormMetadata(
       schemaVersion: json['schema_version'] as String,
       entityCode: json['entity_code'] as String,
-      sections: List<Map<String, dynamic>>.from(json['sections'] as List),
-      conditions: List<Map<String, dynamic>>.from(json['conditions'] as List? ?? []),
-      i18n: json['i18n'] as Map<String, dynamic>?,
-      display: DisplayMetadata.fromJson(json['display'] as Map<String, dynamic>?),
+      sections: (json['sections'] as List)
+          .map((section) => Map<String, dynamic>.from(section as Map))
+          .toList(),
+      conditions: (json['conditions'] as List? ?? [])
+          .map((condition) => Map<String, dynamic>.from(condition as Map))
+          .toList(),
+      i18n: json['i18n'] == null ? null : Map<String, dynamic>.from(json['i18n'] as Map),
+      display: displayRaw == null
+          ? null
+          : DisplayMetadata.fromJson(Map<String, dynamic>.from(displayRaw as Map)),
     );
   }
 

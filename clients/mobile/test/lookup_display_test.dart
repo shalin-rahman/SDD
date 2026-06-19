@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:emcap_mobile/metadata_contract.dart';
 import 'package:emcap_mobile/utils/lookup_display.dart';
 
 void main() {
@@ -26,6 +27,36 @@ void main() {
   });
 
   test('resolveRecordDisplayLabel handles empty map', () {
-    expect(resolveRecordDisplayLabel({}), '');
+    expect(resolveRecordDisplayLabel({}), '—');
+  });
+
+  test('lookupEntityFromField returns null for empty lookup_entity', () {
+    expect(lookupEntityFromField(null), isNull);
+    expect(lookupEntityFromField({}), isNull);
+    expect(lookupEntityFromField({'lookup_entity': ''}), isNull);
+    expect(lookupEntityFromField({'lookup_entity': 'PRODUCT'}), 'PRODUCT');
+  });
+
+  test('columnFieldType and columnCurrencyCode read grid metadata', () {
+    final metadata = GridMetadata.fromJson({
+      'schema_version': '1.0',
+      'entity_code': 'PRODUCT',
+      'columns': [
+        {
+          'field': 'unit_price',
+          'label': 'Unit Price',
+          'sortable': true,
+          'filterable': true,
+          'field_type': 'currency',
+          'currency_code': 'EUR',
+        },
+        {'field': 'name', 'label': 'Name', 'sortable': true, 'filterable': true},
+      ],
+      'export': {'csv': true, 'excel': true, 'pdf': false},
+    });
+    expect(columnFieldType(metadata, 'unit_price'), 'currency');
+    expect(columnCurrencyCode(metadata, 'unit_price'), 'EUR');
+    expect(columnFieldType(metadata, 'name'), isNull);
+    expect(columnCurrencyCode(metadata, 'missing'), isNull);
   });
 }

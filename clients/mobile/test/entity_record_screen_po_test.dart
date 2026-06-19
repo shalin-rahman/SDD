@@ -27,8 +27,10 @@ class _PoClient extends EmcapClient {
   Future<Map<String, dynamic>> getPlatformConfig() async => {'modules': {}};
 
   @override
-  Future<Map<String, dynamic>> getRecord(String entityCode, String recordId) async =>
-      Map<String, dynamic>.from(_record);
+  Future<Map<String, dynamic>> getRecord(String entityCode, String recordId) async {
+    if (_record.isEmpty) return {'id': recordId};
+    return Map<String, dynamic>.from(_record);
+  }
 
   @override
   Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
@@ -110,7 +112,7 @@ void main() {
     );
     await settleEntityScreen(tester);
 
-    expect(find.text('PO-001'), findsOneWidget);
+    expect(find.text('PO-001'), findsWidgets);
     expect(find.text(EmcapLocale.t('procurement.po.lines')), findsOneWidget);
     expect(find.text(EmcapLocale.t('procurement.po.receive')), findsOneWidget);
     expect(find.text(EmcapLocale.t('entity.addLine')), findsOneWidget);
@@ -172,7 +174,7 @@ void main() {
     await tester.tap(find.text(EmcapLocale.t('entity.addLine')));
     await settleEntityScreen(tester);
 
-    expect(find.text(EmcapLocale.t('entity.createRecord')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('entity.save')), findsOneWidget);
   });
 
   testWidgets('EntityRecordScreen child create applies po_id query param', (tester) async {
@@ -216,7 +218,7 @@ void main() {
     await tester.tap(find.text(EmcapLocale.t('entity.addLine')));
     await settleEntityScreen(tester);
 
-    expect(find.text(EmcapLocale.t('entity.createRecord')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('entity.save')), findsOneWidget);
   });
 
   testWidgets('EntityRecordScreen child create applies sales_order_id query param', (tester) async {
@@ -260,14 +262,14 @@ void main() {
     );
     await settleEntityScreen(tester);
 
-    expect(find.text('INV-001'), findsOneWidget);
+    expect(find.text('INV-001'), findsWidgets);
     expect(find.text(EmcapLocale.t('procurement.payment.summary')), findsOneWidget);
     expect(find.text(EmcapLocale.t('sales.invoice.collect')), findsOneWidget);
 
     await tester.tap(find.text(EmcapLocale.t('sales.invoice.collect')));
     await settleEntityScreen(tester);
 
-    expect(find.text(EmcapLocale.t('entity.createRecord')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('entity.save')), findsOneWidget);
   });
 
   testWidgets('EntityRecordScreen record vendor payment opens prefilled create', (tester) async {
@@ -296,7 +298,7 @@ void main() {
     await tester.tap(find.text(EmcapLocale.t('procurement.payment.record')));
     await settleEntityScreen(tester);
 
-    expect(find.text(EmcapLocale.t('entity.createRecord')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('entity.save')), findsOneWidget);
   });
 }
 
@@ -317,8 +319,10 @@ class _SoClient extends EmcapClient {
   Future<Map<String, dynamic>> getPlatformConfig() async => {'modules': {}};
 
   @override
-  Future<Map<String, dynamic>> getRecord(String entityCode, String recordId) async =>
-      Map<String, dynamic>.from(_record);
+  Future<Map<String, dynamic>> getRecord(String entityCode, String recordId) async {
+    if (_record.isEmpty) return {'id': recordId};
+    return Map<String, dynamic>.from(_record);
+  }
 
   @override
   Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {

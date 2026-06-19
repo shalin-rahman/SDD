@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import 'package:emcap_mobile/api/emcap_client.dart';
 import 'package:emcap_mobile/metadata_contract.dart';
@@ -91,13 +93,20 @@ void main() {
     expect(grid.isValid, isTrue);
   });
 
-  test('subscribeRecordsStream targets entity records stream endpoint', () {
-    final client = createClient('http://example.test:9000');
+  test('subscribeRecordsStream targets entity records stream endpoint', () async {
+    final client = EmcapClient(
+      'http://localhost:8000',
+      MockClient((request) async {
+        expect(request.url.path, contains('/records/stream'));
+        return http.Response('data: {}\n\n', 200);
+      }),
+    );
     var invoked = false;
     client.subscribeRecordsStream('PRODUCT', () {
       invoked = true;
     });
-    expect(invoked, isFalse);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(invoked, isTrue);
   });
 
   test('offline-enabled grid pairs with sync contract defaults', () {

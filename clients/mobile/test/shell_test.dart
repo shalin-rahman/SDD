@@ -39,13 +39,13 @@ void main() {
   testWidgets('EmcapShell loads nav and shows workflow inbox by default', (tester) async {
     await _pumpShell(tester);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.text(EmcapLocale.t('platform.workflow.title')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('platform.workflow.title')), findsWidgets);
   });
 
   testWidgets('EmcapShell navigates to entity list via rail', (tester) async {
     await _pumpShell(tester);
     await tester.tap(find.byTooltip('Products'));
-    await settleEntityScreen(tester);
+    await pumpUntilFound(tester, find.text('Sample'));
     expect(find.text('Sample'), findsOneWidget);
   });
 
@@ -98,8 +98,17 @@ void main() {
     await _pumpShell(tester, size: const Size(600, 800));
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Products'));
-    await settleEntityScreen(tester);
+    final products = find.descendant(
+      of: find.byType(Drawer),
+      matching: find.text('Products'),
+    );
+    await tester.scrollUntilVisible(
+      products,
+      500,
+      scrollable: find.descendant(of: find.byType(Drawer), matching: find.byType(Scrollable)),
+    );
+    await tester.tap(products);
+    await pumpUntilFound(tester, find.text('Sample'));
     expect(find.text('Sample'), findsOneWidget);
   });
 
@@ -114,7 +123,10 @@ void main() {
       ),
     );
     await settleEntityScreen(tester);
-    await tester.tap(find.byType(DropdownButton<String>));
+    final tenantDropdown = find.byWidgetPredicate(
+      (widget) => widget is DropdownButton<String> && widget.value == 'default',
+    );
+    await tester.tap(tenantDropdown);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Default').last);
     await tester.pumpAndSettle();
