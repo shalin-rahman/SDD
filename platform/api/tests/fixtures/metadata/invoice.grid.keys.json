@@ -4,6 +4,8 @@
     "sales_order_id",
     "customer_id",
     "amount",
+    "amount_paid",
+    "balance_due",
     "due_date",
     "status",
     "active",

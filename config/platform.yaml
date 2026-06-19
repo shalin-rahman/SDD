@@ -92,6 +92,40 @@ documents:
   virus_scan_enabled: true
   retention_days: 365
 
+organization_profile:
+  display_name: EMCAP Demo Corp
+  legal_name: EMCAP Demo Corporation Ltd
+  tax_id: ""
+  email: contact@example.com
+  phone: ""
+  website: https://example.com
+  address:
+    line1: 100 Main Street
+    line2: ""
+    city: Demo City
+    state: ""
+    postal_code: "00000"
+    country: US
+  timezone: UTC
+  locale: en
+  currency: USD
+  fiscal_year_start_month: 1
+  logo_url: ""
+  favicon_url: ""
+  secondary_color: ""
+  invoice:
+    header: "{{display_name}}\n{{address_line1}}"
+    footer: Thank you for your business.
+  report:
+    header: "{{display_name}} — Confidential"
+    footer: Generated {{date}}
+  purchase_order:
+    header: "{{display_name}} — Purchase Order"
+    footer: ""
+  email_signature: |
+    {{display_name}}
+    {{email}} | {{phone}}
+
 security:
   abac_policies:
     - permission: customer.read

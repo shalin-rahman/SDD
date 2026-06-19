@@ -5,6 +5,7 @@ import '../theme.dart';
 import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
 import '../utils/material_icon_util.dart';
+import '../utils/organization_logo_util.dart';
 import '../utils/shell_nav_util.dart';
 import 'account_screen.dart';
 import 'admin_permissions_screen.dart';
@@ -199,7 +200,11 @@ class _EmcapShellState extends State<EmcapShell> {
       case 'admin-security':
         return AdminSecurityScreen(client: widget.client);
       case 'settings':
-        return SettingsScreen(client: widget.client, onNavRefresh: _bootstrap);
+        return SettingsScreen(
+          client: widget.client,
+          onNavRefresh: _bootstrap,
+          logoPicker: pickOrganizationLogoFromDevice,
+        );
       default:
         break;
     }
@@ -262,18 +267,21 @@ class _EmcapShellState extends State<EmcapShell> {
 
   Widget _drawer() {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(EmcapLocale.t('shell.pageTitle.default'), style: Theme.of(context).textTheme.titleLarge),
+      child: Semantics(
+        label: EmcapLocale.t('a11y.landmark.navigation'),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(EmcapLocale.t('shell.pageTitle.default'), style: Theme.of(context).textTheme.titleLarge),
+              ),
             ),
-          ),
-          ..._navTiles(rail: false),
-        ],
+            ..._navTiles(rail: false),
+          ],
+        ),
       ),
     );
   }
@@ -346,7 +354,13 @@ class _EmcapShellState extends State<EmcapShell> {
   @override
   Widget build(BuildContext context) {
     if (_loading || _entries.isEmpty) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: Semantics(
+          label: EmcapLocale.t('a11y.screenReader.loading'),
+          liveRegion: true,
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      );
     }
     final selected = _selectedEntry!;
     return LayoutBuilder(
@@ -361,11 +375,11 @@ class _EmcapShellState extends State<EmcapShell> {
               PopupMenuButton<String>(
                 tooltip: EmcapLocale.t('toolbar.locale'),
                 icon: const Icon(Icons.language),
-                onSelected: (code) => EmcapLocale.setLocale(Locale(code)),
+                onSelected: (tag) => EmcapLocale.setLocaleTag(tag),
                 itemBuilder: (_) => [
-                  PopupMenuItem(value: 'en', child: Text(EmcapLocale.t('toolbar.language.en'))),
-                  PopupMenuItem(value: 'fr', child: Text(EmcapLocale.t('toolbar.language.fr'))),
-                  PopupMenuItem(value: 'bn', child: Text(EmcapLocale.t('toolbar.language.bn'))),
+                  PopupMenuItem(value: 'en-US', child: Text(EmcapLocale.t('toolbar.language.en-US'))),
+                  PopupMenuItem(value: 'fr-FR', child: Text(EmcapLocale.t('toolbar.language.fr-FR'))),
+                  PopupMenuItem(value: 'bn-BD', child: Text(EmcapLocale.t('toolbar.language.bn-BD'))),
                 ],
               ),
               ValueListenableBuilder<ThemeMode>(
@@ -433,9 +447,12 @@ class _EmcapShellState extends State<EmcapShell> {
                       ),
                     ),
                     Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(context.emcapTokens.spaceSm + 4),
-                        child: _bodyForSelection(),
+                      child: Semantics(
+                        label: EmcapLocale.t('a11y.landmark.main'),
+                        child: Padding(
+                          padding: EdgeInsets.all(context.emcapTokens.spaceSm + 4),
+                          child: _bodyForSelection(),
+                        ),
                       ),
                     ),
                   ],
@@ -471,7 +488,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     if (widget.sessionExpired) {
-      _error = EmcapLocale.t('platform.login.sessionExpired');
+      _error = EmcapLocale.t('security.session.expired');
     }
     _loadProviders();
   }

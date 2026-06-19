@@ -57,6 +57,10 @@ flutter test test\account_screen_test.dart test\entity_platform_mobile_test.dart
 flutter test test\record_lifecycle_util_test.dart test\document_preview_util_test.dart test\mobile_sse_grid_test.dart
 ```
 
+**P18-T13 bulk util:** `lib/utils/bulk_grid_util.dart` + `test/entity_list_bulk_test.dart` (selection/export contract; no device).
+
+**P18-T17 movement util:** `lib/utils/stock_movement_util.dart` + `test/entity_record_movement_test.dart`.
+
 Full suite:
 
 ```powershell

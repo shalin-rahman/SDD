@@ -1,0 +1,12 @@
+{
+  "field_names": [
+    "payment_number",
+    "invoice_id",
+    "customer_id",
+    "amount",
+    "payment_date",
+    "payment_method",
+    "status",
+    "active"
+  ]
+}

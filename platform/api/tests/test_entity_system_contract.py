@@ -27,6 +27,15 @@ W1_FIXTURE_ENTITIES = frozenset({"PRODUCT", "WAREHOUSE", "CUSTOMER", "LEAD", "CO
 W3_FIXTURE_ENTITIES = frozenset({"ACCOUNT", "TERMINAL", "EMPLOYEE"})
 W4_FIXTURE_ENTITIES = frozenset({"SUPPLIER", "PURCHASE_ORDER", "SALES_ORDER", "INVOICE"})
 W5_FIXTURE_ENTITIES = frozenset({"STOCK_MOVEMENT", "STOCK_MOVEMENT_LINE"})
+P25_FIXTURE_ENTITIES = frozenset(
+    {
+        "PURCHASE_ORDER_LINE",
+        "SALES_ORDER_LINE",
+        "VENDOR_PAYMENT",
+        "CUSTOMER_PAYMENT",
+        "JOURNAL_ENTRY_LINE",
+    }
+)
 
 _SAMPLE_VALUES: dict[str, object] = {
     "text": "sample",
@@ -180,3 +189,23 @@ def test_w5_grid_keys_match_fixture(client: TestClient, w5_entity_code: str) -> 
     grid = client.get(f"/api/v1/metadata/grids/{w5_entity_code}").json()
     column_fields = [column["field"] for column in grid["columns"]]
     assert column_fields == fixture["column_fields"], w5_entity_code
+
+
+@pytest.mark.parametrize("p25_entity_code", sorted(P25_FIXTURE_ENTITIES))
+def test_p25_form_keys_match_fixture(client: TestClient, p25_entity_code: str) -> None:
+    fixture_path = FIXTURES / f"{p25_entity_code.lower()}.form.keys.json"
+    assert fixture_path.is_file(), p25_entity_code
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    form = client.get(f"/api/v1/metadata/forms/{p25_entity_code}").json()
+    field_names = [field["name"] for field in _main_form_fields(form)]
+    assert field_names == fixture["field_names"], p25_entity_code
+
+
+@pytest.mark.parametrize("p25_entity_code", sorted(P25_FIXTURE_ENTITIES))
+def test_p25_grid_keys_match_fixture(client: TestClient, p25_entity_code: str) -> None:
+    fixture_path = FIXTURES / f"{p25_entity_code.lower()}.grid.keys.json"
+    assert fixture_path.is_file(), p25_entity_code
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    grid = client.get(f"/api/v1/metadata/grids/{p25_entity_code}").json()
+    column_fields = [column["field"] for column in grid["columns"]]
+    assert column_fields == fixture["column_fields"], p25_entity_code

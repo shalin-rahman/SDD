@@ -25,9 +25,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final service = await PreferencesService.create();
     await service.saveLocale(const Locale('fr'));
-    expect(service.loadLocale(), const Locale('fr'));
+    expect(service.loadLocale(), const Locale('fr', 'FR'));
     final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getString(PreferencesService.localeKey), 'fr');
+    expect(prefs.getString(PreferencesService.localeKey), 'fr-FR');
   });
 
   test('clearing theme restores system default', () async {

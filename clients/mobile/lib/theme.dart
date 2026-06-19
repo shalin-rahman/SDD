@@ -52,7 +52,7 @@ class EmcapTheme {
       brightness: brightness,
       scaffoldBackgroundColor: tokens.surface,
       extensions: [tokens],
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: tokens.panelSurface,
         elevation: tokens.elevation1,
         shape: RoundedRectangleBorder(

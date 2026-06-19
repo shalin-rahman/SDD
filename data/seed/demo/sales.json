@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "seed_tag": "demo",
+  "entity_records": [
+    {
+      "id": "11111111-1111-4111-8111-111111111c01",
+      "entity_code": "SALES_ORDER",
+      "tenant_id": "default",
+      "data": {
+        "order_number": "SO-DEMO-001",
+        "customer_id": "11111111-1111-4111-8111-111111111401",
+        "status": "confirmed",
+        "order_date": "2026-06-05",
+        "total_amount": 450.0,
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111c02",
+      "entity_code": "SALES_ORDER_LINE",
+      "tenant_id": "default",
+      "data": {
+        "sales_order_id": "11111111-1111-4111-8111-111111111c01",
+        "product_id": "11111111-1111-4111-8111-111111111104",
+        "quantity": 5,
+        "unit_price": 50.0
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111c03",
+      "entity_code": "SALES_ORDER_LINE",
+      "tenant_id": "default",
+      "data": {
+        "sales_order_id": "11111111-1111-4111-8111-111111111c01",
+        "product_id": "11111111-1111-4111-8111-111111111105",
+        "quantity": 4,
+        "unit_price": 50.0
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111c04",
+      "entity_code": "INVOICE",
+      "tenant_id": "default",
+      "data": {
+        "invoice_number": "INV-DEMO-001",
+        "sales_order_id": "11111111-1111-4111-8111-111111111c01",
+        "customer_id": "11111111-1111-4111-8111-111111111401",
+        "amount": 450.0,
+        "amount_paid": 150.0,
+        "balance_due": 300.0,
+        "due_date": "2026-07-05",
+        "status": "partial",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111c05",
+      "entity_code": "CUSTOMER_PAYMENT",
+      "tenant_id": "default",
+      "data": {
+        "payment_number": "CP-DEMO-001",
+        "invoice_id": "11111111-1111-4111-8111-111111111c04",
+        "customer_id": "11111111-1111-4111-8111-111111111401",
+        "amount": 150.0,
+        "payment_date": "2026-06-12",
+        "payment_method": "wire",
+        "status": "posted",
+        "active": true
+      }
+    },
+    {
+      "id": "11111111-1111-4111-8111-111111111c06",
+      "entity_code": "CUSTOMER_PAYMENT",
+      "tenant_id": "default",
+      "data": {
+        "payment_number": "CP-DEMO-002",
+        "invoice_id": "11111111-1111-4111-8111-111111111c04",
+        "customer_id": "11111111-1111-4111-8111-111111111401",
+        "amount": 300.0,
+        "payment_date": "2026-06-20",
+        "payment_method": "ach",
+        "status": "draft",
+        "active": true
+      }
+    }
+  ]
+}

@@ -1,5 +1,21 @@
 .app-layout {
   height: 100vh;
+  position: relative;
+}
+
+.app-layout__skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background: var(--emcap-surface, #fff);
+  color: var(--emcap-on-surface, #000);
+  text-decoration: none;
+
+  &:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+  }
 }
 
 .app-layout__sidenav {

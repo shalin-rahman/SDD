@@ -24,13 +24,13 @@ void main() {
     'settings.audit.sectionTitle',
     'shell.nav.unknown',
     'common.back',
-    'toolbar.language.en',
+    'toolbar.language.en-US',
   ];
 
-  for (final locale in ['en', 'fr', 'bn']) {
+  for (final locale in ['en-US', 'fr-FR', 'bn-BD']) {
     test('admin i18n keys resolve for $locale', () {
       for (final key in keys) {
-        final value = I18nService.t(key, localeCode: locale);
+        final value = I18nService.t(key, localeTag: locale);
         expect(value, isNot(equals(key)), reason: '$locale missing $key');
       }
     });

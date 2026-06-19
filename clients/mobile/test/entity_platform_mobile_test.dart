@@ -59,6 +59,18 @@ void main() {
       expect(chip.active, isTrue);
     });
 
+    test('buildStatusChipView resolves inactive label from metadata', () {
+      final chip = buildStatusChipView({'active': false}, _statusField, 'en', _t);
+      expect(chip.label, 'Inactive');
+      expect(chip.active, isFalse);
+    });
+
+    test('buildStatusChipView returns empty when statusField null', () {
+      final chip = buildStatusChipView({'active': true}, null, 'en', _t);
+      expect(chip.label, isEmpty);
+      expect(chip.active, isFalse);
+    });
+
     test('PRODUCT hero attaches status chip from display metadata', () {
       final view = buildRecordHeadlineView(
         'PRODUCT',
@@ -79,6 +91,11 @@ void main() {
       final record = {'id': id, 'deleted_at': null};
       expect(canDeleteRecord(id, record, false), isTrue);
       expect(canRestoreRecord(id, record), isFalse);
+      expect(canDeleteRecord(id, record, true), isFalse);
+    });
+
+    test('empty deleted_at is not deleted', () {
+      expect(isRecordDeleted({'deleted_at': '   '}), isFalse);
     });
 
     test('soft-deleted record allows restore blocks delete', () {

@@ -1,0 +1,14 @@
+{
+  "column_fields": [
+    "journal_entry_id",
+    "account_id",
+    "debit",
+    "credit",
+    "memo",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

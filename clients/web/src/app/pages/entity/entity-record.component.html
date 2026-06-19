@@ -51,10 +51,26 @@
               {{ i18n.t('entity.postMovement') }}
             </button>
           }
+          @if (canReceivePurchaseOrder()) {
+            <button
+              recordExtraActions
+              mat-flat-button
+              color="accent"
+              type="button"
+              [disabled]="receivingPo"
+              [attr.aria-label]="i18n.t('procurement.po.receive')"
+              (click)="receivePurchaseOrder()"
+            >
+              {{ i18n.t('procurement.po.receive') }}
+            </button>
+          }
         </app-record-detail-header>
 
         @if (postMovementError) {
           <p class="error">{{ postMovementError }}</p>
+        }
+        @if (receivePoError) {
+          <p class="error">{{ receivePoError }}</p>
         }
 
         @if (detailError) {
@@ -75,32 +91,101 @@
           (noteInputChange)="noteInput = $event"
         />
 
-        @if (entityCode === 'STOCK_MOVEMENT' && selectedRecordId && !creatingNew) {
-          <section class="movement-lines">
-            <h3>{{ i18n.t('entity.movementLinesTitle') }}</h3>
-            @if (movementLinesError) {
-              <p class="error">{{ movementLinesError }}</p>
-            } @else if (!movementLines.length) {
-              <p>{{ i18n.t('entity.movementLinesEmpty') }}</p>
-            } @else {
-              <table class="movement-lines__table">
-                <thead>
-                  <tr>
-                    <th>{{ i18n.t('entity.movementLineProduct') }}</th>
-                    <th>{{ i18n.t('entity.movementLineQty') }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (line of movementLines; track line['id']) {
-                    <tr>
-                      <td>{{ line['product_id'] }}</td>
-                      <td>{{ line['quantity'] }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+        @if (showPaymentSummary()) {
+          <app-section-card [title]="i18n.t('procurement.payment.summary')">
+            <dl class="payment-summary">
+              <div class="payment-summary__row">
+                <dt>{{ i18n.t('procurement.payment.total') }}</dt>
+                <dd>{{ paymentSummaryLabels().total }}</dd>
+              </div>
+              <div class="payment-summary__row">
+                <dt>{{ i18n.t('procurement.payment.paid') }}</dt>
+                <dd>{{ paymentSummaryLabels().paid }}</dd>
+              </div>
+              <div class="payment-summary__row payment-summary__row--balance">
+                <dt>{{ i18n.t('procurement.balance.due') }}</dt>
+                <dd>{{ paymentSummaryLabels().balance }}</dd>
+              </div>
+            </dl>
+            @if (canRecordVendorPayment()) {
+              <div class="payment-summary__actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [attr.aria-label]="i18n.t('procurement.payment.record')"
+                  (click)="recordVendorPayment()"
+                >
+                  {{ i18n.t('procurement.payment.record') }}
+                </button>
+              </div>
             }
-          </section>
+            @if (canRecordCustomerPayment()) {
+              <div class="payment-summary__actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [attr.aria-label]="i18n.t('sales.invoice.collect')"
+                  (click)="recordCustomerPayment()"
+                >
+                  {{ i18n.t('sales.invoice.collect') }}
+                </button>
+              </div>
+            }
+          </app-section-card>
+        }
+
+        @if (showOrderLinesSection()) {
+          <app-child-lines-section
+            [title]="orderLinesTitle()"
+            [lines]="orderLines"
+            [error]="orderLinesError"
+            [canAdd]="canAddOrderLine()"
+            [emptyMessage]="i18n.t('procurement.po.linesEmpty')"
+            [addLabel]="i18n.t('entity.movementLineAdd')"
+            [columns]="orderLineColumns()"
+            [footer]="orderLinesFooter()"
+            (addLine)="addOrderLine()"
+          />
+        }
+
+        @if (showVendorPaymentsSection()) {
+          <app-child-lines-section
+            [title]="i18n.t('procurement.payment.vendorTitle')"
+            [lines]="vendorPayments"
+            [error]="vendorPaymentsError"
+            [canAdd]="canRecordVendorPayment()"
+            [emptyMessage]="i18n.t('procurement.payment.vendorEmpty')"
+            [addLabel]="i18n.t('procurement.payment.record')"
+            [columns]="vendorPaymentColumns()"
+            (addLine)="recordVendorPayment()"
+          />
+        }
+
+        @if (showCustomerPaymentsSection()) {
+          <app-child-lines-section
+            [title]="i18n.t('sales.invoice.customerTitle')"
+            [lines]="customerPayments"
+            [error]="customerPaymentsError"
+            [canAdd]="canRecordCustomerPayment()"
+            [emptyMessage]="i18n.t('sales.invoice.customerEmpty')"
+            [addLabel]="i18n.t('sales.invoice.collect')"
+            [columns]="customerPaymentColumns()"
+            (addLine)="recordCustomerPayment()"
+          />
+        }
+
+        @if (showMovementLinesSection()) {
+          <app-child-lines-section
+            [title]="i18n.t('entity.movementLinesTitle')"
+            [lines]="movementLines"
+            [error]="movementLinesError"
+            [canAdd]="canAddMovementLine()"
+            [emptyMessage]="i18n.t('entity.movementLinesEmpty')"
+            [addLabel]="i18n.t('entity.movementLineAdd')"
+            [columns]="movementLineColumns()"
+            [footer]="movementLinesFooter()"
+            (addLine)="addMovementLine()"
+          />
         }
 
         @if (selectedRecordId && !creatingNew) {

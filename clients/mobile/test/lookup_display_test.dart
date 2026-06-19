@@ -18,4 +18,14 @@ void main() {
     expect(currencyCodeFromField(null), 'USD');
     expect(currencyCodeFromField({'currency_code': 'EUR'}), 'EUR');
   });
+
+  test('resolveRecordDisplayLabel uses code and sku fallbacks', () {
+    expect(resolveRecordDisplayLabel({'id': '1', 'code': 'WH-01'}), 'WH-01');
+    expect(resolveRecordDisplayLabel({'id': '1', 'sku': 'SKU-1'}), 'SKU-1');
+    expect(resolveRecordDisplayLabel({'id': '1', 'title': 'Widget'}), 'Widget');
+  });
+
+  test('resolveRecordDisplayLabel handles empty map', () {
+    expect(resolveRecordDisplayLabel({}), '');
+  });
 }

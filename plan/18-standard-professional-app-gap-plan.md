@@ -32,7 +32,7 @@ This document is the **gap analysis and prioritized roadmap** for elevating EMCA
 
 **Top five gaps (priority order):**
 
-1. **M2 mobile parity** — PRODUCT mobile Product-ready sign-off blocked on Flutter device PNG (`P15-T13`, `P20-T03`, `P18-T09`).
+1. **M2 mobile parity** — PRODUCT mobile Product-ready sign-off pending device PNG (`P15-T13`, `P20-T03`, `P18-T09`); run `flutter pub get && flutter test --coverage` locally first.
 2. **M6 admin Demo → Product-ready** — users/roles/settings rows need DoD + screenshot pack (`P18-T15`, `P18-T21`).
 3. **Enterprise auth UX** — OAuth provider selection, MFA enrollment clarity, account security panel (`P18-T11`).
 4. **i18n depth** — entity pages, admin, settings body copy beyond shell chrome (`P18-T12`).
@@ -59,7 +59,7 @@ This document is the **gap analysis and prioritized roadmap** for elevating EMCA
 | API pytest total | `--cov-fail-under=80` | **Pass (~91%)** |
 | API per-file | workflow, rules, oauth, rbac stragglers | **Partial** |
 | Web Karma | branches 80% in `karma.conf.js` | **Pass (~80.5%)** |
-| Mobile Flutter | `scripts/check-flutter-coverage.py --min 80` | **Wired in CI**; local SDK often absent |
+| Mobile Flutter | `scripts/check-flutter-coverage.py --min 80` | **Wired in CI**; local verify: `cd clients/mobile && flutter pub get && flutter test --coverage` |
 
 ### 2.3 What is already strong
 
@@ -181,7 +181,7 @@ Stable IDs for tracking. Add to `plan/03-task-backlog.md` when implementation st
 
 ## 5. Prioritized roadmap — Phases A–F
 
-Phases are **sequenced for dependency and ROI**. Parallelize B+D while A blocked on Flutter SDK.
+Phases are **sequenced for dependency and ROI**. Parallelize B+D while A awaits M2 PNG capture (`flutter test --coverage` green first).
 
 ```mermaid
 flowchart TB
@@ -282,7 +282,7 @@ flowchart TB
 
 | Blocker | Affects | Mitigation |
 |---------|---------|------------|
-| Flutter SDK not on PATH | A1, A2, A3, mobile PNG | CI Flutter lane; `integration_test/` skeleton ready |
+| Mobile Flutter local verify | A1, A2, A3, mobile PNG | Install stable SDK outside Downloads on PATH (`known-pitfalls.md` § Flutter PATH); CI Flutter lane for PRs |
 | Local stack for Playwright | B1, E2 | `scripts/start-emcap-local.bat`; `npx playwright install chromium` |
 | Product vs backlog drift | All phases | Update matrix **07** same PR as task Done |
 | Bundle budget | E2 optional | Lazy routes already ~818 kB; keep E2 script thin |

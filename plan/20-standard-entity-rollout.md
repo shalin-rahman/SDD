@@ -233,8 +233,8 @@ W5     Stock movement grid + detail; movement_type enum labels in i18n; screensh
 ## Section 3 — Mobile + Tests
 
 > **Owner path:** `clients/mobile/lib/`, `clients/mobile/test/`  
-> **Verify (when SDK available):** `cd clients\mobile && flutter test`  
-> **Local constraint:** code + unit tests only if Flutter not on PATH (`known-pitfalls.md`)
+> **Verify:** `cd clients\mobile && flutter pub get && flutter test --coverage`  
+> **Local setup:** Flutter stable on PATH — install outside Downloads (`known-pitfalls.md` § Flutter PATH)
 
 ### 3.1 Generic (already works — verify)
 
@@ -313,7 +313,7 @@ Existing tasks still apply: **P15-T21**, **P18-T03**, **P18-T06**, **P19-T03** (
 2. Pick **one wave** (default **W1**).
 3. Do **Section 1** tasks → run API verify → doc sync.
 4. Do **Section 2** → run web verify → doc sync.
-5. Do **Section 3** → write Dart tests (skip `flutter run` if blocked) → doc sync.
+5. Do **Section 3** → write Dart tests + run `flutter pub get && flutter test --coverage` → doc sync.
 6. Update `07-product-readiness-matrix.md` rows for touched entities.
 7. **No commit** until user review.
 

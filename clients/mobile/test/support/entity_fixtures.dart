@@ -61,13 +61,23 @@ const w4EntityCodes = ['SUPPLIER', 'PURCHASE_ORDER', 'SALES_ORDER', 'INVOICE'];
 /// Wave W5 inventory movement entities.
 const w5EntityCodes = ['STOCK_MOVEMENT', 'STOCK_MOVEMENT_LINE'];
 
-/// All entities with fixture coverage (W1 + W2 + W3 + W4 + W5).
+/// Wave W6 procurement/sales line + payment entities (P25).
+const w6EntityCodes = [
+  'PURCHASE_ORDER_LINE',
+  'SALES_ORDER_LINE',
+  'VENDOR_PAYMENT',
+  'CUSTOMER_PAYMENT',
+  'JOURNAL_ENTRY_LINE',
+];
+
+/// All entities with fixture coverage (W1 + W2 + W3 + W4 + W5 + W6).
 const fixtureEntityCodes = [
   ...w1EntityCodes,
   ...w2EntityCodes,
   ...w3EntityCodes,
   ...w4EntityCodes,
   ...w5EntityCodes,
+  ...w6EntityCodes,
 ];
 
 /// Entities in [w1EntityCodes] that have both form and grid key fixtures on disk.

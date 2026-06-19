@@ -4,6 +4,9 @@
     "account_id",
     "amount",
     "posted_at",
+    "source_type",
+    "source_id",
+    "status",
     "active"
   ]
 }

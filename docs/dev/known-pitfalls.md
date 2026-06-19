@@ -89,15 +89,17 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Parse `offline` and `realtime` from JSON; mirror `contract.ts` defaults |
 | **Test** | Entity screen sync delta display; contract parity with API metadata |
 
-### M2 blocked — Flutter not installed locally
+### Flutter PATH — install stable SDK outside Downloads
 
 | | |
 |--|--|
-| **Symptom** | `flutter` not recognized; cannot run `clients/mobile`, capture M2 screenshots |
-| **Where** | S2 (P15-T13, P20-T03), P17-T02 mobile inbox |
-| **Workaround** | **Skip device/PNG S2** on this machine; mobile **code + Dart tests** can land without local SDK (P16-T03/T06 Done). Continue web/API lanes in parallel. |
-| **To unblock M2** | Install Flutter SDK, add `flutter\bin` to PATH, then follow `scripts/capture-m2-mobile-screenshots.md` (`flutter pub get`, `flutter test test/theme_tokens_test.dart test/entity_record_hero_test.dart`, run app, capture `phase15-mobile-product-detail.png`). Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. |
-| **CI** | Mobile lint/test still runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter optional until M2 sign-off. |
+| **Symptom** | `flutter` not recognized; `flutter test` fails before running; cannot capture M2 screenshots |
+| **Where** | M2 mobile sign-off (P15-T13, P20-T03), P26 logo upload verify, Batch 3 partials, any local `flutter test` / PNG capture |
+| **Cause** | `flutter` not on PATH; or SDK zip extracted under **Downloads** / `%TEMP%` (Windows Defender, Controlled folder access, or OneDrive can block or relocate binaries) |
+| **Fix** | Unzip Flutter **stable** to a permanent path **outside Downloads** (e.g. `%USERPROFILE%\flutter\flutter_windows_3.44.2-stable\flutter`), add `...\flutter\bin` to user PATH, open a **new** terminal |
+| **Verify** | `flutter --version`; `cd clients/mobile && flutter pub get && flutter test --coverage` |
+| **M2 sign-off** | Follow `scripts/capture-m2-mobile-screenshots.md` after tests green. Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. **Do not mark Product-ready without PNG evidence.** |
+| **CI** | Mobile lint/test runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter required for M2 PNG pack, not for landing mobile code. |
 
 ### Mobile `context.emcapTokens` without Theme extension
 
@@ -897,8 +899,17 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 |--|--|
 | **Symptom** | Mobile shows raw keys or English fallbacks for new web strings |
 | **Cause** | Web `en.json` ~596 lines vs mobile ~367 (~229 keys behind after M6 shell/settings/auth work) |
-| **Fix** | When adding web i18n keys for P18-T12, sync matching keys to `clients/mobile/assets/i18n/{en,fr,bn}.json` in same change |
-| **Test** | Line-count compare or key diff; mobile widget tests for login/settings |
+| **Fix** | When adding web i18n keys for P18-T12, sync matching keys to `clients/mobile/assets/i18n/{en-US,bn-BD,fr-FR}.json` in same change; run `node scripts/audit-i18n.mjs` |
+| **Test** | `i18n_keys_parity_test.dart`; `node scripts/audit-i18n.mjs` (CI `client-lint-web` job) |
+
+### P27 BCP 47 locale tag migration
+
+| | |
+|--|--|
+| **Symptom** | Locale picker shows English after upgrade; `document.documentElement.lang` is `en` not `en-US`; mobile loads wrong bundle |
+| **Cause** | `localStorage emcap-locale` still stores legacy short tags (`en`, `bn`, `fr`); code imports `en-US.json` but reads stored `en` without alias |
+| **Fix** | `I18nService.init()` / `EmcapLocale.init()` normalize via alias map (`en`→`en-US`, etc.) and **write back** canonical tag; keep legacy JSON files one release; use `numberingSystem: 'beng'` / `bn_BD` locale for Bengali digits in format utils |
+| **Test** | `i18n.service.spec.ts` legacy migration; `i18n_bundle_test.dart` alias resolution; `node scripts/audit-i18n.mjs` (bn-BD parity + web→mobile keys); `i18n_keys_parity_test.dart` |
 
 ### Playwright screenshot capture on Windows
 
@@ -925,6 +936,15 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 | **Symptom** | Hardcoded `` `Delete record ${id}?` `` in `entity-record.component.ts` |
 | **Fix** | Use `entity.deleteConfirm` with `{id}` placeholder + `.replace('{id}', id)` |
 | **Test** | Karma entity-record specs; FR/BN keys in `assets/i18n/` |
+
+### P25 backend domain validators (modules only)
+
+| | |
+|--|--|
+| **Symptom** | PO receive does not spawn STOCK_MOVEMENT; payment post does not update balances; JE post skips account rollup |
+| **Cause** | Validator in `platform/` instead of `modules/`; missing `ENTITY_VALIDATORS` export; update validator called without `context` (`repo`, `registry`, `record_id`) |
+| **Fix** | Put rules in `modules/{procurement,sales,accounting}/*.py`; export via `module.py` `ENTITY_VALIDATORS`; side effects only on partial update transitions (draft→received/posted); finance amounts use `read_roles=["accounting.view"]` |
+| **Test** | `test_purchase_order_entities.py`, `test_vendor_payment_entities.py`, `test_customer_payment_entities.py`, `test_journal_double_entry.py`, `test_finance_field_security.py` |
 
 | | |
 |--|--|

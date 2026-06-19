@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import type { MenuItem } from '../../api/emcap-client';
 import type { ModuleNavGroup } from '../../services/shell-nav.util';
 import { SidenavNavComponent } from './sidenav-nav.component';
+import { I18nService } from '../services/i18n.service';
 
 describe('SidenavNavComponent', () => {
   let fixture: ComponentFixture<SidenavNavComponent>;
@@ -36,7 +37,7 @@ describe('SidenavNavComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SidenavNavComponent],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), I18nService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidenavNavComponent);
@@ -100,6 +101,8 @@ describe('SidenavNavComponent', () => {
   it('shows empty nav message when menus are empty', () => {
     fixture.componentInstance.navEmpty = true;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('No menus available');
+    const i18n = TestBed.inject(I18nService);
+    expect(fixture.nativeElement.textContent).toContain(i18n.t('ux.emptyState.title'));
+    expect(fixture.nativeElement.textContent).toContain(i18n.t('ux.emptyState.body'));
   });
 });

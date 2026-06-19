@@ -1,0 +1,1257 @@
+00:00 +0: loading c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart
+00:00 +0: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: (setUpAll)
+00:01 +0: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen loading exposes screen reader semantics
+Pending timers:
+Timer (duration: 24:00:00.000000, periodic: false), created:
+#0      new FakeTimer._ (package:fake_async/fake_async.dart:342:62)
+#1      FakeAsync._createTimer (package:fake_async/fake_async.dart:260:29)
+#2      FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:185:15)
+#6      _SlowSettingsClient.getAdminSettings (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:16:11)
+#7      _SettingsScreenState._reload (package:emcap_mobile/app/settings_screen.dart:139:51)
+#8      _SettingsScreenState.initState (package:emcap_mobile/app/settings_screen.dart:101:5)
+#9      StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5950:55)
+#10     ComponentElement.mount (package:flutter/src/widgets/framework.dart:5793:5)
+...     Normal element mounting (260 frames)
+#270    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#271    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7264:36)
+#272    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7279:32)
+...     Normal element mounting (467 frames)
+#739    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#740    Element.updateChild (package:flutter/src/widgets/framework.dart:4053:20)
+#741    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#742    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#743    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#744    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#745    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#746    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#747    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#748    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#749    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#750    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#751    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#752    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#753    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#754    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#755    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#756    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#757    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#758    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#759    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#760    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#761    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#762    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#763    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#764    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#765    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#766    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#767    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#768    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#769    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#770    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#771    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#772    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#773    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#774    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#775    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#776    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#777    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#778    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#779    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#780    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#781    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#782    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#783    _RawViewElement._updateChild (package:flutter/src/widgets/view.dart:481:16)
+#784    _RawViewElement.update (package:flutter/src/widgets/view.dart:568:5)
+#785    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#786    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#787    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#788    StatelessElement.update (package:flutter/src/widgets/framework.dart:5895:5)
+#789    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#790    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#791    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#792    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#793    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#794    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#795    RootElement._rebuild (package:flutter/src/widgets/binding.dart:2091:16)
+#796    RootElement.update (package:flutter/src/widgets/binding.dart:2069:5)
+#797    RootElement.performRebuild (package:flutter/src/widgets/binding.dart:2083:7)
+#798    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#799    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2750:15)
+#800    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2807:11)
+#801    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3111:18)
+#802    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2431:19)
+#803    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#804    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#805    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#806    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#809    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#810    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#811    WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#814    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#815    WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#816    main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:146:18)
+#817    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#818    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 8 frames from dart:async and package:stack_trace)
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+A Timer is still pending even after the widget tree was disposed.
+'package:flutter_test/src/binding.dart':
+Failed assertion: line 2542 pos 12: '!timersPending'
+
+When the exception was thrown, this was the stack:
+#2      AutomatedTestWidgetsFlutterBinding._verifyInvariants (package:flutter_test/src/binding.dart:2542:12)
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1973:7)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from class _AssertionError and package:stack_trace)
+
+The test description was:
+  SettingsScreen loading exposes screen reader semantics
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +0 -1: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows MFA step indicator and advances on enroll
+00:05 +0 -1: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen loading exposes screen reader semantics [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen loading exposes screen reader semantics
+  
+00:05 +0 -1: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows MFA step indicator and advances on enroll
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Step 1 — Enroll to receive your TOTP
+secret": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart:57:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart line 57
+The test description was:
+  AccountScreen shows MFA step indicator and advances on enroll
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +0 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/account_screen_test.dart: AccountScreen shows MFA step indicator and advances on enroll [E]
+  Test failed. See exception logs above.
+  The test description was: AccountScreen shows MFA step indicator and advances on enroll
+  
+00:05 +0 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:05 +1 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:05 +2 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:08 +3 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: SettingsScreen shows deployment version label
+00:09 +4 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_i18n_strings_test.dart: admin i18n keys resolve for bn-BD
+00:10 +5 -2: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen loading exposes screen reader semantics
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _ElementPredicateWidgetFinder:<Found 0 widgets with a semantics label named "Loading
+content, please wait": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:190:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart line 190
+The test description was:
+  EntityListScreen loading exposes screen reader semantics
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +5 -3: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen loading exposes screen reader semantics [E]
+  Test failed. See exception logs above.
+  The test description was: EntityListScreen loading exposes screen reader semantics
+  
+00:10 +5 -3: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_i18n_strings_test.dart: (tearDownAll)
+00:11 +5 -3: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+00:11 +6 -3: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+00:11 +7 -3: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _ElementPredicateWidgetFinder:<Found 0 widgets with a semantics label named "Main
+content": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:211:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart line 211
+The test description was:
+  EntityListScreen labels main content landmark when loaded
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:13 +7 -4: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded [E]
+  Test failed. See exception logs above.
+  The test description was: EntityListScreen labels main content landmark when loaded
+  
+00:13 +7 -4: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen loading exposes screen reader semantics
+Pending timers:
+Timer (duration: 24:00:00.000000, periodic: false), created:
+#0      new FakeTimer._ (package:fake_async/fake_async.dart:342:62)
+#1      FakeAsync._createTimer (package:fake_async/fake_async.dart:260:29)
+#2      FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:185:15)
+#6      _SlowEntityRecordClient.getFormMetadata (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:103:11)
+#7      _EntityRecordScreenState._loadForm (package:emcap_mobile/app/entity_record_screen.dart:120:42)
+#8      _EntityRecordScreenState.initState (package:emcap_mobile/app/entity_record_screen.dart:92:19)
+#9      StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5950:55)
+#10     ComponentElement.mount (package:flutter/src/widgets/framework.dart:5793:5)
+...     Normal element mounting (260 frames)
+#270    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#271    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7264:36)
+#272    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7279:32)
+...     Normal element mounting (467 frames)
+#739    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#740    Element.updateChild (package:flutter/src/widgets/framework.dart:4053:20)
+#741    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#742    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#743    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#744    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#745    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#746    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#747    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#748    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#749    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#750    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#751    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#752    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#753    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#754    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#755    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#756    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#757    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#758    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#759    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#760    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#761    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#762    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#763    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#764    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#765    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#766    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#767    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#768    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#769    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#770    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#771    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#772    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#773    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#774    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#775    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#776    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#777    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#778    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#779    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#780    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#781    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#782    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#783    _RawViewElement._updateChild (package:flutter/src/widgets/view.dart:481:16)
+#784    _RawViewElement.update (package:flutter/src/widgets/view.dart:568:5)
+#785    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#786    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#787    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#788    StatelessElement.update (package:flutter/src/widgets/framework.dart:5895:5)
+#789    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#790    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#791    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#792    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#793    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#794    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#795    RootElement._rebuild (package:flutter/src/widgets/binding.dart:2091:16)
+#796    RootElement.update (package:flutter/src/widgets/binding.dart:2069:5)
+#797    RootElement.performRebuild (package:flutter/src/widgets/binding.dart:2083:7)
+#798    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#799    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2750:15)
+#800    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2807:11)
+#801    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3111:18)
+#802    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2431:19)
+#803    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#804    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#805    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#806    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#809    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#810    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#811    WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+#814    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#815    WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+#816    main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:218:18)
+#817    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#818    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 8 frames from dart:async and package:stack_trace)
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+A Timer is still pending even after the widget tree was disposed.
+'package:flutter_test/src/binding.dart':
+Failed assertion: line 2542 pos 12: '!timersPending'
+
+When the exception was thrown, this was the stack:
+#2      AutomatedTestWidgetsFlutterBinding._verifyInvariants (package:flutter_test/src/binding.dart:2542:12)
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1973:7)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from class _AssertionError and package:stack_trace)
+
+The test description was:
+  EntityRecordScreen loading exposes screen reader semantics
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +7 -5: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:14 +7 -5: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen loading exposes screen reader semantics [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen loading exposes screen reader semantics
+  
+00:14 +7 -5: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen labels main content landmark when loaded
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _ElementPredicateWidgetFinder:<Found 0 widgets with a semantics label named "Main
+content": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart:251:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart line 251
+The test description was:
+  EntityRecordScreen labels main content landmark when loaded
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +7 -6: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+00:16 +7 -6: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen labels main content landmark when loaded [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen labels main content landmark when loaded
+  
+00:17 +7 -6: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with type "SwitchListTile": []" (used in a call to "tap()") could not
+find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart:30:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsToggleGroup fires onChanged
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:17 +7 -7: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: (tearDownAll)
+00:17 +7 -7: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: SettingsToggleGroup fires onChanged [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsToggleGroup fires onChanged
+  
+00:17 +7 -7: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: PermissionPicker toggles wildcard and permission
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text containing customer.write: []" (used in a call to "tap()")
+could not find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart:52:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  PermissionPicker toggles wildcard and permission
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:17 +7 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/admin_widgets_test.dart: PermissionPicker toggles wildcard and permission [E]
+  Test failed. See exception logs above.
+  The test description was: PermissionPicker toggles wildcard and permission
+  
+00:21 +7 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract form and grid fixtures include CRM profile fields
+00:21 +8 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract hero uses company and contact_name
+00:21 +9 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract hero uses company only when contact_name missing
+00:21 +10 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract hero reflects inactive active flag
+00:21 +11 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract hero falls back to record id when company and contact missing
+00:21 +12 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: LEAD CRM contract grid formats status enum and active boolean
+00:21 +13 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: CONTACT CRM contract form and grid fixtures include lead lookup
+00:21 +14 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: CONTACT CRM contract hero uses name with email subtitle
+00:21 +15 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_entity_contract_test.dart: CONTACT CRM contract hero keeps record id subtitle when email absent
+00:21 +16 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:21 +17 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:21 +18 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:21 +19 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:21 +20 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (setUpAll)
+00:21 +20 -8: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Globex — Pat": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart:61:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart line 61
+The test description was:
+  LEAD EntityRecordScreen shows company em dash contact hero
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:26 +20 -9: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD EntityRecordScreen shows company em dash contact hero [E]
+  Test failed. See exception logs above.
+  The test description was: LEAD EntityRecordScreen shows company em dash contact hero
+  
+00:26 +20 -9: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD record screen shows main section fields
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: at least one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Company": []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart:80:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart line 80
+The test description was:
+  LEAD record screen shows main section fields
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:28 +20 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_platform_settings_util_test.dart: returns defaults when documents section is missing
+00:28 +20 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: LEAD record screen shows main section fields [E]
+  Test failed. See exception logs above.
+  The test description was: LEAD record screen shows main section fields
+  
+00:28 +21 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/crm_record_screen_test.dart: (tearDownAll)
+00:28 +21 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_platform_settings_util_test.dart: reads document settings from platform config
+00:29 +22 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: (setUpAll)
+00:29 +22 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:38 +23 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_util_test.dart: detects mime type from filename
+00:38 +24 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +25 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +26 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +27 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +28 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +29 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +30 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +31 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +32 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +33 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +34 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +35 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +36 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:38 +37 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +38 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +39 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +40 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +41 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +42 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +43 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +44 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +45 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +46 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +47 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:39 +48 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract on variant uses success badge tokens
+00:42 +49 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract on variant uses success badge tokens
+00:42 +50 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows load error with retry
+00:42 +51 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows load error with retry
+00:42 +52 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract warn variant uses warn badge tokens
+00:42 +53 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract status chip maps active to on variant
+00:43 +54 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract status chip maps inactive to off variant
+00:43 +55 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_badge_test.dart: EmcapBadge web contract badge radius uses token radiusSm
+00:46 +56 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/emcap_client_contract_test.dart: EmcapClient exposes SDD platform API methods
+00:47 +57 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: GridMetadata bulk_actions contract parses bulk_actions flag
+00:47 +58 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: GridMetadata bulk_actions contract defaults bulk_actions to false
+00:49 +59 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: GridMetadata bulk_actions contract PRODUCT fixture enables bulk_actions with realtime/offline
+00:50 +60 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection recordIdsFromPage skips empty ids
+00:50 +61 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection toggleRecordSelection adds and removes ids
+00:50 +62 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection toggleSelectAllOnPage selects then deselects page
+00:50 +63 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection isPageFullySelected reflects partial selection
+00:50 +64 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection selectedRecordsFromPage filters working set
+00:50 +65 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection buildGridExportCsv emits header and rows
+00:50 +66 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_bulk_test.dart: bulk_grid_util selection shouldRunBulkDelete requires flag and selection
+00:55 +67 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: (setUpAll)
+00:55 +67 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: (setUpAll)
+00:55 +67 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:59 +68 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: EntityListScreen shows bulk toolbar when bulk_actions enabled
+01:00 +69 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: EntityListScreen shows bulk toolbar when bulk_actions enabled
+01:00 +70 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_platform_mobile_test.dart: lookup field contract FormMetadata parses lookup field with lookup_entity
+01:00 +71 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +72 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +73 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +74 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +75 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +76 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +77 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +78 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:00 +79 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+01:01 +80 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk delete button disabled until a row is selected
+01:01 +81 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero shows SKU — Name em dash headline
+01:03 +82 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: selecting row enables bulk delete and export
+01:04 +83 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_hero_test.dart: PRODUCT hero shows subtitle stock and price lines
+01:04 +84 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:04 +85 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:04 +86 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:04 +87 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:04 +88 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: bulk export copies CSV to clipboard
+01:05 +89 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_bulk_test.dart: (tearDownAll)
+01:07 +89 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract draft movement can be posted
+01:07 +90 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract posted movement cannot be posted again
+01:07 +91 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract non-movement entity never posts
+01:07 +92 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract new movement cannot post before save
+01:07 +93 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract movement without id cannot post
+01:07 +94 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT post flow contract recordId parameter overrides record map id
+01:07 +95 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT lines filter contract filters lines by movement_id
+01:07 +96 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: STOCK_MOVEMENT lines filter contract empty movement_id matches only blank rows
+01:07 +97 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_movement_test.dart: soft delete on movement record deleted movement shows restore not delete
+01:08 +98 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: (setUpAll)
+01:08 +98 -10: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+Error: Couldn't resolve the package 'test' in 'package:test/test.dart'.
+test/entity_system_contract_test.dart:2:8: Error: Not found: 'package:test/test.dart'
+import 'package:test/test.dart' show skip;
+       ^
+01:12 +98 -11: loading c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart [E]
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart":
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: Error: Couldn't resolve the package 'test' in 'package:test/test.dart'.
+  test/entity_system_contract_test.dart:2:8: Error: Not found: 'package:test/test.dart'
+  import 'package:test/test.dart' show skip;
+         ^
+  .
+01:12 +98 -11: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: at least one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Restore": []>
+   Which: means none were found but some were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart:83:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart line 83
+The test description was:
+  EntityRecordScreen shows restore banner for soft-deleted record
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:12 +98 -12: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen shows restore banner for soft-deleted record [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen shows restore banner for soft-deleted record
+  
+01:12 +98 -12: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen restore action calls client restoreRecord
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.first (dart:core/iterable.dart:663:7)
+#1      _FirstFinderMixin.filter (package:flutter_test/src/finders.dart:1383:28)
+#3      _AncestorFinderMixin.allCandidates (package:flutter_test/src/finders.dart:1857:49)
+#4      FinderBase.evaluate (package:flutter_test/src/finders.dart:1030:76)
+#5      WidgetController.widgetList (package:flutter_test/src/controller.dart:848:19)
+#6      WidgetController._maybeViewOf (package:flutter_test/src/controller.dart:795:34)
+#7      WidgetController.tap (package:flutter_test/src/controller.dart:1078:31)
+#8      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart:111:18)
+<asynchronous suspension>
+#9      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#10     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 2 frames from dart:async-patch and package:stack_trace)
+
+The test description was:
+  EntityRecordScreen restore action calls client restoreRecord
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:13 +98 -13: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: EntityRecordScreen restore action calls client restoreRecord [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen restore action calls client restoreRecord
+  
+01:13 +98 -13: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_lifecycle_test.dart: (tearDownAll)
+01:14 +98 -13: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: (setUpAll)
+01:14 +98 -13: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "MOV-001": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart:91:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart line 91
+The test description was:
+  EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:18 +98 -14: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+01:18 +98 -14: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen shows Post movement for draft STOCK_MOVEMENT
+  
+01:18 +98 -14: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "PO-001": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:115:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart line 115
+The test description was:
+  EntityRecordScreen shows PO lines receive and payment summary
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:18 +98 -15: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen post movement confirms and updates status
+01:18 +98 -15: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen shows PO lines receive and payment summary [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen shows PO lines receive and payment summary
+  
+01:19 +98 -15: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen post movement confirms and updates status
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Post movement": []" (used in a call to "tap()") could not
+find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart:117:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  EntityRecordScreen post movement confirms and updates status
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:19 +98 -16: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+01:19 +98 -16: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_movement_test.dart: EntityRecordScreen post movement confirms and updates status [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen post movement confirms and updates status
+  
+01:19 +98 -16: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Receive": []" (used in a call to "tap()") could not find any
+matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:145:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  EntityRecordScreen receive PO confirms and updates status
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:24 +98 -17: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen receive PO confirms and updates status [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen receive PO confirms and updates status
+  
+01:24 +98 -17: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Add line": []" (used in a call to "tap()") could not find any
+matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:174:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  EntityRecordScreen add line navigates with po_id prefill
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:27 +98 -18: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen add line navigates with po_id prefill [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen add line navigates with po_id prefill
+  
+01:27 +98 -18: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "po-prefill": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:195:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart line 195
+The test description was:
+  EntityRecordScreen child create applies po_id query param
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:29 +98 -19: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies po_id query param [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen child create applies po_id query param
+  
+01:29 +98 -19: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen SO add line navigates with sales_order_id prefill
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Order lines": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:217:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart line 217
+The test description was:
+  EntityRecordScreen SO add line navigates with sales_order_id prefill
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:32 +98 -20: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen SO add line navigates with sales_order_id prefill [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen SO add line navigates with sales_order_id prefill
+  
+01:32 +98 -20: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies sales_order_id query param
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "so-prefill": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:239:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart line 239
+The test description was:
+  EntityRecordScreen child create applies sales_order_id query param
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:32 +98 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: product.field-types.json exists and targets PRODUCT
+01:32 +98 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen child create applies sales_order_id query param [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen child create applies sales_order_id query param
+  
+01:32 +99 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_display_test.dart: formats currency values
+01:32 +100 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+01:32 +101 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+01:32 +102 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+01:32 +103 -21: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "INV-001": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:265:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart line 265
+The test description was:
+  EntityRecordScreen invoice shows collect payment and summary
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:33 +103 -22: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: parses all fixture field types into FormFieldMetadata
+01:33 +103 -22: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen invoice shows collect payment and summary [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen invoice shows collect payment and summary
+  
+01:33 +104 -22: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Record payment": []" (used in a call to "tap()") could not
+find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart:298:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  EntityRecordScreen record vendor payment opens prefilled create
+════════════════════════════════════════════════════════════════════════════════════════════════════
+01:33 +104 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: DynamicFormRenderer validates currency field from fixture
+01:33 +104 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_record_screen_po_test.dart: EntityRecordScreen record vendor payment opens prefilled create [E]
+  Test failed. See exception logs above.
+  The test description was: EntityRecordScreen record vendor payment opens prefilled create
+  
+01:33 +104 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: DynamicFormRenderer validates currency field from fixture
+01:37 +105 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/field_types_fixture_test.dart: grid renderer exposes lookup and currency column metadata from fixture
+01:45 +106 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: loads BCP 47 bundles and translates by locale
+01:45 +107 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: falls back to English for missing keys
+01:46 +108 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile en-US contains every web key
+01:46 +109 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile en-US contains every web key
+01:46 +110 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile en-US contains every web key
+01:46 +111 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: selects plural one/other and formats count
+01:46 +112 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: selects plural one/other and formats count
+01:46 +113 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile fr-FR contains every web key
+01:48 +114 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: mobile-only drift is limited to known keys
+01:49 +115 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: bn-BD settings.organization.* parity with web
+01:49 +116 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_keys_parity_test.dart: (tearDownAll)
+01:54 +116 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:55 +117 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:55 +118 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:55 +119 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:55 +120 -23: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:57 +120 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (setUpAll)
+01:57 +120 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/locale_format_util_test.dart: formatDate formats with locale tag [E]
+  LocaleDataException: Locale data has not been initialized, call initializeDateFormatting(<locale>).
+  package:intl/src/intl_helpers.dart 79:5                   UninitializedLocaleData._throwException
+  package:intl/src/intl_helpers.dart 73:7                   UninitializedLocaleData.containsKey
+  package:intl/src/intl/date_format.dart 902:28             DateFormat.localeExists
+  package:intl/src/intl_helpers.dart 184:19                 verifiedLocale
+  package:intl/src/intl/date_format.dart 267:27             new DateFormat
+  package:intl/src/intl/date_format.dart 548:32             new DateFormat.yMMMd
+  package:emcap_mobile/utils/locale_format_util.dart 39:43  formatDate
+  test\locale_format_util_test.dart 31:12                   main.<fn>
+  
+01:58 +120 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: LayoutEditorPanel loads entity metadata tabs
+02:03 +121 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: LayoutEditorPanel loads entity metadata tabs
+02:03 +122 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: LayoutEditorPanel loads entity metadata tabs
+02:03 +123 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: LayoutEditorPanel loads entity metadata tabs
+02:06 +124 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: (setUpAll)
+02:06 +124 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/layout_editor_panel_test.dart: (tearDownAll)
+02:06 +124 -24: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:06 +124 -25: loading c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart [E]
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart": Missing definition of `main` method.
+02:10 +124 -25: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:10 +125 -25: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+02:10 +126 -25: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 2 widgets with text "Sign in": [
+            Text("Sign in", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+            Text("Sign in", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: is too many
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart:31:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart line 31
+The test description was:
+  LoginScreen shows i18n title and provider chips
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:12 +126 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField resolves selected record label
+02:12 +126 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows i18n title and provider chips [E]
+  Test failed. See exception logs above.
+  The test description was: LoginScreen shows i18n title and provider chips
+  
+02:13 +127 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/login_screen_test.dart: LoginScreen shows session expired message when flagged
+02:14 +128 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +129 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +130 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +131 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +132 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +133 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:14 +134 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:16 +135 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupPickerDialog selects a record
+02:16 +136 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/metadata_contract_test.dart: grid sort and filter
+02:16 +137 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:16 +138 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:16 +139 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:16 +140 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:17 +141 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: LookupField clear button resets value
+02:17 +142 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses realtime flag from API payload
+02:17 +143 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata defaults realtime to true when omitted
+02:17 +144 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses offline and grouping flags
+02:17 +145 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: GridMetadata parses bulk_actions alongside realtime flags
+02:17 +146 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: realtime-disabled grid should not require stream subscription at contract level
+02:17 +147 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: subscribeRecordsStream targets entity records stream endpoint
+02:17 +148 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/mobile_sse_grid_test.dart: offline-enabled grid pairs with sync contract defaults
+02:24 +149 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile accepts png within size limit
+02:24 +150 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: validateOrganizationLogoFile rejects empty file
+02:24 +151 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: groupPermissions sorts by module
+02:24 +152 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: groupPermissions sorts by module
+02:24 +153 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/permission_util_test.dart: groupPermissions sorts by module
+02:24 +154 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:24 +155 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:24 +156 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:24 +157 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:24 +158 -26: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes
+02:24 +158 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: encodeOrganizationLogoContentBase64 round-trips bytes [E]
+  Expected: 'AP+AgA=='
+    Actual: 'AP+A'
+     Which: is different. Both strings start the same, but the actual value is missing the following trailing characters: gA==
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\organization_logo_util_test.dart 54:5          main.<fn>
+  
+02:24 +158 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: isOrganizationLogoPreviewAllowed accepts http(s) and document content paths
+02:24 +159 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_logo_util_test.dart: resolveOrganizationLogoPreviewUrl prefixes API base for document paths
+02:29 +160 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/preferences_service_test.dart: loadThemeMode defaults to system when unset
+02:29 +161 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/preferences_service_test.dart: persists theme mode with emcap-theme key
+02:29 +162 -27: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/preferences_service_test.dart: persists locale with emcap-locale key
+02:29 +162 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract draft PO can be received
+02:29 +162 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/preferences_service_test.dart: persists locale with emcap-locale key [E]
+  Expected: Locale:<fr>
+    Actual: Locale:<fr_FR>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\preferences_service_test.dart 28:5             main.<fn>
+  
+02:29 +163 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract draft PO can be received
+02:29 +164 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract submitted PO can be received
+02:29 +165 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract received PO cannot be received again
+02:29 +166 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract new PO cannot receive before save
+02:29 +167 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER receive contract PO without lines cannot be received
+02:29 +168 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER lines filter contract filters lines by po_id
+02:29 +169 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: PURCHASE_ORDER lines filter contract line extension multiplies qty and unit price
+02:29 +170 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: SALES_ORDER line contract draft SO allows add line
+02:29 +171 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: SALES_ORDER line contract filters lines by sales_order_id
+02:29 +172 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: payment summary contract PO summary uses total_amount amount_paid balance_due
+02:29 +173 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: payment summary contract vendor payment allowed when balance due and not cancelled
+02:29 +174 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: payment summary contract collect payment allowed on open invoice
+02:29 +175 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/purchase_order_util_test.dart: payment summary contract vendor payment prefill includes supplier_id
+02:34 +176 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_lifecycle_util_test.dart: isRecordDeleted detects deleted_at timestamp
+02:34 +177 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView new record
+02:34 +178 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView new record
+02:34 +179 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView new record
+02:34 +180 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView PRODUCT sku and name
+02:34 +181 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView WAREHOUSE code and name
+02:34 +182 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView LEAD company and contact
+02:34 +183 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView CONTACT name and email subtitle
+02:34 +184 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView LEAD inactive status chip
+02:34 +185 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView JOURNAL_ENTRY reference
+02:34 +186 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView SALE receipt_no
+02:34 +187 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView LEAVE_REQUEST leave_type and days
+02:34 +188 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView SUPPLIER code and name
+02:34 +189 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView PURCHASE_ORDER po_number
+02:34 +190 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView SALES_ORDER order_number
+02:34 +191 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView INVOICE invoice_number
+02:34 +192 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView STOCK_MOVEMENT movement_number
+02:34 +193 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView STOCK_MOVEMENT_LINE quantity and unit_cost
+02:34 +194 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView ACCOUNT code and name
+02:34 +195 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView TERMINAL terminal_id and location
+02:34 +196 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/record_headline_test.dart: buildRecordHeadlineView EMPLOYEE employee_no and full_name
+02:38 +197 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/security_platform_settings_util_test.dart: parseSecurityPlatformSettings reads ABAC policy count
+02:38 +198 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/security_platform_settings_util_test.dart: parseSecurityPlatformSettings defaults when security section missing
+02:38 +199 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: (setUpAll)
+02:40 +199 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +200 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +201 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +202 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +203 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +204 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +205 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +206 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+02:43 +207 -28: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Organization": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:118:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen organization panel loads org profile and org.* labels
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:46 +207 -29: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel loads org profile and org.* labels [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen organization panel loads org profile and org.* labels
+  
+02:47 +207 -29: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Organization": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:138:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen shows logo preview for https logo URL
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:50 +207 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen shows logo preview for https logo URL [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen shows logo preview for https logo URL
+  
+02:50 +207 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +208 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +209 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +210 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +211 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +212 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +213 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +214 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +215 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +216 -30: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +216 -31: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:50 +216 -31: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/system_fields_contract_test.dart: formats system datetime fields for record display [E]
+  LocaleDataException: Locale data has not been initialized, call initializeDateFormatting(<locale>).
+  package:intl/src/intl_helpers.dart 79:5              UninitializedLocaleData._throwException
+  package:intl/src/intl_helpers.dart 73:7              UninitializedLocaleData.containsKey
+  package:intl/src/intl/date_format.dart 902:28        DateFormat.localeExists
+  package:intl/src/intl_helpers.dart 184:19            verifiedLocale
+  package:intl/src/intl/date_format.dart 267:27        new DateFormat
+  package:intl/src/intl/date_format.dart 548:32        new DateFormat.yMMMd
+  package:emcap_mobile/utils/field_display.dart 18:33  formatRecordFieldValue
+  test\system_fields_contract_test.dart 88:23          main.<fn>
+  
+02:50 +217 -31: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+02:52 +218 -31: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Organization": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:154:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen save sends organization profile with templates
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:52 +218 -32: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen save sends organization profile with templates [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen save sends organization profile with templates
+  
+02:53 +218 -32: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/theme_tokens_test.dart: EmcapThemeTokens forBrightness selects light vs dark
+02:53 +219 -32: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel resolves org.* labels in fr-FR
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Organisation": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:178:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen organization panel resolves org.* labels in fr-FR
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:54 +219 -33: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen organization panel resolves org.* labels in fr-FR [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen organization panel resolves org.* labels in fr-FR
+  
+02:54 +219 -33: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen uploads logo via injectable picker
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Organization": []" (used in a call to "tap()") could not find
+any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart:201:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  SettingsScreen uploads logo via injectable picker
+════════════════════════════════════════════════════════════════════════════════════════════════════
+02:56 +219 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: SettingsScreen uploads logo via injectable picker [E]
+  Test failed. See exception logs above.
+  The test description was: SettingsScreen uploads logo via injectable picker
+  
+02:56 +219 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/settings_screen_organization_test.dart: (tearDownAll)
+02:56 +219 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_detail_util_test.dart: workflowRowActions draft returns submit
+02:56 +220 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: isWorkflowEnabled true when module and engine enabled
+02:56 +221 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: isWorkflowEnabled true when module and engine enabled
+02:56 +222 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: isWorkflowEnabled true when module and engine enabled
+02:56 +223 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: isWorkflowEnabled true when module and engine enabled
+02:56 +224 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: isWorkflowEnabled false when module disabled
+02:56 +225 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_enabled_util_test.dart: entityStartWorkflowCode returns STOCK_ADJUSTMENT for PRODUCT
+03:01 +226 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_sla_util_test.dart: workflowSlaLevel overdue
+03:01 +227 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_sla_util_test.dart: workflowSlaLevel warning within 24h
+03:01 +228 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_sla_util_test.dart: workflowSlaLevel ok beyond 24h
+03:02 +229 -34: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_state_util_test.dart: workflowStateLabel localizes known states
+03:02 +229 -35: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_state_util_test.dart: workflowStateLabel localizes known states [E]
+  Expected: 'Draft'
+    Actual: 'draft'
+     Which: is different.
+            Expected: Draft
+              Actual: draft
+                      ^
+             Differ at offset 0
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\workflow_state_util_test.dart 12:5             main.<fn>
+  
+03:02 +229 -35: c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/workflow_state_util_test.dart: workflowStateLabel falls back to raw code
+03:05 +230 -35: Some tests failed.
+
+Failing tests:
+  c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen labels main content landmark when loaded
+  c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityListScreen loading exposes screen reader semantics
+  c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen labels main content landmark when loaded
+  c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/a11y_semantics_test.dart: EntityRecordScreen loading exposes screen reader semantics
+  ... and 31 more
+FINAL_EXIT=1

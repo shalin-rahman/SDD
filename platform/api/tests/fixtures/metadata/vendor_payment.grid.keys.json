@@ -1,0 +1,17 @@
+{
+  "column_fields": [
+    "payment_number",
+    "po_id",
+    "supplier_id",
+    "amount",
+    "payment_date",
+    "payment_method",
+    "status",
+    "active",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "updated_by",
+    "record_version"
+  ]
+}

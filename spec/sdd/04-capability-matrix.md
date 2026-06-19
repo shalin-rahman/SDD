@@ -61,7 +61,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | Layer | Primary evidence |
 |-------|------------------|
-| API | `platform/api/tests/` (67+ tests, ~90% cov) |
+| API | `platform/api/tests/` (365+ tests, ~92% cov); P25 finance: `test_purchase_order_entities.py`, `test_vendor_payment_entities.py`, `test_sales_order_entities.py`, `test_customer_payment_entities.py`, `test_journal_double_entry.py`, `test_finance_field_security.py`; P25 demo seed: `data/seed/demo/procurement.json`, `sales.json`, extended `accounting.json`; `test_seed_loader.py` (procurement/sales/GL chain — 9 tests) |
 | Web | `emcap-client.test.ts` (full route parity), renderer tests |
 | Mobile | `metadata_contract_test.dart`, `emcap_client.dart` parity |
 | End-user UX | `spec/sdd/05-end-user-matrix.md` |

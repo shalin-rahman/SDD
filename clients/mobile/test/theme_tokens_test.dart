@@ -86,6 +86,14 @@ void main() {
         EmcapThemeTokens.light.surface,
       );
     });
+
+    test('copyWith and lerp produce valid tokens', () {
+      final copied = EmcapThemeTokens.light.copyWith(primary: Colors.red);
+      expect(copied.primary, Colors.red);
+      final mid = EmcapThemeTokens.light.lerp(EmcapThemeTokens.dark, 0.5)!;
+      expect(mid.primary, isNot(equals(EmcapThemeTokens.light.primary)));
+      expect(EmcapThemeTokens.light.lerp(null, 0.5), EmcapThemeTokens.light);
+    });
   });
 }
 

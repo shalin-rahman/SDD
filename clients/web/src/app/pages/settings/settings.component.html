@@ -12,7 +12,7 @@
   />
 } @else {
 @if (status) {
-  <p class="status">{{ status }}</p>
+  <p class="status" role="status" aria-live="polite" [attr.aria-label]="i18n.t('a11y.screenReader.saved')">{{ status }}</p>
 }
 @if (reloadHint) {
   <p class="settings-hint">{{ reloadHint }}</p>
@@ -40,6 +40,137 @@
   <mat-tab [label]="i18n.t('settings.domains.identity')">
     <mat-accordion multi>
       <mat-expansion-panel expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ i18n.t('settings.sections.organization') }}</mat-panel-title>
+          <mat-panel-description>{{ i18n.t('settings.organization.subtitle') }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="settings-form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.displayName.label') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.displayName" [readonly]="!organizationDisplayEditable()" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.legalName.label') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.legalName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.taxId.label') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.taxId" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.contact.email') }}</mat-label>
+            <input matInput type="email" [(ngModel)]="organizationProfile.email" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.contact.phone') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.phone" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.website') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.website" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.addressLine1') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.line1" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.addressLine2') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.line2" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.city') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.city" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.state') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.state" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.postalCode') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.postalCode" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.country') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.address.country" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.timezone') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.timezone" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.locale') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.locale" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.currency') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.currency" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.fiscalYearStart') }}</mat-label>
+            <input matInput type="number" min="1" max="12" [(ngModel)]="organizationProfile.fiscalYearStartMonth" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('settings.organization.logoUrl') }}</mat-label>
+            <input matInput [(ngModel)]="organizationProfile.logoUrl" />
+          </mat-form-field>
+          <div class="settings-org-logo-upload">
+            <input
+              #orgLogoFileInput
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
+              hidden
+              (change)="onOrganizationLogoFileSelected($event)"
+            />
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="organizationLogoUploading"
+              (click)="orgLogoFileInput.click()"
+            >
+              {{ i18n.t('settings.organization.logoUpload') }}
+            </button>
+            @if (organizationLogoUploadStatus) {
+              <p class="settings-hint">{{ organizationLogoUploadStatus }}</p>
+            }
+          </div>
+        </div>
+        @if (organizationLogoPreviewUrl()) {
+          <div class="settings-org-logo-preview">
+            <p class="settings-hint">{{ i18n.t('settings.organization.logoPreview') }}</p>
+            <img
+              [src]="organizationLogoPreviewUrl()"
+              [alt]="organizationLogoAlt()"
+              loading="lazy"
+              width="120"
+              height="48"
+            />
+          </div>
+        }
+        <p class="settings-hint">{{ i18n.t('org.template.tokenHint') }}</p>
+        <div class="settings-form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.invoice.header') }}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="organizationProfile.invoice.header"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.invoice.footer') }}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="organizationProfile.invoice.footer"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.report.header') }}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="organizationProfile.report.header"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ i18n.t('org.report.footer') }}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="organizationProfile.report.footer"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="settings-form-grid__full">
+            <mat-label>{{ i18n.t('settings.organization.emailSignature') }}</mat-label>
+            <textarea matInput rows="3" [(ngModel)]="organizationProfile.emailSignature"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>{{ i18n.t('settings.sections.auth') }}</mat-panel-title>
         </mat-expansion-panel-header>
@@ -198,6 +329,7 @@
         <p class="settings-readonly">{{ i18n.t('settings.observability.metrics') }}</p>
         <p class="settings-hint">{{ i18n.t('settings.observability.grafanaHint') }}</p>
         <p class="settings-hint">{{ i18n.t('settings.observability.runbookHint') }}</p>
+        <p class="settings-hint settings-version">{{ deploymentVersionLabel }}</p>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>

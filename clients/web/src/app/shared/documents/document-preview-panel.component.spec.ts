@@ -120,4 +120,61 @@ describe('DocumentPreviewPanelComponent', () => {
     fixture.componentRef.setInput('open', false);
     fixture.detectChanges();
   });
+
+  it('renders image preview and closes on backdrop click', async () => {
+    const bytes = new Uint8Array(80).fill(0x89);
+    getDocument.and.resolveTo({
+      id: 'doc-img',
+      filename: 'photo.png',
+      version: 1,
+      virus_scan_status: 'clean',
+      content_base64: btoa(String.fromCharCode(...bytes)),
+    });
+
+    fixture.componentRef.setInput('open', true);
+    fixture.componentRef.setInput('document', {
+      id: 'doc-img',
+      filename: 'photo.png',
+      version: '1',
+      virus_scan_status: 'clean',
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.doc-preview-panel__image')).toBeTruthy();
+
+    const closed = jasmine.createSpy('closed');
+    fixture.componentInstance.closed.subscribe(closed);
+    const backdrop = fixture.nativeElement.querySelector('.doc-preview-backdrop') as HTMLElement;
+    backdrop.click();
+    expect(closed).toHaveBeenCalled();
+  });
+
+  it('builds PDF preview view for inline iframe', async () => {
+    const pdfHeader = '%PDF-1.4';
+    const bytes = new TextEncoder().encode(pdfHeader + ' '.repeat(120));
+    getDocument.and.resolveTo({
+      id: 'doc-pdf',
+      filename: 'invoice.pdf',
+      version: 1,
+      virus_scan_status: 'clean',
+      content_base64: btoa(String.fromCharCode(...bytes)),
+    });
+
+    fixture.componentRef.setInput('open', true);
+    fixture.componentRef.setInput('document', {
+      id: 'doc-pdf',
+      filename: 'invoice.pdf',
+      version: '1',
+      virus_scan_status: 'clean',
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.previewView?.mode).toBe('pdf');
+    expect(cmp.filename).toBe('invoice.pdf');
+    expect(cmp.previewView?.blobUrl).toContain('blob:');
+  });
 });

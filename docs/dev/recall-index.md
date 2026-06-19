@@ -43,7 +43,7 @@
 
 | `session-memos/2026-06-13-s3-implementation-slice.md` | S3 tokens + profile hub | P16-T02, P17-T08, P14-T14 |
 | `session-memos/2026-06-13-s1-m1-screenshots.md` | S1 M1 web screenshot pack | P15-T06, P20-T02, `07` M1 signed |
-| `session-memos/2026-06-13-s2-m2-mobile-screenshot-prep.md` | S2 M2 mobile prep (Flutter blocked) | P15-T13, P20-T03 Partial, runbook |
+| `session-memos/2026-06-13-s2-m2-mobile-screenshot-prep.md` | S2 M2 mobile prep (PNG runbook) | P15-T13, P20-T03 Partial, runbook |
 | `session-memos/2026-06-13-p17-workflow-inbox-web.md` | P17 workflow inbox web | P17-T01 |
 | `session-memos/2026-06-13-p17-reports-history-web.md` | P17 reports history web | P17-T03 |
 | `session-memos/2026-06-13-p17-dashboards-web.md` | P17 dashboard KPI cards web | P17-T04 |
@@ -67,6 +67,8 @@
 | `session-memos/2026-06-14-parallel-p13-p19-p15-mobile.md` | P13 field access API + P19 admin + mobile loading | P13-T10/T11, P19-T03/T06, P15-T22/T23 mobile |
 | `session-memos/2026-06-16-web-branch-coverage-push.md` | Sprint 14 web branch coverage 80% | `add-coverage-gate.md`, `known-pitfalls.md` § NFR-003, `emcap-testing` skill |
 | `session-memos/2026-06-17-m6-admin-screenshots-dod.md` | P18-T15/T21 M6 admin PNG + DoD + remainder | `HANDOFF-continue-standard-product.md`, `07` §12, P18-T11/T12 partial |
+| `session-memos/2026-06-18-partials-completion-plan.md` | 10 Partial mobile tasks — batches 1–4 DAG | `HANDOFF-continue-standard-product.md`, Batch 2 screen tests, `flutter test --coverage` + PNG sign-off |
+| `session-memos/2026-06-18-i18n-gap-audit.md` | Phase 27 i18n/l10n gap audit — BCP 47, parity drift, missing domains | `plan/26-i18n-l10n-localization.md`, `data/i18n/seed/starter-catalog.json` |
 | `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).

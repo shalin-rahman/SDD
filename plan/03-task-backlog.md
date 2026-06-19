@@ -21,19 +21,22 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 15 — Entity page redesign | 17 | 0 | 1 | 20 |
 | 16 — Design system | 9 | 0 | 0 | 9 |
 | 17 — Platform services UX | 11 | 0 | 0 | 11 |
-| 18 — Reference modules product | 13 | 0 | 8 | 21 |
+| 18 — Reference modules product | 20 | 0 | 1 | 21 |
 | 19 — Admin product depth | 12 | 0 | 0 | 12 |
 | 20 — Quality gates | 16 | 0 | 2 | 19 |
 | 21 — Infra/docs (support) | 6 | 0 | 0 | 6 |
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
-| **Total** | **333** | **0** | **10** | **343** |
+| 24 — Residual product polish (post-M2) | 3 | 2 | 0 | 5 |
+| 25 — Procurement / Sales / AP-AR / Accounting | 11 | 0 | 1 | 13 |
+| 27 — i18n / l10n (BCP 47) | 12 | 0 | 0 | 12 |
+| **Total** | **366** | **2** | **5** | **377** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-17 (Sprint 7 — P18-T11/T12/T14 Done; optional E2E PR gate; i18n audit) · **Handoff:** `docs/dev/HANDOFF-continue-standard-product.md`
+**Last updated:** 2026-06-19 (9 web PNG sign-off — P24-T01/T02, P25-T13 web, P26-T14, P27-T12 web elevated in matrix 07 §10/§16/§18/§19/§20; mobile Demo+ until device PNGs)
 
-**Current focus:** **CC-1 M2 mobile PNG** blocked (Flutter SDK) · **P20-T08** M2/M3 mobile sign-off when PNG lands.
+**Current focus:** `flutter test --coverage` green (≥80%) · M2 mobile PNG pack (`scripts/capture-m2-mobile-screenshots.md`) · P25-T13 mobile PNG lane open
 
 ---
 
@@ -409,8 +412,8 @@ Playbook: `plan/12-enterprise-product-ui.md` · **Phase 13:** `plan/13-enterpris
 | EMCAP-P15-T10 | Mobile record detail header + section cards | P14-T12, T01 | Done |
 | EMCAP-P15-T11 | Mobile PRODUCT headline/subtitle util | T10 | Done |
 | EMCAP-P15-T12 | Mobile grid polish + datetime cells | T10 | Done |
-| EMCAP-P15-T13 | Mobile screenshots (M2) | T10–T12 | Partial — `entity_record_hero_test.dart` (6 tests) + `integration_test/m2_product_detail_test.dart`; PNG capture blocked (no Flutter SDK) |
-| EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Done — `entity_list_screen` wires `subscribeRecordsStream`; `mobile_sse_grid_test.dart` (6 contract tests: realtime/offline/grouping) |
+| EMCAP-P15-T13 | Mobile screenshots (M2) | T10–T12 | Partial — implementation + targeted specs green (hero 6, bulk 4/4, SSE 3/3, doc-preview 28/28, entity-record screen 6 after load fix); **M2 PNG** pending (`scripts/capture-m2-mobile-screenshots.md`) |
+| EMCAP-P15-T14 | Mobile SSE grid refresh | T12 | Done — `entity_list_screen` wires `subscribeRecordsStream`; `mobile_sse_grid_test.dart` (8 contract tests: realtime/offline/grouping) |
 | EMCAP-P15-T20 | Hero rules via metadata `display` hints | P14-T13, P16-T02 | Done |
 | EMCAP-P15-T21 | Redesign WAREHOUSE + CRM entities | T20 | **Cancelled** — superseded by generic `entity-list`/`entity-record` + P18-T03/T06 screenshots 2026-06-14; no entity-specific page code required |
 | EMCAP-P15-T22 | Loading skeletons + error retry | T21 | Done — web entity initial load + list reload `[loading]` on grid; mobile `entity_list_screen` loading panel + inline list reload + error retry |
@@ -475,7 +478,7 @@ Playbook: `plan/17-platform-services-product-ux.md`
 | EMCAP-P18-T05 | Module report UX | P17-T03 | Done — report menus in module nav + `test_module_report_menus.py` |
 
 > **P18-T05:** Reports UX + `phase18-inventory-low-stock-report.png` + `phase18-inventory-low-stock-via-nav-web.png` Done 2026-06-14 (module report menus + sidenav reachability).
-| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Partial — web Product-ready + screenshots; mobile Demo+ code+tests (`crm_entity_contract_test.dart`, `entity_platform_mobile_test.dart`); device PNG pending |
+| EMCAP-P18-T06 | CRM LEAD/CONTACT product | P15-T21 | Done — web Product-ready + screenshots; mobile `crm_entity_contract_test.dart` (13) + `crm_record_screen_test.dart` (2) after entity-record load fix; device PNG for matrix Product-ready still open |
 | EMCAP-P18-T07 | Menu icons in metadata | P16 | Done — `MenuDefinition.icon` + GET `/menus` + `SidenavNavComponent` mat-icon; all modules; `test_module_report_menus.py` + `sidenav-nav.component.spec.ts` |
 | EMCAP-P18-T08 | Inventory product smoke | T03–T05 | Done — `test_inventory_product_smoke.py` WAREHOUSE + STOCK_MOVEMENT draft chain |
 
@@ -487,17 +490,17 @@ Playbook: `plan/18-reference-modules-product.md`
 |----|------|---------|--------|
 | EMCAP-P18-PLAN | Standard professional app gap analysis | — | Done — `plan/18-standard-professional-app-gap-plan.md` |
 | EMCAP-P18-T11 | Enterprise auth UX (OAuth cards, MFA steps, session expiry) | P19-T02 | Done — web provider picker + MFA steps + `phase18-login-web.png`, `phase18-account-auth-web.png`; mobile provider chips + session expiry |
-| EMCAP-P18-T13 | Grid bulk actions (select, export, soft-delete) | P14 entity platform | Partial — web+e2e+API+mobile code + `entity_list_bulk_test.dart`; `dart test` verify pending |
+| EMCAP-P18-T13 | Grid bulk actions (select, export, soft-delete) | P14 entity platform | Done — web+e2e+API; mobile `bulk_grid_util.dart` + `entity_list_bulk_test.dart` (10) + `entity_list_screen_bulk_test.dart` (4/4 green 2026-06-19) |
 | EMCAP-P18-T12 | App i18n depth (entity, admin, settings bodies) | P16 shell i18n | Done — lookup picker/field, tenant select, mobile admin bodies; `scripts/audit-i18n.mjs` + `admin_i18n_strings_test.dart` |
 | EMCAP-P18-T14 | Playwright E2E smoke + CI hook | Local stack recipe | Done — `e2e-smoke-optional` in `ci.yml` (non-blocking PR); weekly `e2e-smoke.yml` authoritative |
 | EMCAP-P18-T15 | M6 admin/settings Product-ready screenshot batch | P19-T01–T12 | Done — `node scripts/capture-screenshot-sprint.mjs --only=admin-settings` (8 PNGs); matrix 07 §12; README § P18-T15 (2026-06-17) |
 | EMCAP-P18-T21 | Admin users/roles/security Product-ready elevation | P18-T15 | Done — `plan/16-product-ready-dod.md` §3 applied (load retry, saveError, deactivate confirm, ABAC empty/retry); Karma specs; matrix 07 §12 + 06 §7 (2026-06-17) |
-| EMCAP-P18-T09 | M2 PRODUCT mobile Product-ready sign-off | P15-T13, P20-T03 | Partial — hero/header polish + `entity_record_hero_test.dart` depth + integration_test; PNG blocked (Flutter SDK) |
-| EMCAP-P18-T10 | CRM mobile LEAD/CONTACT Product-ready | P18-T06, P18-T09 | Partial — `crm_entity_contract_test.dart` + headline/grid contracts; PNG blocked |
-| EMCAP-P18-T16 | Mobile entity platform Product-ready (lookup, status, soft delete) | P18-T09 | Partial — `entity_platform_mobile_test.dart`, `record_lifecycle_util.dart`, record banner UX; PNG blocked |
-| EMCAP-P18-T17 | STOCK_MOVEMENT mobile Product-ready | P20-T18, P18-T09 | Partial — post movement + lines on `entity_record_screen.dart`; `entity_record_movement_test.dart`; PNG blocked |
-| EMCAP-P18-T18 | Document preview mobile Product-ready | P17-T06 | Partial — `document_preview_util_test.dart` depth (14 tests); device verify open |
-| EMCAP-P18-T20 | Grid realtime/offline mobile parity | P15-T14 | Partial — SSE refresh + offline snapshot UX + `mobile_sse_grid_test.dart`; device PNG blocked |
+| EMCAP-P18-T09 | M2 PRODUCT mobile Product-ready sign-off | P15-T13, P20-T03 | Partial — code + widget specs green; **full `flutter test --coverage`** + M2 PNG required before matrix §9 mobile Product-ready |
+| EMCAP-P18-T10 | CRM mobile LEAD/CONTACT Product-ready | P18-T06, P18-T09 | Done — `crm_record_screen_test.dart` (2) + contracts (13); matrix §18 mobile Product-ready blocked on M2 PNG only |
+| EMCAP-P18-T16 | Mobile entity platform Product-ready (lookup, status, soft delete) | P18-T09 | Done — `entity_platform_mobile_test.dart` (11) + `lookup_field_test.dart` (3) + `entity_record_screen_lifecycle_test.dart` (2); matrix Product-ready blocked on M2 PNG |
+| EMCAP-P18-T17 | STOCK_MOVEMENT mobile Product-ready | P20-T18, P18-T09 | Done — `entity_record_movement_test.dart` (9) + `entity_record_screen_movement_test.dart` (2); matrix Product-ready blocked on M2 PNG |
+| EMCAP-P18-T18 | Document preview mobile Product-ready | P17-T06 | Done — util (24) + dialog (4/4); matrix §10 mobile Product-ready blocked on device PNG |
+| EMCAP-P18-T20 | Grid realtime/offline mobile parity | P15-T14 | Done — contract (8) + `entity_list_screen_sse_test.dart` (3/3); matrix Product-ready blocked on M2 PNG |
 | EMCAP-P18-T19 | Assistant + rule-evaluate product bar | P17-T09, P17-T11 | Done — web flag gate, empty/retry/i18n; rule-evaluate formula gate + specs (2026-06-17) |
 | EMCAP-P18-T22 | Remaining YAML-only settings (AI backend, observability) | P19-T01 | Done — web read-only AI backend summary + observability runbook hints; `ai.enabled` toggle editable (2026-06-17) |
 
@@ -530,20 +533,20 @@ Playbook: `plan/19-admin-product-depth.md` · `plan/13-enterprise-admin-depth.md
 |----|------|---------|--------|
 | EMCAP-P20-T01 | Screenshot convention | — | Done |
 | EMCAP-P20-T02 | M1 PRODUCT web screenshots | P15-T06 | Done |
-| EMCAP-P20-T03 | M2 PRODUCT mobile screenshots | P15-T13 | Partial — runbook + hero/integration tests strengthened; PNG pending |
+| EMCAP-P20-T03 | M2 PRODUCT mobile screenshots | P15-T13 | Partial — runbook + M2 widget/contract specs green; **PNG capture** pending |
 | EMCAP-P20-T04 | Client REQUIRED_METHODS sync | — | Done — web `emcap-client.spec.ts` + mobile `emcap_client_contract_test.dart`; `getReportRun` parity 2026-06-15 |
 | EMCAP-P20-T05 | Metadata snapshot CI all entities | P14-T26 | Done |
 | EMCAP-P20-T06 | Web bundle / lazy routes plan | P16 | Done — entity list/record, notifications, account lazy-loaded; initial 818 kB (under 900 kB warning) |
 | EMCAP-P20-T07 | Entity list perf budget | P15-T22 | Done — lazy entity routes; `app.routes.spec.ts` smoke |
-| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Partial — Sprint 11 rev: M5/M6 **Signed (web)**; §9/§10 mobile Demo+ notes; M2/M3 mobile PNG still open (2026-06-17) |
+| EMCAP-P20-T08 | Matrix rev per milestone | M1–M6 | Partial — M2 targeted specs green; **full `flutter test --coverage`** + M2 PNG before M2 **Product-ready** sign-off |
 | EMCAP-P20-T09 | W1 standard module fields (WAREHOUSE, CRM) | P20-T05 | Done |
 | EMCAP-P20-T10 | W1 web fixtures + headline generalize | P20-T09 | Done |
 | EMCAP-P20-T11 | W1 mobile contracts + If-Match PUT | P20-T09 | Done |
 | EMCAP-P20-T12 | W2 module fields (JE, SALE, LEAVE) | W1 | Done |
-| EMCAP-P20-T13 | W2 web/mobile fixture parity | P20-T12 | Done — JE/SALE/LEAVE fixtures; Karma 130/130; mobile contracts + headlines; local `flutter test` skipped |
-| EMCAP-P20-T14 | W3 remaining entities status + fixtures | W2 | Done — ACCOUNT balance CURRENCY + status; TERMINAL/EMPLOYEE status; EMPLOYEE department ENUM; fixtures API+web+mobile; Karma 145/145; pytest 94 (w2+w3+contract); local `flutter test` skipped |
+| EMCAP-P20-T13 | W2 web/mobile fixture parity | P20-T12 | Done — JE/SALE/LEAVE fixtures; Karma 130/130; mobile contracts + headlines; local `flutter test` available |
+| EMCAP-P20-T14 | W3 remaining entities status + fixtures | W2 | Done — ACCOUNT balance CURRENCY + status; TERMINAL/EMPLOYEE status; EMPLOYEE department ENUM; fixtures API+web+mobile; Karma 145/145; pytest 94 (w2+w3+contract); local `flutter test` available |
 | EMCAP-P20-T15 | W4 procurement/sales standard profile (API) | W3 | Done |
-| EMCAP-P20-T16 | W4 web/mobile fixture parity | P20-T15 | Done — web Karma 115/115; mobile fixture loader W4; local `flutter test` skipped (no SDK) |
+| EMCAP-P20-T16 | W4 web/mobile fixture parity | P20-T15 | Done — web Karma 115/115; mobile fixture loader W4; local `flutter test` available |
 | EMCAP-P20-T17 | W5 STOCK_MOVEMENT + LINE + movement_type enum | M4 / P18-T03 | Done |
 | EMCAP-P20-T18 | W5 stock movement product UX + screenshots | P20-T17 | Done — web+mobile code; Karma 115/115; screenshot pack + local Flutter verify pending |
 | EMCAP-P20-T19 | W5 posted movement → qty_on_hand (`apply_posted_movement` in module) + seed + report | P20-T17 | Done |
@@ -591,6 +594,87 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 ---
 
+## Phase 24 — Residual product polish (post-M2)
+
+> **Plan:** `plan/21-standard-product-residual-gaps.md` — web P24-T01/T02/T05 **Done** 2026-06-19; PNG pack refreshed via `capture-phase24-screenshots.mjs`; mobile P24-T03/T04 pending.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P24-T01 | Document preview web Product-ready elevation | P17-T06 | Done — `docs/product/screenshots/phase24-document-preview-web.png` via `capture-phase24-screenshots.mjs` (2026-06-19); matrix §10 **Product-ready (web)** |
+| EMCAP-P24-T02 | STOCK_MOVEMENT_LINE inline child grid UX polish | P20-T21 | Done — `docs/product/screenshots/phase24-stock-movement-lines-web.png` via `capture-phase24-screenshots.mjs` (2026-06-19); matrix §16 LINE row **Product-ready (web)** |
+| EMCAP-P24-T03 | Mobile admin Product-ready sign-off | P18-T09, P18-T21 | Pending — admin PNG pack; matrix §12 mobile (**Flutter**) |
+| EMCAP-P24-T04 | Mobile a11y semantics (TalkBack/VoiceOver) | P18-T09 | Pending — Semantics on entity primary flows + manual checklist (**Flutter**) |
+| EMCAP-P24-T05 | Web page spec depth ratchet | P20-T04 | Done — entity-record + movement-line util + document-preview specs + `child-lines-section.component.spec.ts`; **492/492** Karma; branches **80.15%** |
+
+---
+
+## Phase 25 — Procurement / Sales / AP-AR / Accounting
+
+> **Plan:** `plan/25-procurement-sales-ap-ar-accounting.md` — W1–W4 + seed (P25-T01–T12) **Done** 2026-06-19; **P25-T13** web Product-ready **Done**; mobile PNG lane **Partial**.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P25-T01 | Plan doc + FR-025/026/027 + backlog rows | — | Done |
+| EMCAP-P25-T02 | PURCHASE_ORDER_LINE + SALES_ORDER_LINE entities + fixtures + pytest | P25-T01 | Done |
+| EMCAP-P25-T03 | PO receive validator + STOCK_MOVEMENT spawn + tests | P25-T02 | Done |
+| EMCAP-P25-T04 | VENDOR_PAYMENT + CUSTOMER_PAYMENT + multi-pay validators | P25-T02 | Done |
+| EMCAP-P25-T05 | JOURNAL_ENTRY_LINE + double-entry post + balance rollup | P25-T02 | Done |
+| EMCAP-P25-T06 | Finance permissions + field read_roles + security tests | P25-T04, P25-T05 | Done |
+| EMCAP-P25-T07 | Web child-lines-section + PO/SO inline grids + i18n | P25-T03, P25-T06 | Done |
+| EMCAP-P25-T08 | Web payment UI + balance cards + karma ≥80% branches | P25-T04, P25-T06 | Done |
+| EMCAP-P25-T09 | Mobile PO/SO/payment utils + screen wiring + dart tests | P25-T03, P25-T04 | Done |
+| EMCAP-P25-T10 | Mobile add-line navigation parity + widget tests | P25-T09 | Done |
+| EMCAP-P25-T11 | Demo seed JSON + seed loader tests | P25-T03–T05 | Done — `procurement.json`, `sales.json`, extended `accounting.json`; `test_seed_loader.py` procurement/sales/GL smoke (9 passed) |
+| EMCAP-P25-T12 | Full verify + doc sync all matrices | P25-T07–T11 | Done — matrices 04/05/07, backlog, HANDOFF; seed pytest + Karma 527/527 |
+| EMCAP-P25-T13 | Screenshot pack + matrix 07 Product-ready | P25-T12 | Partial — web **Done**: 5 PNGs (`docs/product/screenshots/phase25-*-web.png`) via `capture-signoff-screenshots.mjs --only=p25` (2026-06-19); matrix §18 web rows elevated; **mobile device PNG open** |
+
+---
+
+## Phase 26 — Business profile setup & configuration
+
+> **Plan:** `plan/26-business-profile-configuration.md` — Wave 1 (P26-T01–T08) **Done** 2026-06-18; Wave 2 P26-T09 **Done** 2026-06-19.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P26-T01 | Plan doc + FR-028 + backlog rows | — | Done |
+| EMCAP-P26-T02 | Pydantic `organization_profile` + platform.yaml defaults | P26-T01 | Done |
+| EMCAP-P26-T03 | GET/PUT `/admin/organization-profile` + pytest | P26-T02 | Done |
+| EMCAP-P26-T04 | Extend admin settings paths + merge | P26-T02 | Done |
+| EMCAP-P26-T05 | Web Organization settings panel + EN/FR/BN i18n | P26-T03 | Done — org.* starter-catalog keys wired EN/FR/BN (fr-FR added 2026-06-19) |
+| EMCAP-P26-T06 | `organization-profile.util.ts` + karma spec | P26-T05 | Done |
+| EMCAP-P26-T07 | Mobile org section + logo URL preview + dart tests | P26-T03 | Done — org.* keys EN/FR/BN + invoice/report templates; `test/settings_screen_organization_test.dart` (5 cases); `file_picker` wired in `shell.dart` |
+| EMCAP-P26-T08 | `organization_profile_util.dart` | P26-T07 | Done |
+| EMCAP-P26-T09 | Logo blob upload + virus scan hook | P26-T03 | Done — POST `/admin/organization-profile/logo`; `DocumentService` + EICAR hook; web file picker + mobile injectable picker; pytest + dart tests |
+| EMCAP-P26-T10 | Favicon + secondary color branding parity | P26-T09 | Pending |
+| EMCAP-P26-T11 | PDF/report export header injection | P26-T06 | Pending |
+| EMCAP-P26-T12 | INVOICE print view header/footer | P26-T11 | Pending |
+| EMCAP-P26-T13 | Email signature merge in notifications | P26-T03 | Pending |
+| EMCAP-P26-T14 | Screenshot pack + matrix 07 Product-ready | P26-T05, P26-T07 | Done — `phase26-organization-profile-web.png` via `capture-signoff-screenshots.mjs --only=p26` (2026-06-19); matrix §19 |
+| EMCAP-P26-T15 | Full verify + doc sync (`AGENT_LOOP_WAKE_P26`) | P26-T09–T14 | Pending |
+
+---
+
+## Phase 27 — i18n / l10n localization (BCP 47)
+
+> **Plan:** `plan/26-i18n-l10n-localization.md` · **Gap audit:** `docs/dev/session-memos/2026-06-18-i18n-gap-audit.md` · **Seed:** `data/i18n/seed/starter-catalog.json` · **Proposed FR:** FR-029
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P27-T01 | Plan + gap audit + FR-029 trace note + backlog | — | Done |
+| EMCAP-P27-T02 | BCP 47 migration; rename bundles; update `spec/i18n/emcap-ui-keys.json` | P27-T01 | Done |
+| EMCAP-P27-T03 | Web `I18nService` lazy chunks + `t`/`plural` + BCP 47 persistence | P27-T02 | Done (W1 — flat bundles, alias shims, starter-catalog merge) |
+| EMCAP-P27-T04 | Web `locale-format.util.ts` + karma spec (numerals, currency, date) | P27-T02 | Done (W1 — branch coverage ≥80%) |
+| EMCAP-P27-T05 | Mobile `I18nService` + `locale_format_util.dart` + dart tests (no flutter run) | P27-T02 | Done |
+| EMCAP-P27-T06 | Merge seed catalog; fix BN gaps; web/mobile key parity | P27-T03–T05 | Done |
+| EMCAP-P27-T07 | Wire `a11y.*`, `ux.*`, `security.*`, `deployment.*` catalog to UI | P27-T06 | Done |
+| EMCAP-P27-T08 | P25 finance + P26 org i18n completion (web) | P27-T07 | Done |
+| EMCAP-P27-T09 | Mobile parity: org BN, finance, a11y semantics | P27-T07 | Done |
+| EMCAP-P27-T10 | CI parity script; i18n tests green; web branch coverage ≥80% | P27-T08–T09 | Done |
+| EMCAP-P27-T11 | Matrix 06/07 + traceability FR-029 + pitfall + codebase-index sync | P27-T10 | Done |
+| EMCAP-P27-T12 | Full verify + locale-switch screenshot spot-check (`AGENT_LOOP_WAKE_P27`) | P27-T11 | Done (web) — `docs/product/screenshots/phase27-locale-switch-bn-bd-web.png` via `capture-signoff-screenshots.mjs --only=p27` (2026-06-19); matrix 07 §20 + matrix 06 i18n row; mobile device PNG open |
+
+---
+
 ## Crash course — zero-exploration sprints
 
 **Read order (never skip):** `codebase-index.md` → `user-feedback-registry.md` §A/F → this section → task card paths only.
@@ -598,8 +682,8 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | Sprint | Goal | Tasks | Verify (copy-paste) | Blocker |
 |--------|------|-------|---------------------|---------|
 | **CC-0** | Doc + memory integrity | P22-T01–T06, P21-T04–T05 | Grep `entity.component` → 0 outside memos | — |
-| **CC-1** | M2 mobile sign-off | P15-T13, P20-T03 | `flutter test`; `scripts/capture-m2-mobile-screenshots.md` | Flutter SDK |
-| **CC-2** | CRM mobile Product-ready | P18-T06 | `flutter test test/entity_system_contract_test.dart` | Flutter SDK |
+| **CC-1** | M2 mobile sign-off | P15-T13, P20-T03 | `cd clients/mobile && flutter pub get && flutter test --coverage`; `scripts/capture-m2-mobile-screenshots.md` | PNG evidence — do not mark Product-ready without PNGs (`flutter` on PATH; install outside Downloads — `known-pitfalls.md` § Flutter PATH) |
+| **CC-2** | CRM mobile Product-ready | P18-T06 | `flutter test test/entity_system_contract_test.dart` | PNG evidence |
 | **CC-3** | W5 post UX | P20-T20, P20-T21 | pytest `test_stock_movement_entities.py`; Karma entity specs | — |
 | **CC-4** | Admin depth | P19-T04, T09–T12, P21-T06, P23-T04 | Karma admin specs; `test_admin_api.py` | — |
 | **CC-5** | Security metadata filter | P23-T01–T02 | `test_admin_field_access_override.py` + new metadata deny test | — |
@@ -607,7 +691,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | **CC-7** | Design + a11y | P16-T05, T09, P15-T30–T32 | `npm run test:ci`; axe CI job | — |
 | **CC-8** | Infra hardening | P21-T01, P20-T06–T07, P20-T04 | pytest; `ng build --stats-json`; `npm run test:coverage` | — |
 
-**Parallel lanes after CC-0:** CC-3 + CC-4 + CC-5 (web-only) while CC-1 blocked.
+**Parallel lanes after CC-0:** CC-1 + CC-2 (mobile verify + PNG) alongside CC-3 + CC-4 + CC-5 (web-only).
 
 ---
 
@@ -616,7 +700,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 See **critical path** in `plan/16-standard-product-system.md` §3–§4.
 
 1. ~~**S1 / M1:** P15-T06 + P20-T02 (PRODUCT web screenshots)~~ **Done** 2026-06-13
-2. **S2 / M2:** P15-T13 + P20-T03 — **Partial** (hero widget tests + integration_test; PNG capture blocked — no local Flutter SDK)
+2. **S2 / M2:** P15-T13 + P20-T03 — **Partial** (hero widget tests + integration_test; PNG capture pending — run `scripts/capture-m2-mobile-screenshots.md`)
 3. **S3:** P16-T02–T03 — **Done** (web + Flutter `EmcapThemeTokens`)
 4. **S7 web:** P17-T04+ dashboards, docs (P17-T01, T03 Done)
 5. **S4–S6:** P14 lookup/status, P15 depth, a11y

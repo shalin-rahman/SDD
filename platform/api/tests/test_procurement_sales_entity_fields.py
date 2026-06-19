@@ -12,7 +12,7 @@ def test_supplier_standard_profile_metadata(client: TestClient) -> None:
     grid = client.get("/api/v1/metadata/grids/SUPPLIER").json()
 
     field_names = [field["name"] for field in _main_form_fields(form)]
-    assert field_names == ["code", "name", "email", "active"]
+    assert field_names == ["code", "name", "email", "payment_terms", "active"]
 
     status = form["display"]["status_field"]
     assert status["field"] == "active"
@@ -35,6 +35,8 @@ def test_purchase_order_lookups_enum_currency_metadata(client: TestClient) -> No
     assert fields["status"]["options"] == ["draft", "submitted", "received", "cancelled"]
     assert fields["total_amount"]["field_type"] == "currency"
     assert fields["total_amount"]["currency_code"] == "USD"
+    assert fields["amount_paid"]["field_type"] == "currency"
+    assert fields["balance_due"]["field_type"] == "currency"
     assert fields["notes"]["field_type"] == "textarea"
 
     status = form["display"]["status_field"]
@@ -72,12 +74,14 @@ def test_invoice_standard_profile_metadata(client: TestClient) -> None:
     assert fields["customer_id"]["lookup_entity"] == "CUSTOMER"
     assert fields["amount"]["field_type"] == "currency"
     assert fields["amount"]["currency_code"] == "USD"
+    assert fields["amount_paid"]["field_type"] == "currency"
+    assert fields["balance_due"]["field_type"] == "currency"
     assert fields["status"]["field_type"] == "select"
-    assert fields["status"]["options"] == ["draft", "sent", "paid", "void"]
+    assert fields["status"]["options"] == ["draft", "sent", "partial", "paid", "void"]
 
     status = form["display"]["status_field"]
     assert status["field"] == "status"
-    assert status["active_values"] == ["draft", "sent"]
+    assert status["active_values"] == ["draft", "sent", "partial"]
     assert status["labels"]["active"]["en"] == "Outstanding"
 
 

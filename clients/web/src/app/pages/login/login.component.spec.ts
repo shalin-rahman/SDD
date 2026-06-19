@@ -129,7 +129,9 @@ describe('LoginComponent', () => {
     const expiredFixture = TestBed.createComponent(LoginComponent);
     expiredFixture.detectChanges();
     await expiredFixture.whenStable();
-    expect(expiredFixture.componentInstance.error).toContain('session expired');
+    expect(expiredFixture.componentInstance.error).toBe(
+      expiredFixture.componentInstance.i18n.t('security.session.expired'),
+    );
     expect(expiredFixture.componentInstance.providers).toEqual(['username_password']);
   });
 

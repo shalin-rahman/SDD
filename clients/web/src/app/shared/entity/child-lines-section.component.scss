@@ -1,0 +1,41 @@
+.child-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.child-lines__toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.child-lines__error {
+  color: var(--emcap-error, #b3261e);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.child-lines__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.child-lines__table th,
+.child-lines__table td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--emcap-outline-variant, #e8eaed);
+}
+
+.child-lines__table tfoot th,
+.child-lines__table tfoot td {
+  border-bottom: none;
+  border-top: 2px solid var(--emcap-outline, #e0e0e0);
+  font-weight: 600;
+}
+
+.child-lines__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

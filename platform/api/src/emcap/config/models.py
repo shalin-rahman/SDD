@@ -145,6 +145,41 @@ class DocumentsSettings(BaseModel):
     retention_days: int = 365
 
 
+class OrganizationAddress(BaseModel):
+    line1: str = ""
+    line2: str = ""
+    city: str = ""
+    state: str = ""
+    postal_code: str = ""
+    country: str = ""
+
+
+class DocumentTemplateBlock(BaseModel):
+    header: str = ""
+    footer: str = ""
+
+
+class OrganizationProfileSettings(BaseModel):
+    display_name: str = ""
+    legal_name: str = ""
+    tax_id: str = ""
+    email: str = ""
+    phone: str = ""
+    website: str = ""
+    address: OrganizationAddress = Field(default_factory=OrganizationAddress)
+    timezone: str = "UTC"
+    locale: str = "en"
+    currency: str = "USD"
+    fiscal_year_start_month: int = Field(default=1, ge=1, le=12)
+    logo_url: str = ""
+    favicon_url: str = ""
+    secondary_color: str = ""
+    invoice: DocumentTemplateBlock = Field(default_factory=DocumentTemplateBlock)
+    report: DocumentTemplateBlock = Field(default_factory=DocumentTemplateBlock)
+    purchase_order: DocumentTemplateBlock = Field(default_factory=DocumentTemplateBlock)
+    email_signature: str = ""
+
+
 class PlatformConfig(BaseModel):
     platform: PlatformSettings = Field(default_factory=PlatformSettings)
     tenant_strategy: TenantStrategySettings = Field(default_factory=TenantStrategySettings)
@@ -164,3 +199,6 @@ class PlatformConfig(BaseModel):
     seed: SeedSettings = Field(default_factory=SeedSettings)
     security: SecuritySettings = Field(default_factory=SecuritySettings)
     documents: DocumentsSettings = Field(default_factory=DocumentsSettings)
+    organization_profile: OrganizationProfileSettings = Field(
+        default_factory=OrganizationProfileSettings
+    )

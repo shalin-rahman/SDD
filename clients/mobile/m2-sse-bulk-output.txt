@@ -1,0 +1,26 @@
+﻿00:00 +0: loading C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: (setUpAll)
+00:01 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +7: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:02 +8: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +9: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +10: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +11: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +12: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +13: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +14: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +15: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +16: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +17: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:05 +18: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows offline snapshot status
+00:08 +19: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows pending offline changes banner
+00:08 +20: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: EntityListScreen shows realtime label when stream subscribed
+00:08 +21: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_list_screen_sse_test.dart: (tearDownAll)
+00:08 +21: All tests passed!
+DONE

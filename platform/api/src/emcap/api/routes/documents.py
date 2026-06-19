@@ -2,11 +2,13 @@ from collections.abc import Callable
 from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from emcap.auth.dependencies import get_tenant_id
-from emcap.documents.service import DocumentService
+from emcap.documents.service import LOGO_ENTITY_CODE, DocumentService
+from emcap.persistence.database import DocumentRow
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -35,7 +37,12 @@ def upload_document(
 ) -> dict[str, Any]:
     session = _session(request)
     try:
-        service = DocumentService(session, tenant_id=tenant_id)
+        config = request.app.state.platform_config
+        service = DocumentService(
+            session,
+            tenant_id=tenant_id,
+            virus_scan_enabled=config.documents.virus_scan_enabled,
+        )
         return service.upload(
             entity_code=payload.entity_code,
             record_id=payload.record_id,
@@ -59,6 +66,35 @@ def list_documents(
             entity_code, record_id
         )
         return {"entity_code": entity_code, "record_id": record_id, "documents": documents}
+    finally:
+        session.close()
+
+
+@router.get("/{document_id}/content")
+def get_document_content(
+    document_id: str,
+    request: Request,
+    tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
+) -> Response:
+    """Serve stored document bytes. Organization logos are public (no auth)."""
+
+    session = _session(request)
+    try:
+        service = DocumentService(session, tenant_id=tenant_id)
+        row = (
+            session.query(DocumentRow)
+            .filter_by(id=document_id, tenant_id=tenant_id)
+            .one_or_none()
+        )
+        if row is None:
+            raise HTTPException(status_code=404, detail=f"Document not found: {document_id}")
+        if row.entity_code != LOGO_ENTITY_CODE:
+            raise HTTPException(status_code=403, detail="Document content requires authentication")
+        if row.virus_scan_status == "infected":
+            raise HTTPException(status_code=403, detail="Document failed virus scan")
+
+        content, _filename, mime = service.read_content(document_id)
+        return Response(content=content, media_type=mime)
     finally:
         session.close()
 

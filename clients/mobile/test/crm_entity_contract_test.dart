@@ -66,6 +66,18 @@ void main() {
       expect(view.statusActive, isFalse);
     });
 
+    test('hero falls back to record id when company and contact missing', () {
+      final view = buildRecordHeadlineView(
+        'LEAD',
+        {'status': 'new', 'active': true},
+        false,
+        'lead-empty',
+        _t,
+        statusField: _statusField,
+      );
+      expect(view.headline, 'entity.record lead-empty');
+    });
+
     test('grid formats status enum and active boolean', () {
       expect(formatGridCellValue('status', 'lost', fieldType: 'select'), 'lost');
       expect(formatGridCellValue('active', true), 'Yes');

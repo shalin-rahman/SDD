@@ -1,0 +1,28 @@
+﻿--- Error: ---
+test/entity_system_contract_test.dart:28:11: Error: Method not found: 'skip'.
+test/entity_system_contract_test.dart:43:11: Error: Method not found: 'skip'.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: test/entity_system_contract_test.dart:28:11: Error: Method not found: 'skip'.
+  test/entity_system_contract_test.dart:43:11: Error: Method not found: 'skip'.
+test/i18n_bundle_test.dart:16:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+test/i18n_bundle_test.dart:21:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+test/i18n_bundle_test.dart:24:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: test/i18n_bundle_test.dart:16:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+  test/i18n_bundle_test.dart:21:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+  test/i18n_bundle_test.dart:24:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+test/lookup_field_test.dart:28:31: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: test/lookup_field_test.dart:28:31: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
+--- Failed to load ---
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart":
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart":
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart":
+  Failed to load "c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/organization_profile_util_test.dart": Missing definition of `main` method.
+--- Compilation failed ---
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: test/entity_system_contract_test.dart:28:11: Error: Method not found: 'skip'.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/i18n_bundle_test.dart: test/i18n_bundle_test.dart:16:21: Error: A value of type 'Uint8List' can't be returned from an async function with return type 'Future<ByteData?>'.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/lookup_field_test.dart: test/lookup_field_test.dart:28:31: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
+--- Method not found ---
+test/entity_system_contract_test.dart:28:11: Error: Method not found: 'skip'.
+test/entity_system_contract_test.dart:43:11: Error: Method not found: 'skip'.
+  Compilation failed for testPath=c:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/entity_system_contract_test.dart: test/entity_system_contract_test.dart:28:11: Error: Method not found: 'skip'.
+  test/entity_system_contract_test.dart:43:11: Error: Method not found: 'skip'.
+--- Undefined name ---

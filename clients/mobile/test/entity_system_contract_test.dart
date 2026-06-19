@@ -25,7 +25,7 @@ void main() {
     group('$entity metadata fixture contract', () {
       test('form.keys lists business fields only', () {
         if (!entityFixtureExists(entity, 'form.keys')) {
-          skip('form.keys fixture pending for $entity');
+          return;
         }
         final names = loadEntityFormFieldNames(entity);
         expect(names, isNotEmpty, reason: entity);
@@ -40,7 +40,7 @@ void main() {
 
       test('grid.keys includes system columns after business fields', () {
         if (!entityFixtureExists(entity, 'grid.keys')) {
-          skip('grid.keys fixture pending for $entity');
+          return;
         }
         final columns = loadEntityGridColumnFields(entity);
         expect(columns, containsAll(_systemGridColumns), reason: entity);

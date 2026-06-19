@@ -9,6 +9,19 @@ JSON packs loaded on API startup (and via `scripts/apply-seed.py`) per `config/p
 | Core | `data/seed/core/` | Production baseline roles and users |
 | Demo | `data/seed/demo/` | Sample business records (optional) |
 
+### Demo entity packs (`data/seed/demo/`)
+
+| File | Entities | Purpose |
+|------|----------|---------|
+| `products.json` | PRODUCT | 20-SKU catalog |
+| `warehouses.json` | WAREHOUSE | Central + east warehouses |
+| `customers.json` | CUSTOMER | Demo billing customer |
+| `stock_movements.json` | STOCK_MOVEMENT, STOCK_MOVEMENT_LINE | Draft + posted movements |
+| `procurement.json` | SUPPLIER, PURCHASE_ORDER, PURCHASE_ORDER_LINE, VENDOR_PAYMENT | AP chain: draft PO + line; received PO (2 lines, $320) + posted/draft vendor payments |
+| `sales.json` | SALES_ORDER, SALES_ORDER_LINE, INVOICE, CUSTOMER_PAYMENT | AR chain: SO + 2 lines; partial invoice + posted/draft customer payments |
+| `accounting.json` | ACCOUNT, JOURNAL_ENTRY, JOURNAL_ENTRY_LINE | GL chart (asset/liability/revenue) + draft/posted JE with balanced lines |
+| `crm.json`, `hrm.json`, `pos.json` | CRM/HRM/POS entities | Reference module samples |
+
 ## Configuration
 
 ```yaml

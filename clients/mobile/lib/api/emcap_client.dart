@@ -17,9 +17,11 @@ class MaskedSecretView {
 }
 
 class EmcapClient {
-  EmcapClient(this.baseUrl);
+  EmcapClient([this.baseUrl = 'http://localhost:8000', http.Client? httpClient])
+      : _httpClient = httpClient ?? http.Client();
 
   final String baseUrl;
+  final http.Client _httpClient;
   String? _token;
   String _tenantId = 'default';
   void Function()? _onUnauthorized;
@@ -59,10 +61,10 @@ class EmcapClient {
     if (extraHeaders != null) {
       headers.addAll(extraHeaders);
     }
-    final response = await http.Request(method, uri)
+    final request = http.Request(method, uri)
       ..headers.addAll(headers)
       ..body = body == null ? '' : jsonEncode(body);
-    final streamed = await response.send();
+    final streamed = await _httpClient.send(request);
     final text = await streamed.stream.bytesToString();
     if (streamed.statusCode >= 400) {
       if (streamed.statusCode == 401 && _token != null) {
@@ -434,7 +436,7 @@ class EmcapClient {
 
   Future<String> getMetrics() async {
     final uri = Uri.parse('$baseUrl/api/v1/metrics');
-    final response = await http.get(uri, headers: _headers());
+    final response = await _httpClient.get(uri, headers: _headers());
     if (response.statusCode >= 400) {
       throw Exception('${response.statusCode}: ${response.body}');
     }
@@ -521,6 +523,27 @@ class EmcapClient {
 
   Future<Map<String, dynamic>> updateAdminSettings(Map<String, dynamic> settings) async {
     return _request('PUT', '/api/v1/admin/settings', body: {'settings': settings});
+  }
+
+  Future<Map<String, dynamic>> getAdminOrganizationProfile() async {
+    return _request('GET', '/api/v1/admin/organization-profile');
+  }
+
+  Future<Map<String, dynamic>> updateAdminOrganizationProfile(
+    Map<String, dynamic> profile,
+  ) async {
+    return _request('PUT', '/api/v1/admin/organization-profile', body: {'profile': profile});
+  }
+
+  Future<Map<String, dynamic>> uploadAdminOrganizationLogo({
+    required String filename,
+    required String contentBase64,
+  }) async {
+    return _request(
+      'POST',
+      '/api/v1/admin/organization-profile/logo',
+      body: {'filename': filename, 'content_base64': contentBase64},
+    );
   }
 
   Future<Map<String, dynamic>> getAdminIntegrations() async {
@@ -638,7 +661,7 @@ class EmcapClient {
   void subscribeRecordsStream(String entityCode, void Function() onEvent) {
     final uri = Uri.parse('$baseUrl/api/v1/entities/$entityCode/records/stream');
     final request = http.Request('GET', uri)..headers.addAll(_headers());
-    http.Client().send(request).then((streamed) {
+    _httpClient.send(request).then((streamed) {
       streamed.stream.transform(utf8.decoder).listen((chunk) {
         if (chunk.contains('data:')) {
           onEvent();

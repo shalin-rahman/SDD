@@ -47,8 +47,13 @@ describe('SettingsComponent', () => {
                   modules: { ai: { enabled: true } },
                   tenants: { default: { primary_color: '#112233', logo_url: 'https://example/logo.png' } },
                 },
-                editable_paths: ['tenants.default.primary_color', 'tenants.default.logo_url'],
+                editable_paths: ['tenants.default.primary_color', 'tenants.default.logo_url', 'organization_profile.display_name'],
                 override_paths: ['modules.ai.enabled'],
+              }),
+              getAdminOrganizationProfile: jasmine.createSpy('getAdminOrganizationProfile').and.resolveTo({
+                profile: { display_name: 'EMCAP Demo Corp', email: 'contact@example.com' },
+                editable_paths: ['organization_profile.display_name'],
+                override_paths: [],
               }),
               getAdminIntegrations: jasmine
                 .createSpy('getAdminIntegrations')
@@ -82,7 +87,21 @@ describe('SettingsComponent', () => {
                 .createSpy('deleteAdminLayoutOverride')
                 .and.resolveTo({ entity_code: 'PRODUCT', deleted: true }),
               getPlatformConfig,
+              getBaseUrl: jasmine.createSpy('getBaseUrl').and.returnValue('http://localhost:8000'),
               updateAdminSettings,
+              updateAdminOrganizationProfile: jasmine
+                .createSpy('updateAdminOrganizationProfile')
+                .and.resolveTo({ profile: { display_name: 'EMCAP Demo Corp' }, override_paths: [] }),
+              uploadAdminOrganizationLogo: jasmine
+                .createSpy('uploadAdminOrganizationLogo')
+                .and.resolveTo({
+                  logo_url: '/api/v1/documents/doc-1/content',
+                  document_id: 'doc-1',
+                  filename: 'logo.png',
+                  mime_type: 'image/png',
+                  virus_scan_status: 'clean',
+                  profile: { display_name: 'EMCAP Demo Corp', logo_url: '/api/v1/documents/doc-1/content' },
+                }),
               getAdminReportSchedules: jasmine
                 .createSpy('getAdminReportSchedules')
                 .and.resolveTo({
@@ -618,6 +637,22 @@ describe('SettingsComponent', () => {
     await cmp.saveSettings();
     expect(cmp.status).toBeTruthy();
     expect(applyTenantPrimary).toHaveBeenCalled();
+    fixture.detectChanges();
+
+    const statusEl = fixture.nativeElement.querySelector('.status') as HTMLElement;
+    expect(statusEl).toBeTruthy();
+    expect(statusEl.getAttribute('role')).toBe('status');
+    expect(statusEl.getAttribute('aria-live')).toBe('polite');
+    expect(statusEl.getAttribute('aria-label')).toBe(cmp.i18n.t('a11y.screenReader.saved'));
+  });
+
+  it('exposes deployment version label for observability section', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.deploymentVersionLabel).toContain('0.1.0');
+    expect(cmp.deploymentVersionLabel).toContain('1');
   });
 
   it('shows module effective none, branding read-only, and disabled security labels', async () => {
@@ -697,5 +732,213 @@ describe('SettingsComponent', () => {
     expect(cmp.documentStorageBackendLabel('filesystem')).toBe('Filesystem');
     expect(cmp.documentStorageBackendLabel('s3')).toContain('S3');
     expect(cmp.documentStorageBackendLabel('unknown')).toBe('unknown');
+  });
+
+  it('loads organization profile and saves via dedicated endpoint', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    expect(cmp.organizationProfile.displayName).toBe('EMCAP Demo Corp');
+    expect(cmp.organizationDisplayEditable()).toBeTrue();
+
+    cmp.organizationProfile.displayName = 'Acme Widgets';
+    cmp.organizationProfile.logoUrl = 'https://cdn.example/logo.png';
+    expect(cmp.organizationLogoPreviewUrl()).toBe('https://cdn.example/logo.png');
+
+    const updateOrg = TestBed.inject(EmcapApiService).client
+      .updateAdminOrganizationProfile as jasmine.Spy;
+    await cmp.saveSettings();
+    expect(updateOrg).toHaveBeenCalled();
+    const payload = updateOrg.calls.mostRecent().args[0] as Record<string, unknown>;
+    expect(payload['display_name']).toBe('Acme Widgets');
+  });
+
+  it('rejects non-http logo preview URLs and falls back to tenant branding logo', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    cmp.tenantLogoUrl = '';
+    cmp.organizationProfile.logoUrl = 'file:///tmp/logo.png';
+    expect(cmp.organizationLogoPreviewUrl()).toBe('');
+    cmp.tenantLogoUrl = 'https://fallback/logo.png';
+    expect(cmp.organizationLogoPreviewUrl()).toBe('https://fallback/logo.png');
+  });
+
+  it('tracks organization override paths', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    expect(cmp.isOrganizationCustom('organization_profile.display_name')).toBeFalse();
+    cmp.organizationOverridePaths = ['organization_profile.email'];
+    expect(cmp.isOrganizationCustom('organization_profile.email')).toBeTrue();
+  });
+
+  it('organizationDisplayEditable reflects editable_paths membership', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    expect(cmp.organizationDisplayEditable()).toBeTrue();
+    cmp.editablePaths = [];
+    expect(cmp.organizationDisplayEditable()).toBeFalse();
+  });
+
+  it('organizationLogoAlt interpolates company name from org.logo.alt catalog key', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    cmp.organizationProfile.displayName = 'Acme Widgets';
+    expect(cmp.organizationLogoAlt()).toContain('Acme Widgets');
+    cmp.organizationProfile.displayName = '';
+    expect(cmp.organizationLogoAlt()).toBeTruthy();
+  });
+
+  it('persists invoice and report template fields on organization save', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    cmp.organizationProfile.invoice = { header: 'Invoice {{display_name}}', footer: 'Thanks' };
+    cmp.organizationProfile.report = { header: 'Report {{date}}', footer: 'Confidential' };
+
+    const updateOrg = TestBed.inject(EmcapApiService).client
+      .updateAdminOrganizationProfile as jasmine.Spy;
+    await cmp.saveSettings();
+
+    const payload = updateOrg.calls.mostRecent().args[0] as Record<string, unknown>;
+    const invoice = payload['invoice'] as Record<string, string>;
+    const report = payload['report'] as Record<string, string>;
+    expect(invoice['header']).toBe('Invoice {{display_name}}');
+    expect(invoice['footer']).toBe('Thanks');
+    expect(report['header']).toBe('Report {{date}}');
+    expect(report['footer']).toBe('Confidential');
+  });
+
+  it('renders organization panel with org.* starter-catalog field labels', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const tabLabels = (fixture.nativeElement as HTMLElement).querySelectorAll('.mdc-tab__text-label');
+    const identityTab = Array.from(tabLabels).find((el) => el.textContent?.includes('Identity'));
+    expect(identityTab).toBeTruthy();
+    (identityTab as HTMLElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const html = fixture.nativeElement as HTMLElement;
+    expect(html.textContent).toContain('Company display name');
+    expect(html.textContent).toContain('Invoice header');
+    expect(html.textContent).toContain('Report footer');
+  });
+
+  it('hides logo preview when URL is not http(s)', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    cmp.organizationProfile.logoUrl = 'ftp://bad/logo.png';
+    cmp.tenantLogoUrl = '';
+    expect(cmp.organizationLogoPreviewUrl()).toBe('');
+  });
+
+  it('shows logo preview for https organization logo URL', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    cmp.organizationProfile.logoUrl = 'https://cdn.example/logo.png';
+    expect(cmp.organizationLogoPreviewUrl()).toBe('https://cdn.example/logo.png');
+
+    const tabLabels = (fixture.nativeElement as HTMLElement).querySelectorAll('.mdc-tab__text-label');
+    const identityTab = Array.from(tabLabels).find((el) => el.textContent?.includes('Identity'));
+    (identityTab as HTMLElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const img = (fixture.nativeElement as HTMLElement).querySelector('.settings-org-logo-preview img');
+    expect(img).not.toBeNull();
+    expect((img as HTMLImageElement).src).toContain('cdn.example/logo.png');
+    expect(cmp.organizationLogoAlt()).toContain('logo');
+  });
+
+  describe('Organization profile panel', () => {
+    it('accepts http:// logo URLs for preview', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      cmp.organizationProfile.logoUrl = 'http://cdn.example/logo.png';
+      cmp.tenantLogoUrl = 'https://fallback/logo.png';
+      expect(cmp.organizationLogoPreviewUrl()).toBe('http://cdn.example/logo.png');
+    });
+
+    it('prefers organization logo over tenant branding when both are valid', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      cmp.organizationProfile.logoUrl = 'https://org.example/logo.png';
+      cmp.tenantLogoUrl = 'https://tenant.example/logo.png';
+      expect(cmp.organizationLogoPreviewUrl()).toBe('https://org.example/logo.png');
+    });
+
+    it('returns empty preview when both logo URLs are blank or non-http(s)', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      cmp.organizationProfile.logoUrl = '   ';
+      cmp.tenantLogoUrl = 'data:image/png;base64,abc';
+      expect(cmp.organizationLogoPreviewUrl()).toBe('');
+    });
+
+    it('persists contact fields and email signature on organization save', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      cmp.organizationProfile.email = 'billing@acme.example';
+      cmp.organizationProfile.phone = '+1-555-0100';
+      cmp.organizationProfile.emailSignature = '{{display_name}}\n{{email}}';
+
+      const updateOrg = TestBed.inject(EmcapApiService).client
+        .updateAdminOrganizationProfile as jasmine.Spy;
+      await cmp.saveSettings();
+
+      const payload = updateOrg.calls.mostRecent().args[0] as Record<string, unknown>;
+      expect(payload['email']).toBe('billing@acme.example');
+      expect(payload['phone']).toBe('+1-555-0100');
+      expect(payload['email_signature']).toBe('{{display_name}}\n{{email}}');
+    });
+
+    it('makes display name readonly when not in editable_paths', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      cmp.editablePaths = cmp.editablePaths.filter((p) => p !== 'organization_profile.display_name');
+      expect(cmp.organizationDisplayEditable()).toBeFalse();
+
+      const tabLabels = (fixture.nativeElement as HTMLElement).querySelectorAll('.mdc-tab__text-label');
+      const identityTab = Array.from(tabLabels).find((el) => el.textContent?.includes('Identity'));
+      (identityTab as HTMLElement).click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const displayInput = Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll('input'),
+      ).find((el) => (el as HTMLInputElement).value === 'EMCAP Demo Corp') as HTMLInputElement | undefined;
+      expect(displayInput?.readOnly).toBeTrue();
+    });
+
+    it('uploads organization logo from file picker and updates preview URL', async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const cmp = fixture.componentInstance;
+      const uploadLogo = TestBed.inject(EmcapApiService).client
+        .uploadAdminOrganizationLogo as jasmine.Spy;
+
+      const pngBytes = new Uint8Array([137, 80, 78, 71]);
+      const file = new File([pngBytes], 'logo.png', { type: 'image/png' });
+      await cmp.onOrganizationLogoFileSelected({ target: { files: [file], value: '' } } as unknown as Event);
+
+      expect(uploadLogo).toHaveBeenCalledWith('logo.png', jasmine.any(String));
+      expect(cmp.organizationProfile.logoUrl).toBe('/api/v1/documents/doc-1/content');
+      expect(cmp.organizationLogoPreviewUrl()).toBe(
+        'http://localhost:8000/api/v1/documents/doc-1/content',
+      );
+    });
   });
 });

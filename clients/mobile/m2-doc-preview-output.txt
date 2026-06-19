@@ -1,0 +1,33 @@
+﻿00:00 +0: loading C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: (setUpAll)
+00:00 +0: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +1: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +2: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +3: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +4: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +5: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +6: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +7: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +8: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +9: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +10: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +11: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +12: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +13: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +14: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +15: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +16: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:00 +17: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +18: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +19: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +20: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +21: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +22: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +23: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:01 +24: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows text content
+00:02 +25: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows image from base64
+00:03 +26: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows download-only for pdf
+00:03 +27: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: document preview dialog shows load error with retry
+00:03 +28: C:/Users/u1074139/workstation/Study/SDD/clients/mobile/test/document_preview_dialog_test.dart: (tearDownAll)
+00:03 +28: All tests passed!
+DONE

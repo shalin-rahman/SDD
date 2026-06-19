@@ -5,6 +5,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from emcap.admin.organization_profile_service import organization_profile_paths
 from emcap.config.models import PlatformConfig
 from emcap.persistence.database import AdminAuditRow, SettingOverrideRow
 
@@ -54,6 +55,7 @@ ALLOWED_SETTING_PATHS: frozenset[str] = frozenset(
         "documents.virus_scan_enabled",
         "documents.retention_days",
     }
+    | organization_profile_paths()
 )
 
 MASKED_SECRET_VALUE = {"masked": "••••••••", "configured": True}

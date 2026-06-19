@@ -84,8 +84,8 @@ describe('AccountComponent', () => {
   it('onLocaleChange updates i18n for supported locales', () => {
     const i18n = TestBed.inject(I18nService);
     spyOn(i18n, 'setLocale');
-    fixture.componentInstance.onLocaleChange('fr');
-    expect(i18n.setLocale).toHaveBeenCalledWith('fr');
+    fixture.componentInstance.onLocaleChange('fr-FR');
+    expect(i18n.setLocale).toHaveBeenCalledWith('fr-FR');
     fixture.componentInstance.onLocaleChange('xx');
     expect(i18n.setLocale).toHaveBeenCalledTimes(1);
   });

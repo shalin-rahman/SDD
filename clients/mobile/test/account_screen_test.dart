@@ -6,6 +6,8 @@ import 'package:emcap_mobile/app/account_screen.dart';
 import 'package:emcap_mobile/services/i18n_service.dart';
 import 'package:emcap_mobile/theme.dart';
 
+import 'support/screen_test_harness.dart';
+
 class _FakeAccountClient extends EmcapClient {
   _FakeAccountClient() : super('http://localhost:8000');
 
@@ -52,7 +54,7 @@ void main() {
         home: AccountScreen(client: _FakeAccountClient()),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text(EmcapLocale.t('platform.account.mfaStep1')));
 
     expect(find.text(EmcapLocale.t('platform.account.mfaStep1')), findsOneWidget);
     expect(find.text(EmcapLocale.t('platform.account.mfaStep2')), findsOneWidget);

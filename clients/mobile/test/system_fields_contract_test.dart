@@ -3,6 +3,7 @@ import 'package:emcap_mobile/metadata_contract.dart';
 import 'package:emcap_mobile/utils/field_display.dart';
 
 import 'support/field_types_fixture.dart';
+import 'support/screen_test_harness.dart';
 
 const _systemFieldNames = [
   'id',
@@ -67,6 +68,10 @@ FormMetadata productFormWithSystemSection() {
 }
 
 void main() {
+  setUpAll(() async {
+    await initIntlDateFormatting();
+  });
+
   test('PRODUCT form has system section with read-only audit fields', () {
     final form = productFormWithSystemSection();
     final renderer = DynamicFormRenderer(form);

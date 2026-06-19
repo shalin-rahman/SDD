@@ -5,7 +5,7 @@ import 'package:emcap_mobile/utils/shell_nav_util.dart';
 
 void main() {
   setUp(() {
-    EmcapLocale.setLocale('en');
+    EmcapLocale.setLocaleTag('en-US');
   });
 
   test('P13-T12 field access editor i18n keys resolve', () {

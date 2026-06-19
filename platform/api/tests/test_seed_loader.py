@@ -19,6 +19,17 @@ DEMO_DIR = ROOT / "data" / "seed" / "demo"
 DEMO_PRODUCT_ID = "11111111-1111-4111-8111-111111111101"
 DEMO_STOCK_MOVEMENT_ID = "11111111-1111-4111-8111-111111111801"
 DEMO_STOCK_MOVEMENT_LINE_ID = "11111111-1111-4111-8111-111111111901"
+DEMO_SUPPLIER_ID = "11111111-1111-4111-8111-111111111b01"
+DEMO_PO_DRAFT_ID = "11111111-1111-4111-8111-111111111b02"
+DEMO_PO_LINE_ID = "11111111-1111-4111-8111-111111111b03"
+DEMO_PO_RECEIVED_ID = "11111111-1111-4111-8111-111111111b04"
+DEMO_VENDOR_PAYMENT_POSTED_ID = "11111111-1111-4111-8111-111111111b07"
+DEMO_SALES_ORDER_ID = "11111111-1111-4111-8111-111111111c01"
+DEMO_SALES_ORDER_LINE_ID = "11111111-1111-4111-8111-111111111c02"
+DEMO_INVOICE_ID = "11111111-1111-4111-8111-111111111c04"
+DEMO_CUSTOMER_PAYMENT_POSTED_ID = "11111111-1111-4111-8111-111111111c05"
+DEMO_JE_POSTED_ID = "11111111-1111-4111-8111-111111111606"
+DEMO_JE_LINE_DEBIT_ID = "11111111-1111-4111-8111-111111111607"
 
 
 @pytest.fixture
@@ -67,6 +78,89 @@ def test_demo_seed_stock_movements_exist(seed_db: None) -> None:
         assert line.entity_code == "STOCK_MOVEMENT_LINE"
         assert line.data["movement_id"] == DEMO_STOCK_MOVEMENT_ID
         assert line.data["quantity"] == 25
+    finally:
+        session.close()
+
+
+def test_demo_seed_procurement_chain_exist(seed_db: None) -> None:
+    config = load_platform_config(ROOT / "config" / "platform.yaml")
+    session = get_session_factory()()
+    try:
+        config.seed.demo.enabled = True
+        apply_configured_seeds(session, config)
+
+        supplier = session.query(EntityRecordRow).filter_by(id=DEMO_SUPPLIER_ID).one()
+        assert supplier.entity_code == "SUPPLIER"
+        assert supplier.data["code"] == "SUP-DEMO-001"
+
+        po_draft = session.query(EntityRecordRow).filter_by(id=DEMO_PO_DRAFT_ID).one()
+        assert po_draft.data["po_number"] == "PO-DEMO-DRAFT"
+        assert po_draft.data["status"] == "draft"
+
+        po_line = session.query(EntityRecordRow).filter_by(id=DEMO_PO_LINE_ID).one()
+        assert po_line.entity_code == "PURCHASE_ORDER_LINE"
+        assert po_line.data["po_id"] == DEMO_PO_DRAFT_ID
+        assert po_line.data["quantity"] == 10
+
+        po_received = session.query(EntityRecordRow).filter_by(id=DEMO_PO_RECEIVED_ID).one()
+        assert po_received.data["status"] == "received"
+        assert po_received.data["balance_due"] == 200.0
+
+        payment = session.query(EntityRecordRow).filter_by(id=DEMO_VENDOR_PAYMENT_POSTED_ID).one()
+        assert payment.entity_code == "VENDOR_PAYMENT"
+        assert payment.data["status"] == "posted"
+        assert payment.data["amount"] == 120.0
+    finally:
+        session.close()
+
+
+def test_demo_seed_sales_chain_exist(seed_db: None) -> None:
+    config = load_platform_config(ROOT / "config" / "platform.yaml")
+    session = get_session_factory()()
+    try:
+        config.seed.demo.enabled = True
+        apply_configured_seeds(session, config)
+
+        so = session.query(EntityRecordRow).filter_by(id=DEMO_SALES_ORDER_ID).one()
+        assert so.entity_code == "SALES_ORDER"
+        assert so.data["order_number"] == "SO-DEMO-001"
+        assert so.data["total_amount"] == 450.0
+
+        so_line = session.query(EntityRecordRow).filter_by(id=DEMO_SALES_ORDER_LINE_ID).one()
+        assert so_line.entity_code == "SALES_ORDER_LINE"
+        assert so_line.data["sales_order_id"] == DEMO_SALES_ORDER_ID
+
+        invoice = session.query(EntityRecordRow).filter_by(id=DEMO_INVOICE_ID).one()
+        assert invoice.data["status"] == "partial"
+        assert invoice.data["balance_due"] == 300.0
+
+        payment = session.query(EntityRecordRow).filter_by(id=DEMO_CUSTOMER_PAYMENT_POSTED_ID).one()
+        assert payment.entity_code == "CUSTOMER_PAYMENT"
+        assert payment.data["status"] == "posted"
+        assert payment.data["amount"] == 150.0
+    finally:
+        session.close()
+
+
+def test_demo_seed_accounting_double_entry_exist(seed_db: None) -> None:
+    config = load_platform_config(ROOT / "config" / "platform.yaml")
+    session = get_session_factory()()
+    try:
+        config.seed.demo.enabled = True
+        apply_configured_seeds(session, config)
+
+        cash = session.query(EntityRecordRow).filter_by(id="11111111-1111-4111-8111-111111111601").one()
+        assert cash.data["account_type"] == "asset"
+
+        entry = session.query(EntityRecordRow).filter_by(id=DEMO_JE_POSTED_ID).one()
+        assert entry.entity_code == "JOURNAL_ENTRY"
+        assert entry.data["reference"] == "JE-DEMO-GL-001"
+        assert entry.data["status"] == "posted"
+
+        debit_line = session.query(EntityRecordRow).filter_by(id=DEMO_JE_LINE_DEBIT_ID).one()
+        assert debit_line.entity_code == "JOURNAL_ENTRY_LINE"
+        assert debit_line.data["journal_entry_id"] == DEMO_JE_POSTED_ID
+        assert debit_line.data["debit"] == 1500.0
     finally:
         session.close()
 

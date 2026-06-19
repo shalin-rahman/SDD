@@ -43,6 +43,12 @@ import {
   previewPrimaryColor,
   primaryOnWhiteContrast,
 } from '../../shared/utils/branding.util';
+import {
+  buildOrganizationProfilePayload,
+  parseOrganizationProfile,
+  pickOrganizationLogoPreviewUrl,
+  type OrganizationProfileView,
+} from '../../shared/utils/organization-profile.util';
 
 interface EmailTemplate {
   id: string;
@@ -119,6 +125,10 @@ export class SettingsComponent implements OnInit {
     'hybrid',
   ] as const;
 
+  get deploymentVersionLabel(): string {
+    return this.i18n.t('deployment.version.label', { version: '0.1.0', build: '1' });
+  }
+
   isolationModeLabel(mode: string): string {
     const key = `settings.isolation.modes.${mode}`;
     const label = this.i18n.t(key);
@@ -152,6 +162,10 @@ export class SettingsComponent implements OnInit {
   integrationTestStatus = '';
   documentSettings: DocumentPlatformSettings = parseDocumentPlatformSettings({});
   securitySettings: SecurityPlatformSettings = parseSecurityPlatformSettings({});
+  organizationProfile: OrganizationProfileView = parseOrganizationProfile({});
+  organizationOverridePaths: string[] = [];
+  organizationLogoUploadStatus = '';
+  organizationLogoUploading = false;
   reportSchedules: ReportScheduleSummary[] = [];
   reportScheduleStatus = '';
   readonly documentStorageBackends = ['filesystem', 's3'] as const;
@@ -171,7 +185,7 @@ export class SettingsComponent implements OnInit {
   async reload(): Promise<void> {
     this.loadError = '';
     try {
-      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health, platformConfig, schedulesPayload] =
+      const [settingsPayload, integrationsPayload, templatesPayload, auditPayload, health, platformConfig, schedulesPayload, orgProfilePayload] =
         await Promise.all([
         this.api.client.getAdminSettings(),
         this.api.client.getAdminIntegrations(),
@@ -180,6 +194,7 @@ export class SettingsComponent implements OnInit {
         this.api.client.getHealth(),
         this.api.client.getPlatformConfig(),
         this.api.client.getAdminReportSchedules(),
+        this.api.client.getAdminOrganizationProfile(),
       ]);
       this.settings = settingsPayload.settings;
       this.editablePaths = settingsPayload.editable_paths ?? [];
@@ -196,6 +211,11 @@ export class SettingsComponent implements OnInit {
       );
       this.securitySettings = parseSecurityPlatformSettings(platformConfig);
       this.reportSchedules = schedulesPayload.schedules;
+      this.organizationProfile = parseOrganizationProfile(
+        { organization_profile: orgProfilePayload.profile as Record<string, unknown> },
+        platformConfig,
+      );
+      this.organizationOverridePaths = orgProfilePayload.override_paths ?? [];
       const branding = parseTenantBranding(this.settings, platformConfig);
       this.tenantTheme = branding.theme;
       this.tenantDomain = branding.domain;
@@ -573,6 +593,74 @@ export class SettingsComponent implements OnInit {
       : this.i18n.t('settings.security.headersDisabled');
   }
 
+  organizationDisplayEditable(): boolean {
+    return this.editablePaths.includes('organization_profile.display_name');
+  }
+
+  organizationLogoPreviewUrl(): string {
+    return pickOrganizationLogoPreviewUrl(
+      this.organizationProfile.logoUrl,
+      this.tenantLogoUrl,
+      this.api.client.getBaseUrl(),
+    );
+  }
+
+  async onOrganizationLogoFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) {
+      return;
+    }
+
+    const maxBytes = this.documentSettings.maxUploadSizeMb * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.organizationLogoUploadStatus = this.i18n.t('settings.organization.logoUploadTooLarge', {
+        maxMb: this.documentSettings.maxUploadSizeMb,
+      });
+      return;
+    }
+
+    const allowed = /\.(png|jpe?g|gif|webp|svg)$/i;
+    if (!allowed.test(file.name)) {
+      this.organizationLogoUploadStatus = this.i18n.t('settings.organization.logoUploadInvalidType');
+      return;
+    }
+
+    this.organizationLogoUploading = true;
+    this.organizationLogoUploadStatus = '';
+    try {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i += 1) {
+        binary += String.fromCharCode(bytes[i] ?? 0);
+      }
+      const contentBase64 = btoa(binary);
+      const result = await this.api.client.uploadAdminOrganizationLogo(file.name, contentBase64);
+      this.organizationProfile.logoUrl = result.logo_url;
+      this.organizationProfile = parseOrganizationProfile(
+        { organization_profile: result.profile },
+        {},
+      );
+      this.organizationLogoUploadStatus = this.i18n.t('settings.organization.logoUploadSuccess');
+    } catch (err) {
+      this.organizationLogoUploadStatus =
+        err instanceof Error ? err.message : this.i18n.t('settings.organization.logoUploadFailed');
+    } finally {
+      this.organizationLogoUploading = false;
+    }
+  }
+
+  organizationLogoAlt(): string {
+    const companyName = this.organizationProfile.displayName.trim() || this.i18n.t('settings.organization.displayName');
+    return this.i18n.t('org.logo.alt', { companyName });
+  }
+
+  isOrganizationCustom(path: string): boolean {
+    return this.organizationOverridePaths.includes(path);
+  }
+
   brandingPrimaryEditable(): boolean {
     return isBrandingPathEditable(this.editablePaths, 'tenants.default.primary_color');
   }
@@ -796,14 +884,18 @@ export class SettingsComponent implements OnInit {
     this.status = '';
     this.reloadHint = '';
     try {
-      const [settingsPayload, integrationsPayload] = await Promise.all([
+      const [settingsPayload, integrationsPayload, orgProfilePayload] = await Promise.all([
         this.api.client.updateAdminSettings(this.settings),
         this.api.client.updateAdminIntegrations(this.integrations),
+        this.api.client.updateAdminOrganizationProfile(
+          buildOrganizationProfilePayload(this.organizationProfile),
+        ),
       ]);
       this.settings = settingsPayload.settings;
       this.overridePaths = settingsPayload.override_paths ?? [];
       this.integrations = integrationsPayload.integrations;
       this.integrationOverridePaths = integrationsPayload.override_paths ?? [];
+      this.organizationOverridePaths = orgProfilePayload.override_paths ?? [];
       this.syncPaymentFields();
       this.syncIntegrationFields();
       this.documentSettings = mergeDocumentSettings(this.documentSettings, settingsPayload.settings);

@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from typing import Annotated, Any, cast
+import base64
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -39,6 +40,12 @@ from emcap.admin.report_schedule_service import (
 )
 from emcap.admin.settings_service import AdminValidationError as SettingsValidationError
 from emcap.admin.settings_service import get_settings, list_admin_audit, update_settings
+from emcap.admin.organization_profile_service import (
+    AdminValidationError as OrgProfileValidationError,
+    get_organization_profile,
+    update_organization_profile,
+    upload_organization_logo,
+)
 from emcap.admin.templates_service import AdminValidationError as TemplateValidationError
 from emcap.admin.templates_service import (
     create_template,
@@ -105,6 +112,15 @@ class RoleUpdateRequest(BaseModel):
 
 class SettingsUpdateRequest(BaseModel):
     settings: dict[str, Any]
+
+
+class OrganizationProfileUpdateRequest(BaseModel):
+    profile: dict[str, Any]
+
+
+class OrganizationLogoUploadRequest(BaseModel):
+    filename: str
+    content_base64: str
 
 
 class IntegrationsUpdateRequest(BaseModel):
@@ -368,6 +384,68 @@ def admin_update_settings(
             actor=_actor(user),
         )
     except SettingsValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.get("/organization-profile")
+def admin_get_organization_profile(
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.settings.read")
+    session = _open_session(request)
+    try:
+        return get_organization_profile(session, request.app.state.platform_config)
+    finally:
+        session.close()
+
+
+@router.put("/organization-profile")
+def admin_update_organization_profile(
+    payload: OrganizationProfileUpdateRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.settings.write")
+    session = _open_session(request)
+    try:
+        return update_organization_profile(
+            session,
+            request.app.state.platform_config,
+            payload.profile,
+            actor=_actor(user),
+        )
+    except OrgProfileValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    finally:
+        session.close()
+
+
+@router.post("/organization-profile/logo")
+def admin_upload_organization_logo(
+    payload: OrganizationLogoUploadRequest,
+    request: Request,
+    user: Annotated[CurrentUser, Depends(require_user)],
+) -> dict[str, Any]:
+    require_permission(user, "admin.settings.write")
+    session = _open_session(request)
+    tenant_id = getattr(request.state, "tenant_id", "default")
+    try:
+        try:
+            content = base64.b64decode(payload.content_base64, validate=True)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="Invalid base64 logo content") from exc
+        return upload_organization_logo(
+            session,
+            request.app.state.platform_config,
+            filename=payload.filename.strip(),
+            content=content,
+            actor=_actor(user),
+            tenant_id=tenant_id,
+        )
+    except OrgProfileValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     finally:
         session.close()

@@ -4,6 +4,8 @@ import '../api/emcap_client.dart';
 import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
 import '../utils/document_platform_settings_util.dart';
+import '../utils/organization_logo_util.dart';
+import '../utils/organization_profile_util.dart';
 import '../utils/security_platform_settings_util.dart';
 import '../widgets/emcap_badge.dart';
 import '../widgets/layout_editor_panel.dart';
@@ -11,11 +13,19 @@ import '../widgets/detail_placeholder.dart';
 import '../widgets/master_detail_layout.dart';
 import '../widgets/settings_toggle_group.dart';
 
+typedef OrganizationLogoPicker = Future<OrganizationLogoPick?> Function();
+
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, required this.client, this.onNavRefresh});
+  const SettingsScreen({
+    super.key,
+    required this.client,
+    this.onNavRefresh,
+    this.logoPicker,
+  });
 
   final EmcapClient client;
   final VoidCallback? onNavRefresh;
+  final OrganizationLogoPicker? logoPicker;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -47,6 +57,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ];
   DocumentPlatformSettings _documentSettings = parseDocumentPlatformSettings({});
   SecurityPlatformSettings _securitySettings = parseSecurityPlatformSettings({});
+  OrganizationProfileView _organizationProfile = parseOrganizationProfile({});
+
+  final _orgDisplayNameController = TextEditingController();
+  final _orgLegalNameController = TextEditingController();
+  final _orgTaxIdController = TextEditingController();
+  final _orgEmailController = TextEditingController();
+  final _orgPhoneController = TextEditingController();
+  final _orgLogoUrlController = TextEditingController();
+  final _orgInvoiceHeaderController = TextEditingController();
+  final _orgInvoiceFooterController = TextEditingController();
+  final _orgReportHeaderController = TextEditingController();
+  final _orgReportFooterController = TextEditingController();
+
+  String _orgLogoUploadStatus = '';
+  bool _orgLogoUploading = false;
 
   String? _selectedTemplateId;
   bool _creatingTemplate = false;
@@ -92,6 +117,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _soapEndpointController.dispose();
     _webhookSecretController.dispose();
     _isolationConfirmController.dispose();
+    _orgDisplayNameController.dispose();
+    _orgLegalNameController.dispose();
+    _orgTaxIdController.dispose();
+    _orgEmailController.dispose();
+    _orgPhoneController.dispose();
+    _orgLogoUrlController.dispose();
+    _orgInvoiceHeaderController.dispose();
+    _orgInvoiceFooterController.dispose();
+    _orgReportHeaderController.dispose();
+    _orgReportFooterController.dispose();
     super.dispose();
   }
 
@@ -102,6 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
     try {
       final settingsPayload = await widget.client.getAdminSettings();
+      final orgProfilePayload = await widget.client.getAdminOrganizationProfile();
       final integrationsPayload = await widget.client.getAdminIntegrations();
       final templates = await widget.client.listAdminTemplates();
       final audit = await widget.client.getAdminAudit();
@@ -143,6 +179,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _isolationModeDraft = isolationModeDraft;
         _documentSettings = parseDocumentPlatformSettings(platformConfig);
         _securitySettings = parseSecurityPlatformSettings(platformConfig);
+        final orgProfile = Map<String, dynamic>.from(orgProfilePayload['profile'] as Map? ?? {});
+        _organizationProfile = parseOrganizationProfile(
+          {'organization_profile': orgProfile},
+          platformConfig: platformConfig,
+        );
+        _syncOrganizationFields(_organizationProfile);
         _tenantThemeController.text = '${defaultTenant['theme'] ?? 'default'}';
         _tenantDomainController.text = '${defaultTenant['domain'] ?? 'localhost'}';
         _syncPaymentFields(settings);
@@ -220,6 +262,123 @@ class _SettingsScreenState extends State<SettingsScreen> {
     sectionMap[module] = moduleMap;
     _settings = {..._settings, section: sectionMap};
     setState(() {});
+  }
+
+  void _syncOrganizationFields(OrganizationProfileView profile) {
+    _orgDisplayNameController.text = profile.displayName;
+    _orgLegalNameController.text = profile.legalName;
+    _orgTaxIdController.text = profile.taxId;
+    _orgEmailController.text = profile.email;
+    _orgPhoneController.text = profile.phone;
+    _orgLogoUrlController.text = profile.logoUrl;
+    _orgInvoiceHeaderController.text = profile.invoice.header;
+    _orgInvoiceFooterController.text = profile.invoice.footer;
+    _orgReportHeaderController.text = profile.report.header;
+    _orgReportFooterController.text = profile.report.footer;
+  }
+
+  OrganizationProfileView _organizationProfileFromControllers() {
+    return OrganizationProfileView(
+      displayName: _orgDisplayNameController.text.trim(),
+      legalName: _orgLegalNameController.text.trim(),
+      taxId: _orgTaxIdController.text.trim(),
+      email: _orgEmailController.text.trim(),
+      phone: _orgPhoneController.text.trim(),
+      website: _organizationProfile.website,
+      address: _organizationProfile.address,
+      timezone: _organizationProfile.timezone,
+      locale: _organizationProfile.locale,
+      currency: _organizationProfile.currency,
+      fiscalYearStartMonth: _organizationProfile.fiscalYearStartMonth,
+      logoUrl: _orgLogoUrlController.text.trim(),
+      faviconUrl: _organizationProfile.faviconUrl,
+      secondaryColor: _organizationProfile.secondaryColor,
+      invoice: DocumentTemplateBlock(
+        header: _orgInvoiceHeaderController.text,
+        footer: _orgInvoiceFooterController.text,
+      ),
+      report: DocumentTemplateBlock(
+        header: _orgReportHeaderController.text,
+        footer: _orgReportFooterController.text,
+      ),
+      purchaseOrder: _organizationProfile.purchaseOrder,
+      emailSignature: _organizationProfile.emailSignature,
+    );
+  }
+
+  String _organizationLogoPreviewUrl() {
+    return resolveOrganizationLogoPreviewUrl(
+      _orgLogoUrlController.text,
+      widget.client.baseUrl,
+    );
+  }
+
+  Future<void> _pickAndUploadOrganizationLogo() async {
+    final picker = widget.logoPicker;
+    if (picker == null) {
+      setState(() {
+        _orgLogoUploadStatus = EmcapLocale.t('settings.organization.logoUploadUnavailable');
+      });
+      return;
+    }
+
+    final pick = await picker();
+    if (pick == null || !mounted) {
+      return;
+    }
+
+    final validationError = validateOrganizationLogoFile(
+      filename: pick.filename,
+      sizeBytes: pick.bytes.length,
+      maxUploadSizeMb: _documentSettings.maxUploadSizeMb,
+    );
+    if (validationError == 'invalid_type') {
+      setState(() {
+        _orgLogoUploadStatus = EmcapLocale.t('settings.organization.logoUploadInvalidType');
+      });
+      return;
+    }
+    if (validationError == 'too_large') {
+      setState(() {
+        _orgLogoUploadStatus = EmcapLocale.t(
+          'settings.organization.logoUploadTooLarge',
+          params: {'maxMb': '${_documentSettings.maxUploadSizeMb}'},
+        );
+      });
+      return;
+    }
+
+    setState(() {
+      _orgLogoUploading = true;
+      _orgLogoUploadStatus = '';
+    });
+    try {
+      final result = await widget.client.uploadAdminOrganizationLogo(
+        filename: pick.filename,
+        contentBase64: encodeOrganizationLogoContentBase64(pick.bytes),
+      );
+      if (!mounted) return;
+      setState(() {
+        _orgLogoUrlController.text = '${result['logo_url'] ?? ''}';
+        _orgLogoUploadStatus = EmcapLocale.t('settings.organization.logoUploadSuccess');
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _orgLogoUploadStatus = EmcapLocale.t('settings.organization.logoUploadFailed');
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _orgLogoUploading = false);
+      }
+    }
+  }
+
+  String _organizationLogoAlt() {
+    final companyName = _orgDisplayNameController.text.trim().isNotEmpty
+        ? _orgDisplayNameController.text.trim()
+        : EmcapLocale.t('org.displayName.label');
+    return EmcapLocale.t('org.logo.alt', params: {'companyName': companyName});
   }
 
   void _applyBranding() {
@@ -329,6 +488,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final settingsPayload = await widget.client.updateAdminSettings(_settings);
       final integrationsPayload = await widget.client.updateAdminIntegrations(_integrations);
+      await widget.client.updateAdminOrganizationProfile(
+        buildOrganizationProfilePayload(_organizationProfileFromControllers()),
+      );
       if (!mounted) return;
       final settings = Map<String, dynamic>.from(settingsPayload['settings'] as Map? ?? _settings);
       final integrations = Map<String, dynamic>.from(integrationsPayload['integrations'] as Map? ?? _integrations);
@@ -501,7 +663,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final tokens = context.emcapTokens;
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Semantics(
+        label: EmcapLocale.t('a11y.screenReader.loading'),
+        liveRegion: true,
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     final templateListPane = Column(
@@ -595,7 +761,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Text(EmcapLocale.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
         Text(EmcapLocale.t('settings.reloadHint'), style: Theme.of(context).textTheme.bodySmall),
         if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-        if (_status.isNotEmpty) Text(_status, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        if (_status.isNotEmpty)
+          Semantics(
+            liveRegion: true,
+            label: EmcapLocale.t('a11y.screenReader.saved'),
+            child: Text(_status, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+          ),
+        Text(
+          EmcapLocale.t('deployment.version.label', params: {'version': '0.1.0', 'build': '1'}),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: FilledButton(onPressed: _saveSettings, child: Text(EmcapLocale.t('settings.save'))),
@@ -1011,6 +1186,154 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       EmcapLocale.t('settings.documents.readOnlyHint'),
                       style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Card(
+          margin: EdgeInsets.only(bottom: tokens.spaceSm),
+          child: ExpansionTile(
+            title: Text(EmcapLocale.t('settings.sections.organization')),
+            subtitle: Text(EmcapLocale.t('settings.organization.subtitle')),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(tokens.spaceSm + 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: _orgDisplayNameController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.displayName.label'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgLegalNameController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.legalName.label'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgTaxIdController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.taxId.label'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgEmailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.contact.email'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgPhoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.contact.phone'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgLogoUrlController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.organization.logoUrl'),
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    OutlinedButton.icon(
+                      onPressed: _orgLogoUploading ? null : _pickAndUploadOrganizationLogo,
+                      icon: _orgLogoUploading
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.upload_file),
+                      label: Text(EmcapLocale.t('settings.organization.logoUpload')),
+                    ),
+                    if (_orgLogoUploadStatus.isNotEmpty) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      Text(
+                        _orgLogoUploadStatus,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                    if (_organizationLogoPreviewUrl().isNotEmpty) ...[
+                      SizedBox(height: tokens.spaceSm),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Semantics(
+                          label: _organizationLogoAlt(),
+                          child: Image.network(
+                            _organizationLogoPreviewUrl(),
+                            width: 120,
+                            height: 48,
+                            fit: BoxFit.contain,
+                            cacheWidth: 240,
+                            cacheHeight: 96,
+                            errorBuilder: (_, __, ___) => Text(
+                              EmcapLocale.t('settings.organization.logoPreviewFailed'),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: tokens.spaceSm),
+                    Text(
+                      EmcapLocale.t('org.template.tokenHint'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgInvoiceHeaderController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.invoice.header'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgInvoiceFooterController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.invoice.footer'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgReportHeaderController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.report.header'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: tokens.spaceSm),
+                    TextField(
+                      controller: _orgReportFooterController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('org.report.footer'),
+                        border: const OutlineInputBorder(),
+                      ),
                     ),
                   ],
                 ),

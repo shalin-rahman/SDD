@@ -28,7 +28,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(EmcapLocale.t('platform.login.title')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text(EmcapLocale.t('platform.login.title')),
+      ),
+      findsOneWidget,
+    );
     expect(find.text(EmcapLocale.t('platform.login.provider.username_password')), findsOneWidget);
     expect(find.text(EmcapLocale.t('platform.login.provider.oauth')), findsOneWidget);
   });
@@ -42,6 +48,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(EmcapLocale.t('platform.login.sessionExpired')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('security.session.expired')), findsOneWidget);
   });
 }

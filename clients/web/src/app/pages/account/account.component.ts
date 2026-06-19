@@ -9,7 +9,6 @@ import { PageHeaderComponent } from '../../shared/layout/page-header.component';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { SectionCardComponent } from '../../shared/layout/section-card.component';
-import type { AppLocale } from '../../shared/services/i18n.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { ThemeService } from '../../shared/services/theme.service';
 
@@ -73,9 +72,8 @@ export class AccountComponent implements OnInit {
   }
 
   onLocaleChange(value: string): void {
-    const locale = value as AppLocale;
-    if (locale === 'en' || locale === 'fr' || locale === 'bn') {
-      this.i18n.setLocale(locale);
+    if (value === 'en-US' || value === 'bn-BD' || value === 'fr-FR') {
+      this.i18n.setLocale(value);
     }
   }
 

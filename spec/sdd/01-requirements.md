@@ -29,6 +29,11 @@ Extracted from SDD v1.0 (`spec/framework-sdd.txt`). Each ID is stable for tracea
 | FR-017 | Immutable audit trail for CRUD, login, workflow | 19 |
 | FR-018 | Business modules deploy via `ModuleDefinition` only | 26–27, 30 |
 | FR-019 | SDK auto-provides menus, permissions, localization | 26 |
+| FR-025 | Procurement AP: PO lines, goods receive spawns stock movement, multi vendor payment on PO | 27, 30 |
+| FR-026 | Sales AR: SO lines, invoice partial/paid settlement, multi customer payment | 27, 30 |
+| FR-027 | GL double-entry journal lines with account balance rollup on post | 27, 30 |
+| FR-028 | Tenant organization profile: legal/contact info, document header/footer templates, in-app settings UI | 27, 30 |
+| FR-029 | Client shells use BCP 47 locale tags (`en-US`, `bn-BD`, `fr-FR`), CLDR plural keys, regional numeral/date formatting, interpolation-only messages, lazy locale bundles, and a11y/compliance string catalog | 9, 27, 30 |
 
 ## Non-functional requirements
 

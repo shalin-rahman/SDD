@@ -30,6 +30,11 @@ describe('SettingsComponent a11y (P15-T32)', () => {
                 editable_paths: ['tenants.default.primary_color'],
                 override_paths: [],
               }),
+              getAdminOrganizationProfile: jasmine.createSpy('getAdminOrganizationProfile').and.resolveTo({
+                profile: { display_name: 'EMCAP Demo Corp' },
+                editable_paths: [],
+                override_paths: [],
+              }),
               getAdminIntegrations: jasmine
                 .createSpy('getAdminIntegrations')
                 .and.resolveTo({ integrations: {}, override_paths: [] }),
@@ -77,6 +82,9 @@ describe('SettingsComponent a11y (P15-T32)', () => {
               updateAdminSettings: jasmine
                 .createSpy('updateAdminSettings')
                 .and.resolveTo({ settings: {}, editable_paths: [], override_paths: [] }),
+              updateAdminOrganizationProfile: jasmine
+                .createSpy('updateAdminOrganizationProfile')
+                .and.resolveTo({ profile: {}, override_paths: [] }),
               updateAdminIntegrations: jasmine
                 .createSpy('updateAdminIntegrations')
                 .and.resolveTo({ integrations: {}, override_paths: [] }),

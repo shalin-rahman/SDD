@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 
 /// EMCAP design tokens — ADR-006 parity with `clients/web/src/styles/_tokens.scss`.

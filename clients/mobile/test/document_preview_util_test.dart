@@ -113,4 +113,76 @@ void main() {
     });
     expect(documentDownloadFallbackText(view, 'notes.txt'), 'Saved note');
   });
+
+  test('mimeTypeFromFilename returns octet-stream without extension', () {
+    expect(mimeTypeFromFilename('README'), 'application/octet-stream');
+    expect(mimeTypeFromFilename('data.unknown'), 'application/octet-stream');
+  });
+
+  test('decodeBase64Content rejects invalid padding', () {
+    expect(decodeBase64Content('abc'), isNull);
+    expect(decodeBase64Content(''), isNull);
+  });
+
+  test('decodeHexContent rejects non-hex payload', () {
+    expect(decodeHexContent('zz'), isNull);
+    expect(decodeHexContent('123'), isNull);
+  });
+
+  test('buildDocumentPreviewView decodes text file bytes', () {
+    final view = buildDocumentPreviewView({
+      'filename': 'readme.txt',
+      'content': '48656c6c6f',
+    });
+    expect(view.mode, DocumentPreviewMode.text);
+    expect(view.textContent, 'Hello');
+  });
+
+  test('parseDocumentVersions maps invalid row to fallback id', () {
+    final versions = parseDocumentVersions(
+      {
+        'version': 1,
+        'versions': ['bad-row'],
+      },
+      'doc-fallback',
+    );
+    expect(versions.length, 1);
+    expect(versions.first.id, 'doc-fallback');
+  });
+
+  test('virusScanBadgeKind covers scanning and blocked aliases', () {
+    expect(virusScanBadgeKind(''), VirusScanBadgeKind.unknown);
+    expect(virusScanBadgeKind('scanning'), VirusScanBadgeKind.pending);
+    expect(virusScanBadgeKind('queued'), VirusScanBadgeKind.pending);
+    expect(virusScanBadgeKind('infected'), VirusScanBadgeKind.blocked);
+    expect(virusScanBadgeKind('failed'), VirusScanBadgeKind.blocked);
+    expect(virusScanBadgeKind('ok'), VirusScanBadgeKind.clean);
+    expect(virusScanBadgeKind('mystery'), VirusScanBadgeKind.unknown);
+  });
+
+  test('documentDownloadFallbackText falls back to base64 bytes', () {
+    final bytes = Uint8List.fromList([1, 2, 3]);
+    final view = buildDocumentPreviewView({
+      'filename': 'archive.bin',
+      'content_base64': base64Encode(bytes),
+    });
+    expect(documentDownloadFallbackText(view, 'archive.bin'), base64Encode(bytes));
+  });
+
+  test('documentDownloadFallbackText uses filename when no content', () {
+    final view = buildDocumentPreviewView({'filename': 'empty.bin'});
+    expect(documentDownloadFallbackText(view, 'empty.bin'), 'empty.bin');
+  });
+
+  test('decodeUtf8Bytes returns empty string on invalid utf8', () {
+    expect(decodeUtf8Bytes(Uint8List.fromList([0xFF, 0xFE, 0xFD])), '');
+  });
+
+  test('buildDocumentPreviewView uses small image as download mode', () {
+    final view = buildDocumentPreviewView({
+      'filename': 'tiny.png',
+      'content_base64': base64Encode(Uint8List.fromList([1, 2, 3])),
+    });
+    expect(view.mode, DocumentPreviewMode.download);
+  });
 }

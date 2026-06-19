@@ -12,7 +12,7 @@
 
 
 
-**Last updated:** 2026-06-17 (Sprint 11 — M5/M6 web sign-off in `07`; shell/report schedules Product-ready)
+**Last updated:** 2026-06-19 (P27 W3–W4 — finance/org i18n EN/FR/BN web+mobile parity; BCP 47 audit script; FR-029 traced)
 
 **Note:** Backlog **Done** on Phase 12/13 means **Wired** or **Demo** in `07-product-readiness-matrix.md` until screenshot + UX checklist pass.
 
@@ -57,6 +57,8 @@
 | White-label theme from tenant | Partial | Partial | Partial | Seed color from tenant config |
 
 | **Tenant branding admin UI** | No | Partial | Partial | Settings Integrations tab: split-pane live preview, primary/logo save, WCAG contrast hint (P19-T05 Done) |
+
+| **Organization profile admin UI** | Partial | Partial | Partial | Settings Identity → Organization: name, contact, logo URL preview + **blob upload** (P26-T09), invoice/report templates; `org.*` starter-catalog i18n EN/FR/BN; GET/PUT `/admin/organization-profile`; POST `/admin/organization-profile/logo` with virus scan |
 
 | Isolation strategy display | Done | Partial | Partial | Settings Platform tab shows configured/effective mode |
 
@@ -118,7 +120,7 @@
 
 | Metadata i18n labels | Done | Done | `label_key` + BN sample on PRODUCT |
 
-| **App UI i18n + locale switcher** | Done | Partial | P18-T12 Done — lookup picker/field, tenant select, mobile admin/settings section titles; `audit-i18n.mjs` for remaining low-priority labels |
+| **App UI i18n + locale switcher** | Done | Done | P27 W3–W4 Done — BCP 47 bundles (`en-US`/`bn-BD`/`fr-FR`); P25 procurement/sales finance keys + P26 `settings.organization.*` in BN on web + mobile; `audit-i18n.mjs` CI gate; **P27-T12** sign-off refresh `phase27-locale-switch-bn-bd-web.png` via `capture-signoff-screenshots.mjs --only=p27` (2026-06-19) |
 
 | **Theme picker (light/dark)** | Done | Done | Persisted (`localStorage` / `shared_preferences`) |
 

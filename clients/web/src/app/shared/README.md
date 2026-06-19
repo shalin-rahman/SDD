@@ -8,11 +8,11 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 
 | Component | Selector | Use |
 |-----------|----------|-----|
-| `AppLayoutComponent` | `app-app-layout` | Material sidenav shell + toolbar |
+| `AppLayoutComponent` | `app-app-layout` | Material sidenav shell + toolbar; P27 skip link + nav/main landmark labels (`a11y.*`) |
 | `MasterDetailLayoutComponent` | `app-master-detail-layout` | List/detail split for **admin** screens; mobile toggle via `[detailOpen]` — **not** used on entity pages (separate routes per **A15**) |
 | `PageHeaderComponent` | `app-page-header` | Title, optional back button, action slot (`ng-content`) |
 | `DetailPlaceholderComponent` | `app-detail-placeholder` | Empty detail pane; optional New CTA |
-| `LoadingPanelComponent` | `app-loading-panel` | Centered loading message |
+| `LoadingPanelComponent` | `app-loading-panel` | Centered loading message; `role="status"` + `a11y.screenReader.loading` |
 | `EmptyStateComponent` | `app-empty-state` | Message + optional primary action |
 | `SectionCardComponent` | `app-section-card` | Titled card for profile/settings sections |
 
@@ -33,6 +33,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `LookupPickerDialogComponent` | (dialog) | Search/select target entity record |
 | `CurrencyFieldComponent` | `app-currency-field` | Currency input with `currency_code` label |
 | `RecordTabsComponent` | `app-record-tabs` | Notes, documents, audit, workflow tabs on a record |
+| `ChildLinesSectionComponent` | `app-child-lines-section` | Config-driven inline child lines table (PO/SO/STOCK_MOVEMENT parity — P24-T02 / P25-T07) |
 | `RecordDetailHeaderComponent` | `app-record-detail-header` | Entity record hero: headline, subtitle, `.emcap-badge` status, action toolbar |
 | `DocumentPreviewPanelComponent` | `app-document-preview-panel` | Side panel: PDF/image inline, text snippet, download CTA, virus badge |
 
@@ -73,9 +74,15 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 | `utils/workflow-enabled.util.ts` | Platform workflow gate + entity start-workflow codes (PRODUCT → STOCK_ADJUSTMENT) |
 | `utils/field-display.util.ts` | Grid/form datetime, currency, textarea cell formatters |
 | `utils/lookup-display.util.ts` | Resolve lookup record display label (name/code/sku) |
+| `utils/movement-line.util.ts` | STOCK_MOVEMENT_LINE filter, qty/cost/total formatters, product label map (P24-T02) |
+| `utils/order-line.util.ts` | PO/SO line filter, qty/unit-price/extension formatters (P25-T07) |
+| `utils/purchase_order_util.ts` | PO receive guards, line filter wrapper — mobile parity (P25-T07) |
+| `utils/payment.util.ts` | AP/AR payment filter, summary labels, locale-aware currency via `locale-format.util` (P25-T08) |
+| `utils/locale-format.util.ts` | Intl currency, date, integer, plural category (P26 i18n/l10n) |
 | `utils/document-preview.util.ts` | Document mime, preview mode, version list, virus badge |
 | `utils/assistant-chat.util.ts` | AI chat response extract + message id helper |
 | `utils/branding.util.ts` | Tenant primary/logo parse, hex normalize, preview color |
+| `utils/organization-profile.util.ts` | P26 org profile parse, document template interpolation, header/footer resolve |
 | `utils/tenant.util.ts` | Tenant labels, permissions extract |
 | `utils/permission.util.ts` | Permission grouping + wildcard helpers |
 | `constants/layout.constants.ts` | Breakpoint, debounce, page size |

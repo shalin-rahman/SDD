@@ -1,0 +1,9 @@
+{
+  "field_names": [
+    "journal_entry_id",
+    "account_id",
+    "debit",
+    "credit",
+    "memo"
+  ]
+}

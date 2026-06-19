@@ -155,6 +155,10 @@ jobs:
           # Optional a11y-only gate (also covered by test:ci *.a11y.spec.ts):
           # npm run test:a11y
 
+      - name: i18n bundle parity audit (P27)
+        working-directory: ${{ github.workspace }}
+        run: node scripts/audit-i18n.mjs
+
   # P18-T14 — optional Playwright smoke on PRs (non-blocking; full gate: e2e-smoke.yml weekly).
   e2e-smoke-optional:
     if: github.event_name == 'pull_request'

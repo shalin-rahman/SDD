@@ -105,7 +105,9 @@ Maps **what a business end user can do in web/mobile shells** vs what `spec/fram
 | Inventory | Done | PRODUCT, WAREHOUSE |
 | CRM | Done | LEAD, CONTACT |
 | Demo | Done | CUSTOMER |
-| Accounting | Done | ACCOUNT, JOURNAL_ENTRY |
+| Accounting | Done | ACCOUNT, JOURNAL_ENTRY, JOURNAL_ENTRY_LINE — P25 double-entry post + balance rollup; demo seed `accounting.json` (5 accounts, draft + posted JE with lines) |
+| Procurement | Done | SUPPLIER, PURCHASE_ORDER, PURCHASE_ORDER_LINE, VENDOR_PAYMENT — P25 validators + web/mobile UX (P25-T07–T10); demo seed `procurement.json` |
+| Sales | Done | SALES_ORDER, SALES_ORDER_LINE, INVOICE, CUSTOMER_PAYMENT — P25 validators + web/mobile UX (P25-T07–T10); demo seed `sales.json` |
 | HRM | Done | EMPLOYEE, LEAVE_REQUEST |
 | POS | Done | SALE, TERMINAL |
 

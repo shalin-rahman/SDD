@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
       return;
     }
     if (this.route.snapshot.queryParamMap.get('sessionExpired') === '1') {
-      this.error = this.i18n.t('platform.login.sessionExpired');
+      this.error = this.i18n.t('security.session.expired');
     }
     void this.loadProviders();
   }

@@ -12,6 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^1.2.2
+  intl: any
+  file_picker: ^8.1.7
   shared_preferences: ^2.3.3
 
 dev_dependencies:
@@ -27,3 +29,6 @@ flutter:
     - assets/i18n/en.json
     - assets/i18n/fr.json
     - assets/i18n/bn.json
+    - assets/i18n/en-US.json
+    - assets/i18n/fr-FR.json
+    - assets/i18n/bn-BD.json

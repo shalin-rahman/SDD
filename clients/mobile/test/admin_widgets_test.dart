@@ -4,13 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:emcap_mobile/widgets/permission_picker.dart';
 import 'package:emcap_mobile/widgets/settings_toggle_group.dart';
 
+import 'support/screen_test_harness.dart';
+
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    await initMobileScreenTests();
+  });
 
   testWidgets('SettingsToggleGroup fires onChanged', (tester) async {
     final items = [SettingsToggleItem(key: 'workflow', label: 'Workflow', checked: true)];
     String? changedKey;
-  bool? changedValue;
+    bool? changedValue;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -26,6 +30,9 @@ void main() {
         ),
       ),
     );
+
+    await tester.tap(find.text('Modules'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byType(SwitchListTile));
     await tester.pumpAndSettle();
@@ -48,6 +55,9 @@ void main() {
         ),
       ),
     );
+
+    await tester.tap(find.textContaining('Customer'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.textContaining('customer.write'));
     await tester.pumpAndSettle();

@@ -1,0 +1,17 @@
+# Default field read_roles for procurement finance fields (P25-T06).
+# Empty read_roles on an entity field = visible to all entity readers.
+# Non-empty = user must hold at least one listed permission.
+
+field_defaults:
+  PURCHASE_ORDER:
+    total_amount: [accounting.view]
+    amount_paid: [accounting.view]
+    balance_due: [accounting.view]
+  PURCHASE_ORDER_LINE:
+    unit_price: [accounting.view]
+  VENDOR_PAYMENT:
+    amount: [accounting.view]
+
+permissions:
+  - procurement.pay
+  - accounting.view

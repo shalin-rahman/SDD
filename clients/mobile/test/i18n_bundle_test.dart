@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:emcap_mobile/services/i18n_service.dart';
+import 'package:emcap_mobile/utils/locale_format_util.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+
+ByteData _assetBytes(String body) => ByteData.sublistView(Uint8List.fromList(utf8.encode(body)));
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -11,28 +16,60 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler('flutter/assets', (message) async {
       final key = utf8.decode(message!.buffer.asUint8List());
-      if (key.endsWith('en.json')) {
-        return utf8.encode('{"nav.signOut":"Sign out","settings.title":"Settings"}');
+      if (key.endsWith('en-US.json')) {
+        return _assetBytes(
+          '{"nav.signOut":"Sign out","settings.title":"Settings","org.logo.alt":"{companyName} logo","plural.recordCount.one":"{count} record","plural.recordCount.other":"{count} records"}',
+        );
       }
-      if (key.endsWith('fr.json')) {
-        return utf8.encode('{"nav.signOut":"Déconnexion","settings.title":"Paramètres"}');
+      if (key.endsWith('fr-FR.json')) {
+        return _assetBytes('{"nav.signOut":"Déconnexion","settings.title":"Paramètres"}');
       }
-      if (key.endsWith('bn.json')) {
-        return utf8.encode('{"nav.signOut":"সাইন আউট","settings.title":"সেটিংস"}');
+      if (key.endsWith('bn-BD.json')) {
+        return _assetBytes(
+          '{"nav.signOut":"সাইন আউট","settings.title":"সেটিংস","plural.recordCount.one":"{count}টি রেকর্ড","plural.recordCount.other":"{count}টি রেকর্ড"}',
+        );
       }
       return null;
     });
     await I18nService.loadBundles();
   });
 
-  test('loads bundles and translates by locale', () {
-    expect(I18nService.t('nav.signOut', localeCode: 'en'), 'Sign out');
-    expect(I18nService.t('nav.signOut', localeCode: 'fr'), 'Déconnexion');
-    expect(I18nService.t('nav.signOut', localeCode: 'bn'), 'সাইন আউট');
+  test('loads BCP 47 bundles and translates by locale', () {
+    expect(I18nService.t('nav.signOut', localeTag: 'en-US'), 'Sign out');
+    expect(I18nService.t('nav.signOut', localeTag: 'fr-FR'), 'Déconnexion');
+    expect(I18nService.t('nav.signOut', localeTag: 'bn-BD'), 'সাইন আউট');
   });
 
   test('falls back to English for missing keys', () {
-    expect(I18nService.t('settings.title', localeCode: 'bn'), 'সেটিংস');
-    expect(I18nService.t('missing.key', localeCode: 'bn'), 'missing.key');
+    expect(I18nService.t('settings.title', localeTag: 'bn-BD'), 'সেটিংস');
+    expect(I18nService.t('missing.key', localeTag: 'bn-BD'), 'missing.key');
+  });
+
+  test('resolves legacy locale aliases on read path', () {
+    expect(I18nService.t('nav.signOut', localeTag: 'en'), 'Sign out');
+    expect(I18nService.t('nav.signOut', localeTag: 'bn'), 'সাইন আউট');
+    expect(canonicalLocaleTag('bn'), 'bn-BD');
+    expect(canonicalLocaleTag('en-US'), 'en-US');
+  });
+
+  test('interpolates {token} placeholders', () {
+    expect(
+      I18nService.t('org.logo.alt', params: {'companyName': 'Acme'}, localeTag: 'en-US'),
+      'Acme logo',
+    );
+  });
+
+  test('selects plural one/other and formats count', () {
+    expect(
+      I18nService.plural('plural.recordCount', 1, localeTag: 'en-US'),
+      '1 record',
+    );
+    expect(
+      I18nService.plural('plural.recordCount', 5, localeTag: 'en-US'),
+      '5 records',
+    );
+    final bnOne = I18nService.plural('plural.recordCount', 1, localeTag: 'bn-BD');
+    expect(bnOne, contains('১'));
+    expect(bnOne.contains(RegExp(r'[0-9]')), isFalse);
   });
 }

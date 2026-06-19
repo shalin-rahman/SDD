@@ -251,18 +251,22 @@ class _EntityListScreenState extends State<EntityListScreen> {
   }
 
   Widget _loadingPanel({bool inline = false}) {
-    final panel = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const CircularProgressIndicator(),
-        const SizedBox(height: 12),
-        Text(
-          EmcapLocale.t('common.loading'),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
-      ],
+    final panel = Semantics(
+      label: EmcapLocale.t('a11y.screenReader.loading'),
+      liveRegion: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 12),
+          Text(
+            EmcapLocale.t('common.loading'),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
+      ),
     );
     if (inline) {
       return Padding(
@@ -357,9 +361,11 @@ class _EntityListScreenState extends State<EntityListScreen> {
     final groups = gridRenderer.groupRecords(pageRecords, _groupField);
     final isEmpty = totalRecords == 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    return Semantics(
+      label: EmcapLocale.t('a11y.landmark.main'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         Row(
           children: [
             Expanded(
@@ -621,6 +627,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
           ),
         ),
       ],
+    ),
     );
   }
 }

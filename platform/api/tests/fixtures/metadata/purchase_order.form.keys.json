@@ -5,6 +5,8 @@
     "warehouse_id",
     "status",
     "total_amount",
+    "amount_paid",
+    "balance_due",
     "order_date",
     "notes",
     "active"

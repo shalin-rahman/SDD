@@ -3,6 +3,7 @@
     "code",
     "name",
     "email",
+    "payment_terms",
     "active"
   ]
 }

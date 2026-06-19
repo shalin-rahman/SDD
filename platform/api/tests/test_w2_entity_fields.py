@@ -24,8 +24,8 @@ def test_journal_entry_account_lookup_and_amount_currency(client: TestClient) ->
     assert grid_account["lookup_entity"] == "ACCOUNT"
 
     status = form["display"]["status_field"]
-    assert status["field"] == "active"
-    assert status["labels"]["active"]["bn"] == "সক্রিয়"
+    assert status["field"] == "status"
+    assert status["active_values"] == ["draft"]
 
 
 def test_sale_total_currency_and_terminal_lookup(client: TestClient) -> None:

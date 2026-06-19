@@ -75,6 +75,9 @@ void main() {
     expect(client.createAdminRole, isA<Function>());
     expect(client.updateAdminRole, isA<Function>());
     expect(client.getAdminSettings, isA<Function>());
+    expect(client.getAdminOrganizationProfile, isA<Function>());
+    expect(client.updateAdminOrganizationProfile, isA<Function>());
+    expect(client.uploadAdminOrganizationLogo, isA<Function>());
     expect(client.updateAdminSettings, isA<Function>());
     expect(client.listAdminTemplates, isA<Function>());
     expect(client.createAdminTemplate, isA<Function>());

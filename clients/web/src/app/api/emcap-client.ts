@@ -32,6 +32,21 @@ export interface AdminSettingsResponse {
   write_only_paths?: string[];
 }
 
+export interface AdminOrganizationProfileResponse {
+  profile: Record<string, unknown>;
+  editable_paths: string[];
+  override_paths?: string[];
+}
+
+export interface AdminOrganizationLogoUploadResponse {
+  logo_url: string;
+  document_id: string;
+  filename: string;
+  mime_type: string;
+  virus_scan_status: string;
+  profile: Record<string, unknown>;
+}
+
 export interface AdminIntegrationsResponse {
   integrations: Record<string, unknown>;
   editable_paths: string[];
@@ -119,6 +134,10 @@ export interface ReportScheduleSummary {
 
 export class EmcapClient {
   constructor(private readonly baseUrl: string) {}
+
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
 
   private token: string | null = null;
   private tenantId = 'default';
@@ -592,6 +611,29 @@ export class EmcapClient {
     return this.request('/api/v1/admin/settings', {
       method: 'PUT',
       body: JSON.stringify({ settings }),
+    });
+  }
+
+  getAdminOrganizationProfile(): Promise<AdminOrganizationProfileResponse> {
+    return this.request('/api/v1/admin/organization-profile');
+  }
+
+  updateAdminOrganizationProfile(
+    profile: Record<string, unknown>,
+  ): Promise<AdminOrganizationProfileResponse> {
+    return this.request('/api/v1/admin/organization-profile', {
+      method: 'PUT',
+      body: JSON.stringify({ profile }),
+    });
+  }
+
+  uploadAdminOrganizationLogo(
+    filename: string,
+    contentBase64: string,
+  ): Promise<AdminOrganizationLogoUploadResponse> {
+    return this.request('/api/v1/admin/organization-profile/logo', {
+      method: 'POST',
+      body: JSON.stringify({ filename, content_base64: contentBase64 }),
     });
   }
 

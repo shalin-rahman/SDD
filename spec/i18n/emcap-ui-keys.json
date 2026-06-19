@@ -1,6 +1,11 @@
 {
-  "version": 1,
-  "locales": ["en", "fr", "bn"],
+  "version": 2,
+  "locales": ["en-US", "bn-BD", "fr-FR"],
+  "legacyLocaleAliases": {
+    "en": "en-US",
+    "bn": "bn-BD",
+    "fr": "fr-FR"
+  },
   "bundles": {
     "web": "clients/web/src/assets/i18n",
     "mobile": "clients/mobile/assets/i18n"
@@ -11,9 +16,9 @@
     "nav.settings",
     "toolbar.theme",
     "toolbar.locale",
-    "toolbar.language.en",
-    "toolbar.language.fr",
-    "toolbar.language.bn",
+    "toolbar.language.en-US",
+    "toolbar.language.fr-FR",
+    "toolbar.language.bn-BD",
     "admin.users.title",
     "admin.roles.title",
     "admin.permissions.title",
@@ -22,6 +27,10 @@
     "settings.saved",
     "common.loading",
     "common.save",
-    "common.cancel"
+    "common.cancel",
+    "plural.recordCount.one",
+    "plural.recordCount.other",
+    "plural.notificationCount.one",
+    "plural.notificationCount.other"
   ]
 }

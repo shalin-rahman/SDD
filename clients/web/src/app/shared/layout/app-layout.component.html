@@ -1,9 +1,11 @@
+<a class="app-layout__skip-link" href="#main-content">{{ i18n.t('a11y.skipToContent') }}</a>
 <mat-sidenav-container class="app-layout">
   <mat-sidenav
     #drawer
     class="app-layout__sidenav"
     [mode]="isMobile ? 'over' : 'side'"
     [opened]="sidenavOpened"
+    [attr.aria-label]="i18n.t('a11y.landmark.navigation')"
   >
     <div class="app-layout__brand">
       <strong>EMCAP</strong>
@@ -34,9 +36,9 @@
         (valueChange)="onLocaleChange($event)"
         [attr.aria-label]="i18n.t('toolbar.locale')"
       >
-        <mat-option value="en">{{ i18n.t('toolbar.language.en') }}</mat-option>
-        <mat-option value="fr">{{ i18n.t('toolbar.language.fr') }}</mat-option>
-        <mat-option value="bn">{{ i18n.t('toolbar.language.bn') }}</mat-option>
+        <mat-option value="en-US">{{ i18n.t('toolbar.language.en-US') }}</mat-option>
+        <mat-option value="fr-FR">{{ i18n.t('toolbar.language.fr-FR') }}</mat-option>
+        <mat-option value="bn-BD">{{ i18n.t('toolbar.language.bn-BD') }}</mat-option>
       </mat-select>
       <button mat-icon-button type="button" [attr.aria-label]="i18n.t('toolbar.theme')" (click)="theme.toggle()">
         <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
@@ -50,7 +52,7 @@
       }
       <button mat-button type="button" (click)="signOut.emit()">{{ i18n.t('nav.signOut') }}</button>
     </mat-toolbar>
-    <main class="app-layout__content">
+    <main id="main-content" class="app-layout__content" [attr.aria-label]="i18n.t('a11y.landmark.main')">
       <router-outlet />
     </main>
   </mat-sidenav-content>

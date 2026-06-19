@@ -146,3 +146,27 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-008d Record hero header | `record-detail-header.component` | P15-T01, P15-T03 | `07-product-readiness-matrix.md` §9 |
 | FR-008d Section cards | `dynamic-form-view` Material cards | P15-T02 | Demo until screenshots |
 | FR-008d Grid polish | `dynamic-data-grid` + `field-display.util` | P15-T04 | Demo until screenshots |
+
+## Phase 25 — Procurement / Sales / AP-AR / Accounting
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-025 | `modules/procurement/` PO lines, receive validator, VENDOR_PAYMENT | EMCAP-P25-T02–T04 | `test_purchase_order_entities.py`, `test_vendor_payment_entities.py` |
+| FR-026 | `modules/sales/` SO lines, CUSTOMER_PAYMENT, invoice partial/paid | EMCAP-P25-T02, P25-T04 | `test_sales_order_entities.py`, `test_customer_payment_entities.py` |
+| FR-027 | `modules/accounting/journal.py` JOURNAL_ENTRY_LINE double-entry | EMCAP-P25-T05 | `test_journal_double_entry.py` |
+| FR-002 | Finance field `read_roles`, `procurement.pay`, `sales.collect`, `accounting.post/view` | EMCAP-P25-T06 | `test_finance_field_security.py` |
+| FR-018 | Business logic in `modules/` only; `ENTITY_VALIDATORS` hook | EMCAP-P25-T03–T05 | `test_platform_core_unchanged.py` |
+
+## Phase 26 — Business profile configuration
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-028 | `organization_profile` in `config/platform.yaml`; GET/PUT `/admin/organization-profile`; settings UI | EMCAP-P26-T02–T08 | `test_organization_profile_admin.py`; `organization-profile.util.spec.ts`; `organization_profile_util_test.dart` |
+
+## Phase 27 — i18n / l10n (BCP 47)
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-029 | `I18nService` / `EmcapLocale` BCP 47 bundles; `locale-format.util.ts` / `locale_format_util.dart`; starter-catalog merge; legacy alias migration | EMCAP-P27-T01–T11 | `npm run test:coverage` branches ≥80%; `dart test test/i18n_bundle_test.dart test/i18n_keys_parity_test.dart test/locale_format_util_test.dart test/a11y_semantics_test.dart`; `node scripts/audit-i18n.mjs`; matrix 06 i18n row |
+| FR-008d | App UI i18n + locale switcher (P25 finance + P26 org keys in EN/FR/BN) | EMCAP-P27-T08–T09 | Web entity-record PO/SO/payment i18n; mobile bundle parity; `settings.organization.*` bn-BD on web + mobile |
+| FR-007 | Metadata `label_key` + dynamic form localization | EMCAP-P27-T06 | Existing metadata i18n; P27 app-chrome catalog keys |

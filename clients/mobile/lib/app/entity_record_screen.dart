@@ -7,6 +7,10 @@ import '../theme/app_tokens.dart';
 import '../utils/field_display.dart';
 import '../utils/record_headline.dart';
 import '../utils/record_lifecycle_util.dart';
+import '../utils/payment_util.dart';
+import '../utils/purchase_order_util.dart';
+import '../utils/sales_order_util.dart';
+import '../utils/stock_movement_util.dart';
 import '../utils/workflow_enabled_util.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/document_preview_dialog.dart';
@@ -32,6 +36,7 @@ class EntityRecordScreen extends StatefulWidget {
     required this.title,
     this.recordId,
     this.creatingNew = false,
+    this.queryParams,
     this.onOpenWorkflowInbox,
   });
 
@@ -40,6 +45,8 @@ class EntityRecordScreen extends StatefulWidget {
   final String title;
   final String? recordId;
   final bool creatingNew;
+  /// Parent FK prefill when creating child records (e.g. `po_id`, `sales_order_id`).
+  final Map<String, String>? queryParams;
   final VoidCallback? onOpenWorkflowInbox;
 
   @override
@@ -71,6 +78,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   String? _movementLinesError;
   String? _postMovementError;
   bool _postingMovement = false;
+  List<Map<String, dynamic>> _orderLines = [];
+  String? _orderLinesError;
+  bool _receivingPo = false;
+  String? _receivePoError;
+  bool _recordLoaded = false;
 
   @override
   void initState() {
@@ -78,8 +90,13 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     EmcapLocale.locale.addListener(_onLocaleChanged);
     _creatingNew = widget.creatingNew;
     _selectedRecordId = widget.recordId;
-    _formFuture = _loadForm();
-    if (_selectedRecordId != null) {
+    _formFuture = _loadForm().then((form) {
+      if (_creatingNew) {
+        _applyCreatePrefill(form);
+      }
+      return form;
+    });
+    if (_selectedRecordId != null && !_creatingNew) {
       _loadRecord(_selectedRecordId!);
     }
   }
@@ -417,10 +434,12 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   }
 
   bool _canPostMovement() {
-    return widget.entityCode == 'STOCK_MOVEMENT' &&
-        _selectedRecordId != null &&
-        !_creatingNew &&
-        '${_recordValues['status'] ?? ''}' == 'draft';
+    return canPostMovement(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
   }
 
   Future<void> _postMovement() async {
@@ -473,7 +492,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       final lines = await widget.client.listRecords('STOCK_MOVEMENT_LINE');
       if (!mounted || _selectedRecordId != recordId) return;
       setState(() {
-        _movementLines = lines.where((row) => '${row['movement_id'] ?? ''}' == recordId).toList();
+        _movementLines = filterMovementLines(lines, recordId);
         _movementLinesError = null;
       });
     } catch (err) {
@@ -483,6 +502,278 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         _movementLinesError = EmcapLocale.t('entity.movementLinesFailed');
       });
     }
+  }
+
+  void _applyCreatePrefill(FormMetadata formMeta) {
+    final params = widget.queryParams;
+    if (!_creatingNew || params == null || params.isEmpty) {
+      return;
+    }
+    final renderer = DynamicFormRenderer(formMeta, locale: EmcapLocale.locale.value.languageCode);
+    var changed = false;
+    for (final entry in params.entries) {
+      if (!renderer.fieldNames().contains(entry.key)) {
+        continue;
+      }
+      final field = renderer.getField(entry.key);
+      if (field?.fieldType == 'lookup') {
+        _lookupValues[entry.key] = entry.value;
+        changed = true;
+      } else if (_controllers.containsKey(entry.key)) {
+        _controllers[entry.key]!.text = entry.value;
+        changed = true;
+      }
+    }
+    if (changed && mounted) {
+      setState(() {});
+    }
+  }
+
+  bool _showOrderLinesSection() {
+    return (widget.entityCode == 'PURCHASE_ORDER' || widget.entityCode == 'SALES_ORDER') &&
+        _selectedRecordId != null &&
+        !_creatingNew;
+  }
+
+  String _orderLinesTitle() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return EmcapLocale.t('procurement.po.lines');
+    }
+    return EmcapLocale.t('sales.so.lines');
+  }
+
+  String _orderLinesEmptyLabel() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return EmcapLocale.t('procurement.po.linesEmpty');
+    }
+    return EmcapLocale.t('sales.so.linesEmpty');
+  }
+
+  String _orderLinesFailedLabel() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return EmcapLocale.t('procurement.po.linesFailed');
+    }
+    return EmcapLocale.t('sales.so.linesFailed');
+  }
+
+  Future<void> _loadOrderLines(String recordId) async {
+    if (!_showOrderLinesSection()) {
+      setState(() {
+        _orderLines = [];
+        _orderLinesError = null;
+      });
+      return;
+    }
+    final lineEntity = widget.entityCode == 'PURCHASE_ORDER'
+        ? purchaseOrderLineEntityCode
+        : salesOrderLineEntityCode;
+    try {
+      final lines = await widget.client.listRecords(lineEntity);
+      if (!mounted || _selectedRecordId != recordId) return;
+      final filtered = widget.entityCode == 'PURCHASE_ORDER'
+          ? filterPurchaseOrderLines(lines, recordId)
+          : filterSalesOrderLines(lines, recordId);
+      setState(() {
+        _orderLines = filtered;
+        _orderLinesError = null;
+      });
+    } catch (err) {
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _orderLines = [];
+        _orderLinesError = _orderLinesFailedLabel();
+      });
+    }
+  }
+
+  bool _canReceivePurchaseOrder() {
+    return canReceivePurchaseOrder(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+      orderLineCount: _orderLines.length,
+    );
+  }
+
+  bool _canAddOrderLine() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return canAddPurchaseOrderLine(
+        widget.entityCode,
+        _recordValues,
+        recordId: _selectedRecordId,
+        creatingNew: _creatingNew,
+      );
+    }
+    if (widget.entityCode == 'SALES_ORDER') {
+      return canAddSalesOrderLine(
+        widget.entityCode,
+        _recordValues,
+        recordId: _selectedRecordId,
+        creatingNew: _creatingNew,
+      );
+    }
+    return false;
+  }
+
+  bool _canRecordVendorPayment() {
+    return canRecordVendorPayment(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
+  }
+
+  bool _canCollectCustomerPayment() {
+    return canCollectCustomerPayment(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
+  }
+
+  Future<void> _receivePurchaseOrder() async {
+    if (!_canReceivePurchaseOrder() || _selectedRecordId == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(EmcapLocale.t('procurement.po.receiveConfirm')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(EmcapLocale.t('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(EmcapLocale.t('procurement.po.receive'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() {
+      _receivingPo = true;
+      _receivePoError = null;
+    });
+    try {
+      final version = _recordValues['record_version'];
+      final ifMatch = version is int ? version : int.tryParse('$version');
+      await widget.client.updateRecord(
+        widget.entityCode,
+        _selectedRecordId!,
+        {'status': 'received'},
+        ifMatch: ifMatch,
+      );
+      _listChanged = true;
+      await _loadRecord(_selectedRecordId!);
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _receivePoError = EmcapLocale.t('procurement.po.receiveFailed'));
+    } finally {
+      if (mounted) {
+        setState(() => _receivingPo = false);
+      }
+    }
+  }
+
+  Future<void> _openChildCreate(String childEntityCode, Map<String, String> prefill) async {
+    final changed = await Navigator.of(context, rootNavigator: true).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => EntityRecordScreen(
+          client: widget.client,
+          entityCode: childEntityCode,
+          title: childEntityCode,
+          creatingNew: true,
+          queryParams: prefill,
+        ),
+      ),
+    );
+    if (changed == true && _selectedRecordId != null && mounted) {
+      _listChanged = true;
+      await _loadRecord(_selectedRecordId!);
+    }
+  }
+
+  void _addOrderLine() {
+    if (!_canAddOrderLine() || _selectedRecordId == null) return;
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      _openChildCreate(
+        purchaseOrderLineEntityCode,
+        {purchaseOrderCreatePrefillParam: _selectedRecordId!},
+      );
+      return;
+    }
+    if (widget.entityCode == 'SALES_ORDER') {
+      _openChildCreate(
+        salesOrderLineEntityCode,
+        {salesOrderCreatePrefillParam: _selectedRecordId!},
+      );
+    }
+  }
+
+  void _recordVendorPayment() {
+    if (!_canRecordVendorPayment() || _selectedRecordId == null) return;
+    _openChildCreate(
+      vendorPaymentEntityCode,
+      vendorPaymentPrefill(_recordValues, _selectedRecordId!),
+    );
+  }
+
+  void _collectCustomerPayment() {
+    if (!_canCollectCustomerPayment() || _selectedRecordId == null) return;
+    _openChildCreate(
+      customerPaymentEntityCode,
+      customerPaymentPrefill(_recordValues, _selectedRecordId!),
+    );
+  }
+
+  Widget _buildPaymentSummaryCard() {
+    if (!showPaymentSummaryCard(widget.entityCode)) {
+      return const SizedBox.shrink();
+    }
+    final summary = buildPaymentSummary(widget.entityCode, _recordValues);
+    if (summary == null) {
+      return const SizedBox.shrink();
+    }
+    final locale = EmcapLocale.locale.value.languageCode;
+    String fmt(double amount) =>
+        formatRecordFieldValue('amount', 'currency', amount, locale: locale, currencyCode: 'USD');
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(EmcapLocale.t('procurement.payment.summary'), style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Text('${EmcapLocale.t('procurement.payment.total')}: ${fmt(summary.total)}'),
+            Text('${EmcapLocale.t('procurement.payment.paid')}: ${fmt(summary.paid)}'),
+            Text('${EmcapLocale.t('procurement.balance.due')}: ${fmt(summary.balance)}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderLineTile(Map<String, dynamic> line) {
+    final locale = EmcapLocale.locale.value.languageCode;
+    final qty = widget.entityCode == 'PURCHASE_ORDER'
+        ? purchaseOrderLineQuantity(line)
+        : salesOrderLineQuantity(line);
+    final price = widget.entityCode == 'PURCHASE_ORDER'
+        ? purchaseOrderLineUnitPrice(line)
+        : salesOrderLineUnitPrice(line);
+    final priceLabel = formatRecordFieldValue(
+      'unit_price',
+      'currency',
+      price,
+      locale: locale,
+      currencyCode: 'USD',
+    );
+    return ListTile(
+      dense: true,
+      title: Text('${EmcapLocale.t('entity.movementLineProduct')}: ${line['product_id'] ?? ''}'),
+      subtitle: Text(
+        '${EmcapLocale.t('entity.movementLineQty')}: $qty · ${EmcapLocale.t('entity.priceLine')} $priceLabel',
+      ),
+    );
   }
 
   bool _canStartWorkflow() {
@@ -510,6 +801,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     setState(() {
       _selectedRecordId = recordId;
       _creatingNew = false;
+      _recordLoaded = false;
       _loadingDetail = true;
       _selectedNotes = [];
       _selectedDocuments = [];
@@ -518,6 +810,9 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       _movementLines = [];
       _movementLinesError = null;
       _postMovementError = null;
+      _orderLines = [];
+      _orderLinesError = null;
+      _receivePoError = null;
       _editingId = null;
     });
     try {
@@ -539,15 +834,24 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       if (widget.entityCode == 'STOCK_MOVEMENT') {
         await _loadMovementLines(recordId);
       }
+      if (_showOrderLinesSection()) {
+        await _loadOrderLines(recordId);
+      }
     } catch (err) {
       if (!mounted || _selectedRecordId != recordId) return;
       setState(() => _createError = err.toString());
     } finally {
       if (mounted && _selectedRecordId == recordId) {
-        setState(() => _loadingDetail = false);
+        setState(() {
+          _loadingDetail = false;
+          _recordLoaded = true;
+        });
       }
     }
   }
+
+  bool get _waitingForRecord =>
+      _selectedRecordId != null && !_creatingNew && !_recordLoaded && _createError == null;
 
   Widget _buildSystemSection(
     DynamicFormRenderer renderer,
@@ -594,7 +898,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         if (!snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(leading: BackButton(onPressed: _popToList)),
-            body: const Center(child: CircularProgressIndicator()),
+            body: Semantics(
+              label: EmcapLocale.t('a11y.screenReader.loading'),
+              liveRegion: true,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
           );
         }
         final formMeta = snapshot.data!;
@@ -611,14 +919,30 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         final statusLabel = headlineView.statusLabel;
         final statusActive = headlineView.statusActive;
 
+        if (_waitingForRecord) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: BackButton(onPressed: _popToList),
+              title: Text(_appBarTitle(formMeta), overflow: TextOverflow.ellipsis),
+            ),
+            body: Semantics(
+              label: EmcapLocale.t('a11y.screenReader.loading'),
+              liveRegion: true,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
         return Scaffold(
           appBar: AppBar(
             leading: BackButton(onPressed: _popToList),
             title: Text(_appBarTitle(formMeta), overflow: TextOverflow.ellipsis),
           ),
-          body: ListView(
-            padding: EdgeInsets.all(context.emcapTokens.spaceMd),
-            children: [
+          body: Semantics(
+            label: EmcapLocale.t('a11y.landmark.main'),
+            child: ListView(
+              padding: EdgeInsets.all(context.emcapTokens.spaceMd),
+              children: [
               if (_selectedRecordId != null && !_creatingNew) ...[
                 if (isRecordDeleted(_recordValues))
                   Container(
@@ -693,6 +1017,28 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                             : Text(EmcapLocale.t('entity.postMovement')),
                       ),
+                    if (_canReceivePurchaseOrder())
+                      TextButton(
+                        onPressed: _receivingPo ? null : _receivePurchaseOrder,
+                        child: _receivingPo
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                            : Text(EmcapLocale.t('procurement.po.receive')),
+                      ),
+                    if (_canRecordVendorPayment())
+                      TextButton(
+                        onPressed: _recordVendorPayment,
+                        child: Text(EmcapLocale.t('procurement.payment.record')),
+                      ),
+                    if (_canCollectCustomerPayment())
+                      TextButton(
+                        onPressed: _collectCustomerPayment,
+                        child: Text(EmcapLocale.t('sales.invoice.collect')),
+                      ),
+                    if (_canAddOrderLine())
+                      TextButton(
+                        onPressed: _addOrderLine,
+                        child: Text(EmcapLocale.t('entity.addLine')),
+                      ),
                     if (_canStartWorkflow())
                       TextButton(
                         onPressed: () async {
@@ -713,6 +1059,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(_postMovementError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ),
+                if (_receivePoError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(_receivePoError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ),
                 if (_loadingDetail)
                   const Padding(
@@ -738,6 +1089,20 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                     ),
                   ),
                   _buildSystemSection(formRenderer, _recordValues, forceReadOnly: true),
+                  if (showPaymentSummaryCard(widget.entityCode)) _buildPaymentSummaryCard(),
+                  if (_showOrderLinesSection()) ...[
+                    const Divider(),
+                    Text(_orderLinesTitle(), style: Theme.of(context).textTheme.titleSmall),
+                    if (_orderLinesError != null)
+                      Text(_orderLinesError!, style: TextStyle(color: Theme.of(context).colorScheme.error))
+                    else if (_orderLines.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(_orderLinesEmptyLabel()),
+                      )
+                    else
+                      ..._orderLines.map(_buildOrderLineTile),
+                  ],
                   if (widget.entityCode == 'STOCK_MOVEMENT') ...[
                     const Divider(),
                     Text(EmcapLocale.t('entity.movementLinesTitle'), style: Theme.of(context).textTheme.titleSmall),
@@ -885,6 +1250,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                 ),
               ],
             ],
+          ),
           ),
         );
       },

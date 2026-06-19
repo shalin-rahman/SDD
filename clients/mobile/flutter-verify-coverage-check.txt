@@ -1,0 +1,7 @@
+﻿python : Missing coverage file: clients\mobile\coverage\lcov.info
+At C:\Users\u1074139\AppData\Local\Temp\ps-script-22f0ea4f-93fa-4a9b-a0e3-1b1d44448ac5.ps1:128 char:1
++ python "c:\Users\u1074139\workstation\Study\SDD\scripts\check-flutter ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Missing coverag...erage\lcov.info:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

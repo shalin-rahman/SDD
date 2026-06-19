@@ -2,6 +2,7 @@
   "field_names": [
     "code",
     "name",
+    "account_type",
     "balance",
     "active"
   ]
