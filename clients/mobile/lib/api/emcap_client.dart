@@ -88,7 +88,12 @@ class EmcapClient {
 
   Future<List<Map<String, dynamic>>> getMenus() async {
     final body = await _request('GET', '/api/v1/menus');
-    return List<Map<String, dynamic>>.from(body['menus'] as List);
+    final menus = body['menus'];
+    if (menus is! List) return [];
+    return [
+      for (final item in menus)
+        if (item is Map) Map<String, dynamic>.from(item),
+    ];
   }
 
   Future<Map<String, dynamic>> getFormMetadata(String entityCode) async {

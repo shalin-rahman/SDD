@@ -121,24 +121,40 @@ Capture: OS screenshot tool, emulator screenshot, or Chrome DevTools device tool
 
 ---
 
-## 6. Automated capture (optional)
+## 6. Automated capture (integration tests)
 
-Skeleton integration test (complete when SDK available):
+**Harness:** `clients/mobile/integration_test/signoff_harness.dart` (shared sign-in, nav, screenshot copy).
+
+| Test file | PNG outputs |
+|-----------|-------------|
+| `m2_product_detail_test.dart` | `phase15-mobile-product-detail.png` |
+| `admin_signoff_test.dart` | `phase24-mobile-admin-*.png` (3) |
+| `mobile_signoff_test.dart` | `phase25-*-mobile.png` (4), `phase26-organization-profile-mobile.png`, `phase27-locale-switch-bn-bd-mobile.png` |
+
+**Device requirements:** Windows desktop needs **Visual Studio C++ toolchain**; Chrome `flutter test integration_test/… -d chrome` is **not supported** in Flutter 3.44; use **Android emulator** or `flutter drive` + chromedriver.
 
 ```powershell
 cd clients\mobile
-flutter test integration_test\m2_product_detail_test.dart -d chrome
+flutter test integration_test\m2_product_detail_test.dart -d windows   # needs VS Build Tools
 ```
 
-Or driver + screenshot binding:
+## 7. Automated capture (Playwright + Flutter web build)
+
+When device integration tests are unavailable:
 
 ```powershell
-flutter drive --driver=test_driver\integration_test.dart --target=integration_test\m2_product_detail_test.dart -d chrome
+scripts\start-emcap-local.bat
+cd clients\mobile
+flutter build web --dart-define=EMCAP_API_URL=http://localhost:8000
+cd build\web
+python -m http.server 5051
+# separate terminal (repo root):
+cd clients\web
+npx playwright@1.49.1 install chromium
+node ..\..\scripts\capture-mobile-signoff-screenshots.mjs
 ```
 
-Copy output from test binding to `docs/product/screenshots/phase15-mobile-product-detail.png`.
-
----
+Script serves built web at phone viewport (390×844). On some Windows hosts headless Chromium may stall on shell bootstrap — fallback: **manual** §4.
 
 ## 7. Close M2 tasks
 

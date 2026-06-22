@@ -18,9 +18,28 @@ void main() {
     expect(extractUserPermissions({}), ['*.*']);
   });
 
-  test('extractModuleToggles returns modules map', () {
+  test('extractModuleToggles accepts any map shape', () {
     expect(extractModuleToggles({'modules': {'workflow': {'enabled': false}}}), isNotNull);
     expect(extractModuleToggles({'modules': 'bad'}), isNull);
+  });
+
+  test('parseTenantEntries supports API map and test list shapes', () {
+    final fromMap = parseTenantEntries({
+      'tenants': {
+        'default': {'domain': 'localhost', 'primary_color': '#1A56DB'},
+      },
+    });
+    expect(fromMap, hasLength(1));
+    expect(fromMap.first['id'], 'default');
+    expect(fromMap.first['domain'], 'localhost');
+
+    final fromList = parseTenantEntries({
+      'tenants': [
+        {'id': 'default', 'name': 'Default'},
+      ],
+    });
+    expect(fromList, hasLength(1));
+    expect(fromList.first['name'], 'Default');
   });
 
   test('buildPlatformLinks includes admin security and assistant toggles', () {

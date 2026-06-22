@@ -78,21 +78,26 @@ class _EmcapShellState extends State<EmcapShell> {
       final tenants = await widget.client.listTenants();
       final config = await widget.client.getPlatformConfig();
       final me = await widget.client.getMe();
-      final rawMenus = await widget.client.getMenus();
       final modules = extractModuleToggles(config);
       final permissions = extractUserPermissions(me);
-      final menus = filterMenus(
-        rawMenus.map(MenuItem.fromJson).toList(),
-        permissions,
-        modules,
-      );
+      var menus = <MenuItem>[];
+      try {
+        final rawMenus = await widget.client.getMenus();
+        menus = filterMenus(
+          rawMenus.map(MenuItem.fromJson).toList(),
+          permissions,
+          modules,
+        );
+      } catch (_) {
+        menus = const [];
+      }
       final groups = groupMenusByModule(menus);
       final platformLinks = buildPlatformLinks(modules, permissions);
       if (!mounted) return;
       setState(() {
         _multiTenant = health['multi_tenant'] == true;
         _tenantLabel = 'tenant · ${health['tenant_strategy']} · multi=${health['multi_tenant']}';
-        _tenants = List<Map<String, dynamic>>.from(tenants['tenants'] as List? ?? []);
+        _tenants = parseTenantEntries(tenants);
         _selectedTenantId = widget.client.getTenantId();
         _aiEnabled = (modules?['ai'] as Map?)?['enabled'] == true;
         _entries = _buildEntries(platformLinks, groups);
@@ -105,7 +110,24 @@ class _EmcapShellState extends State<EmcapShell> {
         EmcapTheme.seedColor.value = const Color(0xFF1A56DB);
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (!mounted) return;
+      setState(() {
+        _entries = _buildEntries(buildPlatformLinks(null, const ['*.*']), const []);
+        if (_entries.isNotEmpty && !_entries.any((e) => e.key == _selectedKey)) {
+          _selectedKey = _entries.first.key;
+        }
+        _loading = false;
+      });
+    } finally {
+      if (mounted && _loading && _entries.isEmpty) {
+        setState(() {
+          _entries = _buildEntries(buildPlatformLinks(null, const ['*.*']), const []);
+          if (_entries.isNotEmpty) {
+            _selectedKey = _entries.first.key;
+          }
+          _loading = false;
+        });
+      }
     }
   }
 

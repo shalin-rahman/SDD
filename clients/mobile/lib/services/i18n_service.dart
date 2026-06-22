@@ -79,25 +79,42 @@ class EmcapLocale {
     locale.value = _localeFromStored(prefs.loadLocaleTag());
   }
 
+  static bool _isSupported(Locale locale) {
+    return supported.any(
+      (entry) =>
+          entry.languageCode == locale.languageCode &&
+          entry.countryCode == locale.countryCode,
+    );
+  }
+
   static Locale _localeFromStored(String stored) {
     final canonical = canonicalLocaleTag(stored);
     final parts = canonical.split('-');
     if (parts.length >= 2) {
-      return Locale.fromSubtags(languageCode: parts[0], countryCode: parts[1]);
+      final candidate = Locale.fromSubtags(languageCode: parts[0], countryCode: parts[1]);
+      if (_isSupported(candidate)) {
+        return candidate;
+      }
+      return supported.first;
     }
     for (final entry in supported) {
       if (entry.languageCode == parts[0]) {
-        return entry;
+        return Locale(entry.languageCode);
       }
     }
     return supported.first;
   }
 
   static Locale _supportedLocale(Locale value) {
-    final tag = value.countryCode != null && value.countryCode!.isNotEmpty
-        ? '${value.languageCode}-${value.countryCode}'
-        : value.languageCode;
-    return _localeFromStored(tag);
+    if (value.countryCode == null || value.countryCode!.isEmpty) {
+      for (final entry in supported) {
+        if (entry.languageCode == value.languageCode) {
+          return Locale(value.languageCode);
+        }
+      }
+      return supported.first;
+    }
+    return _localeFromStored('${value.languageCode}-${value.countryCode}');
   }
 
   static Future<void> setLocale(Locale value) async {

@@ -170,10 +170,31 @@ List<String> extractUserPermissions(Map<String, dynamic> me) {
 
 Map<String, dynamic>? extractModuleToggles(Map<String, dynamic> config) {
   final modules = config['modules'];
-  if (modules is Map<String, dynamic>) {
-    return modules;
+  if (modules is Map) {
+    return Map<String, dynamic>.from(modules);
   }
   return null;
+}
+
+/// API returns `tenants` as a map keyed by tenant id; tests may use a list.
+List<Map<String, dynamic>> parseTenantEntries(Map<String, dynamic> payload) {
+  final raw = payload['tenants'];
+  if (raw is List) {
+    return [
+      for (final item in raw)
+        if (item is Map) Map<String, dynamic>.from(item),
+    ];
+  }
+  if (raw is Map) {
+    return [
+      for (final entry in raw.entries)
+        {
+          'id': entry.key,
+          if (entry.value is Map) ...Map<String, dynamic>.from(entry.value as Map),
+        },
+    ];
+  }
+  return [];
 }
 
 class ShellNavEntryRef {

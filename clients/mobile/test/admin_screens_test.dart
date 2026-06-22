@@ -38,7 +38,7 @@ void main() {
     await pump(tester, AdminUsersScreen(client: FakeEmcapClient()));
     expect(find.text('admin'), findsOneWidget);
     await tester.tap(find.text(EmcapLocale.t('admin.users.new')));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text(EmcapLocale.t('admin.users.createTitle')));
     expect(find.text(EmcapLocale.t('admin.users.createTitle')), findsOneWidget);
   });
 
@@ -127,7 +127,8 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Amount'), findsOneWidget);
     await tester.enterText(find.byType(TextField), '25');
     expect(controller.text, contains('25'));

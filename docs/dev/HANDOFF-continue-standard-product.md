@@ -2,11 +2,40 @@
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-19 (9 web PNG sign-off — P24/P25/P26/P27 matrix 07 elevation; mobile stays Demo+ until device PNGs)
+**Last updated:** 2026-06-20 (Flutter full suite **508/508** green ~4m; settings coverage **13/13** ~11s)
 
 **Backlog:** P24-T01/T02 **Done (web)** · P25-T13 **Partial** (web PNG done; mobile open) · P26-T14 **Done (web)** · P27-T12 **Done (web)** · `plan/03-task-backlog.md`
 
 **Do not commit** unless user explicitly asks.
+
+---
+
+## Flutter test session (2026-06-19–20) — learnings
+
+**Do NOT use background multi-agents for Flutter verify** — user prefers **one file at a time** in foreground (~20–30s per file, ~15 min full suite).
+
+| Issue | Learning |
+|-------|----------|
+| 50–70 min "hangs" | Background jobs interrupted mid `flutter test --coverage`; not infinite loop |
+| `pumpAndSettle()` | Up to **10 min/call** on spinning loaders — use `screen_test_harness.dart` helpers |
+| Missing mock | **`getPlatformConfig()`** required on any `EmcapClient` mock that opens `EntityRecordScreen` |
+| Post-nav settle | **`settleEntityScreen` matches list route under pushed record** — use `pumpUntilFound(entity.newRecord)` |
+| MasterDetail narrow | At width &lt;900px, selecting a template hides list pane — tap **Back** before **New template** |
+| Security rate limit | `parseSecurityPlatformSettings` hardcodes **120** req/min — do not assert API mock `200` |
+
+**Fixed this session:**
+- `test/entity_list_screen_coverage_test.dart` — **7/7 pass** (~26s)
+- `test/settings_screen_coverage_test.dart` — **13/13 pass** (~11s); replaced 14× `pumpAndSettle`, split logo tests, scoped module switch tap
+- `test/admin_screens_test.dart` — **9/9 pass** (~4s); harness cleanup (2× `pumpAndSettle` removed)
+- `test/workflow_inbox_screen_test.dart` — **4/4 pass** (~8s); harness cleanup (5× `pumpAndSettle` removed)
+
+**Full suite (2026-06-20):** `flutter test` — **508/508 pass** (~4m); `flutter test --coverage` — **85.34%** line (4605/5396).
+
+**Agent shell PATH:** prepend `$env:Path = "C:\Users\u1074139\flutter\flutter_windows_3.44.2-stable\flutter\bin;" + $env:Path` before `flutter` commands.
+
+**Next:** M2 mobile PNG pack — integration harness + `scripts/capture-mobile-signoff-screenshots.mjs` added; **automated capture blocked** on this host (no VS toolchain / Android emulator; Flutter web headless stalls post-login). Use manual `flutter run -d chrome` at 390×844 or device/emulator + `integration_test/*_signoff_test.dart`.
+
+Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
 ---
 
@@ -93,7 +122,7 @@ node scripts/capture-signoff-screenshots.mjs --only=p25
 
 ## Suggested prompt (new chat)
 
-> Continue EMCAP from HANDOFF. **Web PNG sign-off Done** (9 PNGs, matrix 07 §10/§16/§18/§19/§20). Next: **`flutter test --coverage` green (≥80%)** + **M2 mobile PNG pack**. Mobile stays Demo+ until device PNGs. No commit before review.
+> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. **Web PNG sign-off Done** (9 PNGs). Next: **Flutter tests one file at a time** — no background agents; fix `admin_screens_test.dart` / `workflow_inbox_screen_test.dart` then remaining failures; then `flutter test --coverage` ≥80% + M2 mobile PNG pack. Read `known-pitfalls.md` § Flutter widget test before touching harness. No commit before review.
 
 ---
 

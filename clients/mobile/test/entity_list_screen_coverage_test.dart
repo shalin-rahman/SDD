@@ -3,20 +3,34 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:emcap_mobile/api/emcap_client.dart';
 import 'package:emcap_mobile/app/entity_list_screen.dart';
+import 'package:emcap_mobile/app/entity_record_screen.dart';
 import 'package:emcap_mobile/services/i18n_service.dart';
 import 'package:emcap_mobile/theme.dart';
 
 import 'support/screen_metadata_fixtures.dart';
 import 'support/screen_test_harness.dart';
 
+const _invalidFormMetadata = {
+  'schema_version': '1',
+  'entity_code': 'PRODUCT',
+  'sections': <Map<String, dynamic>>[],
+};
+
+const _invalidGridMetadata = {
+  'schema_version': '1',
+  'entity_code': 'PRODUCT',
+  'columns': <Map<String, dynamic>>[],
+  'export': <String, dynamic>{},
+};
+
 class _InvalidMetadataClient extends EmcapClient {
   _InvalidMetadataClient() : super('http://localhost:8000');
 
   @override
-  Future<Map<String, dynamic>> getFormMetadata(String entityCode) async => {'sections': []};
+  Future<Map<String, dynamic>> getFormMetadata(String entityCode) async => _invalidFormMetadata;
 
   @override
-  Future<Map<String, dynamic>> getGridMetadata(String entityCode) async => {'columns': []};
+  Future<Map<String, dynamic>> getGridMetadata(String entityCode) async => _invalidGridMetadata;
 
   @override
   Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
@@ -103,6 +117,9 @@ class _EmptyListClient extends EmcapClient {
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {};
+
+  @override
+  Future<Map<String, dynamic>> getPlatformConfig() async => {'modules': {}};
 }
 
 class _RetryMetadataClient extends EmcapClient {
@@ -113,7 +130,7 @@ class _RetryMetadataClient extends EmcapClient {
   @override
   Future<Map<String, dynamic>> getFormMetadata(String entityCode) async {
     attempts++;
-    if (attempts == 1) return {'sections': []};
+    if (attempts == 1) return _invalidFormMetadata;
     return productFormMetadataJson();
   }
 
@@ -257,11 +274,11 @@ void main() {
         ),
       ),
     );
-    await pumpUntilAbsent(tester, find.byType(CircularProgressIndicator));
+    await settleEntityScreen(tester);
 
     expect(find.text(EmcapLocale.t('grid.empty')), findsOneWidget);
-    await tester.tap(find.text(EmcapLocale.t('entity.new')));
-    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, EmcapLocale.t('entity.new')).first);
+    await pumpUntilFound(tester, find.text(EmcapLocale.t('entity.newRecord')));
     expect(find.text(EmcapLocale.t('entity.newRecord')), findsOneWidget);
   });
 
@@ -283,7 +300,7 @@ void main() {
     expect(find.text(EmcapLocale.t('entity.invalidMetadata')), findsOneWidget);
 
     await tester.tap(find.text(EmcapLocale.t('common.retry')));
-    await tester.pumpAndSettle();
+    await settleEntityScreen(tester);
     expect(find.text('Sample'), findsOneWidget);
   });
 }

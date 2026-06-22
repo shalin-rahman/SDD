@@ -275,6 +275,55 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Use package name from `pubspec.yaml` (`emcap_mobile`) |
 | **Test** | `flutter test` |
 
+### Flutter widget test — `pumpAndSettle` on entity screens
+
+| | |
+|--|--|
+| **Symptom** | Single test or full suite appears hung for minutes; agent/CI times out at 50–70+ min |
+| **Where** | Any screen test with `CircularProgressIndicator` / loading semantics (`entity_list_screen_coverage_test.dart`, `settings_screen_coverage_test.dart`, etc.) |
+| **Cause** | `pumpAndSettle()` waits up to **10 min per call** while progress indicators animate forever |
+| **Fix** | Use `test/support/screen_test_harness.dart`: `settleEntityScreen`, `pumpUntilFound`, `pumpUntilAbsent` — never bare `pumpAndSettle` on entity/settings/workflow screens |
+| **Test** | `flutter test test/entity_list_screen_coverage_test.dart` completes in ~30s |
+
+### Flutter widget test — mock clients must stub `getPlatformConfig`
+
+| | |
+|--|--|
+| **Symptom** | After list → record navigation, finder never sees `entity.newRecord` / Save; record screen stuck loading or error |
+| **Where** | `EntityRecordScreen._loadForm()` → `widget.client.getPlatformConfig()` |
+| **Cause** | Test `EmcapClient` subclasses override metadata/list but not `getPlatformConfig()` — base class hits HTTP (400 in widget tests) |
+| **Fix** | Add `@override Future<Map<String, dynamic>> getPlatformConfig() async => {'modules': {}};` to every mock client that opens `EntityRecordScreen` |
+| **Test** | `entity_list_screen_coverage_test.dart` — `EntityListScreen empty grid shows create action` |
+
+### Flutter widget test — `settleEntityScreen` after Navigator.push
+
+| | |
+|--|--|
+| **Symptom** | Harness returns early after route push; assertions fail on create headline |
+| **Cause** | List route stays in tree under pushed record route — both expose `a11y.landmark.main`; harness matches list first |
+| **Fix** | After navigation, `pumpUntilFound` on record-specific text (`entity.newRecord`, `entity.save`) or `find.byType(EntityRecordScreen)` — not `settleEntityScreen` alone |
+| **Test** | Same create-action test in `entity_list_screen_coverage_test.dart` |
+
+### Flutter widget test — MasterDetailLayout hides list pane on narrow width
+
+| | |
+|--|--|
+| **Symptom** | After tapping a list item, finder cannot see list actions (e.g. settings **New template**) |
+| **Where** | `settings_screen_coverage_test.dart`, any screen using `MasterDetailLayout` at test width &lt;900px |
+| **Cause** | `detailOpen: true` replaces list pane with detail-only column on narrow layouts |
+| **Fix** | Tap `common.back` before list-pane actions, or assert/create before opening detail |
+| **Test** | `settings_screen_coverage_test.dart` — `SettingsScreen templates select create and save` |
+
+### Flutter shell bootstrap — `listTenants` map vs list
+
+| | |
+|--|--|
+| **Symptom** | Drawer shows platform links only (Workflow, Settings, …) — no entity menus (Products, Purchase Orders, …) on Flutter web/device |
+| **Where** | `shell.dart` `_bootstrap` |
+| **Cause** | API `GET /tenants` returns `tenants` as a **map** keyed by tenant id; casting to `List?` in `setState` throws → outer catch drops entity nav |
+| **Fix** | Use `parseTenantEntries()` in `shell_nav_util.dart` (handles map and list shapes) |
+| **Test** | `shell_nav_util_extended_test.dart` — `parseTenantEntries supports API map and test list shapes` |
+
 ## Phase 10 — Angular CLI web client
 
 ### npm ENOENT when running `npx ng new` (Windows)

@@ -56,11 +56,13 @@ void main() {
     expect(find.textContaining('admin'), findsWidgets);
 
     await tester.tap(find.byType(DropdownButtonFormField<String>).first);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     final submittedLabel = workflowStateLabel('submitted');
     final submittedFinder = find.text(submittedLabel);
     await tester.tap(submittedFinder.evaluate().isNotEmpty ? submittedFinder.last : find.text('submitted').last);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('approval'), findsOneWidget);
   });
 
@@ -86,13 +88,15 @@ void main() {
     expect(find.textContaining(EmcapLocale.t('platform.workflow.escalated')), findsOneWidget);
 
     await tester.tap(find.text(EmcapLocale.t('platform.workflow.approve')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text(EmcapLocale.t('platform.workflow.approve')).last);
     await settleWorkflowInbox(tester);
     expect(client.transitionCalls, 1);
 
     await tester.tap(find.text(EmcapLocale.t('platform.workflow.delegate')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.enterText(find.byType(TextField), 'inventory-manager');
     await tester.tap(find.text(EmcapLocale.t('common.save')));
     await settleWorkflowInbox(tester);
@@ -125,7 +129,8 @@ void main() {
     );
     await settleWorkflowInbox(tester);
     await tester.tap(find.textContaining('PRODUCT ·'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(opened, 'PRODUCT');
   });
 }
