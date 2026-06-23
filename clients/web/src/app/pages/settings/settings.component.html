@@ -594,6 +594,14 @@
                 <mat-label>{{ i18n.t('settings.branding.domainHint') }}</mat-label>
                 <input matInput [(ngModel)]="tenantDomain" />
               </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ i18n.t('settings.branding.secondaryColor') }}</mat-label>
+                <input matInput [(ngModel)]="organizationProfile.secondaryColor" placeholder="#0066cc" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ i18n.t('settings.branding.faviconUrl') }}</mat-label>
+                <input matInput [(ngModel)]="organizationProfile.faviconUrl" placeholder="https://" />
+              </mat-form-field>
             </div>
             @if (brandingReadOnly()) {
               <p class="settings-hint">{{ i18n.t('settings.branding.readOnlyHint') }}</p>
@@ -603,6 +611,7 @@
             <p class="settings-branding-preview-label">{{ i18n.t('settings.branding.previewPanel') }}</p>
             <app-branding-preview-panel
               [primaryColor]="brandingPreviewPrimary()"
+              [secondaryColor]="organizationProfile.secondaryColor"
               [logoUrl]="tenantLogoUrl"
               [title]="i18n.t('settings.branding.previewTitle')"
               [subtitle]="i18n.t('settings.branding.previewSubtitle')"

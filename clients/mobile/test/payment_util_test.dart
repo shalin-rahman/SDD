@@ -181,4 +181,48 @@ void main() {
       expect(customerPaymentPrefill({'customer_id': ''}, 'inv-9'), {'invoice_id': 'inv-9'});
     });
   });
+
+  group('payment history helpers', () {
+    test('filterVendorPayments and filterCustomerPayments match parent id', () {
+      final vendorPayments = [
+        {'id': 'vp-1', 'po_id': 'po-1', 'amount': 10},
+        {'id': 'vp-2', 'po_id': 'po-1', 'amount': 20},
+        {'id': 'vp-3', 'po_id': 'po-2', 'amount': 5},
+      ];
+      expect(filterVendorPayments(vendorPayments, 'po-1').length, 2);
+      expect(filterVendorPayments(vendorPayments, 'missing'), isEmpty);
+
+      final customerPayments = [
+        {'id': 'cp-1', 'invoice_id': 'inv-1', 'amount': 50},
+        {'id': 'cp-2', 'invoice_id': 'inv-2', 'amount': 25},
+      ];
+      expect(filterCustomerPayments(customerPayments, 'inv-1').length, 1);
+      expect(filterCustomerPayments(customerPayments, 'missing'), isEmpty);
+    });
+
+    test('paymentNumberLabel prefers payment_number then id', () {
+      expect(paymentNumberLabel({'payment_number': 'P-1'}), 'P-1');
+      expect(paymentNumberLabel({'payment_number': '  ', 'id': 'pay-99'}), 'pay-99');
+      expect(paymentNumberLabel({}), '—');
+    });
+
+    test('formatPaymentAmount and formatPaymentDate handle empty values', () {
+      expect(formatPaymentAmount(0), '—');
+      expect(formatPaymentAmount(42.5), contains('42.50'));
+      expect(formatPaymentDate({}), '—');
+      expect(formatPaymentDate({'payment_date': '2026-03-01'}), isNot('—'));
+    });
+
+    test('paymentStatusLabel falls back to dash', () {
+      expect(paymentStatusLabel({'status': 'posted'}), 'posted');
+      expect(paymentStatusLabel({}), '—');
+    });
+
+    test('showVendorPaymentsSection and showCustomerPaymentsSection', () {
+      expect(showVendorPaymentsSection('PURCHASE_ORDER'), isTrue);
+      expect(showVendorPaymentsSection('INVOICE'), isFalse);
+      expect(showCustomerPaymentsSection('INVOICE'), isTrue);
+      expect(showCustomerPaymentsSection('PURCHASE_ORDER'), isFalse);
+    });
+  });
 }

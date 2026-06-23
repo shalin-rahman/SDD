@@ -37,4 +37,14 @@ describe('ThemeService', () => {
     service.applyTenantPrimary('#aabbcc');
     expect(document.documentElement.style.getPropertyValue('--emcap-primary')).toBe('#aabbcc');
   });
+
+  it('applies tenant secondary and favicon when configured', () => {
+    const service = new ThemeService();
+    service.applyTenantSecondary('#ff6600');
+    expect(document.documentElement.style.getPropertyValue('--emcap-secondary')).toBe('#ff6600');
+
+    service.applyFavicon('https://cdn.example/favicon.ico');
+    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    expect(link?.href).toBe('https://cdn.example/favicon.ico');
+  });
 });

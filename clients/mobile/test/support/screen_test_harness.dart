@@ -100,9 +100,33 @@ Future<void> scrollAccountTo(WidgetTester tester, Finder target) async {
   }
 }
 
-/// Admin / platform screens without main-content semantics — wait for load spinners.
+/// Entity record detail tabs (notes/documents) — after main landmark, wait for detail load.
+Future<void> settleEntityRecordDetail(WidgetTester tester) async {
+  await settleEntityScreen(tester);
+  await pumpUntilAbsent(tester, find.byType(LinearProgressIndicator), maxPumps: 120);
+  await tester.pump(const Duration(milliseconds: 100));
+}
+
+/// Admin / platform screens — wait for main landmark or legacy spinner clear.
 Future<void> settleAdminScreen(WidgetTester tester) async {
-  await pumpUntilAbsent(tester, find.byType(CircularProgressIndicator));
+  final mainLandmark = find.bySemanticsLabel(EmcapLocale.t('a11y.landmark.main'));
+  final loadingSemantics = find.bySemanticsLabel(EmcapLocale.t('a11y.screenReader.loading'));
+  const step = Duration(milliseconds: 50);
+
+  await tester.pump();
+  for (var i = 0; i < 120; i++) {
+    await tester.pump(step);
+    if (mainLandmark.evaluate().isNotEmpty && loadingSemantics.evaluate().isEmpty) {
+      await tester.pump(const Duration(milliseconds: 100));
+      return;
+    }
+    if (find.byType(CircularProgressIndicator).evaluate().isEmpty &&
+        mainLandmark.evaluate().isEmpty &&
+        loadingSemantics.evaluate().isEmpty) {
+      await tester.pump(const Duration(milliseconds: 100));
+      return;
+    }
+  }
 }
 
 /// Workflow inbox — no main landmark; wait for instance list.

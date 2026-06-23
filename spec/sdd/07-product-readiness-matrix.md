@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-19 (9 web PNG sign-off pack — P24-T01/T02, P25-T13 §18, P26 §19, P27 §20 via `capture-phase24-screenshots.mjs` + `capture-signoff-screenshots.mjs`; **mobile stays Demo+ until device PNGs + full `flutter test --coverage`**)
+**Last updated:** 2026-06-23 (P26 Wave 2 T10–T12 — export/print/branding; P28 + M2 mobile sign-off)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -25,8 +25,8 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 
 | Milestone | Scope | Blocking | Status |
 |-----------|--------|----------|--------|
-| **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile open |
-| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Open** — Batch 3 (2026-06-19): bulk **4/4**, SSE **3/3**, doc-preview **28/28**, hero **6/6**, entity-record screen **6/6** (load fix); **full `flutter test --coverage`** + M2 PNG (`scripts/capture-m2-mobile-screenshots.md`) pending — **do not mark Product-ready** |
+| **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile **Signed** 2026-06-22 |
+| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Signed (mobile)** — 2026-06-22; `phase15-mobile-product-detail.png`; **526/526** flutter; **85.43%** line coverage |
 | **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — P18-T13 bulk Done; platform/lifecycle/movement/crm screen specs green; M2 PNG + matrix sign-off open |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
 | **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile Demo+ lanes open |
@@ -83,12 +83,12 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Capability | Web | Mobile | Screenshot | Status |
 |------------|-----|--------|------------|--------|
-| Record hero header (SKU + name) | Done | Done | `phase15-product-detail-hero.png` | **Product-ready (web)** · Mobile Demo |
-| Status chip (active) | Done | Done | `phase15-product-detail-hero.png` | **Product-ready (web)** · Mobile Demo |
-| Section cards (business / system) | Done | Done | `phase14-product-detail-system-card.png` | **Product-ready (web)** · Mobile Demo |
-| Header action bar (save/delete/workflow) | Done | Done | `phase15-product-detail-hero.png` | **Product-ready (web)** · Mobile Demo |
-| Grid datetime formatting | Done | Done | `phase14-product-grid-system-columns.png` | **Product-ready (web)** · Mobile Demo |
-| Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo |
+| Record hero header (SKU + name) | Done | Done | `phase15-product-detail-hero.png` · `phase15-mobile-product-detail.png` | **Product-ready** web + mobile |
+| Status chip (active) | Done | Done | same pack | **Product-ready** web + mobile |
+| Section cards (business / system) | Done | Done | same pack | **Product-ready** web + mobile |
+| Header action bar (save/delete/workflow) | Done | Done | same pack | **Product-ready** web + mobile |
+| Grid datetime formatting | Done | Done | `phase14-product-grid-system-columns.png` | **Product-ready (web)** · Mobile Demo+ |
+| Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo+ |
 | Loading skeleton + error retry | Done | Demo | Partial | **Demo (web)** — P15-T22; mobile list load panel + error retry (`entity_list_screen`) |
 | Empty grid + New CTA | Done | Demo | Partial | **Product-ready (web)** — P15-T23; mobile empty grid + `entity.new` CTA |
 | Professional density at 1280px | Done | Partial | `phase15-product-detail-hero-dark.png` | **Product-ready (web)** — P16-T07 compact toggle on Account; Mobile Demo |
@@ -119,7 +119,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Area | Backlog says | Product readiness | Plan |
 |------|--------------|-------------------|------|
 | Enterprise shell / nav | Many Done | **Product-ready (web)** | P16-T09 + M6 i18n/retry; `phase19-shell-nav-web.png` via `capture-screenshot-sprint.mjs --only=shell-nav` |
-| Admin users/roles/security | Done | **Product-ready (web)** | P18-T15 PNGs + **P18-T21** DoD (load retry, saveError, deactivate confirm, ABAC empty/retry); `phase19-admin-users-web.png`, `phase19-admin-roles-web.png`, `phase19-admin-security-field-access-web.png` |
+| Admin users/roles/security | Done | **Product-ready (web)** · **Product-ready (mobile)** | P18-T15/P18-T21 web PNGs; mobile `phase24-mobile-admin-*.png` (2026-06-22) |
 | Entity record header | Done | **Product-ready (web)** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` + `role="status"` aria-label; i18n action labels |
 | Settings hub + isolation | Partial/Done | **Product-ready (web)** | `phase19-settings-ia-web.png`, `phase19-settings-isolation-web.png` — P19-T01/T07; P18-T15 |
 | Layout designer (ADR-007) | Done | **Product-ready (web)** | `phase19-settings-layout-editor-web.png` — P13-T31; P18-T15 |
@@ -128,6 +128,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Report schedules | Done | **Product-ready (web)** | Cron editor i18n/validation; `phase19-settings-report-schedules-web.png`; `test_report_schedule_admin.py` |
 | ABAC editor (P13) | Done | **Product-ready (web)** | P19-T04 + P18-T21 empty/retry/saveError; security PNG |
 | Integrations (settings hub) | Done | **Product-ready (web)** | P19-T10 registry cards + REST test; Account/mobile account no dispatch buttons |
+| Mobile TalkBack/VoiceOver semantics | P24-T04 Done | **Demo+** | `test/a11y_semantics_test.dart` (14 cases); manual device checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` |
 
 ---
 
@@ -162,12 +163,12 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Capability | API | Web | Mobile | Evidence | Status |
 |------------|-----|-----|--------|----------|--------|
-| `PURCHASE_ORDER` + `PURCHASE_ORDER_LINE` child rows | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase25-purchase-order-detail-web.png`; P25-T07 `child-lines-section`; demo seed `procurement.json` | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
+| `PURCHASE_ORDER` + `PURCHASE_ORDER_LINE` child rows | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase25-purchase-order-detail-web.png` · `phase25-purchase-order-detail-mobile.png` | **Product-ready** both surfaces |
 | PO receive → `STOCK_MOVEMENT` spawn | Done | Demo | Demo | `modules/procurement/purchase_order.py`; `test_purchase_order_entities.py` | Demo |
-| `VENDOR_PAYMENT` multi-pay + PO balance | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase25-vendor-payment-detail-web.png`; P25-T08 payment balance cards; seed VP-DEMO-001 | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
-| `SALES_ORDER` + `SALES_ORDER_LINE` child rows | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase25-sales-order-detail-web.png`; P25-T07 inline grids; demo seed `sales.json` | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
-| `INVOICE` partial/paid + `CUSTOMER_PAYMENT` multi-pay | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase25-invoice-partial-web.png`; P25-T08; seed INV-DEMO-001 partial | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
-| `JOURNAL_ENTRY` + `JOURNAL_ENTRY_LINE` double-entry | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase25-journal-entry-detail-web.png`; P25-T05 `test_journal_double_entry.py`; seed JE-DEMO-GL-001 | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
+| `VENDOR_PAYMENT` multi-pay + PO balance | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase25-vendor-payment-detail-*.png` | **Product-ready** both surfaces |
+| `SALES_ORDER` + `SALES_ORDER_LINE` child rows | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase25-sales-order-detail-*.png` | **Product-ready** both surfaces |
+| `INVOICE` partial/paid + `CUSTOMER_PAYMENT` multi-pay | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase25-invoice-partial-*.png` | **Product-ready** both surfaces |
+| `JOURNAL_ENTRY` + `JOURNAL_ENTRY_LINE` double-entry | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase25-journal-entry-detail-*.png`; P28 JE Post/Void UX | **Product-ready** both surfaces |
 | Finance field security (`accounting.view`) | Done | Demo | Demo | P25-T06 `test_finance_field_security.py` | Demo |
 | Demo seed loader smoke | Done | N/A | N/A | `test_seed_loader.py` — procurement/sales/GL chain (9 passed) | Done |
 
@@ -179,7 +180,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 - `docs/product/screenshots/phase25-invoice-partial-web.png`
 - `docs/product/screenshots/phase25-journal-entry-detail-web.png`
 
-Mobile lanes remain **Demo+** until M2 device PNG pack.
+Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (8 PNGs, 2026-06-22).
 
 ---
 
@@ -187,8 +188,11 @@ Mobile lanes remain **Demo+** until M2 device PNG pack.
 
 | Capability | API | Web | Mobile | Evidence | Status |
 |------------|-----|-----|--------|----------|--------|
-| Organization profile settings panel | Done | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase26-organization-profile-web.png` — Settings → Identity → Organization; P26-T14 sign-off via `capture-signoff-screenshots.mjs --only=p26` (2026-06-19) | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
+| Organization profile settings panel | Done | **Product-ready (web)** | **Product-ready (mobile)** | `phase26-organization-profile-web.png` · `phase26-organization-profile-mobile.png` | **Product-ready** both surfaces |
 | Logo blob upload + virus scan | Done | Demo+ | Demo+ | P26-T09 POST `/admin/organization-profile/logo`; web file picker; mobile `file_picker` via `pickOrganizationLogoFromDevice` in `shell.dart` → `SettingsScreen.logoPicker`; dart tests `organization_logo_util_test.dart` + `settings_screen_organization_test.dart` (upload via injectable picker) | Demo+ (device PNG open) |
+| Favicon + secondary accent branding | Done | Demo+ | Demo+ | Web: branding panel fields + `ThemeService.applyFavicon` / `applyTenantSecondary` via `ShellContextService`; mobile branding TextFields | Demo+ |
+| PDF grid export org header/footer | N/A | Demo+ | N/A | `export.util.ts` `buildPrintableTableHtml` + `entity-list` report template; karma `export.util.spec.ts` | Demo+ |
+| INVOICE print view org header/footer | N/A | Demo+ | Demo+ | Web `entity-record` Print invoice + `buildPrintableFieldsHtml`; mobile `entity_record_screen` + `export_util.dart` + `invoice_print_dialog.dart`; tests `entity_record_screen_invoice_print_test.dart`, `export_util_test.dart` | **Demo+** both surfaces |
 
 ---
 
@@ -196,5 +200,5 @@ Mobile lanes remain **Demo+** until M2 device PNG pack.
 
 | Capability | API | Web | Mobile | Evidence | Status |
 |------------|-----|-----|--------|----------|--------|
-| BCP 47 locale bundles + locale switcher | N/A | **Product-ready (web)** | Demo+ | `docs/product/screenshots/phase27-locale-switch-bn-bd-web.png` — P27-T12 sign-off via `capture-signoff-screenshots.mjs --only=p27` (2026-06-19); BCP 47 bundles `en-US`/`bn-BD`/`fr-FR`; `audit-i18n.mjs` CI gate | **Product-ready (web)** · Mobile Demo+ (device PNG open) |
+| BCP 47 locale bundles + locale switcher | N/A | **Product-ready (web)** | **Product-ready (mobile)** | `phase27-locale-switch-bn-bd-web.png` · `phase27-locale-switch-bn-bd-mobile.png` | **Product-ready** both surfaces |
 | Locale-aware number / currency / date formatting | N/A | **Product-ready (web)** | Demo+ | `locale-format.util.ts` + karma ≥80%; mobile `locale_format_util.dart` dart tests | **Product-ready (web)** · Mobile Demo+ |

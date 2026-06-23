@@ -1,4 +1,4 @@
-<div class="branding-preview" [style.--emcap-primary]="resolvedPrimary()">
+<div class="branding-preview" [style.--emcap-primary]="resolvedPrimary()" [style.--emcap-secondary]="resolvedSecondary()">
   @if (!contrastAdequate()) {
     <p class="branding-preview__contrast">
       <span class="emcap-badge emcap-badge--warn">{{ contrastHint() }}</span>

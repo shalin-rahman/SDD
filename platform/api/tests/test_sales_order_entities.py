@@ -110,6 +110,52 @@ def test_so_confirm_rollup_total(client: TestClient) -> None:
     assert confirmed.json()["total_amount"] == 100.0
 
 
+def test_so_confirm_without_lines_rejected(client: TestClient) -> None:
+    customer = _seed_customer(client)
+
+    so = client.post(
+        "/api/v1/entities/SALES_ORDER/records",
+        json={
+            "order_number": "SO-P28-NOLINE",
+            "customer_id": customer["id"],
+            "status": "draft",
+            "active": True,
+        },
+    )
+    assert so.status_code == 201
+    so_body = so.json()
+
+    response = client.put(
+        f"/api/v1/entities/SALES_ORDER/records/{so_body['id']}",
+        json={"status": "confirmed"},
+        headers={"If-Match": str(so_body["record_version"])},
+    )
+    assert response.status_code == 400
+    assert "without lines" in response.json()["detail"]
+
+
+def test_so_ship_without_lines_rejected(client: TestClient) -> None:
+    customer = _seed_customer(client)
+
+    so = client.post(
+        "/api/v1/entities/SALES_ORDER/records",
+        json={
+            "order_number": "SO-P28-NOSHIP",
+            "customer_id": customer["id"],
+            "status": "draft",
+            "active": True,
+        },
+    ).json()
+
+    response = client.put(
+        f"/api/v1/entities/SALES_ORDER/records/{so['id']}",
+        json={"status": "shipped"},
+        headers={"If-Match": str(so["record_version"])},
+    )
+    assert response.status_code == 400
+    assert "without lines" in response.json()["detail"]
+
+
 def test_invoice_chain_with_balance_fields(client: TestClient) -> None:
     customer = _seed_customer(client)
     so = client.post(

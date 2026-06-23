@@ -14,7 +14,7 @@ _FINANCE_READ = ["accounting.view"]
 
 def _load_validators() -> dict[str, Callable[..., Any]]:
     validators: dict[str, Callable[..., Any]] = {}
-    for name in ("sales_order", "customer_payment"):
+    for name in ("sales_order", "customer_payment", "invoice"):
         path = Path(__file__).resolve().parent / f"{name}.py"
         spec = importlib.util.spec_from_file_location(f"sales_{name}", path)
         if spec is None or spec.loader is None:
@@ -23,8 +23,10 @@ def _load_validators() -> dict[str, Callable[..., Any]]:
         spec.loader.exec_module(module)
         if name == "sales_order":
             validators["SALES_ORDER"] = module.validate_sales_order_payload
-        else:
+        elif name == "customer_payment":
             validators["CUSTOMER_PAYMENT"] = module.validate_customer_payment_payload
+        else:
+            validators["INVOICE"] = module.validate_invoice_payload
     return validators
 
 
@@ -62,7 +64,7 @@ MODULE = ModuleDefinition(
             ],
             options=EntityOptions(
                 audit_enabled=True,
-                workflow_enabled=True,
+                workflow_enabled=False,
                 notes_enabled=True,
                 document_enabled=False,
                 status_field=StatusFieldDisplay(

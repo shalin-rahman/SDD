@@ -45,6 +45,31 @@ class _PoClient extends EmcapClient {
         },
       ];
     }
+    if (entityCode == 'PRODUCT') {
+      return [
+        {'id': 'prod-1', 'name': 'Widget A', 'code': 'W-A'},
+      ];
+    }
+    if (entityCode == 'VENDOR_PAYMENT') {
+      return [
+        {
+          'id': 'vp-1',
+          'po_id': 'po-1',
+          'payment_number': 'VP-001',
+          'amount': 25,
+          'payment_date': '2026-03-01',
+          'status': 'posted',
+        },
+        {
+          'id': 'vp-2',
+          'po_id': 'po-2',
+          'payment_number': 'VP-002',
+          'amount': 10,
+          'payment_date': '2026-03-02',
+          'status': 'posted',
+        },
+      ];
+    }
     return [];
   }
 
@@ -90,20 +115,23 @@ void main() {
   setUpAll(initMobileScreenTests);
 
   testWidgets('EntityRecordScreen shows PO lines receive and payment summary', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final client = _PoClient({
+      'id': 'po-1',
+      'po_number': 'PO-001',
+      'supplier_id': 'sup-1',
+      'status': 'submitted',
+      'total_amount': 100,
+      'amount_paid': 0,
+      'balance_due': 100,
+      'record_version': 1,
+    });
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
         home: EntityRecordScreen(
-          client: _PoClient({
-            'id': 'po-1',
-            'po_number': 'PO-001',
-            'supplier_id': 'sup-1',
-            'status': 'submitted',
-            'total_amount': 100,
-            'amount_paid': 0,
-            'balance_due': 100,
-            'record_version': 1,
-          }),
+          client: client,
           entityCode: 'PURCHASE_ORDER',
           title: 'Purchase orders',
           recordId: 'po-1',
@@ -118,7 +146,13 @@ void main() {
     expect(find.text(EmcapLocale.t('entity.addLine')), findsOneWidget);
     expect(find.text(EmcapLocale.t('procurement.payment.record')), findsOneWidget);
     expect(find.text(EmcapLocale.t('procurement.payment.summary')), findsOneWidget);
-    expect(find.textContaining('prod-1'), findsOneWidget);
+    expect(find.textContaining('Widget A'), findsOneWidget);
+    expect(find.textContaining('prod-1'), findsNothing);
+    expect(find.text(EmcapLocale.t('entity.movementLinesSummary')), findsOneWidget);
+    expect(find.textContaining('62.50'), findsOneWidget);
+    expect(find.text(EmcapLocale.t('procurement.payment.vendorTitle')), findsOneWidget);
+    expect(find.textContaining('VP-001'), findsOneWidget);
+    expect(find.textContaining('VP-002'), findsNothing);
   });
 
   testWidgets('EntityRecordScreen receive PO confirms and updates status', (tester) async {
@@ -264,6 +298,8 @@ void main() {
 
     expect(find.text('INV-001'), findsWidgets);
     expect(find.text(EmcapLocale.t('procurement.payment.summary')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('sales.invoice.customerTitle')), findsOneWidget);
+    expect(find.textContaining('CP-001'), findsOneWidget);
     expect(find.text(EmcapLocale.t('sales.invoice.collect')), findsOneWidget);
 
     await tester.tap(find.text(EmcapLocale.t('sales.invoice.collect')));
@@ -337,6 +373,11 @@ class _SoClient extends EmcapClient {
         },
       ];
     }
+    if (entityCode == 'PRODUCT') {
+      return [
+        {'id': 'prod-1', 'name': 'Service Pack', 'code': 'SP-1'},
+      ];
+    }
     return [];
   }
 
@@ -382,7 +423,21 @@ class _InvoiceClient extends EmcapClient {
       Map<String, dynamic>.from(_record);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+    if (entityCode == 'CUSTOMER_PAYMENT') {
+      return [
+        {
+          'id': 'cp-1',
+          'invoice_id': 'inv-1',
+          'payment_number': 'CP-001',
+          'amount': 50,
+          'payment_date': '2026-04-15',
+          'status': 'posted',
+        },
+      ];
+    }
+    return [];
+  }
 
   @override
   Future<List<Map<String, dynamic>>> listNotes(String entityCode, String recordId) async => [];

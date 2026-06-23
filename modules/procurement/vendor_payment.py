@@ -102,6 +102,30 @@ def _apply_po_payment(
     )
 
 
+def _reverse_po_payment(
+    po_id: str,
+    amount: Decimal,
+    *,
+    repo: Any,
+    registry: Any,
+    commit: bool,
+) -> None:
+    po_entity = registry.get("PURCHASE_ORDER")
+    po = repo.get_record(po_entity, po_id)
+    amount_paid = _decimal(po.get("amount_paid")) - amount
+    if amount_paid < 0:
+        msg = "cannot void payment: amount_paid would be negative"
+        raise VendorPaymentValidationError(msg)
+
+    balance_due = _decimal(po.get("balance_due")) + amount
+    repo.update_record(
+        po_entity,
+        po_id,
+        {"amount_paid": float(amount_paid), "balance_due": float(balance_due)},
+        commit=commit,
+    )
+
+
 def _is_posting_transition(
     payload: dict[str, Any],
     *,
@@ -111,6 +135,17 @@ def _is_posting_transition(
     if not partial or existing is None:
         return payload.get("status") == "posted"
     return payload.get("status") == "posted" and existing.get("status") == "draft"
+
+
+def _is_void_transition(
+    payload: dict[str, Any],
+    *,
+    partial: bool,
+    existing: dict[str, Any] | None,
+) -> bool:
+    if not partial or existing is None:
+        return False
+    return payload.get("status") == "void" and existing.get("status") == "posted"
 
 
 def validate_vendor_payment_payload(
@@ -130,7 +165,13 @@ def validate_vendor_payment_payload(
         msg = "cannot create vendor payment directly in posted status"
         raise VendorPaymentValidationError(msg)
 
-    if not _is_posting_transition(payload, partial=partial, existing=existing):
+    if payload.get("status") == "void" and not partial:
+        msg = "cannot create vendor payment directly in void status"
+        raise VendorPaymentValidationError(msg)
+
+    posting = _is_posting_transition(payload, partial=partial, existing=existing)
+    voiding = _is_void_transition(payload, partial=partial, existing=existing)
+    if not posting and not voiding:
         return
 
     if context is None:
@@ -144,9 +185,13 @@ def validate_vendor_payment_payload(
 
     po_id = str(merged.get("po_id") or "")
     if not po_id:
-        msg = "po_id is required to post vendor payment"
+        msg = "po_id is required to post or void vendor payment"
         raise VendorPaymentValidationError(msg)
 
     commit = context.get("commit", True)
+    if voiding:
+        _reverse_po_payment(po_id, amount, repo=repo, registry=registry, commit=commit)
+        return
+
     _apply_po_payment(po_id, amount, repo=repo, registry=registry, commit=commit)
     _create_payment_journal(merged, payment_id=str(record_id), repo=repo, registry=registry)

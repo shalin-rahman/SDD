@@ -7,14 +7,19 @@ import '../theme/app_tokens.dart';
 import '../utils/field_display.dart';
 import '../utils/record_headline.dart';
 import '../utils/record_lifecycle_util.dart';
+import '../utils/order_line_util.dart';
+import '../utils/journal_entry_util.dart';
 import '../utils/payment_util.dart';
 import '../utils/purchase_order_util.dart';
 import '../utils/sales_order_util.dart';
 import '../utils/stock_movement_util.dart';
+import '../utils/export_util.dart';
+import '../utils/organization_profile_util.dart';
 import '../utils/workflow_enabled_util.dart';
 import '../widgets/currency_field.dart';
 import '../widgets/document_preview_dialog.dart';
 import '../widgets/emcap_badge.dart';
+import '../widgets/invoice_print_dialog.dart';
 import '../widgets/lookup_field.dart';
 
 /// System fields hidden on create — platform injects these on save.
@@ -79,11 +84,50 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   String? _postMovementError;
   bool _postingMovement = false;
   List<Map<String, dynamic>> _orderLines = [];
+  Map<String, String> _orderProductLabels = {};
   String? _orderLinesError;
+  List<Map<String, dynamic>> _journalLines = [];
+  String? _journalLinesError;
+  Map<String, String> _journalAccountLabels = {};
+  bool _postingJournal = false;
+  String? _postJournalError;
+  bool _voidingJournal = false;
+  String? _voidJournalError;
+  List<Map<String, dynamic>> _vendorPayments = [];
+  String? _vendorPaymentsError;
+  List<Map<String, dynamic>> _customerPayments = [];
+  String? _customerPaymentsError;
   bool _receivingPo = false;
   String? _receivePoError;
   bool _recordLoaded = false;
   int _loadGeneration = 0;
+  OrganizationProfileView _organizationProfile = const OrganizationProfileView(
+    displayName: '',
+    legalName: '',
+    taxId: '',
+    email: '',
+    phone: '',
+    website: '',
+    address: OrganizationAddress(
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: '',
+    ),
+    timezone: 'UTC',
+    locale: 'en',
+    currency: 'USD',
+    fiscalYearStartMonth: 1,
+    logoUrl: '',
+    faviconUrl: '',
+    secondaryColor: '',
+    invoice: DocumentTemplateBlock(header: '', footer: ''),
+    report: DocumentTemplateBlock(header: '', footer: ''),
+    purchaseOrder: DocumentTemplateBlock(header: '', footer: ''),
+    emailSignature: '',
+  );
 
   @override
   void initState() {
@@ -124,6 +168,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     final form = FormMetadata.fromJson(formJson);
     _syncControllers(DynamicFormRenderer(form, locale: EmcapLocale.locale.value.languageCode).fieldNames());
     _workflowEnabled = isWorkflowEnabled(platformConfig);
+    _organizationProfile = parseOrganizationProfile({}, platformConfig: platformConfig);
     return form;
   }
 
@@ -563,6 +608,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     if (!_showOrderLinesSection()) {
       setState(() {
         _orderLines = [];
+        _orderProductLabels = {};
         _orderLinesError = null;
       });
       return;
@@ -571,22 +617,243 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         ? purchaseOrderLineEntityCode
         : salesOrderLineEntityCode;
     try {
-      final lines = await widget.client.listRecords(lineEntity);
+      final results = await Future.wait([
+        widget.client.listRecords(lineEntity),
+        widget.client.listRecords('PRODUCT').catchError((_) => <Map<String, dynamic>>[]),
+      ]);
       if (!mounted || _selectedRecordId != recordId) return;
+      final lines = results[0];
       final filtered = widget.entityCode == 'PURCHASE_ORDER'
           ? filterPurchaseOrderLines(lines, recordId)
           : filterSalesOrderLines(lines, recordId);
       setState(() {
         _orderLines = filtered;
+        _orderProductLabels = buildProductLabelMap(results[1]);
         _orderLinesError = null;
       });
     } catch (err) {
       if (!mounted || _selectedRecordId != recordId) return;
       setState(() {
         _orderLines = [];
+        _orderProductLabels = {};
         _orderLinesError = _orderLinesFailedLabel();
       });
     }
+  }
+
+  bool _showJournalLinesSection() {
+    return widget.entityCode == 'JOURNAL_ENTRY' &&
+        _selectedRecordId != null &&
+        !_creatingNew;
+  }
+
+  Future<void> _loadJournalLines(String recordId) async {
+    if (!_showJournalLinesSection()) {
+      setState(() {
+        _journalLines = [];
+        _journalLinesError = null;
+        _journalAccountLabels = {};
+      });
+      return;
+    }
+    try {
+      final results = await Future.wait([
+        widget.client.listRecords(journalLineEntityCode),
+        widget.client.listRecords('ACCOUNT').catchError((_) => <Map<String, dynamic>>[]),
+      ]);
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _journalLines = filterJournalLines(results[0], recordId);
+        _journalAccountLabels = buildAccountLabelMap(results[1]);
+        _journalLinesError = null;
+      });
+    } catch (err) {
+      if (!mounted || _selectedRecordId != recordId) return;
+      setState(() {
+        _journalLines = [];
+        _journalAccountLabels = {};
+        _journalLinesError = EmcapLocale.t('accounting.journal.linesFailed');
+      });
+    }
+  }
+
+  bool _canPostJournal() {
+    return canPostJournalEntry(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
+  }
+
+  bool _canVoidJournal() {
+    return canVoidJournalEntry(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
+  }
+
+  bool _canAddJournalLine() {
+    return canAddJournalLine(
+      widget.entityCode,
+      _recordValues,
+      recordId: _selectedRecordId,
+      creatingNew: _creatingNew,
+    );
+  }
+
+  Future<void> _postJournal() async {
+    if (!_canPostJournal() || _selectedRecordId == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(EmcapLocale.t('accounting.journal.postConfirm')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(EmcapLocale.t('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(EmcapLocale.t('accounting.journal.post'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() {
+      _postingJournal = true;
+      _postJournalError = null;
+    });
+    try {
+      final version = _recordValues['record_version'];
+      final ifMatch = version is int ? version : int.tryParse('$version');
+      final updated = await widget.client.updateRecord(
+        widget.entityCode,
+        _selectedRecordId!,
+        {'status': 'posted'},
+        ifMatch: ifMatch,
+      );
+      if (!mounted) return;
+      setState(() => _recordValues = Map<String, dynamic>.from(updated));
+      _listChanged = true;
+      await _loadRecord(_selectedRecordId!);
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _postJournalError = EmcapLocale.t('accounting.journal.postFailed'));
+    } finally {
+      if (mounted) {
+        setState(() => _postingJournal = false);
+      }
+    }
+  }
+
+  Future<void> _voidJournal() async {
+    if (!_canVoidJournal() || _selectedRecordId == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(EmcapLocale.t('accounting.journal.voidConfirm')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(EmcapLocale.t('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(EmcapLocale.t('accounting.journal.void'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() {
+      _voidingJournal = true;
+      _voidJournalError = null;
+    });
+    try {
+      final version = _recordValues['record_version'];
+      final ifMatch = version is int ? version : int.tryParse('$version');
+      final updated = await widget.client.updateRecord(
+        widget.entityCode,
+        _selectedRecordId!,
+        {'status': 'void'},
+        ifMatch: ifMatch,
+      );
+      if (!mounted) return;
+      setState(() => _recordValues = Map<String, dynamic>.from(updated));
+      _listChanged = true;
+      await _loadRecord(_selectedRecordId!);
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _voidJournalError = EmcapLocale.t('accounting.journal.voidFailed'));
+    } finally {
+      if (mounted) {
+        setState(() => _voidingJournal = false);
+      }
+    }
+  }
+
+  void _addJournalLine() {
+    if (!_canAddJournalLine() || _selectedRecordId == null) return;
+    _openChildCreate(
+      journalLineEntityCode,
+      {journalEntryCreatePrefillParam: _selectedRecordId!},
+    );
+  }
+
+  String _paymentHistoryTitle() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return EmcapLocale.t('procurement.payment.vendorTitle');
+    }
+    return EmcapLocale.t('sales.invoice.customerTitle');
+  }
+
+  String _paymentHistoryEmptyLabel() {
+    if (widget.entityCode == 'PURCHASE_ORDER') {
+      return EmcapLocale.t('procurement.payment.vendorEmpty');
+    }
+    return EmcapLocale.t('sales.invoice.customerEmpty');
+  }
+
+  Widget _buildPaymentTile(Map<String, dynamic> payment) {
+    final locale = EmcapLocale.locale.value.languageCode;
+    final amountLabel = formatPaymentAmount(
+      paymentAmount(payment),
+      locale: locale,
+    );
+    final dateLabel = formatPaymentDate(payment, locale: locale);
+    final statusLabel = paymentStatusLabel(payment);
+    final title = '${EmcapLocale.t('procurement.payment.number')}: ${paymentNumberLabel(payment)}';
+    return ListTile(
+      dense: true,
+      title: Text(title),
+      subtitle: Text(
+        '${EmcapLocale.t('procurement.payment.amount')}: $amountLabel · '
+        '${EmcapLocale.t('procurement.payment.date')}: $dateLabel · '
+        '${EmcapLocale.t('procurement.payment.status')}: $statusLabel',
+      ),
+    );
+  }
+
+  Iterable<Widget> _vendorPaymentHistoryWidgets() {
+    if (_vendorPaymentsError != null) {
+      return [Text(_vendorPaymentsError!, style: TextStyle(color: Theme.of(context).colorScheme.error))];
+    }
+    if (_vendorPayments.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(_paymentHistoryEmptyLabel()),
+        ),
+      ];
+    }
+    return _vendorPayments.map(_buildPaymentTile);
+  }
+
+  Iterable<Widget> _customerPaymentHistoryWidgets() {
+    if (_customerPaymentsError != null) {
+      return [Text(_customerPaymentsError!, style: TextStyle(color: Theme.of(context).colorScheme.error))];
+    }
+    if (_customerPayments.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(_paymentHistoryEmptyLabel()),
+        ),
+      ];
+    }
+    return _customerPayments.map(_buildPaymentTile);
   }
 
   bool _canReceivePurchaseOrder() {
@@ -634,6 +901,42 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       _recordValues,
       recordId: _selectedRecordId,
       creatingNew: _creatingNew,
+    );
+  }
+
+  bool _canPrintInvoice() {
+    return widget.entityCode == 'INVOICE' &&
+        _selectedRecordId != null &&
+        !_creatingNew &&
+        !_loadingDetail;
+  }
+
+  Future<void> _printInvoice(
+    FormMetadata formMeta,
+    DynamicFormRenderer formRenderer,
+    RecordHeadlineView headlineView,
+  ) async {
+    if (!_canPrintInvoice()) return;
+    final blocks = resolveDocumentHeaderFooter(_organizationProfile, _organizationProfile.invoice);
+    final title = headlineView.headline.isNotEmpty
+        ? headlineView.headline
+        : EmcapLocale.t('sales.invoice.printTitle');
+    final visibleFields = _visibleFieldNames(formRenderer);
+    final formValues = _formValues(formRenderer);
+    final fields = visibleFields
+        .map(
+          (name) => PrintableFieldRow(
+            label: formRenderer.label(name),
+            value: '${formValues[name] ?? ''}',
+          ),
+        )
+        .toList();
+    if (!mounted) return;
+    await showInvoicePrintDialog(
+      context,
+      title: title,
+      blocks: PrintableDocumentBlocks(header: blocks.header, footer: blocks.footer),
+      fields: fields,
     );
   }
 
@@ -757,12 +1060,8 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
 
   Widget _buildOrderLineTile(Map<String, dynamic> line) {
     final locale = EmcapLocale.locale.value.languageCode;
-    final qty = widget.entityCode == 'PURCHASE_ORDER'
-        ? purchaseOrderLineQuantity(line)
-        : salesOrderLineQuantity(line);
-    final price = widget.entityCode == 'PURCHASE_ORDER'
-        ? purchaseOrderLineUnitPrice(line)
-        : salesOrderLineUnitPrice(line);
+    final qty = orderLineQuantity(line);
+    final price = orderLineUnitPrice(line);
     final priceLabel = formatRecordFieldValue(
       'unit_price',
       'currency',
@@ -770,11 +1069,99 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       locale: locale,
       currencyCode: 'USD',
     );
+    final productLabel = orderLineProductLabel(line, _orderProductLabels);
     return ListTile(
       dense: true,
-      title: Text('${EmcapLocale.t('entity.movementLineProduct')}: ${line['product_id'] ?? ''}'),
+      title: Text('${EmcapLocale.t('entity.movementLineProduct')}: $productLabel'),
       subtitle: Text(
         '${EmcapLocale.t('entity.movementLineQty')}: $qty · ${EmcapLocale.t('entity.priceLine')} $priceLabel',
+      ),
+    );
+  }
+
+  Widget _buildOrderLinesFooter() {
+    if (_orderLines.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final locale = EmcapLocale.locale.value.languageCode;
+    final qtyTotal = sumOrderLineQuantities(_orderLines);
+    final extTotal = sumOrderLineExtensions(_orderLines);
+    final qtyLabel = qtyTotal == 0 ? '—' : '$qtyTotal';
+    final extLabel = extTotal == 0
+        ? '—'
+        : formatRecordFieldValue(
+            'unit_price',
+            'currency',
+            extTotal,
+            locale: locale,
+            currencyCode: 'USD',
+          );
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              EmcapLocale.t('entity.movementLinesSummary'),
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              qtyLabel,
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          const Spacer(),
+          Expanded(
+            child: Text(
+              extLabel,
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJournalLineTile(Map<String, dynamic> line) {
+    final locale = EmcapLocale.locale.value.languageCode;
+    final account = journalLineAccountLabel(line, _journalAccountLabels);
+    final debit = formatJournalLineAmount(line, 'debit', locale: locale);
+    final credit = formatJournalLineAmount(line, 'credit', locale: locale);
+    return ListTile(
+      dense: true,
+      title: Text('${EmcapLocale.t('accounting.journal.lineAccount')}: $account'),
+      subtitle: Text(
+        '${EmcapLocale.t('accounting.journal.lineDebit')}: $debit · '
+        '${EmcapLocale.t('accounting.journal.lineCredit')}: $credit',
+      ),
+    );
+  }
+
+  Widget _buildJournalLinesFooter() {
+    if (_journalLines.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final locale = EmcapLocale.locale.value.languageCode;
+    final debitTotal = formatJournalLinesTotal(
+      sumJournalLineAmounts(_journalLines, 'debit'),
+      locale: locale,
+    );
+    final creditTotal = formatJournalLinesTotal(
+      sumJournalLineAmounts(_journalLines, 'credit'),
+      locale: locale,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 8),
+      child: Text(
+        '${EmcapLocale.t('entity.movementLinesSummary')}: '
+        '${EmcapLocale.t('accounting.journal.lineDebit')} $debitTotal · '
+        '${EmcapLocale.t('accounting.journal.lineCredit')} $creditTotal',
+        style: Theme.of(context).textTheme.labelMedium,
       ),
     );
   }
@@ -787,6 +1174,34 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
 
   bool _showWorkflowSection() {
     return _workflowEnabled && entityStartWorkflowCode(widget.entityCode) != null;
+  }
+
+  Future<void> _loadPaymentHistory(
+    String recordId, {
+    required List<Map<String, dynamic>> vendorPayments,
+    required List<Map<String, dynamic>> customerPayments,
+    required void Function(String?) setVendorError,
+    required void Function(String?) setCustomerError,
+  }) async {
+    if (showVendorPaymentsSection(widget.entityCode)) {
+      try {
+        final payments = await widget.client.listRecords(vendorPaymentEntityCode);
+        vendorPayments.addAll(filterVendorPayments(payments, recordId));
+        setVendorError(null);
+      } catch (err) {
+        setVendorError(EmcapLocale.t('procurement.payment.loadFailed'));
+      }
+      return;
+    }
+    if (showCustomerPaymentsSection(widget.entityCode)) {
+      try {
+        final payments = await widget.client.listRecords(customerPaymentEntityCode);
+        customerPayments.addAll(filterCustomerPayments(payments, recordId));
+        setCustomerError(null);
+      } catch (err) {
+        setCustomerError(EmcapLocale.t('sales.invoice.paymentsFailed'));
+      }
+    }
   }
 
   Future<void> _loadWorkflowInstances(String recordId) async {
@@ -802,6 +1217,10 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
 
   Future<void> _loadRecord(String recordId) async {
     final generation = ++_loadGeneration;
+    var loadedVendorPayments = <Map<String, dynamic>>[];
+    String? loadedVendorPaymentsError;
+    var loadedCustomerPayments = <Map<String, dynamic>>[];
+    String? loadedCustomerPaymentsError;
     setState(() {
       _selectedRecordId = recordId;
       _creatingNew = false;
@@ -815,7 +1234,17 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       _movementLinesError = null;
       _postMovementError = null;
       _orderLines = [];
+      _orderProductLabels = {};
       _orderLinesError = null;
+      _journalLines = [];
+      _journalLinesError = null;
+      _journalAccountLabels = {};
+      _postJournalError = null;
+      _voidJournalError = null;
+      _vendorPayments = [];
+      _vendorPaymentsError = null;
+      _customerPayments = [];
+      _customerPaymentsError = null;
       _receivePoError = null;
       _createError = null;
       _editingId = null;
@@ -844,12 +1273,28 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       if (_showOrderLinesSection()) {
         await _loadOrderLines(recordId);
       }
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
+      if (_showJournalLinesSection()) {
+        await _loadJournalLines(recordId);
+      }
+      if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
+      await _loadPaymentHistory(
+        recordId,
+        vendorPayments: loadedVendorPayments,
+        customerPayments: loadedCustomerPayments,
+        setVendorError: (err) => loadedVendorPaymentsError = err,
+        setCustomerError: (err) => loadedCustomerPaymentsError = err,
+      );
     } catch (err) {
       if (!mounted || _selectedRecordId != recordId || generation != _loadGeneration) return;
       setState(() => _createError = err.toString());
     } finally {
       if (mounted && _selectedRecordId == recordId && generation == _loadGeneration) {
         setState(() {
+          _vendorPayments = loadedVendorPayments;
+          _vendorPaymentsError = loadedVendorPaymentsError;
+          _customerPayments = loadedCustomerPayments;
+          _customerPaymentsError = loadedCustomerPaymentsError;
           _loadingDetail = false;
           _recordLoaded = true;
         });
@@ -1060,10 +1505,38 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                           onPressed: _collectCustomerPayment,
                           child: Text(EmcapLocale.t('sales.invoice.collect')),
                         ),
+                      if (_canPrintInvoice())
+                        Semantics(
+                          label: EmcapLocale.t('sales.invoice.print'),
+                          button: true,
+                          child: TextButton(
+                            onPressed: () => _printInvoice(formMeta, formRenderer, headlineView),
+                            child: Text(EmcapLocale.t('sales.invoice.print')),
+                          ),
+                        ),
                       if (_canAddOrderLine())
                         TextButton(
                           onPressed: _addOrderLine,
                           child: Text(EmcapLocale.t('entity.addLine')),
+                        ),
+                      if (_canAddJournalLine())
+                        TextButton(
+                          onPressed: _addJournalLine,
+                          child: Text(EmcapLocale.t('entity.addLine')),
+                        ),
+                      if (_canPostJournal())
+                        TextButton(
+                          onPressed: _postingJournal ? null : _postJournal,
+                          child: _postingJournal
+                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              : Text(EmcapLocale.t('accounting.journal.post')),
+                        ),
+                      if (_canVoidJournal())
+                        TextButton(
+                          onPressed: _voidingJournal ? null : _voidJournal,
+                          child: _voidingJournal
+                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                              : Text(EmcapLocale.t('accounting.journal.void')),
                         ),
                       if (_canStartWorkflow())
                         TextButton(
@@ -1090,6 +1563,16 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(_receivePoError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ),
+                if (_postJournalError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(_postJournalError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ),
+                if (_voidJournalError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(_voidJournalError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ),
                 if (_loadingDetail)
                   const Padding(
@@ -1126,8 +1609,35 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(_orderLinesEmptyLabel()),
                       )
-                    else
+                    else ...[
                       ..._orderLines.map(_buildOrderLineTile),
+                      _buildOrderLinesFooter(),
+                    ],
+                  ],
+                  if (_showJournalLinesSection()) ...[
+                    const Divider(),
+                    Text(EmcapLocale.t('accounting.journal.lines'), style: Theme.of(context).textTheme.titleSmall),
+                    if (_journalLinesError != null)
+                      Text(_journalLinesError!, style: TextStyle(color: Theme.of(context).colorScheme.error))
+                    else if (_journalLines.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(EmcapLocale.t('accounting.journal.linesEmpty')),
+                      )
+                    else ...[
+                      ..._journalLines.map(_buildJournalLineTile),
+                      _buildJournalLinesFooter(),
+                    ],
+                  ],
+                  if (showVendorPaymentsSection(widget.entityCode) ||
+                      showCustomerPaymentsSection(widget.entityCode)) ...[
+                    const Divider(),
+                    Text(_paymentHistoryTitle(), style: Theme.of(context).textTheme.titleSmall),
+                    if (widget.entityCode == 'PURCHASE_ORDER') ...[
+                      ..._vendorPaymentHistoryWidgets(),
+                    ] else ...[
+                      ..._customerPaymentHistoryWidgets(),
+                    ],
                   ],
                   if (widget.entityCode == 'STOCK_MOVEMENT') ...[
                     const Divider(),
@@ -1159,6 +1669,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
                       dense: true,
                       title: Text('${doc['filename'] ?? doc['id'] ?? ''} v${doc['version'] ?? 1}'),
                       trailing: IconButton(
+                        tooltip: EmcapLocale.t('record.previewDocument'),
                         icon: const Icon(Icons.visibility),
                         onPressed: () async {
                           if (!context.mounted) return;

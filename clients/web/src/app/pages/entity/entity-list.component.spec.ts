@@ -47,6 +47,11 @@ describe('EntityListComponent', () => {
                 offline: false,
               }),
               syncSnapshot: jasmine.createSpy('syncSnapshot').and.resolveTo({ sync_version: '1' }),
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({
+                organization_profile: {
+                  report: { header: 'Acme Report', footer: 'Confidential' },
+                },
+              }),
               getMenus: jasmine.createSpy('getMenus').and.resolveTo({
                 menus: [{ entity_code: 'PRODUCT', label: 'Products' }],
               }),
@@ -295,9 +300,15 @@ describe('EntityListComponent', () => {
 
     const cmp = fixture.componentInstance;
     spyOn(URL, 'createObjectURL').and.returnValue('blob:1');
+    const print = jasmine.createSpy('print');
+    const doc = { write: jasmine.createSpy('write'), close: jasmine.createSpy('close') };
+    spyOn(window, 'open').and.returnValue({ document: doc, print } as unknown as Window);
     cmp.exportExcelFile();
     cmp.exportPdfFile();
     expect(cmp.exportExcel).toBeTrue();
+    const html = doc.write.calls.mostRecent().args[0] as string;
+    expect(html).toContain('Acme Report');
+    expect(html).toContain('Confidential');
   });
 
   it('clears search timer and filters grid columns', async () => {

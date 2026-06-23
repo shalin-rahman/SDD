@@ -1,6 +1,6 @@
 # Phase 26 — Business profile setup & configuration
 
-**Status:** Wave 2 in progress (2026-06-19) — P26-T09 logo upload Done  
+**Status:** Wave 5 complete (2026-06-23) — P26-T12 mobile invoice print Done; P26-T13 email signature Done; P26-T15 verify Done  
 **Parent:** `plan/17-standard-product-execution-playbook.md`  
 **Driver:** Standard SaaS org setup — company identity, branding, contact, document headers/footers — editable in-app (feedback §B white-label, §M security/memory).
 
@@ -139,12 +139,12 @@ organization_profile:
 | P26-T07 | Mobile org section + logo preview + dart tests | Mobile | 1 | **Done** |
 | P26-T08 | `organization_profile_util.dart` | Mobile | 1 | **Done** |
 | P26-T09 | Logo blob upload + virus scan hook | Backend + Security | 2 | **Done** |
-| P26-T10 | Favicon + secondary color in branding panel | Web + Mobile | 2 | Pending |
-| P26-T11 | PDF/report export header injection | Web | 3 | Pending |
-| P26-T12 | INVOICE print view header/footer | Web + Mobile | 3 | Pending |
-| P26-T13 | Email signature merge in notification templates | Backend | 4 | Pending |
-| P26-T14 | Screenshot pack + matrix 07 Product-ready | QA | 5 | Pending |
-| P26-T15 | Full verify + doc sync | QA | 5 | Pending |
+| P26-T10 | Favicon + secondary color in branding panel | Web + Mobile | 2 | **Done** |
+| P26-T11 | PDF/report export header injection | Web | 3 | **Done** |
+| P26-T12 | INVOICE print view header/footer | Web + Mobile | 3 | **Done** |
+| P26-T13 | Email signature merge in notification templates | Backend | 4 | **Done** |
+| P26-T14 | Screenshot pack + matrix 07 Product-ready | QA | 5 | **Done** |
+| P26-T15 | Full verify + doc sync | QA | 5 | **Done** |
 
 **Wave order:** 0 plan → 1 API+UI MVP → 2 upload/branding → 3 document consumers → 4 email → 5 sign-off.
 

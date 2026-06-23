@@ -202,3 +202,98 @@ def test_vendor_payment_post_creates_journal_draft(client: TestClient) -> None:
     lines = client.get("/api/v1/entities/JOURNAL_ENTRY_LINE/records").json()["records"]
     je_lines = [line for line in lines if line["journal_entry_id"] == linked[-1]["id"]]
     assert len(je_lines) == 2
+
+
+def test_vendor_payment_void_reverses_po_balance(client: TestClient) -> None:
+    _seed_gl_accounts(client)
+    po = _seed_received_po(client, po_number="PO-VP-VOID", line_total=100.0)
+
+    payment = client.post(
+        "/api/v1/entities/VENDOR_PAYMENT/records",
+        json={
+            "payment_number": "VP-VOID-01",
+            "po_id": po["id"],
+            "supplier_id": po["supplier_id"],
+            "amount": 40.0,
+            "status": "draft",
+            "active": True,
+        },
+    ).json()
+
+    posted = client.put(
+        f"/api/v1/entities/VENDOR_PAYMENT/records/{payment['id']}",
+        json={"status": "posted"},
+        headers={"If-Match": str(payment["record_version"])},
+    )
+    assert posted.status_code == 200
+    posted_body = posted.json()
+
+    po_after_post = client.get(f"/api/v1/entities/PURCHASE_ORDER/records/{po['id']}").json()
+    assert po_after_post["amount_paid"] == 40.0
+    assert po_after_post["balance_due"] == 60.0
+
+    voided = client.put(
+        f"/api/v1/entities/VENDOR_PAYMENT/records/{posted_body['id']}",
+        json={"status": "void"},
+        headers={"If-Match": str(posted_body["record_version"])},
+    )
+    assert voided.status_code == 200
+    assert voided.json()["status"] == "void"
+
+    po_after_void = client.get(f"/api/v1/entities/PURCHASE_ORDER/records/{po['id']}").json()
+    assert po_after_void["amount_paid"] == 0.0
+    assert po_after_void["balance_due"] == 100.0
+
+
+def test_vendor_payment_void_after_partial_sequence(client: TestClient) -> None:
+    _seed_gl_accounts(client)
+    po = _seed_received_po(client, po_number="PO-VP-VOID2", line_total=100.0)
+
+    p1 = client.post(
+        "/api/v1/entities/VENDOR_PAYMENT/records",
+        json={
+            "payment_number": "VP-VOID2-A",
+            "po_id": po["id"],
+            "supplier_id": po["supplier_id"],
+            "amount": 30.0,
+            "status": "draft",
+            "active": True,
+        },
+    ).json()
+    client.put(
+        f"/api/v1/entities/VENDOR_PAYMENT/records/{p1['id']}",
+        json={"status": "posted"},
+        headers={"If-Match": str(p1["record_version"])},
+    )
+
+    p2 = client.post(
+        "/api/v1/entities/VENDOR_PAYMENT/records",
+        json={
+            "payment_number": "VP-VOID2-B",
+            "po_id": po["id"],
+            "supplier_id": po["supplier_id"],
+            "amount": 70.0,
+            "status": "draft",
+            "active": True,
+        },
+    ).json()
+    posted_p2 = client.put(
+        f"/api/v1/entities/VENDOR_PAYMENT/records/{p2['id']}",
+        json={"status": "posted"},
+        headers={"If-Match": str(p2["record_version"])},
+    ).json()
+
+    po_paid = client.get(f"/api/v1/entities/PURCHASE_ORDER/records/{po['id']}").json()
+    assert po_paid["amount_paid"] == 100.0
+    assert po_paid["balance_due"] == 0.0
+
+    voided = client.put(
+        f"/api/v1/entities/VENDOR_PAYMENT/records/{posted_p2['id']}",
+        json={"status": "void"},
+        headers={"If-Match": str(posted_p2["record_version"])},
+    )
+    assert voided.status_code == 200
+
+    po_after = client.get(f"/api/v1/entities/PURCHASE_ORDER/records/{po['id']}").json()
+    assert po_after["amount_paid"] == 30.0
+    assert po_after["balance_due"] == 70.0

@@ -71,10 +71,26 @@ import {
   paymentStatusLabel,
 } from '../../shared/utils/payment.util';
 import {
+  buildAccountLabelMap,
+  canAddJournalLine,
+  canPostJournalEntry,
+  canVoidJournalEntry,
+  filterJournalLines,
+  formatJournalLineAmount,
+  formatJournalLinesTotal,
+  journalLineAccountLabel,
+  sumJournalLineAmounts,
+} from '../../shared/utils/journal-entry.util';
+import {
   canAddPurchaseOrderLine,
   canReceivePurchaseOrder as poCanReceive,
 } from '../../shared/utils/purchase_order_util';
-import { parseOrganizationProfile } from '../../shared/utils/organization-profile.util';
+import {
+  parseOrganizationProfile,
+  resolveDocumentHeaderFooter,
+  type OrganizationProfileView,
+} from '../../shared/utils/organization-profile.util';
+import { buildPrintableFieldsHtml, printHtmlDocument } from '../../shared/utils/export.util';
 import { loadEntityMenuTitle } from './entity-page.util';
 
 @Component({
@@ -136,7 +152,15 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
   customerPaymentsError = '';
   receivingPo = false;
   receivePoError = '';
+  journalLines: Record<string, unknown>[] = [];
+  journalLinesError = '';
+  journalAccountLabels: Record<string, string> = {};
+  postingJournal = false;
+  postJournalError = '';
+  voidingJournal = false;
+  voidJournalError = '';
   organizationCurrency = 'USD';
+  private organizationProfile: OrganizationProfileView = parseOrganizationProfile({});
 
   visibleFields: FormFieldMetadata[] = [];
   notes: RecordNote[] = [];
@@ -205,7 +229,8 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
         this.api.client.getPlatformConfig().catch(() => ({})),
       ]);
       this.workflowEnabled = isWorkflowEnabled(platformConfig);
-      this.organizationCurrency = parseOrganizationProfile({}, platformConfig).currency || 'USD';
+      this.organizationProfile = parseOrganizationProfile({}, platformConfig);
+      this.organizationCurrency = this.organizationProfile.currency || 'USD';
       if (!validateFormMetadata(loadedFormMeta)) {
         this.loadError = this.i18n.t('entity.invalidMetadata');
         return;
@@ -233,7 +258,12 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
       }
       this.rebuildForm(loaded);
       await this.loadRecordDetail(id);
-      await Promise.all([this.loadMovementLines(id), this.loadOrderLines(id), this.loadPayments(id)]);
+      await Promise.all([
+        this.loadMovementLines(id),
+        this.loadOrderLines(id),
+        this.loadJournalLines(id),
+        this.loadPayments(id),
+      ]);
     } catch (err) {
       this.loadError = err instanceof Error ? err.message : this.i18n.t('entity.loadFailed');
     }
@@ -506,6 +536,134 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
     return this.i18n.t('procurement.po.lines');
   }
 
+  showJournalLinesSection(): boolean {
+    return (
+      this.entityCode === 'JOURNAL_ENTRY' && Boolean(this.selectedRecordId) && !this.creatingNew
+    );
+  }
+
+  canAddJournalLine(): boolean {
+    return canAddJournalLine(this.entityCode, this.formValues, {
+      recordId: this.selectedRecordId,
+      creatingNew: this.creatingNew,
+    });
+  }
+
+  canPostJournal(): boolean {
+    return canPostJournalEntry(this.entityCode, this.formValues, {
+      recordId: this.selectedRecordId,
+      creatingNew: this.creatingNew,
+    });
+  }
+
+  canVoidJournal(): boolean {
+    return canVoidJournalEntry(this.entityCode, this.formValues, {
+      recordId: this.selectedRecordId,
+      creatingNew: this.creatingNew,
+    });
+  }
+
+  journalLineColumns(): ChildLineColumn[] {
+    const currency = this.organizationCurrency;
+    return [
+      {
+        header: this.i18n.t('accounting.journal.lineAccount'),
+        cell: (line) => journalLineAccountLabel(line, this.journalAccountLabels),
+      },
+      {
+        header: this.i18n.t('accounting.journal.lineDebit'),
+        align: 'right',
+        cell: (line) => formatJournalLineAmount(line, 'debit', currency),
+      },
+      {
+        header: this.i18n.t('accounting.journal.lineCredit'),
+        align: 'right',
+        cell: (line) => formatJournalLineAmount(line, 'credit', currency),
+      },
+    ];
+  }
+
+  journalLinesFooter(): ChildLinesFooter | null {
+    if (!this.journalLines.length) {
+      return null;
+    }
+    const currency = this.organizationCurrency;
+    return {
+      label: this.i18n.t('entity.movementLinesSummary'),
+      cells: [
+        formatJournalLinesTotal(sumJournalLineAmounts(this.journalLines, 'debit'), currency),
+        formatJournalLinesTotal(sumJournalLineAmounts(this.journalLines, 'credit'), currency),
+      ],
+    };
+  }
+
+  addJournalLine(): void {
+    if (!this.canAddJournalLine() || !this.selectedRecordId) {
+      return;
+    }
+    void this.router.navigate(['/app/entity', 'JOURNAL_ENTRY_LINE', 'new'], {
+      queryParams: { journal_entry_id: this.selectedRecordId },
+    });
+  }
+
+  async postJournal(): Promise<void> {
+    if (!this.canPostJournal() || !this.selectedRecordId) {
+      return;
+    }
+    if (!window.confirm(this.i18n.t('accounting.journal.postConfirm'))) {
+      return;
+    }
+    this.postJournalError = '';
+    this.postingJournal = true;
+    const id = this.selectedRecordId;
+    try {
+      const version = this.formValues['record_version'];
+      const ifMatch = typeof version === 'number' ? version : Number(version);
+      await this.api.client.updateRecord(
+        this.entityCode,
+        id,
+        { status: 'posted' },
+        Number.isFinite(ifMatch) ? ifMatch : undefined,
+      );
+      this.editingId = null;
+      await this.loadRecord(id, false);
+    } catch (err) {
+      this.postJournalError =
+        err instanceof Error ? err.message : this.i18n.t('accounting.journal.postFailed');
+    } finally {
+      this.postingJournal = false;
+    }
+  }
+
+  async voidJournal(): Promise<void> {
+    if (!this.canVoidJournal() || !this.selectedRecordId) {
+      return;
+    }
+    if (!window.confirm(this.i18n.t('accounting.journal.voidConfirm'))) {
+      return;
+    }
+    this.voidJournalError = '';
+    this.voidingJournal = true;
+    const id = this.selectedRecordId;
+    try {
+      const version = this.formValues['record_version'];
+      const ifMatch = typeof version === 'number' ? version : Number(version);
+      await this.api.client.updateRecord(
+        this.entityCode,
+        id,
+        { status: 'void' },
+        Number.isFinite(ifMatch) ? ifMatch : undefined,
+      );
+      this.editingId = null;
+      await this.loadRecord(id, false);
+    } catch (err) {
+      this.voidJournalError =
+        err instanceof Error ? err.message : this.i18n.t('accounting.journal.voidFailed');
+    } finally {
+      this.voidingJournal = false;
+    }
+  }
+
   addOrderLine(): void {
     if (!this.canAddOrderLine() || !this.selectedRecordId) {
       return;
@@ -626,6 +784,26 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
     return this.entityCode === 'INVOICE' && Boolean(this.selectedRecordId) && !this.creatingNew;
   }
 
+  canPrintInvoice(): boolean {
+    return this.entityCode === 'INVOICE' && Boolean(this.selectedRecordId) && !this.creatingNew;
+  }
+
+  printInvoice(): void {
+    if (!this.canPrintInvoice() || !this.formRenderer) {
+      return;
+    }
+    const blocks = resolveDocumentHeaderFooter(
+      this.organizationProfile,
+      this.organizationProfile.invoice,
+    );
+    const title = this.recordHeadline() || this.i18n.t('sales.invoice.printTitle');
+    const fields = this.visibleFields.map((field) => ({
+      label: this.formRenderer!.label(field.name),
+      value: String(this.formValues[field.name] ?? ''),
+    }));
+    printHtmlDocument(buildPrintableFieldsHtml(title, fields, blocks));
+  }
+
   paymentLineColumns(): ChildLineColumn[] {
     const locale = this.i18n.locale();
     const currency = this.organizationCurrency;
@@ -698,6 +876,12 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
     const invoiceId = query?.get('invoice_id');
     if (this.entityCode === 'CUSTOMER_PAYMENT' && invoiceId) {
       this.formValues = { ...this.formValues, invoice_id: invoiceId };
+      this.rebuildForm(this.formValues);
+      return;
+    }
+    const journalEntryId = query?.get('journal_entry_id');
+    if (this.entityCode === 'JOURNAL_ENTRY_LINE' && journalEntryId) {
+      this.formValues = { ...this.formValues, journal_entry_id: journalEntryId };
       this.rebuildForm(this.formValues);
     }
   }
@@ -779,6 +963,27 @@ export class EntityRecordComponent implements OnInit, OnDestroy {
         this.customerPaymentsError =
           err instanceof Error ? err.message : this.i18n.t('sales.invoice.paymentsFailed');
       }
+    }
+  }
+
+  private async loadJournalLines(recordId: string): Promise<void> {
+    if (this.entityCode !== 'JOURNAL_ENTRY') {
+      this.journalLines = [];
+      return;
+    }
+    this.journalLinesError = '';
+    this.journalAccountLabels = {};
+    try {
+      const [linesResponse, accountsResponse] = await Promise.all([
+        this.api.client.listRecords('JOURNAL_ENTRY_LINE'),
+        this.api.client.listRecords('ACCOUNT').catch(() => ({ records: [] })),
+      ]);
+      this.journalLines = filterJournalLines(linesResponse.records ?? [], recordId);
+      this.journalAccountLabels = buildAccountLabelMap(accountsResponse.records ?? []);
+    } catch (err) {
+      this.journalLines = [];
+      this.journalLinesError =
+        err instanceof Error ? err.message : this.i18n.t('accounting.journal.linesFailed');
     }
   }
 

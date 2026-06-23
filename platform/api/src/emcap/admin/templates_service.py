@@ -38,6 +38,19 @@ def get_template(session: Session, template_id: str) -> dict[str, Any]:
     return _template_payload(row)
 
 
+def get_template_by_code(session: Session, code: str, tenant_id: str = "default") -> dict[str, Any]:
+    normalized = code.strip().lower()
+    row = (
+        session.query(NotificationTemplateRow)
+        .filter_by(tenant_id=tenant_id, code=normalized)
+        .one_or_none()
+    )
+    if row is None:
+        msg = f"Unknown template: {normalized}"
+        raise AdminValidationError(msg)
+    return _template_payload(row)
+
+
 def create_template(
     session: Session,
     *,

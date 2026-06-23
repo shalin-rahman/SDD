@@ -157,7 +157,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Semantics(
+        label: EmcapLocale.t('a11y.screenReader.loading'),
+        liveRegion: true,
+        container: true,
+        child: ExcludeSemantics(
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      );
     }
 
     final listPane = Column(
@@ -281,15 +288,20 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ],
           );
 
-    return MasterDetailLayout(
-      listPane: listPane,
-      detailPane: detailPane,
-      detailOpen: _detailOpen,
-      onBack: () => setState(() {
-        _detailOpen = false;
-        _creating = false;
-        _selectedId = null;
-      }),
+    return Semantics(
+      label: EmcapLocale.t('a11y.landmark.main'),
+      container: true,
+      explicitChildNodes: true,
+      child: MasterDetailLayout(
+        listPane: listPane,
+        detailPane: detailPane,
+        detailOpen: _detailOpen,
+        onBack: () => setState(() {
+          _detailOpen = false;
+          _creating = false;
+          _selectedId = null;
+        }),
+      ),
     );
   }
 }

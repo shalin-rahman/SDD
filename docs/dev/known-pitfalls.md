@@ -76,6 +76,17 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Use `;` or dedicated `.ps1` scripts under `scripts/` |
 | **Test** | `scripts/verify-full-stack.ps1` |
 
+### PowerShell `Invoke-WebRequest` health probe hang
+
+| | |
+|--|--|
+| **Symptom** | Agent/terminal blocked for hours on API health check; stack appears down when it is merely unreachable |
+| **Where** | Ad-hoc `Invoke-WebRequest http://localhost:8000/api/v1/health` in PowerShell without a strict timeout |
+| **Cause** | Default .NET HTTP client waits indefinitely when nothing listens on the port |
+| **Fix** | Use **`node scripts/check-api-health.mjs`** (8s timeout) or **`curl.exe --max-time 5 http://localhost:8000/api/v1/health`** — never bare `Invoke-WebRequest` without `-TimeoutSec` |
+| **Verify** | `node scripts/check-api-health.mjs` exits in ≤8s (0 when API up, 1 when down) |
+| **Test** | `clients/mobile/test/a11y_semantics_test.dart` (unrelated regression guard); health script self-documents timeout |
+
 ---
 
 ## Mobile client

@@ -456,3 +456,93 @@ Map<String, dynamic> customerPaymentFormMetadataJson() => {
       ],
       'conditions': [],
     };
+
+Map<String, dynamic> journalEntryFormMetadataJson() => {
+      'schema_version': '1.0',
+      'entity_code': 'JOURNAL_ENTRY',
+      'sections': [
+        {
+          'code': 'main',
+          'label': 'Main',
+          'fields': [
+            {
+              'name': 'reference',
+              'label': 'Reference',
+              'field_type': 'text',
+              'row': 0,
+              'col': 0,
+              'span': 6,
+            },
+            {
+              'name': 'source_type',
+              'label': 'Source',
+              'field_type': 'select',
+              'options': ['manual', 'vendor_payment', 'customer_payment'],
+              'row': 0,
+              'col': 6,
+              'span': 6,
+            },
+            {
+              'name': 'status',
+              'label': 'Status',
+              'field_type': 'select',
+              'options': ['draft', 'posted', 'void'],
+              'row': 1,
+              'col': 0,
+              'span': 6,
+            },
+          ],
+        },
+      ],
+      'conditions': [],
+    };
+
+Map<String, dynamic> journalEntryLineFormMetadataJson() => {
+      'schema_version': '1.0',
+      'entity_code': 'JOURNAL_ENTRY_LINE',
+      'sections': [
+        {
+          'code': 'main',
+          'label': 'Main',
+          'fields': [
+            {
+              'name': 'journal_entry_id',
+              'label': 'Journal entry',
+              'field_type': 'lookup',
+              'lookup_entity': 'JOURNAL_ENTRY',
+              'row': 0,
+              'col': 0,
+              'span': 6,
+            },
+            {
+              'name': 'account_id',
+              'label': 'Account',
+              'field_type': 'lookup',
+              'lookup_entity': 'ACCOUNT',
+              'row': 0,
+              'col': 6,
+              'span': 6,
+            },
+            {
+              'name': 'debit',
+              'label': 'Debit',
+              'field_type': 'currency',
+              'currency_code': 'USD',
+              'row': 1,
+              'col': 0,
+              'span': 6,
+            },
+            {
+              'name': 'credit',
+              'label': 'Credit',
+              'field_type': 'currency',
+              'currency_code': 'USD',
+              'row': 1,
+              'col': 6,
+              'span': 6,
+            },
+          ],
+        },
+      ],
+      'conditions': [],
+    };

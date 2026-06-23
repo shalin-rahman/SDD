@@ -234,7 +234,14 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Semantics(
+        label: EmcapLocale.t('a11y.screenReader.loading'),
+        liveRegion: true,
+        container: true,
+        child: ExcludeSemantics(
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      );
     }
     if (_error != null) {
       return Center(child: Text(_error!));
@@ -299,30 +306,34 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
             ],
           );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(EmcapLocale.t('admin.security.title'), style: Theme.of(context).textTheme.titleLarge),
-              Text(EmcapLocale.t('admin.security.subtitleEditor')),
-            ],
+    return Semantics(
+      label: EmcapLocale.t('a11y.landmark.main'),
+      container: true,
+      explicitChildNodes: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(EmcapLocale.t('admin.security.title'), style: Theme.of(context).textTheme.titleLarge),
+                Text(EmcapLocale.t('admin.security.subtitleEditor')),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          flex: 2,
-          child: MasterDetailLayout(
-            listPane: listPane,
-            detailPane: detailPane,
-            detailOpen: entity != null,
+          Expanded(
+            flex: 2,
+            child: MasterDetailLayout(
+              listPane: listPane,
+              detailPane: detailPane,
+              detailOpen: entity != null,
+            ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          child: ListView(
+          Expanded(
+            flex: 1,
+            child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Text(EmcapLocale.t('admin.security.abacTitle'), style: Theme.of(context).textTheme.titleMedium),
@@ -377,7 +388,8 @@ class _AdminSecurityScreenState extends State<AdminSecurityScreen> {
             ],
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }

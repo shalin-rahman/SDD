@@ -14,6 +14,11 @@ import { DynamicDataGridComponent } from '../../shared/data/dynamic-data-grid.co
 import { I18nService } from '../../shared/services/i18n.service';
 import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from '../../shared/constants/layout.constants';
 import { downloadCsv, printPdfTable } from '../../shared/utils/export.util';
+import {
+  parseOrganizationProfile,
+  resolveDocumentHeaderFooter,
+  type OrganizationProfileView,
+} from '../../shared/utils/organization-profile.util';
 import { recordId } from '../../shared/utils/record.util';
 import { loadEntityMenuTitle } from './entity-page.util';
 
@@ -63,6 +68,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
   bulkActions = false;
   selectedRecordIds: string[] = [];
   bulkError = '';
+  private organizationProfile: OrganizationProfileView = parseOrganizationProfile({});
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private streamCleanup: (() => void) | null = null;
 
@@ -125,12 +131,15 @@ export class EntityListComponent implements OnInit, OnDestroy {
     this.loadingEntity = true;
     this.gridRenderer = null;
     try {
-      const [loadedFormMeta, loadedGridMeta, recordsPayload, snapshot] = await Promise.all([
-        this.api.client.getFormMetadata(this.entityCode),
-        this.api.client.getGridMetadata(this.entityCode),
-        this.api.client.listRecords(this.entityCode),
-        this.api.client.syncSnapshot(this.entityCode),
-      ]);
+      const [loadedFormMeta, loadedGridMeta, recordsPayload, snapshot, platformConfig] =
+        await Promise.all([
+          this.api.client.getFormMetadata(this.entityCode),
+          this.api.client.getGridMetadata(this.entityCode),
+          this.api.client.listRecords(this.entityCode),
+          this.api.client.syncSnapshot(this.entityCode),
+          this.api.client.getPlatformConfig().catch(() => ({})),
+        ]);
+      this.organizationProfile = parseOrganizationProfile({}, platformConfig);
       if (!validateFormMetadata(loadedFormMeta) || !validateGridMetadata(loadedGridMeta)) {
         this.loadError = this.i18n.t('entity.invalidMetadata');
         return;
@@ -262,7 +271,11 @@ export class EntityListComponent implements OnInit, OnDestroy {
 
   exportPdfFile(): void {
     if (!this.gridRenderer) return;
-    printPdfTable(this.gridRenderer.columnFields(), this.allRecords, this.title);
+    const blocks = resolveDocumentHeaderFooter(
+      this.organizationProfile,
+      this.organizationProfile.report,
+    );
+    printPdfTable(this.gridRenderer.columnFields(), this.allRecords, this.title, blocks);
   }
 
   toggleRecordSelection(record: Record<string, unknown>): void {

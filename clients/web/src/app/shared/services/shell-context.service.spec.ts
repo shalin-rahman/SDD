@@ -21,7 +21,12 @@ describe('ShellContextService', () => {
             client: {
               getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({
                 modules: { workflow: { enabled: true } },
+                organization_profile: {
+                  secondary_color: '#336699',
+                  favicon_url: 'https://cdn.example/favicon.ico',
+                },
               }),
+              getBaseUrl: jasmine.createSpy('getBaseUrl').and.returnValue('http://localhost:8000'),
               getMe: jasmine.createSpy('getMe').and.resolveTo({ permissions: ['*.*'] }),
               getHealth: jasmine.createSpy('getHealth').and.resolveTo({
                 multi_tenant: false,
@@ -60,7 +65,11 @@ describe('ShellContextService', () => {
         },
         {
           provide: ThemeService,
-          useValue: { applyTenantPrimary: jasmine.createSpy('applyTenantPrimary') },
+          useValue: {
+            applyTenantPrimary: jasmine.createSpy('applyTenantPrimary'),
+            applyTenantSecondary: jasmine.createSpy('applyTenantSecondary'),
+            applyFavicon: jasmine.createSpy('applyFavicon'),
+          },
         },
       ],
     });
@@ -68,12 +77,18 @@ describe('ShellContextService', () => {
   });
 
   it('loads platform config, menus, and tenant state', async () => {
+    const theme = TestBed.inject(ThemeService) as unknown as {
+      applyTenantSecondary: jasmine.Spy;
+      applyFavicon: jasmine.Spy;
+    };
     const state = await service.load();
 
     expect(state.platformLinks.length).toBeGreaterThan(0);
     expect(state.menus.length).toBe(1);
     expect(service.navGroups().length).toBeGreaterThan(0);
     expect(state.tenantLine).toContain('shared_database');
+    expect(theme.applyTenantSecondary).toHaveBeenCalledWith('#336699');
+    expect(theme.applyFavicon).toHaveBeenCalledWith('https://cdn.example/favicon.ico');
   });
 
   it('selectTenant updates api client and auth session', () => {

@@ -179,6 +179,25 @@ async function tapNav(page, label) {
   throw new Error(`Nav item not found: ${label}`);
 }
 
+async function openGridRowByPattern(page, pattern) {
+  await enableFlutterAccessibility(page);
+  await page.waitForTimeout(6_000);
+  for (let scroll = 0; scroll < 12; scroll += 1) {
+    const row = typeof pattern === 'string'
+      ? page.getByText(pattern, { exact: false })
+      : page.getByText(pattern);
+    if ((await row.count()) > 0) {
+      await row.first().click({ force: true });
+      await page.waitForTimeout(5_000);
+      return;
+    }
+    await page.mouse.wheel(0, 320);
+    await page.waitForTimeout(400);
+  }
+  const body = await page.evaluate(() => document.body?.innerText?.slice(0, 1200) ?? '');
+  throw new Error(`Grid row not found: ${pattern}\n${body}`);
+}
+
 async function openFirstGridRow(page) {
   await enableFlutterAccessibility(page);
   await page.waitForTimeout(8_000);
@@ -200,9 +219,60 @@ async function openFirstGridRow(page) {
 }
 
 async function expandSettingsSection(page, labelPattern) {
-  const section = page.getByText(labelPattern, { exact: false }).first();
-  await section.click({ force: true });
-  await page.waitForTimeout(800);
+  await enableFlutterAccessibility(page);
+  await page.getByText(/Save changes|Platform settings/i).first()
+    .waitFor({ state: 'attached', timeout: 90_000 });
+  const patterns = [
+    labelPattern,
+    /Organization/i,
+    /Company name, contact/i,
+    /Organisation/i,
+  ];
+  for (let i = 0; i < 40; i += 1) {
+    for (const pattern of patterns) {
+      for (const locator of [
+        page.getByRole('button', { name: pattern }),
+        page.getByText(pattern),
+      ]) {
+        if ((await locator.count()) > 0) {
+          try {
+            await locator.first().click({ force: true, timeout: 3_000 });
+            await page.waitForTimeout(1_200);
+            const expanded = page.getByText(/Company display name|Display name|Legal name/i);
+            if ((await expanded.count()) > 0) return;
+          } catch {
+            // scroll and retry
+          }
+        }
+      }
+    }
+    await page.mouse.move(195, 520);
+    await page.mouse.wheel(0, 480);
+    await page.waitForTimeout(280);
+  }
+  const body = await page.evaluate(() => document.body?.innerText?.slice(0, 2000) ?? '');
+  throw new Error(`Settings section not found: ${labelPattern}\n${body}`);
+}
+
+async function captureP26(page) {
+  console.log('\nphase26-organization-profile-mobile.png…');
+  await goBackToShell(page);
+  await openDrawer(page);
+  await tapPlatformNav(page, 'Settings');
+  await page.getByText(/Save changes|Platform settings/i).first()
+    .waitFor({ state: 'attached', timeout: 90_000 });
+  await page.waitForTimeout(2_000);
+  let orgTile = page.getByText(/Organization/i).filter({ hasText: /Company name|contact info/i });
+  for (let i = 0; i < 16; i += 1) {
+    if ((await orgTile.count()) > 0) break;
+    await page.mouse.move(195, 520);
+    await page.mouse.wheel(0, 360);
+    await page.waitForTimeout(280);
+    orgTile = page.getByText(/Organization/i).filter({ hasText: /Company name|contact info/i });
+  }
+  await orgTile.first().click({ force: true });
+  await page.waitForTimeout(1_500);
+  await capture(page, 'phase26-organization-profile-mobile.png');
 }
 
 async function captureM2(page) {
@@ -211,6 +281,39 @@ async function captureM2(page) {
   await tapNav(page, 'Products');
   await openFirstGridRow(page);
   await capture(page, 'phase15-mobile-product-detail.png');
+}
+
+async function captureP24Admin(page) {
+  const shots = [
+    ['Admin users', 'phase24-mobile-admin-users.png'],
+    ['Admin roles', 'phase24-mobile-admin-roles.png'],
+    ['Security policies', 'phase24-mobile-admin-security.png'],
+  ];
+  for (const [nav, file] of shots) {
+    console.log('\n%s…', file);
+    await goBackToShell(page);
+    await openDrawer(page);
+    await tapNav(page, nav);
+    await page.waitForTimeout(3_000);
+    await capture(page, file);
+  }
+}
+
+async function captureP25VendorPayment(page) {
+  console.log('\nphase25-vendor-payment-detail-mobile.png…');
+  await goBackToShell(page);
+  await openDrawer(page);
+  await tapNav(page, 'Purchase Orders');
+  await openGridRowByPattern(page, /PO-DEMO-002/i);
+  await enableFlutterAccessibility(page);
+  for (let i = 0; i < 10; i += 1) {
+    const payment = page.getByText(/VP-DEMO-001|Payment summary|Vendor payments/i);
+    if ((await payment.count()) > 0) break;
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(350);
+  }
+  await page.waitForTimeout(1_000);
+  await capture(page, 'phase25-vendor-payment-detail-mobile.png');
 }
 
 async function captureP25(page) {
@@ -228,17 +331,6 @@ async function captureP25(page) {
     await openFirstGridRow(page);
     await capture(page, file);
   }
-}
-
-async function captureP26(page) {
-  console.log('\nphase26-organization-profile-mobile.png…');
-  await goBackToShell(page);
-  await openDrawer(page);
-  await tapPlatformNav(page, 'Settings');
-  await page.waitForTimeout(6_000);
-  await expandSettingsSection(page, /Organization/i);
-  await page.waitForTimeout(1_500);
-  await capture(page, 'phase26-organization-profile-mobile.png');
 }
 
 async function captureP27(page) {
@@ -268,7 +360,9 @@ async function main() {
     await login(page);
 
     if (ONLY === 'all' || ONLY === 'm2') await captureM2(page);
+    if (ONLY === 'all' || ONLY === 'p24') await captureP24Admin(page);
     if (ONLY === 'all' || ONLY === 'p25') await captureP25(page);
+    if (ONLY === 'all' || ONLY === 'p25' || ONLY === 'vp') await captureP25VendorPayment(page);
     if (ONLY === 'all' || ONLY === 'p26') await captureP26(page);
     if (ONLY === 'all' || ONLY === 'p27') await captureP27(page);
 

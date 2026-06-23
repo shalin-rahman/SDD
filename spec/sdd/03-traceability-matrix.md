@@ -170,3 +170,11 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-029 | `I18nService` / `EmcapLocale` BCP 47 bundles; `locale-format.util.ts` / `locale_format_util.dart`; starter-catalog merge; legacy alias migration | EMCAP-P27-T01–T11 | `npm run test:coverage` branches ≥80%; `dart test test/i18n_bundle_test.dart test/i18n_keys_parity_test.dart test/locale_format_util_test.dart test/a11y_semantics_test.dart`; `node scripts/audit-i18n.mjs`; matrix 06 i18n row |
 | FR-008d | App UI i18n + locale switcher (P25 finance + P26 org keys in EN/FR/BN) | EMCAP-P27-T08–T09 | Web entity-record PO/SO/payment i18n; mobile bundle parity; `settings.organization.*` bn-BD on web + mobile |
 | FR-007 | Metadata `label_key` + dynamic form localization | EMCAP-P27-T06 | Existing metadata i18n; P27 app-chrome catalog keys |
+
+## Phase 28 — Application review remediation (finance hardening)
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-030 | INVOICE/PRODUCT validators; SO zero-line guard; payment void; PO/SO workflow flag cleanup; JE Post/Void UX (web + mobile) | EMCAP-P28-T02–T14 | `test_invoice_entities.py`, `test_product_stock_guard.py`; payment void tests; `entity-record.component.spec.ts` branches ≥80%; `flutter test --coverage` ≥80% line |
+| FR-018 | `ENTITY_VALIDATORS` in `modules/` only | EMCAP-P28-T02–T06 | `test_platform_core_unchanged.py` |
+| FR-025 / FR-026 / FR-027 | Extends P25 domain rules (regression-safe) | EMCAP-P28-T02, T04, T06 | Existing P25 entity pytest suites + new cases |

@@ -34,6 +34,7 @@ Extracted from SDD v1.0 (`spec/framework-sdd.txt`). Each ID is stable for tracea
 | FR-027 | GL double-entry journal lines with account balance rollup on post | 27, 30 |
 | FR-028 | Tenant organization profile: legal/contact info, document header/footer templates, in-app settings UI | 27, 30 |
 | FR-029 | Client shells use BCP 47 locale tags (`en-US`, `bn-BD`, `fr-FR`), CLDR plural keys, regional numeral/date formatting, interpolation-only messages, lazy locale bundles, and a11y/compliance string catalog | 9, 27, 30 |
+| FR-030 | Finance domain hardening: INVOICE/PRODUCT entity validators, SO/PO status transition guards, payment void with balance rollback, journal entry Post/Void UX on web and mobile | 27, 30 |
 
 ## Non-functional requirements
 

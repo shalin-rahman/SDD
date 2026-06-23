@@ -117,6 +117,36 @@ def _apply_invoice_payment(
     )
 
 
+def _reverse_invoice_payment(
+    invoice_id: str,
+    amount: Decimal,
+    *,
+    repo: Any,
+    registry: Any,
+    commit: bool,
+) -> None:
+    invoice_entity = registry.get("INVOICE")
+    invoice = repo.get_record(invoice_entity, invoice_id)
+    invoice_amount = _decimal(invoice.get("amount"))
+    amount_paid = _decimal(invoice.get("amount_paid")) - amount
+    if amount_paid < 0:
+        msg = "cannot void payment: amount_paid would be negative"
+        raise CustomerPaymentValidationError(msg)
+
+    balance_due = _decimal(invoice.get("balance_due")) + amount
+    status = _invoice_status(amount_paid, invoice_amount)
+    repo.update_record(
+        invoice_entity,
+        invoice_id,
+        {
+            "amount_paid": float(amount_paid),
+            "balance_due": float(balance_due),
+            "status": status,
+        },
+        commit=commit,
+    )
+
+
 def _is_posting_transition(
     payload: dict[str, Any],
     *,
@@ -126,6 +156,17 @@ def _is_posting_transition(
     if not partial or existing is None:
         return payload.get("status") == "posted"
     return payload.get("status") == "posted" and existing.get("status") == "draft"
+
+
+def _is_void_transition(
+    payload: dict[str, Any],
+    *,
+    partial: bool,
+    existing: dict[str, Any] | None,
+) -> bool:
+    if not partial or existing is None:
+        return False
+    return payload.get("status") == "void" and existing.get("status") == "posted"
 
 
 def validate_customer_payment_payload(
@@ -145,7 +186,13 @@ def validate_customer_payment_payload(
         msg = "cannot create customer payment directly in posted status"
         raise CustomerPaymentValidationError(msg)
 
-    if not _is_posting_transition(payload, partial=partial, existing=existing):
+    if payload.get("status") == "void" and not partial:
+        msg = "cannot create customer payment directly in void status"
+        raise CustomerPaymentValidationError(msg)
+
+    posting = _is_posting_transition(payload, partial=partial, existing=existing)
+    voiding = _is_void_transition(payload, partial=partial, existing=existing)
+    if not posting and not voiding:
         return
 
     if context is None:
@@ -159,9 +206,13 @@ def validate_customer_payment_payload(
 
     invoice_id = str(merged.get("invoice_id") or "")
     if not invoice_id:
-        msg = "invoice_id is required to post customer payment"
+        msg = "invoice_id is required to post or void customer payment"
         raise CustomerPaymentValidationError(msg)
 
     commit = context.get("commit", True)
+    if voiding:
+        _reverse_invoice_payment(invoice_id, amount, repo=repo, registry=registry, commit=commit)
+        return
+
     _apply_invoice_payment(invoice_id, amount, repo=repo, registry=registry, commit=commit)
     _create_payment_journal(merged, payment_id=str(record_id), repo=repo, registry=registry)

@@ -57,9 +57,13 @@ def validate_sales_order_payload(
     if repo is None or registry is None or record_id is None:
         return
 
-    if payload.get("status") not in {"confirmed", "shipped", "invoiced"}:
+    new_status = payload.get("status")
+    if new_status not in {"confirmed", "shipped", "invoiced"}:
         return
 
     total = rollup_so_lines(str(record_id), repo=repo, registry=registry)
-    if total > 0:
-        payload["total_amount"] = float(total)
+    if total <= 0:
+        msg = "cannot transition sales order without lines"
+        raise SalesOrderValidationError(msg)
+
+    payload["total_amount"] = float(total)

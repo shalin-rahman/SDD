@@ -14,6 +14,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | **Phase 25 AP/AR/GL** | `plan/25-procurement-sales-ap-ar-accounting.md` |
 | **Phase 26 business profile** | `plan/26-business-profile-configuration.md` |
 | **Phase 27 i18n/l10n (BCP 47)** | `plan/26-i18n-l10n-localization.md`, `docs/dev/session-memos/2026-06-18-i18n-gap-audit.md`, `data/i18n/seed/starter-catalog.json` |
+| **Phase 28 finance hardening (app review)** | `plan/28-application-review-remediation.md` — INVOICE/PRODUCT validators, JE UX, mobile parity; coverage ≥80% |
 | Entity platform + UX | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
 | Product readiness gate | `spec/sdd/07-product-readiness-matrix.md` |
 | **All user feedback (memory)** | `docs/product/user-feedback-registry.md` (§A, §M security/memory tiers) |
@@ -78,12 +79,14 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Web legacy (archive) | `clients/web-legacy/` | Read-only reference |
 | Mobile | `clients/mobile/lib/` | Flutter shell; theme tokens `lib/theme/app_tokens.dart`; badges `lib/widgets/emcap_badge.dart`; **verify:** `cd clients/mobile && flutter pub get && flutter test --coverage` (80% gate: `scripts/check-flutter-coverage.py`) |
 | Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; bulk actions when `bulk_actions`; STOCK_MOVEMENT post/lines; P25 PO/SO lines, receive/collect, payment summary |
-| `clients/mobile/lib/utils/bulk_grid_util.dart` | P18-T13 bulk selection + CSV export helpers (web parity) |
+| `clients/mobile/lib/utils/bulk_grid_util.dart` | P18-T13 bulk selection + CSV/PDF export + org header/footer printable HTML helpers (web parity) |
 | `clients/mobile/lib/utils/stock_movement_util.dart` | P18-T17 post movement + line filter helpers |
 | `clients/mobile/lib/utils/purchase_order_util.dart` | P25-T09 PO receive (requires lines) + line filter + add-line gate |
 | `clients/mobile/lib/utils/sales_order_util.dart` | P25-T09 SO line filter + add-line gate |
 | `clients/mobile/lib/utils/payment_util.dart` | P25-T09 payment summary + AP/AR balance guards + prefill helpers |
 | `clients/mobile/lib/utils/organization_profile_util.dart` | P26 org profile parse, template interpolation, logo URL guard |
+| `clients/mobile/lib/utils/export_util.dart` | P26-T12 printable fields HTML + invoice print dialog helpers |
+| `clients/mobile/lib/widgets/invoice_print_dialog.dart` | P26-T12 INVOICE print preview dialog with org header/footer |
 | `clients/mobile/lib/app/shell.dart` | P26-T09 — passes `logoPicker: pickOrganizationLogoFromDevice` to `SettingsScreen` |
 | `clients/mobile/lib/utils/organization_logo_util.dart` | P26-T09 logo validation, base64 encode, preview URL, `pickOrganizationLogoFromDevice` (`file_picker`) |
 | `clients/mobile/lib/utils/record_lifecycle_util.dart` | Soft delete / restore helpers (web `record-lifecycle.util.ts` parity) |
@@ -128,6 +131,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `scripts/stop-emcap.bat` | `docker compose down` + free ports 8000/4200 |
 | `scripts/logs-emcap.bat` | Re-follow Docker logs |
 | `scripts/lint-format.bat` | ruff/black/mypy + prettier/eslint + dart format |
+| `scripts/check-api-health.mjs` | Fast API health probe (8s timeout); `node scripts/check-api-health.mjs` — prefer over PowerShell `Invoke-WebRequest` without timeout (see `known-pitfalls.md`) |
 | `scripts/_resolve-scripts.bat` | Resolve `scripts\` from repo root (PowerShell-safe) |
 | `scripts/apply-seed.py` | Apply JSON seed to running Postgres |
 | `scripts/capture-m1-screenshots.mjs` | Playwright M1 PRODUCT web screenshot pack (P15-T06 / P20-T02); requires local stack |
@@ -137,6 +141,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `data/i18n/seed/starter-catalog.json` | P27 seed — `en-US`/`bn-BD` a11y, ux, security, deployment, org, plural keys |
 | `spec/i18n/emcap-ui-keys.json` | Required i18n key manifest (expand in P27-T02) |
 | `plan/26-i18n-l10n-localization.md` | Phase 27 i18n/l10n playbook — BCP 47, CLDR plurals, multi-agent waves |
+| `plan/28-application-review-remediation.md` | Phase 28 — application review remediation (validators, JE Post/Void, mobile finance parity); FR-030 |
 | `scripts/e2e-smoke.mjs` | P18-T14 Playwright smoke: login → PRODUCT CRUD + bulk delete → settings → report schedule → admin users → LEAD list; recipe `docs/dev/recipes/e2e-smoke.md` |
 | `.github/workflows/e2e-smoke.yml` | Weekly + manual E2E smoke (authoritative) |
 | `.github/workflows/ci.yml` | `e2e-smoke-optional` job on PRs (`continue-on-error: true`) |
@@ -182,9 +187,11 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/layout/loading-panel.component.spec.ts` | P27 W2 — loading status role + `a11y.screenReader.loading` aria-label |
 | `clients/web/src/app/shared/services/i18n.service.spec.ts` | P27 W1 — BCP 47 bundles, legacy alias migration, interpolation, plural, starter-catalog keys |
 | `clients/web/src/app/shared/utils/locale-format.util.spec.ts` | P27 W1 — Intl numerals/currency/date (en-US, bn-BD Bengali digits) |
-| `clients/web/src/app/shared/utils/export.util.spec.ts` | CSV export |
+| `clients/web/src/app/shared/utils/export.util.spec.ts` | CSV/PDF export + org header/footer printable HTML |
 | `platform/api/tests/test_admin_api.py` | Admin users/roles/settings/templates + ABAC + security policies |
 | `platform/api/tests/test_organization_profile_admin.py` | P26 GET/PUT organization profile + POST logo upload (validation, virus scan, content serve) |
+| `platform/api/src/emcap/notifications/template_render.py` | P26-T13 org token interpolation + email signature merge for notification templates |
+| `platform/api/tests/test_notification_template_render.py` | P26-T13 signature append/placeholder + POST `/notifications/send-template` |
 | `platform/api/tests/test_admin_field_access_override.py` | P13-T10/T11 field `read_roles` override API + record/metadata enforcement |
 | `clients/web/src/app/app.routes.spec.ts` | P20-T07 lazy route smoke (entity, notifications, account) |
 | `clients/web/src/app/shared/data/dynamic-data-grid.component.spec.ts` | P15-T30 grid keyboard navigation |
@@ -219,7 +226,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `platform/api/tests/test_layout_merge.py` | Unit tests for `layout_merge.py` form/grid merge helpers |
 | `platform/api/tests/test_rbac.py` | RBAC `list_roles` / `assign_role` unit tests |
 | `platform/api/tests/test_formula_engine.py` | Formula rule engine AST evaluator edge cases |
-| `clients/web/karma.conf.js` | Karma coverage reporter + **80% branch / line** gate (`npm run test:coverage`; 417 specs, 80.14% branches) |
+| `clients/web/karma.conf.js` | Karma coverage reporter + **80% branch / line** gate (`npm run test:coverage`; 543 specs, 80.95% branches) |
 | `clients/web/src/app/metadata/contract.spec.ts` | `resolveFieldLabel` / `resolveColumnLabel` + `??` fallback contract |
 | `clients/web/src/app/services/auth.service.spec.ts` | Auth token/session helpers |
 | `clients/web/src/app/shared/admin/permission-picker.component.spec.ts` | Permission picker chip toggle |
@@ -277,7 +284,9 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/support/screen_metadata_fixtures.dart` | Shared form/grid JSON fixtures; P25 PO/SO/invoice/payment metadata |
 | `clients/mobile/test/entity_platform_mobile_test.dart` | P18-T16 lookup/status/soft-delete mobile contracts |
 | `clients/mobile/test/record_lifecycle_util_test.dart` | Soft delete / restore helpers (web parity) |
-| `clients/mobile/test/a11y_semantics_test.dart` | P27 W2 — Semantics labels for settings/entity_list/entity_record loading, landmarks, deployment version |
+| `clients/mobile/test/a11y_semantics_test.dart` | P24-T04 — Semantics on entity list/record/settings/admin (loading, landmarks, preview/print); manual checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` |
+| `clients/mobile/test/export_util_test.dart` | P26-T12 printable fields HTML helper |
+| `clients/mobile/test/entity_record_screen_invoice_print_test.dart` | P26-T12 mobile INVOICE print dialog + org header/footer |
 | `clients/mobile/test/i18n_keys_parity_test.dart` | P27 web⊆mobile BCP 47 key parity (`en-US`/`bn-BD`/`fr-FR`); org BN gap gate |
 | `clients/mobile/test/locale_format_util_test.dart` | P27 Bengali/Western numeral + currency + date Intl contract |
 | `clients/mobile/lib/utils/locale_format_util.dart` | P27 mobile Intl format helpers (`formatInteger`, `formatCurrency`, `formatDate`, plural category) |

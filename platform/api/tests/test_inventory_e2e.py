@@ -55,10 +55,16 @@ def test_product_crud(client: TestClient) -> None:
 
     updated = client.put(
         f"/api/v1/entities/PRODUCT/records/{record_id}",
-        json={"quantity_on_hand": 95},
+        json={"name": "Widget A (revised)"},
     )
     assert updated.status_code == 200
-    assert updated.json()["quantity_on_hand"] == 95
+    assert updated.json()["name"] == "Widget A (revised)"
+
+    blocked = client.put(
+        f"/api/v1/entities/PRODUCT/records/{record_id}",
+        json={"quantity_on_hand": 95},
+    )
+    assert blocked.status_code == 400
 
     deleted = client.delete(f"/api/v1/entities/PRODUCT/records/{record_id}")
     assert deleted.status_code == 200

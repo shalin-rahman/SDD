@@ -46,6 +46,21 @@ describe('organization-profile.util', () => {
     expect(resolved.footer).toBe('Thanks');
   });
 
+  it('resolves report document blocks for grid export', () => {
+    const view = parseOrganizationProfile(
+      {},
+      {
+        organization_profile: {
+          display_name: 'Acme',
+          report: { header: '{{display_name}} Report', footer: 'Generated {{date}}' },
+        },
+      },
+    );
+    const resolved = resolveDocumentHeaderFooter(view, view.report);
+    expect(resolved.header).toBe('Acme Report');
+    expect(resolved.footer).toContain('Generated');
+  });
+
   it('interpolates date token in report footer', () => {
     const text = interpolateOrganizationTemplate('Generated {{date}}', {
       date: '2026-06-18',

@@ -1,12 +1,10 @@
-﻿# Continue here — standard product (new chat handoff)
+# Continue here — standard product (new chat handoff)
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-20 (Flutter full suite **508/508** green ~4m; settings coverage **13/13** ~11s)
+**Last updated:** 2026-06-22 (P28 complete; M2 mobile signed — **526/526** flutter, **85.43%** line; 7 mobile PNGs; matrix §07 mobile rows updated)
 
-**Backlog:** P24-T01/T02 **Done (web)** · P25-T13 **Partial** (web PNG done; mobile open) · P26-T14 **Done (web)** · P27-T12 **Done (web)** · `plan/03-task-backlog.md`
-
-**Do not commit** unless user explicitly asks.
+**Honest gate:** Web rows signed with 9 web PNGs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (7 core + P25 partial — vendor-payment mobile open).
 
 ---
 
@@ -41,11 +39,22 @@ Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
 ## Current focus
 
-1. **`flutter test --coverage` green (≥80%)** — full mobile suite sign-off (P20-T08); Flutter stable on PATH outside Downloads (`known-pitfalls.md` § Flutter PATH)
-2. **M2 mobile PNG pack** — `scripts/capture-m2-mobile-screenshots.md`; device/emulator captures for matrix 07 mobile lanes (P25-T13 mobile, P26 org, P27 locale switch, §8–§10 entity platform)
-3. **P26 Wave 2** — PDF header injection (P26-T11) after mobile verify green
+1. ~~**P28 finance hardening**~~ **Done** 2026-06-22 — validators, JE UX, mobile parity; coverage gates green
+2. **P24-T03/T04** — mobile admin PNG + TalkBack/VoiceOver semantics
+3. **P26-T10–T13** — favicon, PDF/invoice headers, email signature
+4. **P25-T13** — optional `phase25-vendor-payment-detail-mobile.png`
 
-**Honest gate:** web rows signed with 9 PNGs under `docs/product/screenshots/`; **do not mark mobile Product-ready** without device PNG evidence.
+**Do not commit** unless user explicitly asks.
+
+---
+
+## Verify snapshot (2026-06-22)
+
+| Layer | Result |
+|-------|--------|
+| Flutter | **526/526** pass (~5m); line coverage **85.43%** (4927/5767) |
+| Web Karma | **536/536**; branches **81.08%** |
+| P28 backend entity tests | **57/57** pass |
 
 ---
 

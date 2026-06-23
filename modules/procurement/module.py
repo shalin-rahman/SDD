@@ -111,7 +111,7 @@ MODULE = ModuleDefinition(
             ],
             options=EntityOptions(
                 audit_enabled=True,
-                workflow_enabled=True,
+                workflow_enabled=False,
                 notes_enabled=True,
                 document_enabled=True,
                 status_field=StatusFieldDisplay(

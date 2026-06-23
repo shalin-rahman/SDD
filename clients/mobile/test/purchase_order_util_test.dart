@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:emcap_mobile/utils/order_line_util.dart';
 import 'package:emcap_mobile/utils/payment_util.dart';
 import 'package:emcap_mobile/utils/purchase_order_util.dart';
 import 'package:emcap_mobile/utils/sales_order_util.dart';
@@ -151,6 +152,17 @@ void main() {
         {'id': 'l2', 'sales_order_id': 'so-2', 'quantity': 1, 'unit_price': 10},
       ];
       expect(filterSalesOrderLines(lines, 'so-1'), hasLength(1));
+    });
+  });
+
+  group('order line product labels', () {
+    test('orderLineProductLabel resolves via lookup cache', () {
+      final labels = buildProductLabelMap([
+        {'id': 'prod-1', 'name': 'Widget A'},
+      ]);
+      final line = {'product_id': 'prod-1', 'quantity': 5, 'unit_price': 10};
+      expect(orderLineProductLabel(line, labels), 'Widget A');
+      expect(sumOrderLineExtensions([line]), 50);
     });
   });
 

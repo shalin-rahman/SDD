@@ -51,6 +51,32 @@
               {{ i18n.t('entity.postMovement') }}
             </button>
           }
+          @if (canPostJournal()) {
+            <button
+              recordExtraActions
+              mat-flat-button
+              color="accent"
+              type="button"
+              [disabled]="postingJournal"
+              [attr.aria-label]="i18n.t('accounting.journal.post')"
+              (click)="postJournal()"
+            >
+              {{ i18n.t('accounting.journal.post') }}
+            </button>
+          }
+          @if (canVoidJournal()) {
+            <button
+              recordExtraActions
+              mat-flat-button
+              color="warn"
+              type="button"
+              [disabled]="voidingJournal"
+              [attr.aria-label]="i18n.t('accounting.journal.void')"
+              (click)="voidJournal()"
+            >
+              {{ i18n.t('accounting.journal.void') }}
+            </button>
+          }
           @if (canReceivePurchaseOrder()) {
             <button
               recordExtraActions
@@ -64,10 +90,27 @@
               {{ i18n.t('procurement.po.receive') }}
             </button>
           }
+          @if (canPrintInvoice()) {
+            <button
+              recordExtraActions
+              mat-stroked-button
+              type="button"
+              [attr.aria-label]="i18n.t('sales.invoice.print')"
+              (click)="printInvoice()"
+            >
+              {{ i18n.t('sales.invoice.print') }}
+            </button>
+          }
         </app-record-detail-header>
 
         @if (postMovementError) {
           <p class="error">{{ postMovementError }}</p>
+        }
+        @if (postJournalError) {
+          <p class="error">{{ postJournalError }}</p>
+        }
+        @if (voidJournalError) {
+          <p class="error">{{ voidJournalError }}</p>
         }
         @if (receivePoError) {
           <p class="error">{{ receivePoError }}</p>
@@ -145,6 +188,20 @@
             [columns]="orderLineColumns()"
             [footer]="orderLinesFooter()"
             (addLine)="addOrderLine()"
+          />
+        }
+
+        @if (showJournalLinesSection()) {
+          <app-child-lines-section
+            [title]="i18n.t('accounting.journal.lines')"
+            [lines]="journalLines"
+            [error]="journalLinesError"
+            [canAdd]="canAddJournalLine()"
+            [emptyMessage]="i18n.t('accounting.journal.linesEmpty')"
+            [addLabel]="i18n.t('entity.movementLineAdd')"
+            [columns]="journalLineColumns()"
+            [footer]="journalLinesFooter()"
+            (addLine)="addJournalLine()"
           />
         }
 

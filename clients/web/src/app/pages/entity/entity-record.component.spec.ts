@@ -1673,6 +1673,75 @@ describe('EntityRecordComponent', () => {
     expect(text).toContain('Record receipt');
   });
 
+  it('prints INVOICE with organization header and footer templates', async () => {
+    const paramMap$ = new BehaviorSubject(
+      convertToParamMap({ code: 'INVOICE', recordId: 'inv-print' }),
+    );
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([]),
+        I18nService,
+        { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
+                schema_version: '1',
+                entity_code: 'INVOICE',
+                sections: [
+                  {
+                    code: 'main',
+                    label: 'Main',
+                    fields: [{ name: 'invoice_number', label: 'Invoice #', field_type: 'text', required: true, row: 1, col: 1, span: 1 }],
+                  },
+                ],
+                conditions: [],
+                display: { headline: { code_field: 'invoice_number' } },
+              }),
+              getRecord: jasmine.createSpy('getRecord').and.resolveTo({
+                id: 'inv-print',
+                invoice_number: 'INV-9001',
+                status: 'sent',
+                amount: 100,
+                record_version: 1,
+              }),
+              listRecords: jasmine.createSpy('listRecords').and.resolveTo({ records: [] }),
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({
+                organization_profile: {
+                  display_name: 'Acme Widgets',
+                  invoice: { header: '{{display_name}}', footer: 'Thank you' },
+                },
+              }),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({ menus: [] }),
+              listNotes: jasmine.createSpy('listNotes').and.resolveTo({ notes: [] }),
+              listDocuments: jasmine.createSpy('listDocuments').and.resolveTo({ documents: [] }),
+              listAudit: jasmine.createSpy('listAudit').and.resolveTo({ audit: [] }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    const doc = { write: jasmine.createSpy('write'), close: jasmine.createSpy('close') };
+    spyOn(window, 'open').and.returnValue({ document: doc, print: jasmine.createSpy('print') } as unknown as Window);
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.canPrintInvoice()).toBeTrue();
+    cmp.printInvoice();
+    const html = doc.write.calls.mostRecent().args[0] as string;
+    expect(html).toContain('Acme Widgets');
+    expect(html).toContain('Thank you');
+    expect(html).toContain('INV-9001');
+  });
+
   it('guards vendor and customer payment navigation and receive PO', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -1885,5 +1954,298 @@ describe('EntityRecordComponent', () => {
     await fixture.whenStable();
 
     expect(fixture.componentInstance.customerPaymentsError).toContain('customer payments down');
+  });
+
+  it('loads journal entry lines, posts draft entry, and navigates to add line', async () => {
+    const paramMap$ = new BehaviorSubject(
+      convertToParamMap({ code: 'JOURNAL_ENTRY', recordId: 'je-1' }),
+    );
+    const updateRecord = jasmine.createSpy('updateRecord').and.resolveTo({ id: 'je-1', status: 'posted' });
+    const listRecords = jasmine.createSpy('listRecords').and.callFake((entityCode: string) => {
+      if (entityCode === 'JOURNAL_ENTRY_LINE') {
+        return Promise.resolve({
+          records: [
+            { id: 'jel-1', journal_entry_id: 'je-1', account_id: 'acct-1', debit: 100, credit: 0 },
+            { id: 'jel-2', journal_entry_id: 'je-1', account_id: 'acct-2', debit: 0, credit: 100 },
+            { id: 'jel-3', journal_entry_id: 'other', debit: 1, credit: 0 },
+          ],
+        });
+      }
+      if (entityCode === 'ACCOUNT') {
+        return Promise.resolve({
+          records: [
+            { id: 'acct-1', code: '1000', name: 'Cash' },
+            { id: 'acct-2', code: '2000', name: 'Payables' },
+          ],
+        });
+      }
+      return Promise.resolve({ records: [] });
+    });
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([
+          { path: 'app/entity/:code/:recordId', component: EntityRecordComponent },
+        ]),
+        I18nService,
+        { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
+                schema_version: '1',
+                entity_code: 'JOURNAL_ENTRY',
+                sections: [{ code: 'main', label: 'Main', fields: [] }],
+                conditions: [],
+              }),
+              getRecord: jasmine.createSpy('getRecord').and.resolveTo({
+                id: 'je-1',
+                reference: 'JE-001',
+                status: 'draft',
+                record_version: 4,
+              }),
+              updateRecord,
+              listRecords,
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({}),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({ menus: [] }),
+              listNotes: jasmine.createSpy('listNotes').and.resolveTo({ notes: [] }),
+              listDocuments: jasmine.createSpy('listDocuments').and.resolveTo({ documents: [] }),
+              listAudit: jasmine.createSpy('listAudit').and.resolveTo({ audit: [] }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.journalLines.length).toBe(2);
+    expect(cmp.canPostJournal()).toBeTrue();
+    expect(cmp.canVoidJournal()).toBeFalse();
+    expect(cmp.canAddJournalLine()).toBeTrue();
+    expect(cmp.journalLineColumns()[0].cell(cmp.journalLines[0])).toBe('Cash');
+
+    cmp.addJournalLine();
+    expect(navigate).toHaveBeenCalledWith(['/app/entity', 'JOURNAL_ENTRY_LINE', 'new'], {
+      queryParams: { journal_entry_id: 'je-1' },
+    });
+
+    spyOn(window, 'confirm').and.returnValue(false);
+    await cmp.postJournal();
+    expect(updateRecord).not.toHaveBeenCalled();
+
+    (window.confirm as jasmine.Spy).and.returnValue(true);
+    await cmp.postJournal();
+    expect(updateRecord).toHaveBeenCalledWith('JOURNAL_ENTRY', 'je-1', { status: 'posted' }, 4);
+  });
+
+  it('voids posted journal entry and guards post/void when not applicable', async () => {
+    const paramMap$ = new BehaviorSubject(
+      convertToParamMap({ code: 'JOURNAL_ENTRY', recordId: 'je-posted' }),
+    );
+    const updateRecord = jasmine.createSpy('updateRecord').and.resolveTo({ id: 'je-posted', status: 'void' });
+    const listRecords = jasmine.createSpy('listRecords').and.callFake((entityCode: string) => {
+      if (entityCode === 'JOURNAL_ENTRY_LINE') {
+        return Promise.resolve({
+          records: [
+            { id: 'jel-1', journal_entry_id: 'je-posted', account_id: 'acct-1', debit: 50, credit: 0 },
+            { id: 'jel-2', journal_entry_id: 'je-posted', account_id: 'acct-2', debit: 0, credit: 50 },
+          ],
+        });
+      }
+      if (entityCode === 'ACCOUNT') {
+        return Promise.resolve({ records: [{ id: 'acct-1', name: 'Cash' }] });
+      }
+      return Promise.resolve({ records: [] });
+    });
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([]),
+        I18nService,
+        { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
+                schema_version: '1',
+                entity_code: 'JOURNAL_ENTRY',
+                sections: [{ code: 'main', label: 'Main', fields: [] }],
+                conditions: [],
+              }),
+              getRecord: jasmine.createSpy('getRecord').and.resolveTo({
+                id: 'je-posted',
+                status: 'posted',
+                record_version: 2,
+              }),
+              updateRecord,
+              listRecords,
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({}),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({ menus: [] }),
+              listNotes: jasmine.createSpy('listNotes').and.resolveTo({ notes: [] }),
+              listDocuments: jasmine.createSpy('listDocuments').and.resolveTo({ documents: [] }),
+              listAudit: jasmine.createSpy('listAudit').and.resolveTo({ audit: [] }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.canPostJournal()).toBeFalse();
+    expect(cmp.canVoidJournal()).toBeTrue();
+    expect(cmp.canAddJournalLine()).toBeFalse();
+    expect(cmp.journalLinesFooter()).not.toBeNull();
+
+    spyOn(window, 'confirm').and.returnValue(false);
+    await cmp.voidJournal();
+    expect(updateRecord).not.toHaveBeenCalled();
+
+    (window.confirm as jasmine.Spy).and.returnValue(true);
+    await cmp.voidJournal();
+    expect(updateRecord).toHaveBeenCalledWith('JOURNAL_ENTRY', 'je-posted', { status: 'void' }, 2);
+
+    cmp.entityCode = 'PRODUCT';
+    expect(cmp.showJournalLinesSection()).toBeFalse();
+    await cmp.postJournal();
+    await cmp.voidJournal();
+    cmp.addJournalLine();
+  });
+
+  it('handles journal line load failure and post/void API errors', async () => {
+    const paramMap$ = new BehaviorSubject(
+      convertToParamMap({ code: 'JOURNAL_ENTRY', recordId: 'je-err' }),
+    );
+    const updateRecord = jasmine
+      .createSpy('updateRecord')
+      .and.rejectWith(new Error('post down'));
+    const listRecords = jasmine.createSpy('listRecords').and.rejectWith(new Error('lines down'));
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([]),
+        I18nService,
+        { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
+                schema_version: '1',
+                entity_code: 'JOURNAL_ENTRY',
+                sections: [{ code: 'main', label: 'Main', fields: [] }],
+                conditions: [],
+              }),
+              getRecord: jasmine.createSpy('getRecord').and.resolveTo({
+                id: 'je-err',
+                status: 'draft',
+                record_version: 1,
+              }),
+              updateRecord,
+              listRecords,
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({}),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({ menus: [] }),
+              listNotes: jasmine.createSpy('listNotes').and.resolveTo({ notes: [] }),
+              listDocuments: jasmine.createSpy('listDocuments').and.resolveTo({ documents: [] }),
+              listAudit: jasmine.createSpy('listAudit').and.resolveTo({ audit: [] }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const cmp = fixture.componentInstance;
+    expect(cmp.journalLinesError).toContain('lines down');
+    expect(cmp.journalLinesFooter()).toBeNull();
+
+    spyOn(window, 'confirm').and.returnValue(true);
+    await cmp.postJournal();
+    expect(cmp.postJournalError).toContain('post down');
+
+    cmp.formValues = { ...cmp.formValues, status: 'posted' };
+    updateRecord.and.rejectWith(new Error('void down'));
+    await cmp.voidJournal();
+    expect(cmp.voidJournalError).toContain('void down');
+  });
+
+  it('prefills journal_entry_id when creating JOURNAL_ENTRY_LINE from parent entry', async () => {
+    const paramMap$ = new BehaviorSubject(
+      convertToParamMap({ code: 'JOURNAL_ENTRY_LINE', recordId: 'new' }),
+    );
+    const queryParamMap$ = new BehaviorSubject(convertToParamMap({ journal_entry_id: 'je-parent' }));
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [EntityRecordComponent],
+      providers: [
+        provideRouter([]),
+        I18nService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: paramMap$.asObservable(),
+            queryParamMap: queryParamMap$.asObservable(),
+            snapshot: { queryParamMap: convertToParamMap({ journal_entry_id: 'je-parent' }) },
+          },
+        },
+        {
+          provide: EmcapApiService,
+          useValue: {
+            client: {
+              getFormMetadata: jasmine.createSpy('getFormMetadata').and.resolveTo({
+                schema_version: '1',
+                entity_code: 'JOURNAL_ENTRY_LINE',
+                sections: [
+                  {
+                    code: 'main',
+                    label: 'Main',
+                    fields: [
+                      {
+                        name: 'journal_entry_id',
+                        label: 'Journal entry',
+                        field_type: 'lookup',
+                        required: true,
+                        row: 0,
+                        col: 0,
+                        span: 6,
+                      },
+                    ],
+                  },
+                ],
+                conditions: [],
+              }),
+              getPlatformConfig: jasmine.createSpy('getPlatformConfig').and.resolveTo({}),
+              getMenus: jasmine.createSpy('getMenus').and.resolveTo({ menus: [] }),
+            },
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EntityRecordComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.formValues['journal_entry_id']).toBe('je-parent');
   });
 });

@@ -11,6 +11,10 @@ import {
   type ModuleNavGroup,
   type PlatformNavLink,
 } from '../../services/shell-nav.util';
+import {
+  parseOrganizationProfile,
+  resolveOrganizationLogoPreviewUrl,
+} from '../utils/organization-profile.util';
 import { extractModuleToggles, extractUserPermissions } from '../utils/tenant.util';
 import { ThemeService } from './theme.service';
 
@@ -45,9 +49,17 @@ export class ShellContextService {
     let modules: Record<string, { enabled?: boolean }> | undefined;
     let userPermissions = ['*.*'];
 
+    let platformConfig: Record<string, unknown> = {};
     try {
-      const config = await this.api.client.getPlatformConfig();
-      modules = extractModuleToggles(config);
+      platformConfig = await this.api.client.getPlatformConfig();
+      modules = extractModuleToggles(platformConfig);
+      const orgProfile = parseOrganizationProfile({}, platformConfig);
+      this.theme.applyTenantSecondary(orgProfile.secondaryColor);
+      const faviconHref = resolveOrganizationLogoPreviewUrl(
+        orgProfile.faviconUrl,
+        this.api.client.getBaseUrl(),
+      );
+      this.theme.applyFavicon(faviconHref);
     } catch {
       modules = undefined;
     }

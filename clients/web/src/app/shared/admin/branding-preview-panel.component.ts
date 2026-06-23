@@ -22,6 +22,7 @@ export class BrandingPreviewPanelComponent {
   private readonly i18n = inject(I18nService);
 
   @Input() primaryColor = DEFAULT_EMCAP_PRIMARY;
+  @Input() secondaryColor = '';
   @Input() logoUrl = '';
   @Input() title = 'Preview';
   @Input() subtitle = '';
@@ -29,6 +30,13 @@ export class BrandingPreviewPanelComponent {
 
   resolvedPrimary(): string {
     return previewPrimaryColor(this.primaryColor);
+  }
+
+  resolvedSecondary(): string {
+    if (!this.secondaryColor?.trim()) {
+      return '';
+    }
+    return previewPrimaryColor(this.secondaryColor);
   }
 
   contrastAdequate(): boolean {

@@ -260,6 +260,30 @@ def test_posted_issue_decreases_quantity_on_hand(client: TestClient) -> None:
     assert updated["quantity_on_hand"] == 35
 
 
+def test_posted_issue_rejects_insufficient_quantity(client: TestClient) -> None:
+    product = _seed_product(client)
+    warehouse = _seed_warehouse(client, code="SM-WH-INS", name="Insufficient WH")
+
+    movement, _line = _create_draft_movement_with_line(
+        client,
+        movement_number="SM-INS-01",
+        movement_type="issue",
+        warehouse_id=warehouse["id"],
+        product_id=product["id"],
+        quantity=100,
+    )
+    response = client.put(
+        f"/api/v1/entities/STOCK_MOVEMENT/records/{movement['id']}",
+        json={"status": "posted"},
+        headers={"If-Match": str(movement["record_version"])},
+    )
+    assert response.status_code == 400
+    assert "insufficient quantity_on_hand" in response.json()["detail"]
+
+    unchanged = client.get(f"/api/v1/entities/PRODUCT/records/{product['id']}").json()
+    assert unchanged["quantity_on_hand"] == 50
+
+
 def test_posted_transfer_keeps_product_level_quantity(client: TestClient) -> None:
     """Product-level qty is unchanged; warehouse context lives on the movement header."""
     product = _seed_product(client)

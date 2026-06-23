@@ -48,4 +48,25 @@ export class ThemeService {
     const resolved = normalizePrimaryColor(color) ?? DEFAULT_EMCAP_PRIMARY;
     document.documentElement.style.setProperty('--emcap-primary', resolved);
   }
+
+  applyTenantSecondary(color: string | undefined | null): void {
+    const resolved = normalizePrimaryColor(color);
+    if (resolved) {
+      document.documentElement.style.setProperty('--emcap-secondary', resolved);
+    }
+  }
+
+  applyFavicon(href: string | undefined | null): void {
+    const trimmed = href?.trim();
+    if (!trimmed) {
+      return;
+    }
+    let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = trimmed;
+  }
 }

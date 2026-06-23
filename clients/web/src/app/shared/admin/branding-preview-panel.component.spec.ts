@@ -33,4 +33,12 @@ describe('BrandingPreviewPanelComponent', () => {
     expect(fixture.componentInstance.contrastAdequate()).toBeFalse();
     expect(fixture.nativeElement.querySelector('.emcap-badge--warn')).toBeTruthy();
   });
+
+  it('applies secondary accent css variable when provided', () => {
+    fixture.componentInstance.secondaryColor = '#336699';
+    fixture.detectChanges();
+    expect(fixture.componentInstance.resolvedSecondary()).toBe('#336699');
+    const root = fixture.nativeElement.querySelector('.branding-preview') as HTMLElement;
+    expect(root.style.getPropertyValue('--emcap-secondary')).toBe('#336699');
+  });
 });

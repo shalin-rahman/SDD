@@ -93,6 +93,55 @@ def _is_void_transition(
     return payload.get("status") == "void" and existing.get("status") == "posted"
 
 
+def _validate_status_transition(
+    payload: dict[str, Any],
+    *,
+    partial: bool,
+    existing: dict[str, Any] | None,
+) -> None:
+    if not partial or existing is None:
+        status = payload.get("status")
+        if status == "posted":
+            msg = "cannot create journal entry directly in posted status"
+            raise JournalValidationError(msg)
+        if status == "void":
+            msg = "cannot create journal entry directly in void status"
+            raise JournalValidationError(msg)
+        return
+
+    old_status = str(existing.get("status") or "draft")
+    if old_status == "void":
+        msg = "void journal entries cannot be modified"
+        raise JournalValidationError(msg)
+
+    new_status = payload.get("status")
+    if new_status is None:
+        if old_status == "posted":
+            msg = "posted journal entries cannot be modified except to void"
+            raise JournalValidationError(msg)
+        return
+
+    new_status = str(new_status)
+    if new_status == old_status:
+        return
+
+    if old_status == "posted":
+        if new_status != "void":
+            msg = "posted journal entries cannot be modified except to void"
+            raise JournalValidationError(msg)
+        return
+
+    if new_status == "posted":
+        if old_status != "draft":
+            msg = "only draft journal entries can be posted"
+            raise JournalValidationError(msg)
+        return
+
+    if new_status == "void":
+        msg = "only posted journal entries can be voided"
+        raise JournalValidationError(msg)
+
+
 def validate_journal_entry_payload(
     payload: dict[str, Any],
     *,
@@ -100,9 +149,7 @@ def validate_journal_entry_payload(
     existing: dict[str, Any] | None = None,
     context: dict[str, Any] | None = None,
 ) -> None:
-    if payload.get("status") == "posted" and not partial:
-        msg = "cannot create journal entry directly in posted status"
-        raise JournalValidationError(msg)
+    _validate_status_transition(payload, partial=partial, existing=existing)
 
     posting = _is_posting_transition(payload, partial=partial, existing=existing)
     voiding = _is_void_transition(payload, partial=partial, existing=existing)

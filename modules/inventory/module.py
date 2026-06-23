@@ -22,17 +22,23 @@ REFERENCE_TYPES = ["manual", "purchase_order", "sales_order", "stock_adjustment"
 MOVEMENT_OPEN_STATUSES = ["draft"]
 
 
-def _load_stock_movement_validators() -> dict[str, Callable[..., Any]]:
-    path = Path(__file__).resolve().parent / "stock_movement.py"
-    spec = importlib.util.spec_from_file_location("inventory_stock_movement", path)
-    if spec is None or spec.loader is None:
-        return {}
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return {"STOCK_MOVEMENT": module.validate_stock_movement_payload}
+def _load_validators() -> dict[str, Callable[..., Any]]:
+    validators: dict[str, Callable[..., Any]] = {}
+    for name in ("stock_movement", "product"):
+        path = Path(__file__).resolve().parent / f"{name}.py"
+        spec = importlib.util.spec_from_file_location(f"inventory_{name}", path)
+        if spec is None or spec.loader is None:
+            continue
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        if name == "stock_movement":
+            validators["STOCK_MOVEMENT"] = module.validate_stock_movement_payload
+        else:
+            validators["PRODUCT"] = module.validate_product_payload
+    return validators
 
 
-ENTITY_VALIDATORS = _load_stock_movement_validators()
+ENTITY_VALIDATORS = _load_validators()
 
 STOCK_ADJUSTMENT = WorkflowDefinition(
     code="STOCK_ADJUSTMENT",

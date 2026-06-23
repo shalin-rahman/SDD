@@ -69,6 +69,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _orgInvoiceFooterController = TextEditingController();
   final _orgReportHeaderController = TextEditingController();
   final _orgReportFooterController = TextEditingController();
+  final _orgFaviconUrlController = TextEditingController();
+  final _orgSecondaryColorController = TextEditingController();
 
   String _orgLogoUploadStatus = '';
   bool _orgLogoUploading = false;
@@ -127,6 +129,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _orgInvoiceFooterController.dispose();
     _orgReportHeaderController.dispose();
     _orgReportFooterController.dispose();
+    _orgFaviconUrlController.dispose();
+    _orgSecondaryColorController.dispose();
     super.dispose();
   }
 
@@ -275,6 +279,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _orgInvoiceFooterController.text = profile.invoice.footer;
     _orgReportHeaderController.text = profile.report.header;
     _orgReportFooterController.text = profile.report.footer;
+    _orgFaviconUrlController.text = profile.faviconUrl;
+    _orgSecondaryColorController.text = profile.secondaryColor;
   }
 
   OrganizationProfileView _organizationProfileFromControllers() {
@@ -291,8 +297,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       currency: _organizationProfile.currency,
       fiscalYearStartMonth: _organizationProfile.fiscalYearStartMonth,
       logoUrl: _orgLogoUrlController.text.trim(),
-      faviconUrl: _organizationProfile.faviconUrl,
-      secondaryColor: _organizationProfile.secondaryColor,
+      faviconUrl: _orgFaviconUrlController.text.trim(),
+      secondaryColor: _orgSecondaryColorController.text.trim(),
       invoice: DocumentTemplateBlock(
         header: _orgInvoiceHeaderController.text,
         footer: _orgInvoiceFooterController.text,
@@ -1365,6 +1371,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     TextField(
                       controller: _tenantDomainController,
                       decoration: const InputDecoration(labelText: 'Domain', border: OutlineInputBorder()),
+                    ),
+                    TextField(
+                      controller: _orgSecondaryColorController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.branding.secondaryColor'),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    TextField(
+                      controller: _orgFaviconUrlController,
+                      decoration: InputDecoration(
+                        labelText: EmcapLocale.t('settings.branding.faviconUrl'),
+                        border: const OutlineInputBorder(),
+                      ),
                     ),
                   ],
                 ),

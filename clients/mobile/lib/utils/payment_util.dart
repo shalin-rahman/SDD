@@ -1,7 +1,11 @@
+import 'locale_format_util.dart';
+
 /// Payment summary + AP/AR action helpers — web entity-record parity.
 
 const vendorPaymentEntityCode = 'VENDOR_PAYMENT';
 const customerPaymentEntityCode = 'CUSTOMER_PAYMENT';
+const vendorPaymentPoField = 'po_id';
+const customerPaymentInvoiceField = 'invoice_id';
 
 class PaymentSummary {
   const PaymentSummary({
@@ -105,4 +109,76 @@ Map<String, String> customerPaymentPrefill(
     prefill['customer_id'] = '$customerId';
   }
   return prefill;
+}
+
+List<Map<String, dynamic>> filterPaymentsByParent(
+  List<Map<String, dynamic>> payments,
+  String parentField,
+  String parentId,
+) {
+  return payments
+      .where((row) => '${row[parentField] ?? ''}' == parentId)
+      .toList();
+}
+
+List<Map<String, dynamic>> filterVendorPayments(
+  List<Map<String, dynamic>> payments,
+  String poId,
+) {
+  return filterPaymentsByParent(payments, vendorPaymentPoField, poId);
+}
+
+List<Map<String, dynamic>> filterCustomerPayments(
+  List<Map<String, dynamic>> payments,
+  String invoiceId,
+) {
+  return filterPaymentsByParent(payments, customerPaymentInvoiceField, invoiceId);
+}
+
+bool showVendorPaymentsSection(String entityCode) {
+  return entityCode == 'PURCHASE_ORDER';
+}
+
+bool showCustomerPaymentsSection(String entityCode) {
+  return entityCode == 'INVOICE';
+}
+
+double paymentAmount(Map<String, dynamic> payment) {
+  return _amount(payment['amount']);
+}
+
+String paymentNumberLabel(Map<String, dynamic> payment) {
+  final num = '${payment['payment_number'] ?? ''}'.trim();
+  return num.isNotEmpty ? num : '${payment['id'] ?? '—'}';
+}
+
+String paymentStatusLabel(Map<String, dynamic> payment) {
+  final status = '${payment['status'] ?? ''}'.trim();
+  return status.isNotEmpty ? status : '—';
+}
+
+String formatPaymentAmount(
+  double amount, {
+  String currencyCode = 'USD',
+  String locale = 'en-US',
+}) {
+  if (amount == 0) {
+    return '—';
+  }
+  return formatCurrency(amount, currencyCode, locale);
+}
+
+String formatPaymentDate(
+  Map<String, dynamic> payment, {
+  String locale = 'en-US',
+}) {
+  final raw = payment['payment_date'];
+  if (raw == null || raw == '') {
+    return '—';
+  }
+  final parsed = DateTime.tryParse('$raw');
+  if (parsed == null) {
+    return '$raw';
+  }
+  return formatDate(parsed, locale);
 }

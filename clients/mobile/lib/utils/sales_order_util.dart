@@ -15,7 +15,7 @@ bool canAddSalesOrderLine(
     return false;
   }
   final status = '${record['status'] ?? ''}';
-  return status == 'draft' || status == 'confirmed';
+  return status == 'draft';
 }
 
 List<Map<String, dynamic>> filterSalesOrderLines(
