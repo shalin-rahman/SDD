@@ -208,4 +208,13 @@ void main() {
     await tester.tap(find.text(EmcapLocale.t('platform.notifications.send')));
     await pumpUntilFound(tester, find.textContaining('send failed'));
   });
+
+  testWidgets('NotificationScreen shows error when list fails', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: NotificationScreen(client: _PlatformScreensClient(failNotifications: true)),
+      ),
+    );
+    await pumpUntilFound(tester, find.textContaining(EmcapLocale.t('platform.common.failed')));
+  });
 }

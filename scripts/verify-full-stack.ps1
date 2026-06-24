@@ -15,11 +15,14 @@ Set-Location "$RepoRoot\platform\api"
 python -m pytest -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-Write-Host "[verify-full-stack] Web client build + test..."
+Write-Host "[verify-full-stack] Web client build..."
 Set-Location "$RepoRoot\clients\web"
 npm run build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-npm run test:ci
+
+Write-Host "[verify-full-stack] Web + mobile client tests (coverage gates)..."
+Set-Location $RepoRoot
+& "$RepoRoot\scripts\verify-clients.ps1"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "[verify-full-stack] API health ($ApiUrl)..."

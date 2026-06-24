@@ -154,6 +154,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `.github/workflows/ci.yml` | `e2e-smoke-optional` job on PRs (`continue-on-error: true`) |
 | `scripts/capture-phase24-screenshots.mjs` | P24 document preview + movement lines web PNG pack (`phase24-*.png`); requires local stack |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); run after `flutter test --coverage` green |
+| `scripts/capture-mobile-signoff-screenshots.mjs` | Playwright mobile Product-ready PNG pack (390×844 Flutter web); `--only=m2|p24|p25|p26|p27|vp`; prereq: API + `flutter build web`; P25 uses fresh page+login per entity; install Playwright in `clients/web` then run from web dir |
 
 **Run from repository root:** `scripts\run-emcap.bat`
 

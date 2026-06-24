@@ -2,9 +2,9 @@
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-24 (matrix 07 partial closure — M3 signed; §8–§9 mobile aligned; P27 mobile PNG captured)
+**Last updated:** 2026-06-25 (mobile sign-off refresh — 11 device PNGs re-captured; §8 M2 system-field rows elevated in matrix 07)
 
-**Honest gate:** Web rows signed with web PNG packs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (**11 mobile PNGs**: M2 PRODUCT, P24 admin×3, P25 finance×5, P26 org profile, P27 locale).
+**Honest gate:** Web rows signed with web PNG packs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (**11 mobile PNGs**, refreshed 2026-06-25: M2 PRODUCT, P24 admin×3, P25 finance×5, P26 org profile, P27 locale).
 
 ---
 
@@ -49,7 +49,7 @@ Phases **24–29 Done** (2026-06-24). Backlog **0 Partial / 0 Pending**; matrix 
 
 ---
 
-## Verify snapshot (2026-06-24 — matrix 07 closure)
+## Verify snapshot (2026-06-25 — mobile sign-off refresh)
 
 | Layer | Result |
 |-------|--------|

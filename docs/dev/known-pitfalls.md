@@ -112,6 +112,16 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **M2 sign-off** | Follow `scripts/capture-m2-mobile-screenshots.md` after tests green. Skeleton: `clients/mobile/integration_test/m2_product_detail_test.dart`. **Do not mark Product-ready without PNG evidence.** |
 | **CI** | Mobile lint/test runs in GitHub Actions when PR includes `clients/mobile/**` — local Flutter required for M2 PNG pack, not for landing mobile code. |
 
+### Mobile signoff Playwright — P25 batch stale grid after PO detail
+
+| | |
+|--|--|
+| **Symptom** | `capture-mobile-signoff-screenshots.mjs --only=all` saves 404 error PNGs for SO/INV/JE (`Record not found: …111111111b04`) or `Grid row not found: /SO-DEMO/i` while PO grid still visible |
+| **Where** | `scripts/capture-mobile-signoff-screenshots.mjs` `captureP25()` after PO detail capture |
+| **Cause** | Flutter web retains prior entity list/detail route; generic `openFirstGridRow()` matches `PO-` before entity nav completes |
+| **Fix** | Use entity-specific row patterns (`/SO-DEMO/i`, `/INV-DEMO/i`, `/JE-DEMO/i`); **`captureP25()` opens a fresh browser page + login per entity** (mirrors `integration_test/mobile_signoff_test.dart`); verify PNG is not a red 404 panel before matrix sign-off |
+| **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=p25` — each saved PNG shows expected demo code in hero (not `Exception: 404`) |
+
 ### Mobile `context.emcapTokens` without Theme extension
 
 | | |
@@ -408,7 +418,7 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Test** | `npm run test:ci` |
 
 
-### npm ERESOLVE � mismatched `@angular/*` patch peers (`npm ci` in CI)
+### npm ERESOLVE � mismatched `@angular/*` patch peers (`npm ci` in CI)
 
 | | |
 |--|--|

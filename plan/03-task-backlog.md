@@ -674,7 +674,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | EMCAP-P27-T09 | Mobile parity: org BN, finance, a11y semantics | P27-T07 | Done |
 | EMCAP-P27-T10 | CI parity script; i18n tests green; web branch coverage ≥80% | P27-T08–T09 | Done |
 | EMCAP-P27-T11 | Matrix 06/07 + traceability FR-029 + pitfall + codebase-index sync | P27-T10 | Done |
-| EMCAP-P27-T12 | Full verify + locale-switch screenshot spot-check (`AGENT_LOOP_WAKE_P27`) | P27-T11 | Done (web) — `docs/product/screenshots/phase27-locale-switch-bn-bd-web.png` via `capture-signoff-screenshots.mjs --only=p27` (2026-06-19); matrix 07 §20 + matrix 06 i18n row; mobile device PNG open |
+| EMCAP-P27-T12 | Full verify + locale-switch screenshot spot-check (`AGENT_LOOP_WAKE_P27`) | P27-T11 | Done — `phase27-locale-switch-bn-bd-web.png` (2026-06-19) + `phase27-locale-switch-bn-bd-mobile.png` refreshed via `capture-mobile-signoff-screenshots.mjs` (2026-06-25); matrix 07 §20 |
 
 ---
 

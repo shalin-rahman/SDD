@@ -71,6 +71,7 @@
 | `session-memos/2026-06-18-i18n-gap-audit.md` | Phase 27 i18n/l10n gap audit — BCP 47, parity drift, missing domains | `plan/26-i18n-l10n-localization.md`, `data/i18n/seed/starter-catalog.json` |
 | `session-memos/2026-06-19-emcap-flutter-test-handoff.md` | Flutter widget-test harness learnings (historical) | `HANDOFF-continue-standard-product.md`, `known-pitfalls.md` § Flutter widget test, `local-environment.md` |
 | `session-memos/2026-06-20-phase28-remediation-plan.md` | Phase 28 finance hardening plan + completion | `plan/28-application-review-remediation.md`, FR-030 |
+| `session-memos/2026-06-25-mobile-signoff-screenshots.md` | Mobile sign-off PNG refresh + matrix 07 §8 elevation | `capture-mobile-signoff-screenshots.mjs`, `07` §8–§9, 11 mobile PNGs |
 | `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).

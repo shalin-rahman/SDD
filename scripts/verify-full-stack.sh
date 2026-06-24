@@ -12,10 +12,12 @@ echo "[verify-full-stack] Platform API tests..."
 cd "$REPO_ROOT/platform/api"
 python -m pytest -q
 
-echo "[verify-full-stack] Web client lint + test..."
+echo "[verify-full-stack] Web client build..."
 cd "$REPO_ROOT/clients/web"
 npm run build
-npm run test:ci
+
+echo "[verify-full-stack] Web + mobile client tests (coverage gates)..."
+"$REPO_ROOT/scripts/verify-clients.sh"
 
 echo "[verify-full-stack] API health ($API_URL)..."
 if curl -sf "$API_URL/api/v1/health" >/dev/null; then

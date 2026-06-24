@@ -299,9 +299,10 @@ async function captureP24Admin(page) {
   }
 }
 
-async function captureP25VendorPayment(page) {
+async function captureP25VendorPayment(browser) {
   console.log('\nphase25-vendor-payment-detail-mobile.png…');
-  await goBackToShell(page);
+  const page = await browser.newPage({ viewport: VIEWPORT });
+  await login(page);
   await openDrawer(page);
   await tapNav(page, 'Purchase Orders');
   await openGridRowByPattern(page, /PO-DEMO-002/i);
@@ -314,22 +315,25 @@ async function captureP25VendorPayment(page) {
   }
   await page.waitForTimeout(1_000);
   await capture(page, 'phase25-vendor-payment-detail-mobile.png');
+  await page.close();
 }
 
-async function captureP25(page) {
+async function captureP25(browser) {
   const shots = [
-    ['Purchase Orders', 'phase25-purchase-order-detail-mobile.png'],
-    ['Sales Orders', 'phase25-sales-order-detail-mobile.png'],
-    ['Invoices', 'phase25-invoice-partial-mobile.png'],
-    ['Journal Entries', 'phase25-journal-entry-detail-mobile.png'],
+    ['Purchase Orders', 'phase25-purchase-order-detail-mobile.png', /PO-DEMO/i],
+    ['Sales Orders', 'phase25-sales-order-detail-mobile.png', /SO-DEMO/i],
+    ['Invoices', 'phase25-invoice-partial-mobile.png', /INV-DEMO/i],
+    ['Journal Entries', 'phase25-journal-entry-detail-mobile.png', /JE-DEMO/i],
   ];
-  for (const [nav, file] of shots) {
+  for (const [nav, file, pattern] of shots) {
     console.log('\n%s…', file);
-    await goBackToShell(page);
+    const page = await browser.newPage({ viewport: VIEWPORT });
+    await login(page);
     await openDrawer(page);
     await tapNav(page, nav);
-    await openFirstGridRow(page);
+    await openGridRowByPattern(page, pattern);
     await capture(page, file);
+    await page.close();
   }
 }
 
@@ -361,8 +365,8 @@ async function main() {
 
     if (ONLY === 'all' || ONLY === 'm2') await captureM2(page);
     if (ONLY === 'all' || ONLY === 'p24') await captureP24Admin(page);
-    if (ONLY === 'all' || ONLY === 'p25') await captureP25(page);
-    if (ONLY === 'all' || ONLY === 'p25' || ONLY === 'vp') await captureP25VendorPayment(page);
+    if (ONLY === 'all' || ONLY === 'p25') await captureP25(browser);
+    if (ONLY === 'all' || ONLY === 'p25' || ONLY === 'vp') await captureP25VendorPayment(browser);
     if (ONLY === 'all' || ONLY === 'p26') await captureP26(page);
     if (ONLY === 'all' || ONLY === 'p27') await captureP27(page);
 

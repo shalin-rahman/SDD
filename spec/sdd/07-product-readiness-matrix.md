@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-24 (matrix 07 partial closure — M3 signed; §8–§9 mobile rows aligned with M2 PNG + 542/542 flutter)
+**Last updated:** 2026-06-25 (mobile sign-off refresh — 11 device PNGs via `capture-mobile-signoff-screenshots.mjs`; §8 M2 system-field rows elevated)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -63,17 +63,17 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Capability | API | Web | Mobile | Evidence | Status |
 |------------|-----|-----|--------|----------|--------|
 | Business fields on entity SDK | Done | Done | Done | `modules/inventory/module.py` | Wired |
-| `created_at` / `updated_at` on records | Done | Product-ready | Demo+ | `test_system_fields.py`; formatters; M2 system card in `phase15-mobile-product-detail.png` | Web Product-ready · Mobile Demo+ |
-| `created_by` on create | Done | Product-ready | Demo+ | `test_create_record_sets_created_by_when_authenticated` | Web Product-ready · Mobile Demo+ |
-| System fields in form metadata | Done | Product-ready | Demo+ | `test_product_form_has_system_section`; M2 system section card | Web Product-ready · Mobile Demo+ |
+| `created_at` / `updated_at` on records | Done | Product-ready | Product-ready | `test_system_fields.py`; formatters; M2 system card in `phase15-mobile-product-detail.png` (2026-06-25) | **Product-ready** web + mobile |
+| `created_by` on create | Done | Product-ready | Product-ready | `test_create_record_sets_created_by_when_authenticated`; M2 system card | **Product-ready** web + mobile |
+| System fields in form metadata | Done | Product-ready | Product-ready | `test_product_form_has_system_section`; M2 system section card (2026-06-25) | **Product-ready** web + mobile |
 | System columns in grid metadata | Done | Product-ready | Demo | `product.grid.keys.json` | Web Product-ready · Mobile Demo (grid PNG web-only) |
-| `updated_by` on PUT | Done | Product-ready | Demo+ | `test_system_fields.py`; system card screenshot | Web Product-ready · Mobile Demo+ |
-| `record_version` + `If-Match` / 409 | Done | Product-ready | Demo+ | version conflict test; `emcap_client.updateRecord(ifMatch:)` | Web Product-ready · mobile If-Match wired (P20-T11) |
+| `updated_by` on PUT | Done | Product-ready | Product-ready | `test_system_fields.py`; M2 system card (2026-06-25) | **Product-ready** web + mobile |
+| `record_version` + `If-Match` / 409 | Done | Product-ready | Product-ready | version conflict test; `emcap_client.updateRecord(ifMatch:)`; M2 Version field | **Product-ready** web + mobile |
 | Soft delete + restore | Done | Demo | Demo+ | DELETE 200; web restore; mobile restore banner + `entity_record_screen_lifecycle_test.dart` (2) | Demo+ — mobile restore path tested; dedicated restore PNG open |
 | Enum field type | Done | Demo | Demo | web `<select>`; mobile `DropdownButtonFormField` in `entity_record_screen.dart` | Demo |
 | Lookup field type (metadata) | Done | Demo | Demo | `LookupField` + picker dialog (web + mobile) | Demo — P14-T24–T25 Done; Product-ready pending screenshots |
 | Currency / textarea field types | Done | Demo | Demo | `CurrencyField` / `TextareaField`; grid currency format | Demo — P14-T24–T25 Done; Product-ready pending screenshots |
-| Status chip metadata contract | Demo | Demo | Demo+ | `display.status_field`; web/mobile `buildStatusChipView` + `record_headline.dart`; M2 PNG status chip | Demo+ — P14-T13 API+web Done; mobile headline util P20-T11; M2 PNG |
+| Status chip metadata contract | Demo | Demo | Product-ready | `display.status_field`; web/mobile `buildStatusChipView` + `record_headline.dart`; M2 ACTIVE chip in `phase15-mobile-product-detail.png` (2026-06-25) | Demo (web) · **Product-ready (mobile)** — P14-T13 API+web Done; mobile headline util P20-T11 |
 
 ---
 
@@ -91,7 +91,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo+ |
 | Loading skeleton + error retry | Done | Demo+ | Demo+ | **Demo+ (web)** — P15-T22; **Demo+ (mobile)** — load panel + error retry (`entity_list_screen_coverage_test.dart`) |
 | Empty grid + New CTA | Done | Demo+ | Demo+ | **Product-ready (web)** — P15-T23; **Demo+ (mobile)** — empty grid + `entity.new` CTA (`entity_list_screen_coverage_test.dart`); dedicated empty PNG open |
-| Professional density at 1280px | Done | Demo | Demo | `phase15-product-detail-hero-dark.png` (web); M2 detail PNG (mobile width) | **Product-ready (web)** — P16-T07 compact toggle on Account; **Demo+ (mobile)** — M2 detail layout |
+| Professional density at 1280px | Done | Demo | Done | `phase15-product-detail-hero-dark.png` (web); `phase15-mobile-product-detail.png` (390×844, 2026-06-25) | **Product-ready (web)** — P16-T07 compact toggle on Account; **Product-ready (mobile)** — M2 detail layout |
 
 **Product-ready** for entity page requires all Demo rows + M1/M2 screenshot pack + `16-product-ready-dod.md` §5.
 
@@ -180,7 +180,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 - `docs/product/screenshots/phase25-invoice-partial-web.png`
 - `docs/product/screenshots/phase25-journal-entry-detail-web.png`
 
-Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (**11 PNGs**, 2026-06-22–24): M2 PRODUCT detail, P24 admin (3), P25 finance (5), P26 org profile, P27 locale switch.
+Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (**11 PNGs**, refreshed **2026-06-25** via `node scripts/capture-mobile-signoff-screenshots.mjs`): M2 PRODUCT detail, P24 admin (3), P25 finance (5), P26 org profile, P27 locale switch.
 
 ---
 
@@ -206,7 +206,7 @@ Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` ex
 
 ---
 
-## Client verify snapshot (matrix 07 closure — 2026-06-24)
+## Client verify snapshot (matrix 07 closure — 2026-06-25)
 
 | Layer | Result |
 |-------|--------|
