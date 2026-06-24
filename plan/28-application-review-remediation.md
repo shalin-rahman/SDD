@@ -277,9 +277,9 @@ Each agent **must** read before coding:
 
 ## Acceptance checklist (phase Done)
 
-- [ ] All P28-T02–T14 marked Done in backlog
-- [ ] API pytest ≥80% line; web Karma ≥80% branches; Flutter ≥80% line
-- [ ] `spec/sdd/03-traceability-matrix.md` FR-030 row updated
-- [ ] `spec/sdd/05-end-user-matrix.md` finance rows note validators + JE UX
-- [ ] `spec/sdd/07-product-readiness-matrix.md` mobile rows synced to PNG evidence
-- [ ] No new pitfall-worthy regressions without `known-pitfalls.md` entry
+- [x] All P28-T02–T14 marked Done in backlog
+- [x] API pytest ≥80% line; web Karma ≥80% branches; Flutter ≥80% line
+- [x] `spec/sdd/03-traceability-matrix.md` FR-030 row updated
+- [x] `spec/sdd/05-end-user-matrix.md` finance rows note validators + JE UX
+- [x] `spec/sdd/07-product-readiness-matrix.md` mobile rows synced to PNG evidence
+- [x] No new pitfall-worthy regressions without `known-pitfalls.md` entry

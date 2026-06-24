@@ -149,16 +149,35 @@
     }
   }
 
-  @if (detailPayload) {
-    <app-section-card [title]="i18n.t('platform.workflow.detailTitle')">
-      <dl class="workflow-detail">
-        @for (entry of detailEntries; track entry.key) {
-          <dt>{{ entry.label }}</dt>
-          <dd>{{ entry.value }}</dd>
+  @if (detailLoading || detailPayload || detailError) {
+    <div class="workflow-dialog" role="dialog" aria-modal="true">
+      <div class="workflow-dialog__panel">
+        @if (detailLoading) {
+          <p>{{ i18n.t('common.loading') }}</p>
+        } @else if (detailError) {
+          <p class="workflow-dialog__error">{{ detailError }}</p>
+          <div class="workflow-dialog__actions">
+            <button type="button" mat-button (click)="closeDetail()">{{ i18n.t('common.cancel') }}</button>
+            @if (detailTarget) {
+              <button type="button" mat-stroked-button (click)="openDetail(detailTarget)">
+                {{ i18n.t('common.retry') }}
+              </button>
+            }
+          </div>
+        } @else if (detailPayload) {
+          <h3>{{ i18n.t('platform.workflow.detailTitle') }}</h3>
+          <dl class="workflow-detail">
+            @for (entry of detailEntries; track entry.key) {
+              <dt>{{ entry.label }}</dt>
+              <dd>{{ entry.value }}</dd>
+            }
+          </dl>
+          <div class="workflow-dialog__actions">
+            <button type="button" mat-button (click)="closeDetail()">{{ i18n.t('common.cancel') }}</button>
+          </div>
         }
-      </dl>
-      <button type="button" mat-button (click)="closeDetail()">{{ i18n.t('common.cancel') }}</button>
-    </app-section-card>
+      </div>
+    </div>
   }
 </div>
 

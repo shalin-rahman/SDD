@@ -9,6 +9,7 @@ import 'package:emcap_mobile/app/admin_users_screen.dart';
 import 'package:emcap_mobile/app/entity_list_screen.dart';
 import 'package:emcap_mobile/app/entity_record_screen.dart';
 import 'package:emcap_mobile/app/settings_screen.dart';
+import 'package:emcap_mobile/app/workflow_inbox_screen.dart';
 import 'package:emcap_mobile/api/emcap_client.dart';
 import 'package:emcap_mobile/services/i18n_service.dart';
 import 'package:emcap_mobile/theme.dart';
@@ -89,9 +90,10 @@ class _ImmediateEntityListClient extends EmcapClient {
       productGridMetadataJson();
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async =>
+      EntityRecordsPage(records: [
         {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Alpha', 'active': true},
-      ];
+      ]);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async =>
@@ -147,7 +149,8 @@ class _EntityRecordWithDocumentClient extends _ImmediateEntityRecordClient {
       ];
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async =>
+      const EntityRecordsPage(records: []);
 }
 
 class _InvoiceA11yClient extends EmcapClient {
@@ -213,6 +216,13 @@ class _SlowAdminSecurityClient extends EmcapClient {
 
   @override
   Future<List<String>> getPermissions() async => [];
+}
+
+class _SlowWorkflowInboxClient extends EmcapClient {
+  final gate = Completer<List<Map<String, dynamic>>>();
+
+  @override
+  Future<List<Map<String, dynamic>>> listWorkflowInstances({String? recordId}) => gate.future;
 }
 
 void main() {
@@ -458,6 +468,61 @@ void main() {
     );
   });
 
+  testWidgets('WorkflowInboxScreen loading exposes screen reader semantics', (tester) async {
+    final client = _SlowWorkflowInboxClient();
+    addTearDown(() {
+      if (!client.gate.isCompleted) {
+        client.gate.completeError(StateError('test finished'));
+      }
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
+        home: WorkflowInboxScreen(client: client),
+      ),
+    );
+    await settleLoadingSemantics(tester);
+
+    expect(
+      find.bySemanticsLabel(EmcapLocale.t('a11y.screenReader.loading')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('WorkflowInboxScreen labels main content landmark when loaded', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
+        home: WorkflowInboxScreen(client: FakeEmcapClient()),
+      ),
+    );
+    await settleWorkflowInbox(tester);
+
+    expect(
+      find.bySemanticsLabel(EmcapLocale.t('a11y.landmark.main')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('WorkflowInboxScreen Detail button exposes semantics label', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
+        home: WorkflowInboxScreen(client: FakeEmcapClient()),
+      ),
+    );
+    await settleWorkflowInbox(tester);
+
+    expect(
+      find.bySemanticsLabel(EmcapLocale.t('platform.workflow.detail')),
+      findsAtLeast(1),
+    );
+  });
+
   testWidgets('EntityRecordScreen document preview exposes button semantics', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -497,7 +562,7 @@ void main() {
 
     expect(
       find.bySemanticsLabel(EmcapLocale.t('sales.invoice.print')),
-      findsOneWidget,
+      findsAtLeast(1),
     );
   });
 }

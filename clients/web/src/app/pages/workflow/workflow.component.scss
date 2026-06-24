@@ -166,6 +166,11 @@
     gap: 0.5rem;
     margin-top: 1rem;
   }
+
+  &__error {
+    margin: 0;
+    color: var(--emcap-error, #b3261e);
+  }
 }
 
 .workflow-detail {

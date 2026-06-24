@@ -33,7 +33,7 @@ class _InvalidMetadataClient extends EmcapClient {
   Future<Map<String, dynamic>> getGridMetadata(String entityCode) async => _invalidGridMetadata;
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => const EntityRecordsPage(records: []);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {};
@@ -62,14 +62,14 @@ class _ReloadErrorClient extends EmcapClient {
       productGridMetadataJson(bulkActions: true);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     listCalls++;
     if (listCalls > 1) {
       throw Exception('reload failed');
     }
-    return [
+    return EntityRecordsPage(records: [
       {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Alpha'},
-    ];
+    ]);
   }
 
   @override
@@ -88,9 +88,9 @@ class _BulkDeleteErrorClient extends EmcapClient {
       productGridMetadataJson(bulkActions: true);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => EntityRecordsPage(records: [
         {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Alpha'},
-      ];
+      ]);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {};
@@ -113,7 +113,7 @@ class _EmptyListClient extends EmcapClient {
       productGridMetadataJson();
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => const EntityRecordsPage(records: []);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {};
@@ -139,9 +139,9 @@ class _RetryMetadataClient extends EmcapClient {
       productGridMetadataJson();
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => EntityRecordsPage(records: [
         {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Sample'},
-      ];
+      ]);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async => {};

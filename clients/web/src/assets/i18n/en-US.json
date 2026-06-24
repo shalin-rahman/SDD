@@ -510,6 +510,8 @@
   "platform.workflow.filterAll": "All",
   "platform.workflow.noMatches": "No tasks match the current filters.",
   "platform.workflow.openProducts": "Open Products",
+  "platform.workflow.openRecord": "Open record",
+  "platform.client.timeout": "Request timed out. Check your connection and try again.",
   "platform.workflow.detailTitle": "Workflow instance",
   "platform.workflow.confirmTransition": "Confirm action",
   "platform.workflow.confirmTransitionAction": "Confirm {action}?",

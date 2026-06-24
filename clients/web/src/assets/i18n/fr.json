@@ -489,6 +489,8 @@
   "platform.workflow.filterAll": "Tous",
   "platform.workflow.noMatches": "Aucune tâche ne correspond aux filtres.",
   "platform.workflow.openProducts": "Ouvrir Produits",
+  "platform.workflow.openRecord": "Ouvrir l'enregistrement",
+  "platform.client.timeout": "Délai de requête dépassé. Vérifiez votre connexion et réessayez.",
   "platform.workflow.detailTitle": "Instance workflow",
   "platform.workflow.confirmTransition": "Confirmer l'action",
   "platform.workflow.confirmTransitionAction": "Confirmer {action} ?",

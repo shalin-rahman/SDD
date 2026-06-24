@@ -52,6 +52,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
   gridMeta: GridMetadata | null = null;
   snapshotSince = '1970-01-01T00:00:00+00:00';
   allRecords: Record<string, unknown>[] = [];
+  totalRecords = 0;
   searchInput = '';
   searchQuery = '';
   page = 1;
@@ -135,7 +136,10 @@ export class EntityListComponent implements OnInit, OnDestroy {
         await Promise.all([
           this.api.client.getFormMetadata(this.entityCode),
           this.api.client.getGridMetadata(this.entityCode),
-          this.api.client.listRecords(this.entityCode),
+          this.api.client.listRecords(this.entityCode, {
+            limit: DEFAULT_PAGE_SIZE,
+            offset: 0,
+          }),
           this.api.client.syncSnapshot(this.entityCode),
           this.api.client.getPlatformConfig().catch(() => ({})),
         ]);
@@ -147,7 +151,9 @@ export class EntityListComponent implements OnInit, OnDestroy {
       this.formMeta = loadedFormMeta;
       this.gridMeta = loadedGridMeta;
       this.snapshotSince = String(snapshot.sync_version ?? this.snapshotSince);
+      this.page = 1;
       this.allRecords = recordsPayload.records;
+      this.totalRecords = recordsPayload.total ?? recordsPayload.records.length;
       this.exportCsv = loadedGridMeta.export.csv;
       this.exportExcel = loadedGridMeta.export.excel;
       this.exportPdf = loadedGridMeta.export.pdf;
@@ -171,10 +177,9 @@ export class EntityListComponent implements OnInit, OnDestroy {
     if (!this.gridRenderer) return;
     let rows = this.gridRenderer.filterRecords(this.allRecords, this.filters);
     rows = this.gridRenderer.sortRecords(rows, this.sortField, this.sortDir);
-    const total = rows.length;
+    const total = this.totalRecords;
     this.totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
-    const paginated = this.gridRenderer.paginate(rows, this.page, DEFAULT_PAGE_SIZE);
-    this.displayGroups = this.gridRenderer.groupRecords(paginated, this.groupBy);
+    this.displayGroups = this.gridRenderer.groupRecords(rows, this.groupBy);
     this.pageLabel = `${this.i18n.t('grid.page')} ${this.page} / ${this.totalPages} (${total} ${this.i18n.t('grid.records')})`;
     if (this.gridMeta?.offline) {
       void this.api.client.syncChanges(this.entityCode, this.snapshotSince).then((changes) => {
@@ -186,11 +191,13 @@ export class EntityListComponent implements OnInit, OnDestroy {
   async reloadAll(): Promise<void> {
     this.loadingList = true;
     try {
-      const payload = await this.api.client.listRecords(
-        this.entityCode,
-        this.searchQuery ? { q: this.searchQuery } : undefined,
-      );
+      const payload = await this.api.client.listRecords(this.entityCode, {
+        ...(this.searchQuery ? { q: this.searchQuery } : {}),
+        limit: DEFAULT_PAGE_SIZE,
+        offset: (this.page - 1) * DEFAULT_PAGE_SIZE,
+      });
       this.allRecords = payload.records;
+      this.totalRecords = payload.total ?? payload.records.length;
       this.refreshGrid();
     } finally {
       this.loadingList = false;
@@ -214,14 +221,14 @@ export class EntityListComponent implements OnInit, OnDestroy {
   prevPage(): void {
     if (this.page > 1) {
       this.page -= 1;
-      this.refreshGrid();
+      void this.reloadAll();
     }
   }
 
   nextPage(): void {
     if (this.page < this.totalPages) {
       this.page += 1;
-      this.refreshGrid();
+      void this.reloadAll();
     }
   }
 
@@ -260,22 +267,41 @@ export class EntityListComponent implements OnInit, OnDestroy {
   }
 
   exportCsvFile(): void {
-    if (!this.gridRenderer) return;
-    downloadCsv(this.gridRenderer.columnFields(), this.allRecords, `${this.entityCode}.csv`);
+    void this.exportAllRecords().then((records) => {
+      if (!this.gridRenderer) return;
+      downloadCsv(this.gridRenderer.columnFields(), records, `${this.entityCode}.csv`);
+    });
   }
 
   exportExcelFile(): void {
-    if (!this.gridRenderer) return;
-    downloadCsv(this.gridRenderer.columnFields(), this.allRecords, `${this.entityCode}.xls`);
+    void this.exportAllRecords().then((records) => {
+      if (!this.gridRenderer) return;
+      downloadCsv(this.gridRenderer.columnFields(), records, `${this.entityCode}.xls`);
+    });
   }
 
   exportPdfFile(): void {
-    if (!this.gridRenderer) return;
-    const blocks = resolveDocumentHeaderFooter(
-      this.organizationProfile,
-      this.organizationProfile.report,
+    void this.exportAllRecords().then((records) => {
+      if (!this.gridRenderer) return;
+      const blocks = resolveDocumentHeaderFooter(
+        this.organizationProfile,
+        this.organizationProfile.report,
+      );
+      printPdfTable(
+        this.gridRenderer.columnFields(),
+        records,
+        `${this.entityCode} export`,
+        blocks,
+      );
+    });
+  }
+
+  private async exportAllRecords(): Promise<Record<string, unknown>[]> {
+    const payload = await this.api.client.listRecords(
+      this.entityCode,
+      this.searchQuery ? { q: this.searchQuery } : undefined,
     );
-    printPdfTable(this.gridRenderer.columnFields(), this.allRecords, this.title, blocks);
+    return payload.records;
   }
 
   toggleRecordSelection(record: Record<string, unknown>): void {

@@ -30,7 +30,13 @@ http.Client _mockHttpClient() {
       return _json({'id': 'n1'});
     }
     if (path.contains('/records') && method == 'GET' && !path.contains('/notes')) {
-      if (path.endsWith('/records')) return _json({'records': []});
+      if (path.endsWith('/records')) {
+        final limit = request.url.queryParameters['limit'];
+        if (limit != null) {
+          return _json({'records': [], 'total': 0, 'limit': int.parse(limit), 'offset': 0});
+        }
+        return _json({'records': []});
+      }
       return _json({'id': 'r1'});
     }
     if (path.contains('/records') && method == 'POST' && path.endsWith('/restore')) {
@@ -181,8 +187,10 @@ void main() {
     expect(await client.getMenus(), isEmpty);
     expect(await client.getFormMetadata('PRODUCT'), isNotEmpty);
     expect(await client.getGridMetadata('PRODUCT'), isNotEmpty);
-    expect(await client.listRecords('PRODUCT'), isEmpty);
-    expect(await client.listRecords('PRODUCT', q: 'x'), isEmpty);
+    final page = await client.listRecords('PRODUCT');
+    expect(page.records, isEmpty);
+    final searchPage = await client.listRecords('PRODUCT', q: 'x');
+    expect(searchPage.records, isEmpty);
     expect((await client.createRecord('PRODUCT', {'name': 'A'}))['id'], 'new');
     expect((await client.getRecord('PRODUCT', 'r1'))['id'], 'r1');
     expect((await client.updateRecord('PRODUCT', 'r1', {'name': 'B'}, ifMatch: 1))['id'], 'r1');
@@ -303,6 +311,25 @@ void main() {
     expect(called, isTrue);
   });
 
+  test('request timeout throws EmcapClientTimeoutException without unauthorized callback', () async {
+    final slowClient = EmcapClient(
+      'http://localhost:8000',
+      MockClient((_) async {
+        await Future<void>.delayed(const Duration(seconds: 5));
+        return _json({'status': 'ok'});
+      }),
+      const Duration(milliseconds: 50),
+    );
+    slowClient.setToken('tok', 'default');
+    var called = false;
+    slowClient.setOnUnauthorized(() => called = true);
+    await expectLater(
+      slowClient.getHealth(),
+      throwsA(isA<EmcapClientTimeoutException>()),
+    );
+    expect(called, isFalse);
+  });
+
   test('204 responses decode to empty map', () async {
     final emptyClient = EmcapClient(
       'http://localhost:8000',
@@ -329,5 +356,22 @@ void main() {
     client.subscribeRecordsStream('PRODUCT', () => events++);
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(events, greaterThan(0));
+  });
+
+  test('cancelRecordsStream stops further SSE callbacks', () async {
+    var events = 0;
+    client.subscribeRecordsStream('PRODUCT', () => events++);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final seen = events;
+    client.cancelRecordsStream();
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(events, seen);
+  });
+
+  test('listRecords with limit parses total', () async {
+    final page = await client.listRecords('PRODUCT', limit: 10, offset: 0);
+    expect(page.records, isEmpty);
+    expect(page.total, 0);
+    expect(page.limit, 10);
   });
 }

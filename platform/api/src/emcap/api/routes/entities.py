@@ -88,6 +88,8 @@ def list_records(
     request: Request,
     q: str | None = Query(default=None),
     include_deleted: bool = Query(default=False),
+    limit: int | None = Query(default=None, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
     registry: EntityRegistry = Depends(_registry),
     session: Session = Depends(_session),
     tenant_id: Annotated[str, Depends(get_tenant_id)] = "default",
@@ -97,14 +99,31 @@ def list_records(
         entity = registry.get(entity_code)
         repo = EntityRepository(session, tenant_id=tenant_id, registry=registry)
         if q:
-            records = repo.search_records(entity, q, include_deleted=include_deleted)
+            records, total = repo.search_records(
+                entity,
+                q,
+                include_deleted=include_deleted,
+                limit=limit,
+                offset=offset,
+            )
         else:
-            records = repo.list_records(entity, include_deleted=include_deleted)
+            records = repo.list_records(
+                entity,
+                include_deleted=include_deleted,
+                limit=limit,
+                offset=offset,
+            )
+            total = repo.count_records(entity, include_deleted=include_deleted)
         overrides = _field_overrides(request)
-        return {
+        payload: dict[str, Any] = {
             "entity": entity.code,
             "records": _secure_records(entity, records, user, overrides),
         }
+        if limit is not None:
+            payload["total"] = total
+            payload["limit"] = limit
+            payload["offset"] = offset
+        return payload
     except EntityRegistryError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 

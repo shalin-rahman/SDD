@@ -6,10 +6,15 @@ bool isRecordDeleted(Map<String, dynamic> record) {
   return '$deletedAt'.trim().isNotEmpty;
 }
 
+bool isRecordLoaded(String? recordId, Map<String, dynamic> record) {
+  if (recordId == null || recordId.isEmpty) return false;
+  return '${record['id'] ?? ''}' == recordId;
+}
+
 bool canDeleteRecord(String? recordId, Map<String, dynamic> record, bool creatingNew) {
-  return recordId != null && recordId.isNotEmpty && !creatingNew && !isRecordDeleted(record);
+  return isRecordLoaded(recordId, record) && !creatingNew && !isRecordDeleted(record);
 }
 
 bool canRestoreRecord(String? recordId, Map<String, dynamic> record) {
-  return recordId != null && recordId.isNotEmpty && isRecordDeleted(record);
+  return isRecordLoaded(recordId, record) && isRecordDeleted(record);
 }

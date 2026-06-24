@@ -537,7 +537,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
       return;
     }
     try {
-      final lines = await widget.client.listRecords('STOCK_MOVEMENT_LINE');
+      final lines = (await widget.client.listRecords('STOCK_MOVEMENT_LINE')).records;
       if (!mounted || _selectedRecordId != recordId) return;
       setState(() {
         _movementLines = filterMovementLines(lines, recordId);
@@ -618,8 +618,11 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
         : salesOrderLineEntityCode;
     try {
       final results = await Future.wait([
-        widget.client.listRecords(lineEntity),
-        widget.client.listRecords('PRODUCT').catchError((_) => <Map<String, dynamic>>[]),
+        widget.client.listRecords(lineEntity).then((page) => page.records),
+        widget.client
+            .listRecords('PRODUCT', limit: 500)
+            .then((page) => page.records)
+            .catchError((_) => <Map<String, dynamic>>[]),
       ]);
       if (!mounted || _selectedRecordId != recordId) return;
       final lines = results[0];
@@ -658,8 +661,8 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     }
     try {
       final results = await Future.wait([
-        widget.client.listRecords(journalLineEntityCode),
-        widget.client.listRecords('ACCOUNT').catchError((_) => <Map<String, dynamic>>[]),
+        widget.client.listRecords(journalLineEntityCode).then((page) => page.records),
+        widget.client.listRecords('ACCOUNT', limit: 500).then((page) => page.records).catchError((_) => <Map<String, dynamic>>[]),
       ]);
       if (!mounted || _selectedRecordId != recordId) return;
       setState(() {
@@ -1185,7 +1188,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   }) async {
     if (showVendorPaymentsSection(widget.entityCode)) {
       try {
-        final payments = await widget.client.listRecords(vendorPaymentEntityCode);
+        final payments = (await widget.client.listRecords(vendorPaymentEntityCode)).records;
         vendorPayments.addAll(filterVendorPayments(payments, recordId));
         setVendorError(null);
       } catch (err) {
@@ -1195,7 +1198,7 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
     }
     if (showCustomerPaymentsSection(widget.entityCode)) {
       try {
-        final payments = await widget.client.listRecords(customerPaymentEntityCode);
+        final payments = (await widget.client.listRecords(customerPaymentEntityCode)).records;
         customerPayments.addAll(filterCustomerPayments(payments, recordId));
         setCustomerError(null);
       } catch (err) {
@@ -1305,6 +1308,16 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
   bool get _waitingForRecord =>
       _selectedRecordId != null && !_creatingNew && !_recordLoaded && _createError == null;
 
+  bool get _recordDetailReady =>
+      _selectedRecordId != null && isRecordLoaded(_selectedRecordId, _recordValues);
+
+  bool get _showRecordLoadError =>
+      _selectedRecordId != null &&
+      !_creatingNew &&
+      _editingId == null &&
+      _createError != null &&
+      !_recordDetailReady;
+
   Widget _buildSystemSection(
     DynamicFormRenderer renderer,
     Map<String, dynamic> values, {
@@ -1391,6 +1404,34 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
           );
         }
 
+        if (_showRecordLoadError) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: BackButton(onPressed: _popToList),
+              title: Text(_appBarTitle(formMeta), overflow: TextOverflow.ellipsis),
+            ),
+            body: Center(
+              child: Padding(
+                padding: EdgeInsets.all(context.emcapTokens.spaceMd),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _createError!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
+                    TextButton(
+                      onPressed: () => _loadRecord(_selectedRecordId!),
+                      child: Text(EmcapLocale.t('common.retry')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
         return Scaffold(
           appBar: AppBar(
             leading: BackButton(onPressed: _popToList),
@@ -1404,16 +1445,6 @@ class _EntityRecordScreenState extends State<EntityRecordScreen> {
               padding: EdgeInsets.all(context.emcapTokens.spaceMd),
               children: [
               if (_selectedRecordId != null && !_creatingNew) ...[
-                if (_createError != null && _editingId == null) ...[
-                  Text(
-                    _createError!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
-                  TextButton(
-                    onPressed: () => _loadRecord(_selectedRecordId!),
-                    child: Text(EmcapLocale.t('common.retry')),
-                  ),
-                ],
                 if (isRecordDeleted(_recordValues))
                   Container(
                     width: double.infinity,

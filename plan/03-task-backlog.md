@@ -28,16 +28,18 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 22 — Agent velocity (doc integrity) | 6 | 0 | 0 | 6 |
 | 23 — Security hardening | 4 | 0 | 0 | 4 |
 | 24 — Residual product polish (post-M2) | 5 | 0 | 0 | 5 |
-| 25 — Procurement / Sales / AP-AR / Accounting | 12 | 0 | 0 | 13 |
+| 25 — Procurement / Sales / AP-AR / Accounting | 13 | 0 | 0 | 13 |
+| 26 — Business profile setup & configuration | 15 | 0 | 0 | 15 |
 | 27 — i18n / l10n (BCP 47) | 12 | 0 | 0 | 12 |
 | 28 — Application review remediation | 14 | 0 | 0 | 14 |
-| **Total** | **389** | **0** | **0** | **391** |
+| 29 — Mobile UX hardening | 9 | 0 | 0 | 9 |
+| **Total** | **414** | **0** | **0** | **416** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-23 (P24-T04 a11y · P26-T12 mobile invoice print · P26-T13 email signature · P26-T15 verify)
+**Last updated:** 2026-06-24 (P29 mobile UX hardening T01–T09 Done)
 
-**Current focus:** Phase 26 complete — next backlog per `plan/17-standard-product-execution-playbook.md`
+**Current focus:** Phase 29 complete — next backlog per `plan/17-standard-product-execution-playbook.md` / Phase R4 residual
 
 ---
 
@@ -611,7 +613,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 ## Phase 25 — Procurement / Sales / AP-AR / Accounting
 
-> **Plan:** `plan/25-procurement-sales-ap-ar-accounting.md` — W1–W4 + seed (P25-T01–T12) **Done** 2026-06-19; **P25-T13** web Product-ready **Done**; mobile PNG lane **Partial**.
+> **Plan:** `plan/25-procurement-sales-ap-ar-accounting.md` — W1–W5 **Done** 2026-06-22; **P25-T13** web + mobile Product-ready PNGs (5 web + 7 mobile incl. `phase25-vendor-payment-detail-mobile.png`).
 
 | ID | Task | Depends | Status |
 |----|------|---------|--------|
@@ -633,7 +635,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 ## Phase 26 — Business profile setup & configuration
 
-> **Plan:** `plan/26-business-profile-configuration.md` — Wave 1 (P26-T01–T08) **Done** 2026-06-18; Wave 2 P26-T09 **Done** 2026-06-19.
+> **Plan:** `plan/26-business-profile-configuration.md` — Waves 1–5 **Done** 2026-06-23 (P26-T01–T15 incl. favicon/branding, PDF/invoice headers, email signature).
 
 | ID | Task | Depends | Status |
 |----|------|---------|--------|
@@ -698,6 +700,24 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | EMCAP-P28-T14 | Doc sync — matrix 07 mobile rows, backlog Partials → Done, HANDOFF | P28-T13 | Done — 2026-06-22 |
 
 **Optional (matrix evidence):** `phase25-vendor-payment-detail-mobile.png` + P24 admin mobile PNGs — fold into P28-T14 or existing P24-T03 / P25-T13 rows.
+
+---
+
+## Phase 29 — Mobile UX hardening
+
+> **Plan:** `plan/29-mobile-ux-hardening.md` — P1/P2 standards review remediation (loading feedback, pagination, SSE lifecycle, workflow a11y). **Gate:** Flutter **≥80% line**; web Karma **≥80% branches** on touched files; API pytest for pagination.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P29-T01 | `EmcapClient.requestTimeout` + `EmcapClientTimeoutException` (30s default) | — | Done — `emcap_client.dart`; `test/emcap_client_http_test.dart` |
+| EMCAP-P29-T02 | `BusyTextButton` + workflow inbox loading/disabled-busy UX | P29-T01 | Done — `widgets/busy_text_button.dart`; `test/workflow_inbox_screen_test.dart` |
+| EMCAP-P29-T03 | Workflow open-record deep-link → `EntityRecordScreen` | P29-T02 | Done — `workflow_inbox_screen.dart`; i18n `platform.workflow.openRecord` |
+| EMCAP-P29-T04 | `cancelRecordsStream()` + entity list `dispose` | — | Done — `emcap_client.dart` + `entity_list_screen.dart`; `test/emcap_client_http_test.dart` |
+| EMCAP-P29-T05 | API `limit`/`offset`/`total` on entity list | — | Done — `entities.py`, `repository.py`; `tests/test_entity_pagination.py` |
+| EMCAP-P29-T06 | Web entity-list server pagination + export-all async | P29-T05 | Done — `entity-list.component.ts`; `entity-list.component.spec.ts` |
+| EMCAP-P29-T07 | Mobile entity-list server pagination (`EntityRecordsPage`) | P29-T05 | Done — `entity_list_screen.dart`; entity list tests |
+| EMCAP-P29-T08 | Workflow a11y Semantics + manual checklist | P29-T02 | Done — `test/a11y_semantics_test.dart` (17 cases); `docs/dev/recipes/mobile-a11y-manual-checklist.md` § Workflow inbox |
+| EMCAP-P29-T09 | Full verify + doc sync | P29-T01–T08 | Done — 2026-06-24 |
 
 ---
 

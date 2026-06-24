@@ -2,9 +2,9 @@
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-22 (P28 complete; M2 mobile signed — **526/526** flutter, **85.43%** line; 7 mobile PNGs; matrix §07 mobile rows updated)
+**Last updated:** 2026-06-24 (P29 mobile UX hardening Done; P26 Wave 2 T10–T13 Done; M2 mobile signed)
 
-**Honest gate:** Web rows signed with 9 web PNGs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (7 core + P25 partial — vendor-payment mobile open).
+**Honest gate:** Web rows signed with 9 web PNGs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (7 core + P25 finance pack).
 
 ---
 
@@ -39,22 +39,25 @@ Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
 ## Current focus
 
-1. ~~**P28 finance hardening**~~ **Done** 2026-06-22 — validators, JE UX, mobile parity; coverage gates green
-2. **P24-T03/T04** — mobile admin PNG + TalkBack/VoiceOver semantics
-3. **P26-T10–T13** — favicon, PDF/invoice headers, email signature
-4. **P25-T13** — optional `phase25-vendor-payment-detail-mobile.png`
+Phases **24–29 Done** (2026-06-24). No open Partial backlog tasks.
+
+1. **Phase R4 deferred admin/platform depth** — permission matrix editor, dashboard charts, template editor depth, editable security policy, rule evaluate mobile, i18n residual sweep (`plan/21-standard-product-residual-gaps.md` §Phase R4)
+2. **Optional Demo+ elevation** — org logo/favicon/branding device PNGs for matrix §19 rows still Demo+
+3. **P27-T12 mobile locale-switch PNG** — web Done; `phase27-locale-switch-bn-bd-mobile.png` open on device/emulator
+4. **Maintenance** — `node scripts/audit-i18n.mjs` on any i18n touch; re-run verify block below before release
 
 **Do not commit** unless user explicitly asks.
 
 ---
 
-## Verify snapshot (2026-06-22)
+## Verify snapshot (2026-06-24)
 
 | Layer | Result |
 |-------|--------|
-| Flutter | **526/526** pass (~5m); line coverage **85.43%** (4927/5767) |
-| Web Karma | **536/536**; branches **81.08%** |
+| Flutter | **542/542** pass (~4m24s); line coverage **85.71%** (5128/5983) |
+| Web Karma | **543/543** pass; branches **80.79%**; lines **95.17%** |
 | P28 backend entity tests | **57/57** pass |
+| P29 API pagination | `tests/test_entity_pagination.py` **3/3** pass |
 
 ---
 
@@ -104,9 +107,9 @@ Plan: `docs/dev/session-memos/2026-06-18-partials-completion-plan.md`
 
 | Remaining gate | Tasks |
 |----------------|-------|
-| **Mobile PNG evidence** | P15-T13, P20-T03, P18-T06/T09/T10/T16/T17/T18/T20, P25-T13 mobile, P26 org logo, P27 locale switch — run `scripts/capture-m2-mobile-screenshots.md`; do **not** mark Product-ready without PNGs |
-| **`flutter test --coverage` verify** | P18-T13 + Batch 3 screen tests — `cd clients/mobile && flutter pub get && flutter test --coverage` |
-| **Matrix ongoing** | P20-T08 (M2/M3 mobile Product-ready sign-off after verify + PNG) |
+| **Demo+ → Product-ready (optional)** | Matrix §19 logo/favicon/branding/email-signature rows — device PNG evidence |
+| **P27 mobile locale PNG** | `phase27-locale-switch-bn-bd-mobile.png` — run `scripts/capture-signoff-screenshots.mjs --only=p27` on device/emulator |
+| **Phase R4 backlog** | Deferred admin/platform depth when product schedules v2 |
 
 ---
 
@@ -131,7 +134,7 @@ node scripts/capture-signoff-screenshots.mjs --only=p25
 
 ## Suggested prompt (new chat)
 
-> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. **Web PNG sign-off Done** (9 PNGs). Next: **Flutter tests one file at a time** — no background agents; fix `admin_screens_test.dart` / `workflow_inbox_screen_test.dart` then remaining failures; then `flutter test --coverage` ≥80% + M2 mobile PNG pack. Read `known-pitfalls.md` § Flutter widget test before touching harness. No commit before review.
+> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. Phases 24–28 **Done** — **526/526** flutter, **85.43%** line. Next: Phase R4 deferred items or optional Demo+ PNG elevation (matrix §19). Read `local-environment.md` for Flutter PATH. No commit before review.
 
 ---
 
@@ -143,7 +146,7 @@ node scripts/capture-signoff-screenshots.mjs --only=p25
 | W3 Web | P25-T07–T08 | **Done** — child-lines-section, payment balance cards |
 | W4 Mobile | P25-T09–T10 | **Done** — purchase_order/sales/payment utils |
 | W5 Seed + verify | P25-T11–T12 | **Done** — demo JSON + `test_seed_loader.py` + matrices 04/05/07 |
-| W6 Product-ready | P25-T13 | **Partial** — web 5 PNGs Done; mobile device PNG open |
+| W6 Product-ready | P25-T13 | **Done** — web 5 PNGs + mobile 7 PNGs incl. `phase25-vendor-payment-detail-mobile.png` (2026-06-22); `flutter test --coverage` green |
 
 **Backend verify (subset — functional only; use full `pytest` for 80% cov gate):**
 ```powershell

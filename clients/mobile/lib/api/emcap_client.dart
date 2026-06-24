@@ -1,6 +1,28 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+
+/// Raised when an HTTP request exceeds [EmcapClient.requestTimeout].
+class EmcapClientTimeoutException implements Exception {
+  EmcapClientTimeoutException(this.method, this.path, this.duration);
+
+  final String method;
+  final String path;
+  final Duration duration;
+
+  @override
+  String toString() => 'Request timed out after ${duration.inSeconds}s: $method $path';
+}
+
+class EntityRecordsPage {
+  const EntityRecordsPage({required this.records, this.total, this.limit, this.offset});
+
+  final List<Map<String, dynamic>> records;
+  final int? total;
+  final int? limit;
+  final int? offset;
+}
 
 class MaskedSecretView {
   const MaskedSecretView({required this.masked, required this.configured});
@@ -17,11 +39,15 @@ class MaskedSecretView {
 }
 
 class EmcapClient {
-  EmcapClient([this.baseUrl = 'http://localhost:8000', http.Client? httpClient])
-      : _httpClient = httpClient ?? http.Client();
+  EmcapClient([
+    this.baseUrl = 'http://localhost:8000',
+    http.Client? httpClient,
+    this.requestTimeout = const Duration(seconds: 30),
+  ]) : _httpClient = httpClient ?? http.Client();
 
   final String baseUrl;
   final http.Client _httpClient;
+  final Duration requestTimeout;
   String? _token;
   String _tenantId = 'default';
   void Function()? _onUnauthorized;
@@ -64,8 +90,13 @@ class EmcapClient {
     final request = http.Request(method, uri)
       ..headers.addAll(headers)
       ..body = body == null ? '' : jsonEncode(body);
-    final streamed = await _httpClient.send(request);
-    final text = await streamed.stream.bytesToString();
+    late final http.StreamedResponse streamed;
+    try {
+      streamed = await _httpClient.send(request).timeout(requestTimeout);
+    } on TimeoutException {
+      throw EmcapClientTimeoutException(method, path, requestTimeout);
+    }
+    final text = await streamed.stream.bytesToString().timeout(requestTimeout);
     if (streamed.statusCode >= 400) {
       if (streamed.statusCode == 401 && _token != null) {
         _token = null;
@@ -104,10 +135,30 @@ class EmcapClient {
     return _request('GET', '/api/v1/metadata/grids/$entityCode');
   }
 
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
-    final query = q == null || q.isEmpty ? '' : '?q=${Uri.encodeComponent(q)}';
+  Future<EntityRecordsPage> listRecords(
+    String entityCode, {
+    String? q,
+    int? limit,
+    int? offset,
+  }) async {
+    final params = <String, String>{};
+    if (q != null && q.isNotEmpty) {
+      params['q'] = q;
+    }
+    if (limit != null) {
+      params['limit'] = '$limit';
+    }
+    if (offset != null && offset > 0) {
+      params['offset'] = '$offset';
+    }
+    final query = params.isEmpty ? '' : '?${Uri(queryParameters: params).query}';
     final body = await _request('GET', '/api/v1/entities/$entityCode/records$query');
-    return List<Map<String, dynamic>>.from(body['records'] as List);
+    return EntityRecordsPage(
+      records: List<Map<String, dynamic>>.from(body['records'] as List),
+      total: body['total'] as int?,
+      limit: body['limit'] as int?,
+      offset: body['offset'] as int?,
+    );
   }
 
   void setTenantId(String tenantId) {
@@ -663,16 +714,25 @@ class EmcapClient {
     return List<Map<String, dynamic>>.from(body['audit'] as List);
   }
 
+  StreamSubscription<void>? _recordsStreamSubscription;
+
+  /// Cancels any active entity records SSE subscription.
+  void cancelRecordsStream() {
+    _recordsStreamSubscription?.cancel();
+    _recordsStreamSubscription = null;
+  }
+
   void subscribeRecordsStream(String entityCode, void Function() onEvent) {
+    cancelRecordsStream();
     final uri = Uri.parse('$baseUrl/api/v1/entities/$entityCode/records/stream');
     final request = http.Request('GET', uri)..headers.addAll(_headers());
     _httpClient.send(request).then((streamed) {
-      streamed.stream.transform(utf8.decoder).listen((chunk) {
+      _recordsStreamSubscription = streamed.stream.transform(utf8.decoder).listen((chunk) {
         if (chunk.contains('data:')) {
           onEvent();
         }
       });
-    });
+    }).ignore();
   }
 }
 

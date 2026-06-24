@@ -61,6 +61,7 @@ scripts\stop-emcap.bat
 
 ## More detail
 
+- **This machine:** `docs/dev/local-environment.md` (Flutter PATH, API health)
 - Pitfalls: `docs/dev/known-pitfalls.md` → Phase 11
 - Recipe: `docs/dev/recipes/run-emcap-local-stack.md`
 - Playbook: `plan/11-local-dev-tooling.md`

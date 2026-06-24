@@ -42,6 +42,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
   FormMetadata? _form;
   GridMetadata? _grid;
   List<Map<String, dynamic>> _records = [];
+  int _totalRecords = 0;
   String _syncVersion = '';
   int _changeCount = 0;
   bool _exportCsv = false;
@@ -65,9 +66,19 @@ class _EntityListScreenState extends State<EntityListScreen> {
 
   @override
   void dispose() {
+    widget.client.cancelRecordsStream();
     EmcapLocale.locale.removeListener(_onLocaleChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<EntityRecordsPage> _fetchRecordsPage() {
+    return widget.client.listRecords(
+      widget.entityCode,
+      q: _searchController.text.trim().isEmpty ? null : _searchController.text.trim(),
+      limit: _pageSize,
+      offset: (_page - 1) * _pageSize,
+    );
   }
 
   Future<void> _loadEntity() async {
@@ -78,10 +89,7 @@ class _EntityListScreenState extends State<EntityListScreen> {
     try {
       final formJson = await widget.client.getFormMetadata(widget.entityCode);
       final gridJson = await widget.client.getGridMetadata(widget.entityCode);
-      final records = await widget.client.listRecords(
-        widget.entityCode,
-        q: _searchController.text.trim().isEmpty ? null : _searchController.text.trim(),
-      );
+      final recordsPage = await _fetchRecordsPage();
       final snapshot = await widget.client.syncSnapshot(widget.entityCode);
       final form = FormMetadata.fromJson(formJson);
       final grid = GridMetadata.fromJson(gridJson);
@@ -107,7 +115,8 @@ class _EntityListScreenState extends State<EntityListScreen> {
       setState(() {
         _form = form;
         _grid = grid;
-        _records = records;
+        _records = recordsPage.records;
+        _totalRecords = recordsPage.total ?? recordsPage.records.length;
         _syncVersion = syncVersion;
         _changeCount = changeCount;
         _exportCsv = exportMap['csv'] == true;
@@ -137,12 +146,12 @@ class _EntityListScreenState extends State<EntityListScreen> {
     }
     setState(() => _loadingList = true);
     try {
-      final records = await widget.client.listRecords(
-        widget.entityCode,
-        q: _searchController.text.trim().isEmpty ? null : _searchController.text.trim(),
-      );
+      final recordsPage = await _fetchRecordsPage();
       if (!mounted) return;
-      setState(() => _records = records);
+      setState(() {
+        _records = recordsPage.records;
+        _totalRecords = recordsPage.total ?? recordsPage.records.length;
+      });
     } catch (err) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -358,9 +367,9 @@ class _EntityListScreenState extends State<EntityListScreen> {
     final tokens = context.emcapTokens;
     var working = gridRenderer.filterRecords(_records, _filters);
     working = gridRenderer.sortRecords(working, _sortField, _sortAsc);
-    final totalRecords = working.length;
+    final totalRecords = _totalRecords;
     final totalPages = (totalRecords / _pageSize).ceil().clamp(1, 9999);
-    final pageRecords = working.skip((_page - 1) * _pageSize).take(_pageSize).toList();
+    final pageRecords = working;
     final groups = gridRenderer.groupRecords(pageRecords, _groupField);
     final isEmpty = totalRecords == 0;
 
@@ -401,14 +410,24 @@ class _EntityListScreenState extends State<EntityListScreen> {
               Row(
                 children: [
                   TextButton(
-                    onPressed: _page > 1 ? () => setState(() => _page--) : null,
+                    onPressed: _page > 1 && !_loadingList
+                        ? () {
+                            _page--;
+                            _reloadList();
+                          }
+                        : null,
                     child: Text(EmcapLocale.t('grid.prev')),
                   ),
                   Text(
                     '${EmcapLocale.t('grid.page')} $_page / $totalPages ($totalRecords ${EmcapLocale.t('grid.records')})',
                   ),
                   TextButton(
-                    onPressed: _page < totalPages ? () => setState(() => _page++) : null,
+                    onPressed: _page < totalPages && !_loadingList
+                        ? () {
+                            _page++;
+                            _reloadList();
+                          }
+                        : null,
                     child: Text(EmcapLocale.t('grid.next')),
                   ),
                 ],

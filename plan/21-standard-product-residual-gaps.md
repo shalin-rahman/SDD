@@ -193,4 +193,4 @@ Doc sync on any P24 Done: `docs/dev/recipes/sync-docs-after-change.md`, matrix *
 
 ---
 
-**Planning artifact.** P24 tasks: **P24-T05 Done**; **P24-T01/T02 Partial** (web UX + specs; PNG pending); **P24-T03/T04 Pending** (Flutter).
+**Historical planning artifact (2026-06-18).** Phases **24–28 Done** (2026-06-23). **Current focus:** Phase R4 deferred admin/platform depth (`§4 Phase R4`) + optional Demo+ → Product-ready elevation for org branding (matrix §19). See `docs/dev/HANDOFF-continue-standard-product.md` and `plan/03-task-backlog.md`.

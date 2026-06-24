@@ -52,7 +52,7 @@ class _CreatePrefillClient extends EmcapClient {
   Future<List<Map<String, dynamic>>> listWorkflowInstances({String? recordId}) async => [];
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => const EntityRecordsPage(records: []);
 }
 
 class _LoadErrorRecordClient extends EmcapClient {
@@ -117,7 +117,7 @@ class _RetryRecordClient extends EmcapClient {
   Future<List<Map<String, dynamic>>> listWorkflowInstances({String? recordId}) async => [];
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [];
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => const EntityRecordsPage(records: []);
 }
 
 void main() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:emcap_mobile/api/emcap_client.dart';
+import 'package:emcap_mobile/app/entity_record_screen.dart';
 import 'package:emcap_mobile/app/workflow_inbox_screen.dart';
 import 'package:emcap_mobile/services/i18n_service.dart';
 import 'package:emcap_mobile/theme.dart';
@@ -78,6 +79,7 @@ void main() {
 
     await tester.tap(find.text(EmcapLocale.t('platform.workflow.detail')));
     await settleWorkflowInbox(tester);
+    expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text(EmcapLocale.t('platform.workflow.detailTitle')), findsOneWidget);
 
     await tester.tap(find.text(EmcapLocale.t('common.cancel')));
@@ -114,23 +116,19 @@ void main() {
     expect(find.text(EmcapLocale.t('platform.workflow.loadFailed')), findsOneWidget);
   });
 
-  testWidgets('WorkflowInboxScreen open entity callback fires', (tester) async {
-    String? opened;
+  testWidgets('WorkflowInboxScreen opens entity record from row link', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
-        home: WorkflowInboxScreen(
-          client: FakeEmcapClient(),
-          onOpenEntity: (code) => opened = code,
-        ),
+        home: WorkflowInboxScreen(client: FakeEmcapClient()),
       ),
     );
     await settleWorkflowInbox(tester);
     await tester.tap(find.textContaining('PRODUCT ·'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(opened, 'PRODUCT');
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byType(EntityRecordScreen), findsOneWidget);
   });
 }

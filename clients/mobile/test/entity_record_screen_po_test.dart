@@ -33,9 +33,9 @@ class _PoClient extends EmcapClient {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (entityCode == 'PURCHASE_ORDER_LINE') {
-      return [
+      return EntityRecordsPage(records: [
         {
           'id': 'line-1',
           'po_id': 'po-1',
@@ -43,15 +43,15 @@ class _PoClient extends EmcapClient {
           'quantity': 5,
           'unit_price': 12.5,
         },
-      ];
+      ]);
     }
     if (entityCode == 'PRODUCT') {
-      return [
+      return EntityRecordsPage(records: [
         {'id': 'prod-1', 'name': 'Widget A', 'code': 'W-A'},
-      ];
+      ]);
     }
     if (entityCode == 'VENDOR_PAYMENT') {
-      return [
+      return EntityRecordsPage(records: [
         {
           'id': 'vp-1',
           'po_id': 'po-1',
@@ -68,9 +68,9 @@ class _PoClient extends EmcapClient {
           'payment_date': '2026-03-02',
           'status': 'posted',
         },
-      ];
+      ]);
     }
-    return [];
+    return const EntityRecordsPage(records: []);
   }
 
   @override
@@ -361,9 +361,9 @@ class _SoClient extends EmcapClient {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (entityCode == 'SALES_ORDER_LINE') {
-      return [
+      return EntityRecordsPage(records: [
         {
           'id': 'line-1',
           'sales_order_id': 'so-1',
@@ -371,14 +371,14 @@ class _SoClient extends EmcapClient {
           'quantity': 2,
           'unit_price': 15,
         },
-      ];
+      ]);
     }
     if (entityCode == 'PRODUCT') {
-      return [
+      return EntityRecordsPage(records: [
         {'id': 'prod-1', 'name': 'Service Pack', 'code': 'SP-1'},
-      ];
+      ]);
     }
-    return [];
+    return const EntityRecordsPage(records: []);
   }
 
   @override
@@ -423,9 +423,9 @@ class _InvoiceClient extends EmcapClient {
       Map<String, dynamic>.from(_record);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (entityCode == 'CUSTOMER_PAYMENT') {
-      return [
+      return EntityRecordsPage(records: [
         {
           'id': 'cp-1',
           'invoice_id': 'inv-1',
@@ -434,9 +434,9 @@ class _InvoiceClient extends EmcapClient {
           'payment_date': '2026-04-15',
           'status': 'posted',
         },
-      ];
+      ]);
     }
-    return [];
+    return const EntityRecordsPage(records: []);
   }
 
   @override

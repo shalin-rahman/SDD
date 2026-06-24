@@ -2,6 +2,10 @@
 
 All Cursor guidance for **this repo** lives here. Do not rely on user-global skills under `~/.cursor/skills-cursor/` for EMCAP work — use the files in this folder instead.
 
+**User-global (not copied):** `~/.cursor/skills-cursor/` — Cursor product skills (canvas, automate, PR split, etc.). **EMCAP domain skills** live only in `.cursor/skills/`.
+
+**Session memos:** substantive EMCAP handoffs → `docs/dev/session-memos/` + `recall-index.md` (rule: `rules/task-chat-summaries.mdc`).
+
 ## Layout
 
 | Path | Purpose |
@@ -15,6 +19,8 @@ All Cursor guidance for **this repo** lives here. Do not rely on user-global ski
 |------|-------|
 | `emcap-core-standards.mdc` | Always apply — module boundaries, config-driven design |
 | `emcap-sdd-workflow.mdc` | Always apply — read index/pitfalls/recipes before coding |
+| `emcap-doc-sync.mdc` | Always apply — docs mandatory with code |
+| `task-chat-summaries.mdc` | Always apply — in-repo session memos + external recall folder |
 | `backend-python.mdc` | `platform/api/**` |
 | `frontend-angular.mdc` | `clients/web/**` (Angular CLI 19) |
 | `frontend-flutter.mdc` | `clients/mobile/**` |

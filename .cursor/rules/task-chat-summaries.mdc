@@ -1,0 +1,35 @@
+---
+description: Save task/chat summaries for recall — EMCAP in-repo memos + external default
+alwaysApply: true
+---
+
+# Task and chat summaries (recall)
+
+## When to do it
+
+- After a **substantive** task (multi-step fix, investigation, migration plan) or when the user asks for a **summary / memo / handoff**.
+- Also when the user says **memorize**, **save for later**, or **recall**.
+
+## Where to save
+
+| Scope | Location |
+|-------|----------|
+| **EMCAP / this repo** | `docs/dev/session-memos/YYYY-MM-DD-<slug>.md` + one row in `docs/dev/recall-index.md` |
+| **Other projects (default)** | `C:\Users\u1074139\.cursor\task-summaries\` — **never** inside unrelated git roots unless user explicitly requests a repo path |
+
+## File naming
+
+`YYYY-MM-DD-<short-slug>.md` (e.g. `2026-06-20-phase28-remediation-plan.md`).
+
+## What to put in each file (compact, reusable)
+
+1. **Goal / ticket** (if any)
+2. **Decisions / constraints** (including no commit before review, user prefs)
+3. **What changed** (paths, high level — not a full diff)
+4. **Verification** (commands/tests run)
+5. **Open follow-ups**
+
+## In chat
+
+- Tell the user **the full path** of the file you wrote so they can open or search it later.
+- For EMCAP: prefer in-repo memos so they ship with the project and appear in `recall-index.md`.

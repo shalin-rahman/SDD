@@ -21,12 +21,12 @@ class _LookupClient extends EmcapClient {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (failList) throw Exception('list failed');
-    return [
+    return EntityRecordsPage(records: [
       {'id': 'wh-1', 'code': 'WH-01', 'name': 'Main'},
       {'id': 'wh-2', 'code': 'WH-02', 'name': 'Secondary'},
-    ];
+    ]);
   }
 }
 

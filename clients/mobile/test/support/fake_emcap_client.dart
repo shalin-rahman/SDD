@@ -219,7 +219,8 @@ class FakeEmcapClient extends EmcapClient {
   Future<Map<String, dynamic>> syncChanges(String entityCode, String since) async => {'count': 0};
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async =>
+      EntityRecordsPage(records: [
         {'id': 'rec-1', 'name': 'Sample'},
-      ];
+      ]);
 }

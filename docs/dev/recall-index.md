@@ -69,6 +69,8 @@
 | `session-memos/2026-06-17-m6-admin-screenshots-dod.md` | P18-T15/T21 M6 admin PNG + DoD + remainder | `HANDOFF-continue-standard-product.md`, `07` §12, P18-T11/T12 partial |
 | `session-memos/2026-06-18-partials-completion-plan.md` | 10 Partial mobile tasks — batches 1–4 DAG | `HANDOFF-continue-standard-product.md`, Batch 2 screen tests, `flutter test --coverage` + PNG sign-off |
 | `session-memos/2026-06-18-i18n-gap-audit.md` | Phase 27 i18n/l10n gap audit — BCP 47, parity drift, missing domains | `plan/26-i18n-l10n-localization.md`, `data/i18n/seed/starter-catalog.json` |
+| `session-memos/2026-06-19-emcap-flutter-test-handoff.md` | Flutter widget-test harness learnings (historical) | `HANDOFF-continue-standard-product.md`, `known-pitfalls.md` § Flutter widget test, `local-environment.md` |
+| `session-memos/2026-06-20-phase28-remediation-plan.md` | Phase 28 finance hardening plan + completion | `plan/28-application-review-remediation.md`, FR-030 |
 | `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).

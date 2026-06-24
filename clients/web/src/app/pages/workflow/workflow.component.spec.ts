@@ -240,11 +240,14 @@ describe('WorkflowComponent', () => {
     await fixture.whenStable();
 
     const cmp = fixture.componentInstance;
-    cmp.openDetail(cmp.instances[0]);
+    await cmp.openDetail(cmp.instances[0]);
     await fixture.whenStable();
+    fixture.detectChanges();
+    expect(getWorkflowInstance).toHaveBeenCalledWith('wf-5');
     expect(cmp.detailEntries.length).toBeGreaterThan(0);
     cmp.closeDetail();
     expect(cmp.detailPayload).toBeNull();
+    expect(cmp.detailTarget).toBeNull();
   });
 
   it('covers state filter, SLA labels, and openProducts navigation', async () => {

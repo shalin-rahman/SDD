@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-23 (P26 Wave 2 T10–T12 — export/print/branding; P28 + M2 mobile sign-off)
+**Last updated:** 2026-06-24 (P29 mobile UX hardening — workflow mobile Demo+, pagination, a11y)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -26,7 +26,7 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | Milestone | Scope | Blocking | Status |
 |-----------|--------|----------|--------|
 | **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile **Signed** 2026-06-22 |
-| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Signed (mobile)** — 2026-06-22; `phase15-mobile-product-detail.png`; **526/526** flutter; **85.43%** line coverage |
+| **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Signed (mobile)** — 2026-06-22; `phase15-mobile-product-detail.png`; **542/542** flutter; **85.71%** line coverage |
 | **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — P18-T13 bulk Done; platform/lifecycle/movement/crm screen specs green; M2 PNG + matrix sign-off open |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
 | **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile Demo+ lanes open |
@@ -101,7 +101,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Surface | API (04) | Product readiness | Plan |
 |---------|----------|-------------------|------|
-| Workflow inbox | Done | **Product-ready (web)** | `phase17-workflow-inbox-web.png` — empty state + CTA |
+| Workflow inbox | Done | **Product-ready (web)** · mobile **Demo+** | `phase17-workflow-inbox-web.png` — empty state + CTA; **P29** mobile `BusyTextButton`, open-record deep-link, timeout error i18n, Semantics (17 a11y cases); device PNG open for Product-ready |
 | Reports + history | Done | **Product-ready (web)** | `phase17-reports-history-web.png` |
 | Dashboards | Done | **Product-ready (web)** | `phase17-dashboards-web.png` |
 | Notifications | Done | **Product-ready (web)** | `phase17-notifications-web.png` |
@@ -128,7 +128,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Report schedules | Done | **Product-ready (web)** | Cron editor i18n/validation; `phase19-settings-report-schedules-web.png`; `test_report_schedule_admin.py` |
 | ABAC editor (P13) | Done | **Product-ready (web)** | P19-T04 + P18-T21 empty/retry/saveError; security PNG |
 | Integrations (settings hub) | Done | **Product-ready (web)** | P19-T10 registry cards + REST test; Account/mobile account no dispatch buttons |
-| Mobile TalkBack/VoiceOver semantics | P24-T04 Done | **Demo+** | `test/a11y_semantics_test.dart` (14 cases); manual device checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` |
+| Mobile TalkBack/VoiceOver semantics | P24-T04 + P29-T08 Done | **Demo+** | `test/a11y_semantics_test.dart` (17 cases incl. workflow inbox); manual device checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` |
 
 ---
 
@@ -193,6 +193,7 @@ Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` ex
 | Favicon + secondary accent branding | Done | Demo+ | Demo+ | Web: branding panel fields + `ThemeService.applyFavicon` / `applyTenantSecondary` via `ShellContextService`; mobile branding TextFields | Demo+ |
 | PDF grid export org header/footer | N/A | Demo+ | N/A | `export.util.ts` `buildPrintableTableHtml` + `entity-list` report template; karma `export.util.spec.ts` | Demo+ |
 | INVOICE print view org header/footer | N/A | Demo+ | Demo+ | Web `entity-record` Print invoice + `buildPrintableFieldsHtml`; mobile `entity_record_screen` + `export_util.dart` + `invoice_print_dialog.dart`; tests `entity_record_screen_invoice_print_test.dart`, `export_util_test.dart` | **Demo+** both surfaces |
+| Email signature in notification templates | Done | N/A | N/A | P26-T13 `notifications/template_render.py` org token interpolation + signature append; POST `/notifications/send-template`; pytest `test_notification_template_render.py` (6 passed) | Demo+ |
 
 ---
 

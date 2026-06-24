@@ -161,7 +161,7 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 
 | Req ID | Design | Task ID | Verification |
 |--------|--------|---------|--------------|
-| FR-028 | `organization_profile` in `config/platform.yaml`; GET/PUT `/admin/organization-profile`; settings UI | EMCAP-P26-T02–T08 | `test_organization_profile_admin.py`; `organization-profile.util.spec.ts`; `organization_profile_util_test.dart` |
+| FR-028 | `organization_profile` in `config/platform.yaml`; GET/PUT `/admin/organization-profile`; settings UI; favicon/secondary branding (P26-T10); PDF export + INVOICE print headers (P26-T11–T12); email signature merge (P26-T13) | EMCAP-P26-T02–T08, **P26-T10–T13** | `test_organization_profile_admin.py`; `organization-profile.util.spec.ts`; `organization_profile_util_test.dart`; `export.util.spec.ts`; `export_util_test.dart`; `entity_record_screen_invoice_print_test.dart`; `test_notification_template_render.py` |
 
 ## Phase 27 — i18n / l10n (BCP 47)
 

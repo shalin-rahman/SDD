@@ -9,7 +9,6 @@ import { EmcapApiService } from '../../services/emcap-api.service';
 import { EmptyStateComponent } from '../../shared/layout/empty-state.component';
 import { LoadingPanelComponent } from '../../shared/layout/loading-panel.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header.component';
-import { SectionCardComponent } from '../../shared/layout/section-card.component';
 import { LayoutService } from '../../shared/services/layout.service';
 import { I18nService } from '../../shared/services/i18n.service';
 import { formatRecordFieldValue } from '../../shared/utils/field-display.util';
@@ -38,7 +37,6 @@ export interface WorkflowInstanceRow {
     PageHeaderComponent,
     LoadingPanelComponent,
     EmptyStateComponent,
-    SectionCardComponent,
   ],
   templateUrl: './workflow.component.html',
   styleUrl: './workflow.component.scss',
@@ -59,6 +57,9 @@ export class WorkflowComponent implements OnInit, OnDestroy {
   isMobile = false;
 
   detailPayload: Record<string, unknown> | null = null;
+  detailTarget: WorkflowInstanceRow | null = null;
+  detailLoading = false;
+  detailError = '';
   pendingTransition: { instance: WorkflowInstanceRow; action: string } | null = null;
   delegateTarget: WorkflowInstanceRow | null = null;
   delegateTo = 'inventory-manager';
@@ -239,14 +240,26 @@ export class WorkflowComponent implements OnInit, OnDestroy {
     await this.load();
   }
 
-  openDetail(instance: WorkflowInstanceRow): void {
-    void this.api.client.getWorkflowInstance(instance.id).then((detail) => {
-      this.detailPayload = detail;
-    });
+  async openDetail(instance: WorkflowInstanceRow): Promise<void> {
+    this.detailTarget = instance;
+    this.detailLoading = true;
+    this.detailError = '';
+    this.detailPayload = null;
+    try {
+      this.detailPayload = await this.api.client.getWorkflowInstance(instance.id);
+    } catch (err) {
+      this.detailError =
+        err instanceof Error ? err.message : this.i18n.t('platform.workflow.loadFailed');
+    } finally {
+      this.detailLoading = false;
+    }
   }
 
   closeDetail(): void {
+    this.detailTarget = null;
     this.detailPayload = null;
+    this.detailError = '';
+    this.detailLoading = false;
   }
 
   private normalizeRow(row: Record<string, unknown>): WorkflowInstanceRow {

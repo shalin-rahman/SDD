@@ -24,9 +24,9 @@ class _SseListClient extends EmcapClient {
       productGridMetadataJson(realtime: realtime, offline: true);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => EntityRecordsPage(records: [
         {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Alpha'},
-      ];
+      ]);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async =>

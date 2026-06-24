@@ -465,6 +465,8 @@
   "platform.workflow.filterAll": "সব",
   "platform.workflow.noMatches": "ফিল্টারের সাথে কোনো কাজ মেলেনি।",
   "platform.workflow.openProducts": "পণ্য খুলুন",
+  "platform.workflow.openRecord": "রেকর্ড খুলুন",
+  "platform.client.timeout": "অনুরোধের সময় শেষ। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
   "platform.workflow.detailTitle": "ওয়ার্কফ্লো ইনস্ট্যান্স",
   "platform.workflow.confirmTransition": "ক্রিয়া নিশ্চিত করুন",
   "platform.workflow.confirmTransitionAction": "{action} নিশ্চিত করবেন?",

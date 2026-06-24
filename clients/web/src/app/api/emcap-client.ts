@@ -211,11 +211,17 @@ export class EmcapClient {
 
   listRecords(
     entityCode: string,
-    options?: { q?: string },
-  ): Promise<{ records: Record<string, unknown>[] }> {
+    options?: { q?: string; limit?: number; offset?: number },
+  ): Promise<{ records: Record<string, unknown>[]; total?: number; limit?: number; offset?: number }> {
     const params = new URLSearchParams();
     if (options?.q) {
       params.set('q', options.q);
+    }
+    if (options?.limit != null) {
+      params.set('limit', String(options.limit));
+    }
+    if (options?.offset != null && options.offset > 0) {
+      params.set('offset', String(options.offset));
     }
     const query = params.toString();
     return this.request(`/api/v1/entities/${entityCode}/records${query ? `?${query}` : ''}`);

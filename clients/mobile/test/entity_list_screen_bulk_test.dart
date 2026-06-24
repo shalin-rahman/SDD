@@ -24,10 +24,10 @@ class _BulkListClient extends EmcapClient {
       productGridMetadataJson(bulkActions: true);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async => [
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async => EntityRecordsPage(records: [
         {'id': 'prod-1', 'sku': 'SKU-A', 'name': 'Alpha'},
         {'id': 'prod-2', 'sku': 'SKU-B', 'name': 'Beta'},
-      ];
+      ]);
 
   @override
   Future<Map<String, dynamic>> syncSnapshot(String entityCode) async =>

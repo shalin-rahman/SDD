@@ -28,12 +28,13 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | **Shared web components** | `clients/web/src/app/shared/README.md` |
 | **Product/admin UX gap** | `spec/sdd/06-admin-product-ui-matrix.md` |
 | Local stack (Windows) | `plan/11-local-dev-tooling.md`, `docs/dev/recipes/run-emcap-local-stack.md` |
+| **Local environment (this machine)** | `docs/dev/local-environment.md` — Flutter PATH, API health, stack commands |
 | Angular web client | `plan/10-angular-cli-web.md`, ADR-005 |
 | Phase 8 end-user UX | `plan/07-phase8-end-user-product.md` |
 | Platform service status | `spec/sdd/04-capability-matrix.md` |
 | End-user UX status | `spec/sdd/05-end-user-matrix.md` |
 | Client API mapping | `plan/04-client-api-completion.md` |
-| Windows local dev guide | `docs/dev/windows-local-dev.md` |
+| Windows local dev guide | `docs/dev/windows-local-dev.md`, **`docs/dev/local-environment.md`** |
 | Pitfalls / regressions | `docs/dev/known-pitfalls.md` |
 | Session memos (handoffs) | `docs/dev/session-memos/`, `docs/dev/recall-index.md` |
 | **New chat handoff** | `docs/dev/HANDOFF-continue-standard-product.md` (tiered read order) |
@@ -78,12 +79,16 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Menus API | `platform/api/src/emcap/api/routes/menus.py` | Returns `module` + optional `icon` per item (`MenuDefinition.icon`) |
 | Web legacy (archive) | `clients/web-legacy/` | Read-only reference |
 | Mobile | `clients/mobile/lib/` | Flutter shell; theme tokens `lib/theme/app_tokens.dart`; badges `lib/widgets/emcap_badge.dart`; **verify:** `cd clients/mobile && flutter pub get && flutter test --coverage` (80% gate: `scripts/check-flutter-coverage.py`) |
-| Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; bulk actions when `bulk_actions`; STOCK_MOVEMENT post/lines; P25 PO/SO lines, receive/collect, payment summary |
+| Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; bulk actions when `bulk_actions`; STOCK_MOVEMENT post/lines; P25 PO/SO lines, receive/collect, payment summary; **P29-T04/T07** server pagination (`EntityRecordsPage`) + SSE `cancelRecordsStream()` on dispose |
+| Mobile HTTP client | `clients/mobile/lib/api/emcap_client.dart` | **P29-T01** `requestTimeout` (30s) + `EmcapClientTimeoutException`; **P29-T04** `cancelRecordsStream()`; pagination `limit`/`offset`/`total` on `listRecords` |
+| Busy async button | `clients/mobile/lib/widgets/busy_text_button.dart` | **P29-T02** disabled + inline spinner during async `onPressed` (workflow inbox transitions) |
 | `clients/mobile/lib/utils/bulk_grid_util.dart` | P18-T13 bulk selection + CSV/PDF export + org header/footer printable HTML helpers (web parity) |
 | `clients/mobile/lib/utils/stock_movement_util.dart` | P18-T17 post movement + line filter helpers |
 | `clients/mobile/lib/utils/purchase_order_util.dart` | P25-T09 PO receive (requires lines) + line filter + add-line gate |
 | `clients/mobile/lib/utils/sales_order_util.dart` | P25-T09 SO line filter + add-line gate |
 | `clients/mobile/lib/utils/payment_util.dart` | P25-T09 payment summary + AP/AR balance guards + prefill helpers |
+| `clients/mobile/lib/utils/order_line_util.dart` | P28-T10 PO/SO line labels (product names) + footer totals |
+| `clients/mobile/lib/utils/journal_entry_util.dart` | P28-T11 JOURNAL_ENTRY child lines + Post/Void helpers |
 | `clients/mobile/lib/utils/organization_profile_util.dart` | P26 org profile parse, template interpolation, logo URL guard |
 | `clients/mobile/lib/utils/export_util.dart` | P26-T12 printable fields HTML + invoice print dialog helpers |
 | `clients/mobile/lib/widgets/invoice_print_dialog.dart` | P26-T12 INVOICE print preview dialog with org header/footer |
@@ -116,7 +121,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `shared/admin/` | `BrandingPreviewPanelComponent` (P19-T05 live preview) |
 | `shared/services/` | `LayoutService`, `ShellContextService`, `ThemeService`, `I18nService` (P27: BCP 47 `en-US`/`bn-BD`/`fr-FR`, `t(key,params)`/`plural`, legacy alias migration) |
 | `shared/utils/locale-format.util.ts` | P27 — `formatInteger`, `formatCurrency`, `formatDate`, `resolvePluralCategory`; spec `locale-format.util.spec.ts` |
-| `shared/utils/` | export, page-title, record, tenant, **branding**, **organization-profile**, **document-preview**, **document-platform-settings**, **security-platform-settings**, **assistant-chat**, **workflow-enabled**, **field-security** helpers |
+| `shared/utils/` | export, page-title, record, tenant, **branding**, **organization-profile**, **journal-entry**, **document-preview**, **document-platform-settings**, **security-platform-settings**, **assistant-chat**, **workflow-enabled**, **field-security** helpers |
 | `services/shell-nav.util.ts` | Menu filter + module grouping (app root) |
 
 ---
@@ -276,9 +281,13 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/entity_record_movement_test.dart` | P18-T17 `stock_movement_util` post/lines + soft-delete contract (9 tests) |
 | `clients/mobile/test/entity_record_screen_movement_test.dart` | P18-T17 `EntityRecordScreen` post movement confirm flow widget tests (2) |
 | `clients/mobile/test/purchase_order_util_test.dart` | P25-T09/T10 PO/SO/payment util contract tests (14) |
+| `clients/mobile/test/order_line_util_test.dart` | P28-T10 PO/SO line label + footer total helpers |
+| `clients/mobile/test/entity_record_screen_journal_test.dart` | P28-T11 mobile JOURNAL_ENTRY child lines + Post/Void widget tests (5) |
+| `clients/web/src/app/shared/utils/journal-entry.util.ts` | P28-T07 web JE child-lines + Post/Void helpers |
+| `clients/web/src/app/shared/utils/journal-entry.util.spec.ts` | P28-T07 karma spec for JE UX helpers |
 | `clients/mobile/test/entity_record_screen_po_test.dart` | P25-T09/T10 PO/SO/invoice lines, receive, payment, add-line prefill widget tests (8) |
 | `clients/mobile/test/entity_record_screen_lifecycle_test.dart` | P18-T16 soft-delete restore banner on `EntityRecordScreen` widget tests (2) |
-| `clients/mobile/test/lookup_field_test.dart` | P18-T16 `LookupField` + `LookupPickerDialog` widget tests (3) |
+| `clients/mobile/test/lookup_field_test.dart` | P18-T16 `LookupField` + `LookupPickerDialog` widget tests (3); **P29** lookup picker uses `limit: 500` server fetch |
 | `clients/mobile/test/document_preview_dialog_test.dart` | P18-T18 document preview dialog text/image/pdf/error widget tests (4) |
 | `clients/mobile/test/crm_record_screen_test.dart` | P18-T06/T10 LEAD `EntityRecordScreen` hero smoke widget tests (2) |
 | `clients/mobile/test/support/screen_metadata_fixtures.dart` | Shared form/grid JSON fixtures; P25 PO/SO/invoice/payment metadata |
@@ -336,7 +345,13 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/web/src/app/shared/utils/field-security.util.spec.ts` | P23-T02 secured visible field names |
 | `clients/mobile/test/admin_field_access_client_test.dart` | P21-T06 mobile `updateAdminFieldAccess` contract |
 | `clients/web/src/app/pages/entity/entity-list.component.spec.ts` | P15-T15 list route loads grid |
-| `clients/mobile/lib/app/workflow_inbox_screen.dart` | P17-T02 filters, SLA, entity nav, detail panel |
+| `clients/mobile/lib/app/workflow_inbox_screen.dart` | P17-T02 filters, SLA, entity nav, detail panel; **P29-T02/T03** `BusyTextButton`, open-record deep-link, timeout i18n |
+| `clients/mobile/test/emcap_client_http_test.dart` | **P29-T01/T04** HTTP timeout + SSE cancel contract |
+| `clients/mobile/test/a11y_semantics_test.dart` | P24-T04 + **P29-T08** workflow inbox Semantics (17 widget cases) |
+| `clients/mobile/test/workflow_inbox_screen_test.dart` | P17-T02 + **P29-T03** open entity record from row link |
+| `platform/api/tests/test_entity_pagination.py` | **P29-T05** entity list `limit`/`offset`/`total` contract |
+| `clients/web/src/app/pages/entity/entity-list.component.ts` | P15-T15 list route; **P29-T06** server pagination + async export-all |
+| `clients/web/src/app/api/emcap-client.ts` | **P29-T06** pagination params on `listRecords` |
 | `clients/web/src/app/pages/entity/entity-record.component.spec.ts` | P15-T15 `/new` route opens create form |
 | `clients/web/src/app/shared/entity/record-tabs.component.spec.ts` | P18-T04 workflow tab + inbox link |
 | `clients/mobile/lib/utils/document_preview_util.dart` | P17-T07 mime/decode/preview view builder (web parity) |

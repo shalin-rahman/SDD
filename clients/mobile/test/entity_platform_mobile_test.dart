@@ -89,9 +89,17 @@ void main() {
     test('active record allows delete blocks restore', () {
       const id = 'rec-1';
       final record = {'id': id, 'deleted_at': null};
+      expect(isRecordLoaded(id, record), isTrue);
       expect(canDeleteRecord(id, record, false), isTrue);
       expect(canRestoreRecord(id, record), isFalse);
       expect(canDeleteRecord(id, record, true), isFalse);
+    });
+
+    test('unloaded record blocks delete and restore', () {
+      const id = 'rec-1';
+      expect(isRecordLoaded(id, const {}), isFalse);
+      expect(canDeleteRecord(id, const {}, false), isFalse);
+      expect(canRestoreRecord(id, const {}), isFalse);
     });
 
     test('empty deleted_at is not deleted', () {

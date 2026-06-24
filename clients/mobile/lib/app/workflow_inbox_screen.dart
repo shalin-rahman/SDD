@@ -6,6 +6,8 @@ import '../utils/field_display.dart';
 import '../utils/workflow_detail_util.dart';
 import '../utils/workflow_sla_util.dart';
 import '../utils/workflow_state_util.dart';
+import '../widgets/busy_text_button.dart';
+import 'entity_record_screen.dart';
 
 class WorkflowInboxScreen extends StatefulWidget {
   const WorkflowInboxScreen({
@@ -29,7 +31,6 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
   String? _busyId;
   String _stateFilter = '';
   String _assigneeFilter = '';
-  Map<String, dynamic>? _detailPayload;
 
   @override
   void initState() {
@@ -48,6 +49,13 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
     if (mounted) setState(() {});
   }
 
+  String _clientErrorMessage(Object err, {required String fallbackKey}) {
+    if (err is EmcapClientTimeoutException) {
+      return EmcapLocale.t('platform.client.timeout');
+    }
+    return EmcapLocale.t(fallbackKey);
+  }
+
   Future<void> _reload() async {
     setState(() {
       _loading = true;
@@ -60,10 +68,10 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
         _instances = instances;
         _loading = false;
       });
-    } catch (_) {
+    } catch (err) {
       if (!mounted) return;
       setState(() {
-        _error = EmcapLocale.t('platform.workflow.loadFailed');
+        _error = _clientErrorMessage(err, fallbackKey: 'platform.workflow.loadFailed');
         _loading = false;
         _instances = [];
       });
@@ -98,7 +106,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
       await _reload();
     } catch (err) {
       if (!mounted) return;
-      setState(() => _error = err.toString());
+      setState(() => _error = _clientErrorMessage(err, fallbackKey: 'platform.workflow.loadFailed'));
     }
   }
 
@@ -128,7 +136,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
       await widget.client.transitionWorkflow(instanceId, action, 'admin');
       await _reload();
     } catch (err) {
-      setState(() => _error = err.toString());
+      setState(() => _error = _clientErrorMessage(err, fallbackKey: 'platform.workflow.loadFailed'));
     } finally {
       if (mounted) setState(() => _busyId = null);
     }
@@ -161,29 +169,97 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
       await widget.client.delegateWorkflow(instanceId, delegateTo.trim());
       await _reload();
     } catch (err) {
-      setState(() => _error = err.toString());
+      setState(() => _error = _clientErrorMessage(err, fallbackKey: 'platform.workflow.loadFailed'));
     } finally {
       if (mounted) setState(() => _busyId = null);
     }
   }
 
   Future<void> _showDetail(String instanceId) async {
+    setState(() {
+      _busyId = instanceId;
+      _error = null;
+    });
     try {
       final detail = await widget.client.getWorkflowInstance(instanceId);
       if (!mounted) return;
-      setState(() => _detailPayload = detail);
-    } catch (_) {
+      final entries = workflowDetailEntries(
+        detail,
+        locale: EmcapLocale.locale.value.languageCode,
+      );
+      final entityCode = '${detail['entity_code'] ?? ''}';
+      final recordId = '${detail['record_id'] ?? ''}';
+      final canOpenRecord = entityCode.isNotEmpty && recordId.isNotEmpty;
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(EmcapLocale.t('platform.workflow.detailTitle')),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: entries
+                    .map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              child: Text(entry.label, style: Theme.of(ctx).textTheme.labelMedium),
+                            ),
+                            Expanded(child: Text(entry.value)),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+          actions: [
+            if (canOpenRecord)
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _openRecord(entityCode, recordId);
+                },
+                child: Text(EmcapLocale.t('platform.workflow.openRecord')),
+              ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(EmcapLocale.t('common.cancel')),
+            ),
+          ],
+        ),
+      );
+    } catch (err) {
       if (!mounted) return;
-      setState(() => _error = EmcapLocale.t('platform.workflow.loadFailed'));
+      setState(() => _error = _clientErrorMessage(err, fallbackKey: 'platform.workflow.loadFailed'));
+    } finally {
+      if (mounted) setState(() => _busyId = null);
     }
-  }
-
-  void _closeDetail() {
-    setState(() => _detailPayload = null);
   }
 
   void _openEntity(String entityCode) {
     widget.onOpenEntity?.call(entityCode);
+  }
+
+  Future<void> _openRecord(String entityCode, String recordId) async {
+    if (entityCode.isEmpty || recordId.isEmpty) return;
+    await Navigator.of(context, rootNavigator: true).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => EntityRecordScreen(
+          client: widget.client,
+          entityCode: entityCode,
+          title: entityCode,
+          recordId: recordId,
+        ),
+      ),
+    );
   }
 
   void _openProducts() {
@@ -193,24 +269,29 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
   List<Widget> _actionsFor(String state, String instanceId) {
     final busy = _busyId == instanceId;
     final widgets = <Widget>[
-      TextButton(
-        onPressed: busy ? null : () => _showDetail(instanceId),
-        child: Text(EmcapLocale.t('platform.workflow.detail')),
+      BusyTextButton(
+        label: EmcapLocale.t('platform.workflow.detail'),
+        busy: busy,
+        onPressed: () => _showDetail(instanceId),
+        semanticsLabel: EmcapLocale.t('platform.workflow.detail'),
       ),
     ];
     for (final action in workflowRowActions(state)) {
       widgets.add(
-        TextButton(
-          onPressed: busy ? null : () => _transition(instanceId, action),
-          child: Text(workflowActionLabel(action)),
+        BusyTextButton(
+          label: workflowActionLabel(action),
+          busy: busy,
+          onPressed: () => _transition(instanceId, action),
         ),
       );
     }
     if (workflowCanDelegate(state)) {
       widgets.add(
-        TextButton(
-          onPressed: busy ? null : () => _delegate(instanceId),
-          child: Text(EmcapLocale.t('platform.workflow.delegate')),
+        BusyTextButton(
+          label: EmcapLocale.t('platform.workflow.delegate'),
+          busy: busy,
+          onPressed: () => _delegate(instanceId),
+          semanticsLabel: EmcapLocale.t('platform.workflow.delegate'),
         ),
       );
     }
@@ -251,6 +332,26 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
     return '—';
   }
 
+  Widget _loadingPanel() {
+    return Semantics(
+      label: EmcapLocale.t('a11y.screenReader.loading'),
+      liveRegion: true,
+      container: true,
+      child: ExcludeSemantics(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 12),
+              Text(EmcapLocale.t('common.loading')),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _emptyState() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,36 +366,122 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
     );
   }
 
-  Widget _detailPanel() {
-    if (_detailPayload == null) return const SizedBox.shrink();
-    final entries = workflowDetailEntries(
-      _detailPayload!,
-      locale: EmcapLocale.locale.value.languageCode,
-    );
-    return Card(
-      margin: const EdgeInsets.only(top: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(EmcapLocale.t('platform.workflow.detailTitle'), style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            ...entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 120, child: Text(entry.label, style: Theme.of(context).textTheme.labelMedium)),
-                    Expanded(child: Text(entry.value)),
-                  ],
-                ),
-              ),
+  Widget _loadedBody() {
+    return Semantics(
+      label: EmcapLocale.t('a11y.landmark.main'),
+      container: true,
+      explicitChildNodes: true,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
-            TextButton(onPressed: _closeDetail, child: Text(EmcapLocale.t('common.cancel'))),
+          if (_escalateMsg != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(_escalateMsg!),
+            ),
+          if (_instances.isEmpty)
+            _emptyState()
+          else ...[
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _stateFilter.isEmpty ? null : _stateFilter,
+                    decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.filterState')),
+                    items: [
+                      DropdownMenuItem(value: '', child: Text(EmcapLocale.t('platform.workflow.filterAll'))),
+                      ..._stateOptions.map((s) => DropdownMenuItem(value: s, child: Text(workflowStateLabel(s)))),
+                    ],
+                    onChanged: (v) => setState(() => _stateFilter = v ?? ''),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _assigneeFilter.isEmpty ? null : _assigneeFilter,
+                    decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.filterAssignee')),
+                    items: [
+                      DropdownMenuItem(value: '', child: Text(EmcapLocale.t('platform.workflow.filterAll'))),
+                      ..._assigneeOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))),
+                    ],
+                    onChanged: (v) => setState(() => _assigneeFilter = v ?? ''),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (_filteredInstances.isEmpty) Text(EmcapLocale.t('platform.workflow.noMatches')),
+            ..._filteredInstances.map((item) {
+              final id = '${item['id']}';
+              final state = '${item['current_state']}';
+              final entityCode = '${item['entity_code']}';
+              final recordId = '${item['record_id']}';
+              final dueAt = item['due_at']?.toString();
+              final slaLabel = _slaLabel(dueAt);
+              final canOpenRecord = entityCode.isNotEmpty && recordId.isNotEmpty;
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${item['workflow_code']}',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          Chip(
+                            label: Text(workflowStateLabel(state), style: const TextStyle(fontSize: 11)),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                      if (canOpenRecord)
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () => _openRecord(entityCode, recordId),
+                          child: Text('$entityCode · $recordId'),
+                        )
+                      else
+                        Text('$entityCode · $recordId'),
+                      if (item['assignee'] != null)
+                        Text('${EmcapLocale.t('platform.workflow.colAssignee')}: ${item['assignee']}'),
+                      Wrap(
+                        spacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            '${EmcapLocale.t('platform.workflow.colDueAt')}: ${_formatDue(item['due_at'], item['sla_hours'])}',
+                          ),
+                          if (slaLabel.isNotEmpty)
+                            Chip(
+                              label: Text(slaLabel, style: const TextStyle(fontSize: 11)),
+                              backgroundColor: _slaColor(dueAt),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                        ],
+                      ),
+                      Wrap(spacing: 4, children: _actionsFor(state, id)),
+                    ],
+                  ),
+                ),
+              );
+            }),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -310,7 +497,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
         ],
       ),
       body: _loading
-          ? Center(child: Text(EmcapLocale.t('common.loading')))
+          ? _loadingPanel()
           : _error != null && _instances.isEmpty
               ? Center(
                   child: Column(
@@ -321,118 +508,7 @@ class _WorkflowInboxScreenState extends State<WorkflowInboxScreen> {
                     ],
                   ),
                 )
-              : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    if (_error != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                      ),
-                    if (_escalateMsg != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(_escalateMsg!),
-                      ),
-                    if (_instances.isEmpty)
-                      _emptyState()
-                    else ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _stateFilter.isEmpty ? null : _stateFilter,
-                              decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.filterState')),
-                              items: [
-                                DropdownMenuItem(value: '', child: Text(EmcapLocale.t('platform.workflow.filterAll'))),
-                                ..._stateOptions.map((s) => DropdownMenuItem(value: s, child: Text(workflowStateLabel(s)))),
-                              ],
-                              onChanged: (v) => setState(() => _stateFilter = v ?? ''),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _assigneeFilter.isEmpty ? null : _assigneeFilter,
-                              decoration: InputDecoration(labelText: EmcapLocale.t('platform.workflow.filterAssignee')),
-                              items: [
-                                DropdownMenuItem(value: '', child: Text(EmcapLocale.t('platform.workflow.filterAll'))),
-                                ..._assigneeOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))),
-                              ],
-                              onChanged: (v) => setState(() => _assigneeFilter = v ?? ''),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      if (_filteredInstances.isEmpty) Text(EmcapLocale.t('platform.workflow.noMatches')),
-                      ..._filteredInstances.map((item) {
-                        final id = '${item['id']}';
-                        final state = '${item['current_state']}';
-                        final entityCode = '${item['entity_code']}';
-                        final recordId = '${item['record_id']}';
-                        final dueAt = item['due_at']?.toString();
-                        final slaLabel = _slaLabel(dueAt);
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        '${item['workflow_code']}',
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                    ),
-                                    Chip(
-                                      label: Text(workflowStateLabel(state), style: const TextStyle(fontSize: 11)),
-                                      visualDensity: VisualDensity.compact,
-                                    ),
-                                  ],
-                                ),
-                                if (widget.onOpenEntity != null)
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    onPressed: () => _openEntity(entityCode),
-                                    child: Text('$entityCode · $recordId'),
-                                  )
-                                else
-                                  Text('$entityCode · $recordId'),
-                                if (item['assignee'] != null)
-                                  Text('${EmcapLocale.t('platform.workflow.colAssignee')}: ${item['assignee']}'),
-                                Wrap(
-                                  spacing: 8,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    Text(
-                                      '${EmcapLocale.t('platform.workflow.colDueAt')}: ${_formatDue(item['due_at'], item['sla_hours'])}',
-                                    ),
-                                    if (slaLabel.isNotEmpty)
-                                      Chip(
-                                        label: Text(slaLabel, style: const TextStyle(fontSize: 11)),
-                                        backgroundColor: _slaColor(dueAt),
-                                        visualDensity: VisualDensity.compact,
-                                      ),
-                                  ],
-                                ),
-                                Wrap(spacing: 4, children: _actionsFor(state, id)),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
-                    _detailPanel(),
-                  ],
-                ),
+              : _loadedBody(),
     );
   }
 }

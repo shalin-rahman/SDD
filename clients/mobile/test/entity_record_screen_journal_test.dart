@@ -33,9 +33,9 @@ class _JournalClient extends EmcapClient {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (entityCode == 'JOURNAL_ENTRY_LINE') {
-      return [
+      return EntityRecordsPage(records: [
         {
           'id': 'jel-1',
           'journal_entry_id': 'je-1',
@@ -56,15 +56,15 @@ class _JournalClient extends EmcapClient {
           'debit': 50,
           'credit': 0,
         },
-      ];
+      ]);
     }
     if (entityCode == 'ACCOUNT') {
-      return [
+      return EntityRecordsPage(records: [
         {'id': 'acct-1', 'name': 'Cash'},
         {'id': 'acct-2', 'name': 'Revenue'},
-      ];
+      ]);
     }
-    return [];
+    return const EntityRecordsPage(records: []);
   }
 
   @override

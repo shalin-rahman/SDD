@@ -33,6 +33,8 @@ class EntityRepository:
         entity: EntityDefinition,
         *,
         include_deleted: bool = False,
+        limit: int | None = None,
+        offset: int = 0,
     ) -> list[dict[str, Any]]:
         query = self._session.query(EntityRecordRow).filter_by(
             entity_code=entity.code,
@@ -40,8 +42,25 @@ class EntityRepository:
         )
         if not include_deleted:
             query = query.filter(EntityRecordRow.deleted_at.is_(None))
-        rows = query.order_by(EntityRecordRow.created_at.desc()).all()
+        query = query.order_by(EntityRecordRow.created_at.desc())
+        if limit is not None:
+            query = query.limit(limit).offset(offset)
+        rows = query.all()
         return [self._to_dict(row) for row in rows]
+
+    def count_records(
+        self,
+        entity: EntityDefinition,
+        *,
+        include_deleted: bool = False,
+    ) -> int:
+        query = self._session.query(EntityRecordRow).filter_by(
+            entity_code=entity.code,
+            tenant_id=self._tenant_id,
+        )
+        if not include_deleted:
+            query = query.filter(EntityRecordRow.deleted_at.is_(None))
+        return query.count()
 
     def get_record(self, entity: EntityDefinition, record_id: str) -> dict[str, Any]:
         row = self._get_row(entity.code, record_id)
@@ -111,13 +130,21 @@ class EntityRepository:
         query: str,
         *,
         include_deleted: bool = False,
-    ) -> list[dict[str, Any]]:
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> tuple[list[dict[str, Any]], int]:
         query_lower = query.lower()
         results: list[dict[str, Any]] = []
         for item in self.list_records(entity, include_deleted=include_deleted):
             if self._matches_query(entity, item, query_lower):
                 results.append(item)
-        return results
+        total = len(results)
+        if limit is not None:
+            end = offset + limit
+            results = results[offset:end]
+        elif offset:
+            results = results[offset:]
+        return results, total
 
     def _get_row(
         self,

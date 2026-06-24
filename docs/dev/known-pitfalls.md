@@ -129,6 +129,36 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Save time** | `EntityRepository` rejects missing or soft-deleted target **record IDs** when `registry` is passed — see `test_create_record_rejects_unknown_lookup_reference` |
 | **Where** | `platform/api/src/emcap/persistence/repository.py`, `api/routes/entities.py` |
 
+### Mobile SSE stream — cancel on screen dispose
+
+| | |
+|--|--|
+| **Symptom** | Entity list keeps receiving SSE events after navigating away; memory leak or stale refresh |
+| **Where** | `clients/mobile/lib/app/entity_list_screen.dart` — realtime grid subscription |
+| **Cause** | `subscribeRecordsStream` not cancelled when widget disposes |
+| **Fix** | Call `widget.client.cancelRecordsStream()` in `dispose()`; client tracks active subscription in `emcap_client.dart` |
+| **Test** | `clients/mobile/test/emcap_client_http_test.dart` — cancel contract |
+
+### Mobile HTTP client — request timeout
+
+| | |
+|--|--|
+| **Symptom** | Workflow/entity requests hang indefinitely on slow or dead network |
+| **Where** | `clients/mobile/lib/api/emcap_client.dart` — `_send` |
+| **Cause** | No timeout on `http.Client.send` / response body read |
+| **Fix** | `EmcapClient.requestTimeout` (default **30s**); throws `EmcapClientTimeoutException`; map to i18n `platform.client.timeout` in UI (e.g. workflow inbox) |
+| **Test** | `clients/mobile/test/emcap_client_http_test.dart` |
+
+### Lookup picker — server pagination cap
+
+| | |
+|--|--|
+| **Symptom** | Lookup dialog missing records when target entity has more than page size |
+| **Where** | `clients/mobile/lib/widgets/lookup_field.dart` — `LookupPickerDialog._loadRecords` |
+| **Cause** | Picker fetches one page; default API page size may truncate large entity sets |
+| **Fix** | Pass explicit `limit: 500` (or search `q` to narrow) on `listRecords`; prefer search for large catalogs |
+| **Test** | `clients/mobile/test/lookup_field_test.dart` |
+
 ---
 
 ## Architecture
@@ -860,8 +890,8 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 |--|--|
 | **Symptom** | `spyOn(exportUtil, 'downloadCsv')` throws or never called |
 | **Cause** | ES module exports are not reliably spyable in Karma/Jasmine |
-| **Fix** | Assert component side effects (`historyError`, `isDownloading`) instead of spying the util |
-| **Test** | `entity-list.component.spec.ts` export error path |
+| **Fix** | Spy on component `exportAllRecords` and assert `listRecords` calls; or assert component flags/side effects — do not `spyOn(exportUtil, …)` |
+| **Test** | `entity-list.component.spec.ts` — excel/pdf export when metadata allows |
 
 ### Workflow `slaLabel` — missing `due_at`
 

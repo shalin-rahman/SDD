@@ -27,13 +27,13 @@ class _MovementClient extends EmcapClient {
       Map<String, dynamic>.from(_record);
 
   @override
-  Future<List<Map<String, dynamic>>> listRecords(String entityCode, {String? q}) async {
+  Future<EntityRecordsPage> listRecords(String entityCode, {String? q, int? limit, int? offset}) async {
     if (entityCode == 'STOCK_MOVEMENT_LINE') {
-      return [
+      return EntityRecordsPage(records: [
         {'id': 'line-1', 'movement_id': 'mov-1', 'product_id': 'prod-1', 'quantity': 5},
-      ];
+      ]);
     }
-    return [];
+    return const EntityRecordsPage(records: []);
   }
 
   @override

@@ -65,10 +65,11 @@ class _LookupPickerDialogState extends State<LookupPickerDialog> {
       final response = await widget.client.listRecords(
         widget.entityCode,
         q: query.isEmpty ? null : query,
+        limit: 500,
       );
       if (!mounted) return;
       setState(() {
-        _records = response;
+        _records = response.records;
         _loading = false;
       });
     } catch (_) {

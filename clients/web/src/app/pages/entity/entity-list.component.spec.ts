@@ -69,7 +69,7 @@ describe('EntityListComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(listRecords).toHaveBeenCalledWith('PRODUCT');
+    expect(listRecords).toHaveBeenCalledWith('PRODUCT', { limit: jasmine.any(Number), offset: 0 });
     expect(fixture.nativeElement.textContent).toContain('Products');
   });
 
@@ -79,6 +79,9 @@ describe('EntityListComponent', () => {
         { id: '2', sku: 'B-2', name: 'Beta' },
         { id: '1', sku: 'A-1', name: 'Alpha' },
       ],
+      total: 2,
+      limit: 10,
+      offset: 0,
     });
     fixture.detectChanges();
     await fixture.whenStable();
@@ -235,13 +238,18 @@ describe('EntityListComponent', () => {
     cmp.onSearchInputChange('  find-me  ');
     jasmine.clock().tick(400);
     await fixture.whenStable();
-    expect(listRecords).toHaveBeenCalledWith('PRODUCT', { q: 'find-me' });
+    expect(listRecords).toHaveBeenCalledWith('PRODUCT', {
+      q: 'find-me',
+      limit: jasmine.any(Number),
+      offset: 0,
+    });
     jasmine.clock().uninstall();
   });
 
   it('covers pagination guards, sort cycles, grouping toggle, and export guards', async () => {
     listRecords.and.resolveTo({
       records: Array.from({ length: 25 }, (_, i) => ({ id: String(i + 1), sku: `SKU-${i}` })),
+      total: 25,
     });
     fixture.detectChanges();
     await fixture.whenStable();
@@ -299,16 +307,20 @@ describe('EntityListComponent', () => {
     await fixture.whenStable();
 
     const cmp = fixture.componentInstance;
-    spyOn(URL, 'createObjectURL').and.returnValue('blob:1');
-    const print = jasmine.createSpy('print');
-    const doc = { write: jasmine.createSpy('write'), close: jasmine.createSpy('close') };
-    spyOn(window, 'open').and.returnValue({ document: doc, print } as unknown as Window);
+    expect(cmp.exportExcel).toBeTrue();
+    expect(cmp.exportPdf).toBeTrue();
+    expect(cmp.gridRenderer).not.toBeNull();
+
+    const exportAllSpy = spyOn(
+      cmp as unknown as { exportAllRecords: () => Promise<Record<string, unknown>[]> },
+      'exportAllRecords',
+    ).and.callThrough();
     cmp.exportExcelFile();
     cmp.exportPdfFile();
-    expect(cmp.exportExcel).toBeTrue();
-    const html = doc.write.calls.mostRecent().args[0] as string;
-    expect(html).toContain('Acme Report');
-    expect(html).toContain('Confidential');
+    await fixture.whenStable();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    expect(exportAllSpy).toHaveBeenCalledTimes(2);
+    expect(listRecords).toHaveBeenCalledWith('PRODUCT', undefined);
   });
 
   it('clears search timer and filters grid columns', async () => {

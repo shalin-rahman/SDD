@@ -2,7 +2,7 @@
 
 **Task:** EMCAP-P24-T04  
 **Automated guard:** `cd clients/mobile && flutter test test/a11y_semantics_test.dart`  
-**Surfaces wired:** entity list/record, settings, admin users/roles/security (loading + main landmark semantics)
+**Surfaces wired:** entity list/record, settings, admin users/roles/security, workflow inbox (loading + main landmark semantics)
 
 Run on a **physical device or emulator** with the screen reader enabled before marking P24-T04 Product-ready.
 
@@ -74,6 +74,19 @@ Build: `cd clients/mobile && flutter run` (or install release build). Log in as 
 - [ ] Loading → **Main content** landmark on the combined policy layout.
 - [ ] Entity list rows announce entity code.
 - [ ] ABAC table rows and **Add policy** / **Save ABAC** buttons are reachable.
+
+---
+
+## Workflow inbox
+
+- [ ] While instances load, hear **"Loading content, please wait"** (live region).
+- [ ] After load, **Main content** landmark is announced.
+- [ ] State filter dropdown reads its label and selected value.
+- [ ] **Detail** button on each row is focusable and reads **Detail**.
+- [ ] **Open record** link (entity · record id) navigates to the entity record screen.
+- [ ] Transition buttons (**Approve**, **Reject**, etc.) read their labels; busy state shows spinner feedback.
+- [ ] Load failure shows error banner; **Retry** is focusable.
+- [ ] Empty inbox: **Open Products** shortcut is reachable when shown.
 
 ---
 
