@@ -134,7 +134,7 @@ node scripts/capture-signoff-screenshots.mjs --only=p25
 
 ## Suggested prompt (new chat)
 
-> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. Phases 24–28 **Done** — **526/526** flutter, **85.43%** line. Next: Phase R4 deferred items or optional Demo+ PNG elevation (matrix §19). Read `local-environment.md` for Flutter PATH. No commit before review.
+> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. Phases 24–29 **Done** — **542/542** flutter **85.71%** line; **543/543** karma **80.79%** branches; P29 pagination pytest **3/3**. Next: Phase R4 deferred items or optional Demo+ PNG elevation (matrix §19). Read `local-environment.md` for Flutter PATH. No commit before review.
 
 ---
 

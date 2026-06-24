@@ -203,3 +203,14 @@ Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` ex
 |------------|-----|-----|--------|----------|--------|
 | BCP 47 locale bundles + locale switcher | N/A | **Product-ready (web)** | **Product-ready (mobile)** | `phase27-locale-switch-bn-bd-web.png` · `phase27-locale-switch-bn-bd-mobile.png` | **Product-ready** both surfaces |
 | Locale-aware number / currency / date formatting | N/A | **Product-ready (web)** | Demo+ | `locale-format.util.ts` + karma ≥80%; mobile `locale_format_util.dart` dart tests | **Product-ready (web)** · Mobile Demo+ |
+
+---
+
+## Client verify snapshot (P29 gate — 2026-06-24)
+
+| Layer | Result |
+|-------|--------|
+| Flutter (M2) | **542/542** pass; line **85.71%** |
+| Web Karma | **543/543** pass; branches **80.79%** |
+| API pagination | `tests/test_entity_pagination.py` **3/3** |
+| Mobile a11y | `test/a11y_semantics_test.dart` **17** cases (incl. workflow inbox §10) |

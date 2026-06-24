@@ -717,7 +717,7 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 | EMCAP-P29-T06 | Web entity-list server pagination + export-all async | P29-T05 | Done — `entity-list.component.ts`; `entity-list.component.spec.ts` |
 | EMCAP-P29-T07 | Mobile entity-list server pagination (`EntityRecordsPage`) | P29-T05 | Done — `entity_list_screen.dart`; entity list tests |
 | EMCAP-P29-T08 | Workflow a11y Semantics + manual checklist | P29-T02 | Done — `test/a11y_semantics_test.dart` (17 cases); `docs/dev/recipes/mobile-a11y-manual-checklist.md` § Workflow inbox |
-| EMCAP-P29-T09 | Full verify + doc sync | P29-T01–T08 | Done — 2026-06-24 |
+| EMCAP-P29-T09 | Full verify + doc sync | P29-T01–T08 | Done — 2026-06-24 — **542/542** flutter **85.71%** line; **543/543** karma **80.79%** branches; pagination pytest **3/3** |
 
 ---
 

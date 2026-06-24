@@ -4,7 +4,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 **Legend:** Done · Partial · Stub (API/route only) · No · N/A
 
-**Last updated:** 2026-06-12 · **Platform services wired** (Phase 9). **Product/admin UI gaps:** `spec/sdd/06-admin-product-ui-matrix.md`. **End-user CRUD:** `spec/sdd/05-end-user-matrix.md`.
+**Last updated:** 2026-06-24 · **P29** entity list server pagination (`limit`/`offset`/`total`). **Product/admin UI gaps:** `spec/sdd/06-admin-product-ui-matrix.md`. **End-user CRUD:** `spec/sdd/05-end-user-matrix.md`.
 
 ---
 
@@ -17,7 +17,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 | Multi-tenancy | Done | Done | Done | Done | Tenant picker + themes; Helm prod values |
 | Dynamic menus | Done | Done | Done | N/A | — |
 | Dynamic forms | Done | Done | Done | N/A | Validation, conditions, i18n, layout grid |
-| Dynamic grids | Done | Done | Done | N/A | Sort/filter/group/export |
+| Dynamic grids | Done | Done | Done | N/A | Sort/filter/group/export; **P29** server pagination `limit`/`offset`/`total` on list API + web/mobile clients |
 | Workflow | Done | Done | Done | N/A | Inbox, start, detail, escalate, rules |
 | Reporting | Done | Done | Done | N/A | Run + history |
 | Dashboards | Done | Done | Done | N/A | — |
@@ -61,7 +61,7 @@ Maps each SDD platform goal to **API · Web · Mobile · Infra** status.
 
 | Layer | Primary evidence |
 |-------|------------------|
-| API | `platform/api/tests/` (365+ tests, ~92% cov); P25 finance: `test_purchase_order_entities.py`, `test_vendor_payment_entities.py`, `test_sales_order_entities.py`, `test_customer_payment_entities.py`, `test_journal_double_entry.py`, `test_finance_field_security.py`; P25 demo seed: `data/seed/demo/procurement.json`, `sales.json`, extended `accounting.json`; `test_seed_loader.py` (procurement/sales/GL chain — 9 tests) |
+| API | `platform/api/tests/` (365+ tests, ~92% cov); **P29** pagination: `test_entity_pagination.py` (3 tests); P25 finance: `test_purchase_order_entities.py`, `test_vendor_payment_entities.py`, `test_sales_order_entities.py`, `test_customer_payment_entities.py`, `test_journal_double_entry.py`, `test_finance_field_security.py`; P25 demo seed: `data/seed/demo/procurement.json`, `sales.json`, extended `accounting.json`; `test_seed_loader.py` (procurement/sales/GL chain — 9 tests) |
 | Web | `emcap-client.test.ts` (full route parity), renderer tests |
 | Mobile | `metadata_contract_test.dart`, `emcap_client.dart` parity |
 | End-user UX | `spec/sdd/05-end-user-matrix.md` |

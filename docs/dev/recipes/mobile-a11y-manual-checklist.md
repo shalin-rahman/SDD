@@ -1,6 +1,6 @@
 # Mobile a11y manual checklist (TalkBack / VoiceOver)
 
-**Task:** EMCAP-P24-T04  
+**Task:** EMCAP-P24-T04 · **P29-T08** workflow inbox Semantics  
 **Automated guard:** `cd clients/mobile && flutter test test/a11y_semantics_test.dart`  
 **Surfaces wired:** entity list/record, settings, admin users/roles/security, workflow inbox (loading + main landmark semantics)
 

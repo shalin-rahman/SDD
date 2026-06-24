@@ -15,6 +15,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | **Phase 26 business profile** | `plan/26-business-profile-configuration.md` |
 | **Phase 27 i18n/l10n (BCP 47)** | `plan/26-i18n-l10n-localization.md`, `docs/dev/session-memos/2026-06-18-i18n-gap-audit.md`, `data/i18n/seed/starter-catalog.json` |
 | **Phase 28 finance hardening (app review)** | `plan/28-application-review-remediation.md` — INVOICE/PRODUCT validators, JE UX, mobile parity; coverage ≥80% |
+| **Phase 29 mobile UX hardening** | `plan/29-mobile-ux-hardening.md` — HTTP timeout, `BusyTextButton`, workflow deep-link, SSE cancel, server pagination (API/web/mobile), workflow a11y |
 | Entity platform + UX | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
 | Product readiness gate | `spec/sdd/07-product-readiness-matrix.md` |
 | **All user feedback (memory)** | `docs/product/user-feedback-registry.md` (§A, §M security/memory tiers) |
@@ -147,6 +148,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `spec/i18n/emcap-ui-keys.json` | Required i18n key manifest (expand in P27-T02) |
 | `plan/26-i18n-l10n-localization.md` | Phase 27 i18n/l10n playbook — BCP 47, CLDR plurals, multi-agent waves |
 | `plan/28-application-review-remediation.md` | Phase 28 — application review remediation (validators, JE Post/Void, mobile finance parity); FR-030 |
+| `plan/29-mobile-ux-hardening.md` | Phase 29 — mobile UX hardening (HTTP timeout, busy buttons, workflow deep-link, SSE cancel, server pagination, workflow a11y) |
 | `scripts/e2e-smoke.mjs` | P18-T14 Playwright smoke: login → PRODUCT CRUD + bulk delete → settings → report schedule → admin users → LEAD list; recipe `docs/dev/recipes/e2e-smoke.md` |
 | `.github/workflows/e2e-smoke.yml` | Weekly + manual E2E smoke (authoritative) |
 | `.github/workflows/ci.yml` | `e2e-smoke-optional` job on PRs (`continue-on-error: true`) |
@@ -293,7 +295,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/support/screen_metadata_fixtures.dart` | Shared form/grid JSON fixtures; P25 PO/SO/invoice/payment metadata |
 | `clients/mobile/test/entity_platform_mobile_test.dart` | P18-T16 lookup/status/soft-delete mobile contracts |
 | `clients/mobile/test/record_lifecycle_util_test.dart` | Soft delete / restore helpers (web parity) |
-| `clients/mobile/test/a11y_semantics_test.dart` | P24-T04 — Semantics on entity list/record/settings/admin (loading, landmarks, preview/print); manual checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` |
+| `clients/mobile/test/a11y_semantics_test.dart` | P24-T04 + **P29-T08** — Semantics on entity list/record/settings/admin/workflow inbox (**17** widget cases); manual checklist `docs/dev/recipes/mobile-a11y-manual-checklist.md` § Workflow inbox |
 | `clients/mobile/test/export_util_test.dart` | P26-T12 printable fields HTML helper |
 | `clients/mobile/test/entity_record_screen_invoice_print_test.dart` | P26-T12 mobile INVOICE print dialog + org header/footer |
 | `clients/mobile/test/i18n_keys_parity_test.dart` | P27 web⊆mobile BCP 47 key parity (`en-US`/`bn-BD`/`fr-FR`); org BN gap gate |
@@ -344,11 +346,10 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/document_platform_settings_util_test.dart` | P19-T06 document platform settings defaults + config parse |
 | `clients/web/src/app/shared/utils/field-security.util.spec.ts` | P23-T02 secured visible field names |
 | `clients/mobile/test/admin_field_access_client_test.dart` | P21-T06 mobile `updateAdminFieldAccess` contract |
-| `clients/web/src/app/pages/entity/entity-list.component.spec.ts` | P15-T15 list route loads grid |
+| `clients/web/src/app/pages/entity/entity-list.component.spec.ts` | P15-T15 list route; **P29-T06** server pagination + async export-all |
 | `clients/mobile/lib/app/workflow_inbox_screen.dart` | P17-T02 filters, SLA, entity nav, detail panel; **P29-T02/T03** `BusyTextButton`, open-record deep-link, timeout i18n |
 | `clients/mobile/test/emcap_client_http_test.dart` | **P29-T01/T04** HTTP timeout + SSE cancel contract |
-| `clients/mobile/test/a11y_semantics_test.dart` | P24-T04 + **P29-T08** workflow inbox Semantics (17 widget cases) |
-| `clients/mobile/test/workflow_inbox_screen_test.dart` | P17-T02 + **P29-T03** open entity record from row link |
+| `clients/mobile/test/workflow_inbox_screen_test.dart` | P17-T02 + **P29-T02/T03** `BusyTextButton` busy state + open entity record from row link |
 | `platform/api/tests/test_entity_pagination.py` | **P29-T05** entity list `limit`/`offset`/`total` contract |
 | `clients/web/src/app/pages/entity/entity-list.component.ts` | P15-T15 list route; **P29-T06** server pagination + async export-all |
 | `clients/web/src/app/api/emcap-client.ts` | **P29-T06** pagination params on `listRecords` |

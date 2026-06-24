@@ -920,6 +920,16 @@ Recipe: `docs/dev/recipes/add-coverage-gate.md`. Gate: `karma.conf.js` **80% bra
 | **Fix** | Use `Math.ceil(25 / 10)` or assert `totalPages === 3` |
 | **Test** | `entity-list.component.spec.ts` pagination |
 
+### Entity-list export-all — async paginated fetch (P29)
+
+| | |
+|--|--|
+| **Symptom** | Excel/PDF export spec fails after server pagination; `downloadCsv` spy never fires |
+| **Where** | `clients/web/src/app/pages/entity/entity-list.component.ts` — `exportAllRecords()` |
+| **Cause** | P29 export paths call private `exportAllRecords()` (async `listRecords` fetch), not page-local rows; `exportUtil.downloadCsv` is not spyable in Karma |
+| **Fix** | Spy `exportAllRecords` on the component and assert it was called; or assert `listRecords` pagination params — do not `spyOn(exportUtil, …)` |
+| **Test** | `entity-list.component.spec.ts` — `exports excel and pdf when metadata allows` |
+
 ### Admin-roles — reject then `selectRole` without reload
 
 | | |

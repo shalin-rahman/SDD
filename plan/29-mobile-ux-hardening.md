@@ -1,6 +1,6 @@
 # Phase 29 — Mobile UX hardening (P1/P2)
 
-**Status:** Complete — 2026-06-23  
+**Status:** Complete — 2026-06-24  
 **Parent:** Standards review remediation (loading feedback, pagination, SSE lifecycle, workflow a11y)  
 **Gate:** Mobile Flutter **≥80% line**; web Karma **≥80% branches** on touched files; API pytest for pagination
 
@@ -47,6 +47,14 @@ python ../../scripts/check-flutter-coverage.py --lcov coverage/lcov.info --min 8
 cd clients/web && npm run test:coverage
 # Branches gate: ≥80% (global summary)
 ```
+
+### Results (2026-06-24)
+
+| Layer | Result |
+|-------|--------|
+| API pagination | `tests/test_entity_pagination.py` **3/3** pass |
+| Flutter | **542/542** pass (~4m24s); line coverage **85.71%** (5128/5983) |
+| Web Karma | **543/543** pass; branches **80.79%**; lines **95.17%** |
 
 ---
 

@@ -178,3 +178,10 @@ Maps requirements → design → tasks → verification. Update when tasks compl
 | FR-030 | INVOICE/PRODUCT validators; SO zero-line guard; payment void; PO/SO workflow flag cleanup; JE Post/Void UX (web + mobile) | EMCAP-P28-T02–T14 | `test_invoice_entities.py`, `test_product_stock_guard.py`; payment void tests; `entity-record.component.spec.ts` branches ≥80%; `flutter test --coverage` ≥80% line |
 | FR-018 | `ENTITY_VALIDATORS` in `modules/` only | EMCAP-P28-T02–T06 | `test_platform_core_unchanged.py` |
 | FR-025 / FR-026 / FR-027 | Extends P25 domain rules (regression-safe) | EMCAP-P28-T02, T04, T06 | Existing P25 entity pytest suites + new cases |
+
+## Phase 29 — Mobile UX hardening
+
+| Req ID | Design | Task ID | Verification |
+|--------|--------|---------|--------------|
+| FR-006 | Server-side entity list pagination (`limit`/`offset`/`total`) — API + web + mobile parity | EMCAP-P29-T05–T07 | `tests/test_entity_pagination.py` **3/3**; `entity-list.component.spec.ts`; mobile `EntityRecordsPage` in `entity_list_screen.dart` |
+| NFR-003, NFR-004 | Client coverage gates after mobile/web hardening | EMCAP-P29-T09 | **542/542** flutter **85.71%** line; **543/543** karma **80.79%** branches |
