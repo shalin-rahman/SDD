@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-24 (P29 mobile UX hardening — workflow mobile Demo+, pagination, a11y)
+**Last updated:** 2026-06-24 (matrix 07 partial closure — M3 signed; §8–§9 mobile rows aligned with M2 PNG + 542/542 flutter)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -27,10 +27,10 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 |-----------|--------|----------|--------|
 | **M1** | PRODUCT web Product-ready + screenshots | P19 admin, W4–W6 depth | **Signed (web)** — 2026-06-13; M2 mobile **Signed** 2026-06-22 |
 | **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Signed (mobile)** — 2026-06-22; `phase15-mobile-product-detail.png`; **542/542** flutter; **85.71%** line coverage |
-| **M3** | Entity platform (lookup, status contract, UI complete) | — | **Partial** — P18-T13 bulk Done; platform/lifecycle/movement/crm screen specs green; M2 PNG + matrix sign-off open |
+| **M3** | Entity platform (lookup, status contract, UI complete) | — | **Signed** — 2026-06-24; P18-T13 bulk Done; platform/lifecycle/movement/crm screen specs green; M2 mobile PNG signed 2026-06-22 |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
-| **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile Demo+ lanes open |
-| **M6** | Admin/settings product depth | — | **Signed (web)** — 2026-06-17; §12 Product-ready rows + P18-T15/T21 PNG batch (shell, report schedules, header, ABAC); mobile PNG lanes open |
+| **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile **Demo+** (platform-service device PNGs open) |
+| **M6** | Admin/settings product depth | — | **Signed (web + mobile admin)** — 2026-06-22; §12 Product-ready rows + P18-T15/T21 web PNG batch; mobile admin `phase24-mobile-admin-*.png` (users/roles/security) |
 
 ---
 
@@ -63,17 +63,17 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Capability | API | Web | Mobile | Evidence | Status |
 |------------|-----|-----|--------|----------|--------|
 | Business fields on entity SDK | Done | Done | Done | `modules/inventory/module.py` | Wired |
-| `created_at` / `updated_at` on records | Done | Product-ready | Demo | `test_system_fields.py`; formatters | Web Product-ready · Mobile Demo |
-| `created_by` on create | Done | Product-ready | Demo | `test_create_record_sets_created_by_when_authenticated` | Web Product-ready |
-| System fields in form metadata | Done | Product-ready | Demo | `test_product_form_has_system_section` | Web Product-ready |
-| System columns in grid metadata | Done | Product-ready | Demo | `product.grid.keys.json` | Web Product-ready |
-| `updated_by` on PUT | Done | Product-ready | Demo | `test_system_fields.py`; system card screenshot | Web Product-ready |
-| `record_version` + `If-Match` / 409 | Done | Product-ready | Demo | version conflict test; `emcap_client.updateRecord(ifMatch:)` | Web Product-ready · mobile If-Match wired (P20-T11) |
-| Soft delete + restore | Done | Demo | Demo+ | DELETE 200; web restore; mobile restore banner + `entity_record_screen_lifecycle_test.dart` (2) | Demo — mobile Product-ready blocked on M2 PNG |
-| Enum field type | Done | Demo | Partial | web `<select>` | Demo |
+| `created_at` / `updated_at` on records | Done | Product-ready | Demo+ | `test_system_fields.py`; formatters; M2 system card in `phase15-mobile-product-detail.png` | Web Product-ready · Mobile Demo+ |
+| `created_by` on create | Done | Product-ready | Demo+ | `test_create_record_sets_created_by_when_authenticated` | Web Product-ready · Mobile Demo+ |
+| System fields in form metadata | Done | Product-ready | Demo+ | `test_product_form_has_system_section`; M2 system section card | Web Product-ready · Mobile Demo+ |
+| System columns in grid metadata | Done | Product-ready | Demo | `product.grid.keys.json` | Web Product-ready · Mobile Demo (grid PNG web-only) |
+| `updated_by` on PUT | Done | Product-ready | Demo+ | `test_system_fields.py`; system card screenshot | Web Product-ready · Mobile Demo+ |
+| `record_version` + `If-Match` / 409 | Done | Product-ready | Demo+ | version conflict test; `emcap_client.updateRecord(ifMatch:)` | Web Product-ready · mobile If-Match wired (P20-T11) |
+| Soft delete + restore | Done | Demo | Demo+ | DELETE 200; web restore; mobile restore banner + `entity_record_screen_lifecycle_test.dart` (2) | Demo+ — mobile restore path tested; dedicated restore PNG open |
+| Enum field type | Done | Demo | Demo | web `<select>`; mobile `DropdownButtonFormField` in `entity_record_screen.dart` | Demo |
 | Lookup field type (metadata) | Done | Demo | Demo | `LookupField` + picker dialog (web + mobile) | Demo — P14-T24–T25 Done; Product-ready pending screenshots |
 | Currency / textarea field types | Done | Demo | Demo | `CurrencyField` / `TextareaField`; grid currency format | Demo — P14-T24–T25 Done; Product-ready pending screenshots |
-| Status chip metadata contract | Partial | Demo | Demo | `display.status_field`; web/mobile `buildStatusChipView` + `record_headline.dart` | Partial — P14-T13 API+web Done; mobile headline util P20-T11 |
+| Status chip metadata contract | Demo | Demo | Demo+ | `display.status_field`; web/mobile `buildStatusChipView` + `record_headline.dart`; M2 PNG status chip | Demo+ — P14-T13 API+web Done; mobile headline util P20-T11; M2 PNG |
 
 ---
 
@@ -89,9 +89,9 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Header action bar (save/delete/workflow) | Done | Done | same pack | **Product-ready** web + mobile |
 | Grid datetime formatting | Done | Done | `phase14-product-grid-system-columns.png` | **Product-ready (web)** · Mobile Demo+ |
 | Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo+ |
-| Loading skeleton + error retry | Done | Demo | Partial | **Demo (web)** — P15-T22; mobile list load panel + error retry (`entity_list_screen`) |
-| Empty grid + New CTA | Done | Demo | Partial | **Product-ready (web)** — P15-T23; mobile empty grid + `entity.new` CTA |
-| Professional density at 1280px | Done | Partial | `phase15-product-detail-hero-dark.png` | **Product-ready (web)** — P16-T07 compact toggle on Account; Mobile Demo |
+| Loading skeleton + error retry | Done | Demo+ | Demo+ | **Demo+ (web)** — P15-T22; **Demo+ (mobile)** — load panel + error retry (`entity_list_screen_coverage_test.dart`) |
+| Empty grid + New CTA | Done | Demo+ | Demo+ | **Product-ready (web)** — P15-T23; **Demo+ (mobile)** — empty grid + `entity.new` CTA (`entity_list_screen_coverage_test.dart`); dedicated empty PNG open |
+| Professional density at 1280px | Done | Demo | Demo | `phase15-product-detail-hero-dark.png` (web); M2 detail PNG (mobile width) | **Product-ready (web)** — P16-T07 compact toggle on Account; **Demo+ (mobile)** — M2 detail layout |
 
 **Product-ready** for entity page requires all Demo rows + M1/M2 screenshot pack + `16-product-ready-dod.md` §5.
 
@@ -121,7 +121,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Enterprise shell / nav | Many Done | **Product-ready (web)** | P16-T09 + M6 i18n/retry; `phase19-shell-nav-web.png` via `capture-screenshot-sprint.mjs --only=shell-nav` |
 | Admin users/roles/security | Done | **Product-ready (web)** · **Product-ready (mobile)** | P18-T15/P18-T21 web PNGs; mobile `phase24-mobile-admin-*.png` (2026-06-22) |
 | Entity record header | Done | **Product-ready (web)** | P16-T05 — `RecordDetailHeaderComponent` `.emcap-badge` + `role="status"` aria-label; i18n action labels |
-| Settings hub + isolation | Partial/Done | **Product-ready (web)** | `phase19-settings-ia-web.png`, `phase19-settings-isolation-web.png` — P19-T01/T07; P18-T15 |
+| Settings hub + isolation | Done | **Product-ready (web)** | `phase19-settings-ia-web.png`, `phase19-settings-isolation-web.png` — P19-T01/T07; P18-T15 |
 | Layout designer (ADR-007) | Done | **Product-ready (web)** | `phase19-settings-layout-editor-web.png` — P13-T31; P18-T15 |
 | Tenant branding preview | Done | **Product-ready (web)** | `phase19-settings-branding-web.png` — P19-T05; P18-T15 refresh |
 | Document platform settings | Done | **Product-ready (web)** | `phase19-settings-documents-web.png` — P19-T06; Sprint 12 editable admin; P18-T15 |
@@ -141,7 +141,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Movement types: receive, return, bonus, gift, damage, lost, transfer, adjustment, issue | Done | Product-ready | Demo | `modules/inventory/module.py` | **Product-ready (web)** |
 | Transfer single-doc model + source warehouse validation | Done | Demo | Demo | `modules/inventory/stock_movement.py` | Demo |
 | Posted movement updates `quantity_on_hand` | Done | Demo | Demo | `apply_posted_movement()` · P20-T19 | Demo |
-| Stock movement UX + screenshots | Done | Product-ready | Demo+ | **P20-T18** + P18-T17 util (9) + movement screen (2) | **Product-ready (web)** · Mobile Demo+ (M2 PNG pending) |
+| Stock movement UX + screenshots | Done | Product-ready | Demo+ | **P20-T18** + P18-T17 util (9) + movement screen (2) | **Product-ready (web)** · Mobile Demo+ (movement screen specs green; device PNG open) |
 
 ---
 
@@ -152,7 +152,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Entity | Web | Mobile | Screenshot | Status |
 |--------|-----|--------|------------|--------|
 | WAREHOUSE grid + detail | Done | Demo | `phase18-warehouse-grid-web.png`, `phase18-warehouse-detail-web.png` | **Product-ready (web)** |
-| LEAD grid + detail | Done | Demo | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (P18-T10 screen specs green; M2 PNG pending) |
+| LEAD grid + detail | Done | Demo+ | `phase18-crm-lead-grid-web.png`, `phase18-crm-lead-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (`crm_record_screen_test.dart`; dedicated CRM device PNG open) |
 | CONTACT grid + detail | Done | Demo | `phase18-crm-contact-grid-web.png`, `phase18-crm-contact-detail-web.png` | **Product-ready (web)** · Mobile Demo+ (P18-T10 contracts) |
 
 **Related (P18-T04 Done):** `STOCK_ADJUSTMENT` workflow on PRODUCT detail — web + mobile submit/approve path; approval UX only; does not replace movement document (W5).
@@ -180,7 +180,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 - `docs/product/screenshots/phase25-invoice-partial-web.png`
 - `docs/product/screenshots/phase25-journal-entry-detail-web.png`
 
-Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (8 PNGs, 2026-06-22).
+Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (**11 PNGs**, 2026-06-22–24): M2 PRODUCT detail, P24 admin (3), P25 finance (5), P26 org profile, P27 locale switch.
 
 ---
 
@@ -206,11 +206,11 @@ Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` ex
 
 ---
 
-## Client verify snapshot (P29 gate — 2026-06-24)
+## Client verify snapshot (matrix 07 closure — 2026-06-24)
 
 | Layer | Result |
 |-------|--------|
-| Flutter (M2) | **542/542** pass; line **85.71%** |
-| Web Karma | **543/543** pass; branches **80.79%** |
+| Flutter (M2/M3) | **542/542** pass (~3m51s); line **85.71%** (5128/5983) |
+| Web Karma | **543/543** pass; branches **80.79%** (prior gate — unchanged this session) |
 | API pagination | `tests/test_entity_pagination.py` **3/3** |
 | Mobile a11y | `test/a11y_semantics_test.dart` **17** cases (incl. workflow inbox §10) |

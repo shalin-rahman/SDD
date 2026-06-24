@@ -2,9 +2,9 @@
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-24 (P29 mobile UX hardening Done; P26 Wave 2 T10–T13 Done; M2 mobile signed)
+**Last updated:** 2026-06-24 (matrix 07 partial closure — M3 signed; §8–§9 mobile aligned; P27 mobile PNG captured)
 
-**Honest gate:** Web rows signed with 9 web PNGs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (7 core + P25 finance pack).
+**Honest gate:** Web rows signed with web PNG packs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (**11 mobile PNGs**: M2 PRODUCT, P24 admin×3, P25 finance×5, P26 org profile, P27 locale).
 
 ---
 
@@ -31,7 +31,7 @@
 
 **Agent shell PATH:** prepend `$env:Path = "C:\Users\u1074139\flutter\flutter_windows_3.44.2-stable\flutter\bin;" + $env:Path` before `flutter` commands.
 
-**Next:** M2 mobile PNG pack — integration harness + `scripts/capture-mobile-signoff-screenshots.mjs` added; **automated capture blocked** on this host (no VS toolchain / Android emulator; Flutter web headless stalls post-login). Use manual `flutter run -d chrome` at 390×844 or device/emulator + `integration_test/*_signoff_test.dart`.
+**Next:** Optional Demo+ elevation — org logo/favicon/branding device PNGs (matrix §19); platform-service mobile PNGs (workflow inbox, document preview). Manual capture: `flutter run -d chrome` at 390×844 or device/emulator + `integration_test/*_signoff_test.dart` / `scripts/capture-mobile-signoff-screenshots.mjs`.
 
 Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
@@ -39,25 +39,24 @@ Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
 ## Current focus
 
-Phases **24–29 Done** (2026-06-24). No open Partial backlog tasks.
+Phases **24–29 Done** (2026-06-24). Backlog **0 Partial / 0 Pending**; matrix 07 stale Partials closed this session.
 
 1. **Phase R4 deferred admin/platform depth** — permission matrix editor, dashboard charts, template editor depth, editable security policy, rule evaluate mobile, i18n residual sweep (`plan/21-standard-product-residual-gaps.md` §Phase R4)
-2. **Optional Demo+ elevation** — org logo/favicon/branding device PNGs for matrix §19 rows still Demo+
-3. **P27-T12 mobile locale-switch PNG** — web Done; `phase27-locale-switch-bn-bd-mobile.png` open on device/emulator
-4. **Maintenance** — `node scripts/audit-i18n.mjs` on any i18n touch; re-run verify block below before release
+2. **Optional Demo+ elevation** — org logo/favicon/branding device PNGs for matrix §19 rows still Demo+; platform-service mobile PNGs (workflow inbox, document preview)
+3. **Maintenance** — `node scripts/audit-i18n.mjs` on any i18n touch; re-run verify block below before release
 
 **Do not commit** unless user explicitly asks.
 
 ---
 
-## Verify snapshot (2026-06-24)
+## Verify snapshot (2026-06-24 — matrix 07 closure)
 
 | Layer | Result |
 |-------|--------|
-| Flutter | **542/542** pass (~4m24s); line coverage **85.71%** (5128/5983) |
-| Web Karma | **543/543** pass; branches **80.79%**; lines **95.17%** |
-| P28 backend entity tests | **57/57** pass |
-| P29 API pagination | `tests/test_entity_pagination.py` **3/3** pass |
+| Flutter | **542/542** pass (~3m51s); line coverage **85.71%** (5128/5983) — re-run this session |
+| Web Karma | **543/543** pass; branches **80.79%**; lines **95.17%** (prior gate — unchanged this session) |
+| P28 backend entity tests | **57/57** pass (prior gate) |
+| P29 API pagination | `tests/test_entity_pagination.py` **3/3** pass (prior gate) |
 
 ---
 
@@ -69,7 +68,7 @@ Phases **24–29 Done** (2026-06-24). No open Partial backlog tasks.
 | P24-T02 | `phase24-stock-movement-lines-web.png` | §16 `STOCK_MOVEMENT_LINE` |
 | P25-T13 | `phase25-purchase-order-detail-web.png`, `phase25-vendor-payment-detail-web.png`, `phase25-sales-order-detail-web.png`, `phase25-invoice-partial-web.png`, `phase25-journal-entry-detail-web.png` | §18 (5 rows) |
 | P26-T14 | `phase26-organization-profile-web.png` | §19 Organization profile |
-| P27-T12 | `phase27-locale-switch-bn-bd-web.png` | §20 i18n / locale switcher |
+| P27-T12 | `phase27-locale-switch-bn-bd-web.png`, `phase27-locale-switch-bn-bd-mobile.png` | §20 i18n / locale switcher |
 
 Capture: `node scripts/capture-phase24-screenshots.mjs` · `node scripts/capture-signoff-screenshots.mjs --only=p25|p26|p27`
 
@@ -103,12 +102,12 @@ Plan: `docs/dev/session-memos/2026-06-18-partials-completion-plan.md`
 
 ---
 
-## Still Partial (mobile gates)
+## Optional elevation (no stale Partials)
 
-| Remaining gate | Tasks |
-|----------------|-------|
+| Remaining optional gate | Notes |
+|-------------------------|-------|
 | **Demo+ → Product-ready (optional)** | Matrix §19 logo/favicon/branding/email-signature rows — device PNG evidence |
-| **P27 mobile locale PNG** | `phase27-locale-switch-bn-bd-mobile.png` — run `scripts/capture-signoff-screenshots.mjs --only=p27` on device/emulator |
+| **Platform-service mobile PNGs** | Workflow inbox, document preview, account profile — widget tests green; dedicated device PNG open |
 | **Phase R4 backlog** | Deferred admin/platform depth when product schedules v2 |
 
 ---
@@ -134,7 +133,7 @@ node scripts/capture-signoff-screenshots.mjs --only=p25
 
 ## Suggested prompt (new chat)
 
-> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. Phases 24–29 **Done** — **542/542** flutter **85.71%** line; **543/543** karma **80.79%** branches; P29 pagination pytest **3/3**. Next: Phase R4 deferred items or optional Demo+ PNG elevation (matrix §19). Read `local-environment.md` for Flutter PATH. No commit before review.
+> Continue EMCAP from `docs/dev/HANDOFF-continue-standard-product.md`. Phases 24–29 **Done** — backlog **0 Partial**; matrix 07 Partials closed. **542/542** flutter **85.71%** line (re-verified 2026-06-24); **543/543** karma **80.79%** branches. Next: Phase R4 deferred items or optional Demo+ PNG elevation (§19 branding, platform-service mobile). Read `local-environment.md` for Flutter PATH. No commit before review.
 
 ---
 
