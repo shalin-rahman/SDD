@@ -4,7 +4,7 @@ Honest UX depth vs `spec/framework-sdd.txt` §8–§9. Replaces pytest-only “D
 
 **Companions:** `05-end-user-matrix.md` (CRUD wiring) · `06-admin-product-ui-matrix.md` (admin shell) · `plan/14-entity-platform-baseline.md`
 
-**Last updated:** 2026-06-25 (mobile sign-off refresh — 11 device PNGs via `capture-mobile-signoff-screenshots.mjs`; §8 M2 system-field rows elevated)
+**Last updated:** 2026-06-25 (mobile sign-off — 14 device PNGs; §10 workflow inbox + document preview + account profile elevated; §8 M2 system-field rows)
 
 **Execution index:** `plan/17-standard-product-execution-playbook.md`
 **Roadmap:** `plan/16-standard-product-system.md` — workstreams W1–W8, milestones M1–M6
@@ -29,7 +29,7 @@ User feedback **C15** requires **separate list and record pages** (not single-ro
 | **M2** | PRODUCT mobile parity + screenshot | M4 inventory sign-off | **Signed (mobile)** — 2026-06-22; `phase15-mobile-product-detail.png`; **542/542** flutter; **85.71%** line coverage |
 | **M3** | Entity platform (lookup, status contract, UI complete) | — | **Signed** — 2026-06-24; P18-T13 bulk Done; platform/lifecycle/movement/crm screen specs green; M2 mobile PNG signed 2026-06-22 |
 | **M4** | Inventory module product (PRODUCT + WAREHOUSE) | M5 | **Signed (web)** — 2026-06-14; WAREHOUSE screenshots; mobile Demo+ |
-| **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile **Demo+** (platform-service device PNGs open) |
+| **M5** | Platform services UX + CRM reference | M6 | **Signed (web)** — 2026-06-17; P17-T10 screenshot pack + CRM LEAD/CONTACT PNGs + workflow state i18n (EN/FR/BN); mobile **partial Product-ready** — P17 workflow inbox + document preview + account profile device PNGs (2026-06-25); reports/dashboards/assistant mobile Demo+ |
 | **M6** | Admin/settings product depth | — | **Signed (web + mobile admin)** — 2026-06-22; §12 Product-ready rows + P18-T15/T21 web PNG batch; mobile admin `phase24-mobile-admin-*.png` (users/roles/security) |
 
 ---
@@ -89,8 +89,8 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 | Header action bar (save/delete/workflow) | Done | Done | same pack | **Product-ready** web + mobile |
 | Grid datetime formatting | Done | Done | `phase14-product-grid-system-columns.png` | **Product-ready (web)** · Mobile Demo+ |
 | Grid visual polish (zebra, sticky header) | Done | Done | `phase15-product-grid-polish.png` | **Product-ready (web)** · Mobile Demo+ |
-| Loading skeleton + error retry | Done | Demo+ | Demo+ | **Demo+ (web)** — P15-T22; **Demo+ (mobile)** — load panel + error retry (`entity_list_screen_coverage_test.dart`) |
-| Empty grid + New CTA | Done | Demo+ | Demo+ | **Product-ready (web)** — P15-T23; **Demo+ (mobile)** — empty grid + `entity.new` CTA (`entity_list_screen_coverage_test.dart`); dedicated empty PNG open |
+| Loading skeleton + error retry | Done | Demo+ | `phase15-product-grid-loading.png` · `phase15-mobile-product-grid-loading.png` | **Demo+ (web)** — P15-T22; **Demo+ (mobile)** — load panel + error retry (`entity_list_screen_coverage_test.dart`); loading PNG 390×844 (2026-06-25) |
+| Empty grid + New CTA | Done | Done | `phase15-product-grid-empty.png` · `phase15-mobile-product-grid-empty.png` | **Product-ready (web)** — P15-T23; **Product-ready (mobile)** — empty grid + `entity.new` CTA (`entity_list_screen_coverage_test.dart`); device PNG 41KB (2026-06-25) |
 | Professional density at 1280px | Done | Demo | Done | `phase15-product-detail-hero-dark.png` (web); `phase15-mobile-product-detail.png` (390×844, 2026-06-25) | **Product-ready (web)** — P16-T07 compact toggle on Account; **Product-ready (mobile)** — M2 detail layout |
 
 **Product-ready** for entity page requires all Demo rows + M1/M2 screenshot pack + `16-product-ready-dod.md` §5.
@@ -101,12 +101,12 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 
 | Surface | API (04) | Product readiness | Plan |
 |---------|----------|-------------------|------|
-| Workflow inbox | Done | **Product-ready (web)** · mobile **Demo+** | `phase17-workflow-inbox-web.png` — empty state + CTA; **P29** mobile `BusyTextButton`, open-record deep-link, timeout error i18n, Semantics (17 a11y cases); device PNG open for Product-ready |
+| Workflow inbox | Done | **Product-ready (web)** · **Product-ready (mobile)** | `phase17-workflow-inbox-web.png` · `phase17-workflow-inbox-mobile.png` (2026-06-25); **P29** mobile `BusyTextButton`, open-record deep-link, timeout error i18n, Semantics (17 a11y cases) |
 | Reports + history | Done | **Product-ready (web)** | `phase17-reports-history-web.png` |
 | Dashboards | Done | **Product-ready (web)** | `phase17-dashboards-web.png` |
 | Notifications | Done | **Product-ready (web)** | `phase17-notifications-web.png` |
-| Document preview | Done | **Product-ready (web)** · mobile **Demo+** | P24-T01 `docs/product/screenshots/phase24-document-preview-web.png` — `capture-phase24-screenshots.mjs` (2026-06-19); mobile util+dialog **28/28**; device PNG open for Product-ready |
-| Account / profile | Done | **Product-ready (web)** · mobile **Demo+** | `docs/product/screenshots/phase17-account-profile-web.png`; mobile MFA step indicator (`account_screen_test.dart`) |
+| Document preview | Done | **Product-ready (web)** · **Product-ready (mobile)** | P24-T01 `phase24-document-preview-web.png` · `phase24-document-preview-mobile.png` (2026-06-25) — `capture-phase24-screenshots.mjs` / `capture-mobile-signoff-screenshots.mjs --only=doc`; mobile util+dialog **28/28** |
+| Account / profile | Done | **Product-ready (web)** · **Product-ready (mobile)** | `phase17-account-profile-web.png` · `phase17-account-profile-mobile.png` (2026-06-25); mobile MFA step indicator (`account_screen_test.dart`) |
 | Assistant | Flag | **Demo+** | P18-T19 — empty/retry/i18n when `ai.enabled` |
 | Rule evaluate | Done | **Demo+** | P18-T19 — formula gate + empty/retry/i18n |
 | LOW_STOCK report | Done | **Product-ready (web)** | `phase18-inventory-low-stock-report.png` |
@@ -180,7 +180,7 @@ Backlog **Done** ≠ **Product-ready**. Phase 12/13 backlog Done without screens
 - `docs/product/screenshots/phase25-invoice-partial-web.png`
 - `docs/product/screenshots/phase25-journal-entry-detail-web.png`
 
-Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (**11 PNGs**, refreshed **2026-06-25** via `node scripts/capture-mobile-signoff-screenshots.mjs`): M2 PRODUCT detail, P24 admin (3), P25 finance (5), P26 org profile, P27 locale switch.
+Mobile lanes: **Product-ready** where `docs/product/screenshots/*-mobile.png` exists (**14 PNGs**, refreshed **2026-06-25** via `node scripts/capture-mobile-signoff-screenshots.mjs`): M2 PRODUCT detail, P17 workflow inbox + account profile, P24 admin (3) + document preview, P25 finance (5), P26 org profile, P27 locale switch.
 
 ---
 

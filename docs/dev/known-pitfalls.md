@@ -122,6 +122,26 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Use entity-specific row patterns (`/SO-DEMO/i`, `/INV-DEMO/i`, `/JE-DEMO/i`); **`captureP25()` opens a fresh browser page + login per entity** (mirrors `integration_test/mobile_signoff_test.dart`); verify PNG is not a red 404 panel before matrix sign-off |
 | **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=p25` — each saved PNG shows expected demo code in hero (not `Exception: 404`) |
 
+### Mobile signoff Playwright — document preview needs API seed
+
+| | |
+|--|--|
+| **Symptom** | `--only=doc` fails with `Grid row not found: /SKU-DEMO/i` or cannot fill Flutter web upload fields |
+| **Where** | `scripts/capture-mobile-signoff-screenshots.mjs` `captureP24DocumentPreview()` |
+| **Cause** | Demo seed has no `SKU-DEMO-*` rows; Flutter web TextField upload is unreliable in Playwright |
+| **Fix** | `seedProductDocument()` POSTs to `/api/v1/documents/upload` for `SKU-TOOL-8001` (`11111111-…1120`); capture opens that row and taps Preview |
+| **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=doc` — `phase24-document-preview-mobile.png` ≥40KB with dialog visible |
+
+### Mobile signoff Playwright — grid-empty capture
+
+| | |
+|--|--|
+| **Symptom** | `--only=grid-empty` times out on `waitForBodyText` / `getByText(/No records yet/)` or `getByText(/^Products$/)` |
+| **Where** | `scripts/capture-mobile-signoff-screenshots.mjs` `captureGridPack()` empty branch |
+| **Cause** | (1) `route.fulfill` on initial load lacks CORS → entity list never mounts; (2) Flutter web empty-state copy is canvas-painted — not in `document.body.innerText` or Playwright `getByText` even when visible; (3) `page.waitForFunction(opts)` treats lone object as **function arg**, not timeout (30s default) |
+| **Fix** | Mirror **grid-loading**: load PRODUCT grid (`SKU-` wait), register `context.route` that `route.fetch`es live API with `q=__NO_MATCH_CAPTURE__`, click **Next** to trigger reload; wait for **SKU row count 0** (not empty-state copy); then capture |
+| **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=grid-empty` — `phase15-mobile-product-grid-empty.png` ≥40KB with inbox icon + “No records yet…” + New CTA |
+
 ### Mobile `context.emcapTokens` without Theme extension
 
 | | |

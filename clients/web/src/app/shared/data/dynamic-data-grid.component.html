@@ -9,27 +9,44 @@
     <span>{{ pageLabel }}</span>
     <button type="button" (click)="nextPage.emit()" [disabled]="page >= totalPages">{{ i18n.t('grid.next') }}</button>
     <button type="button" (click)="toggleGroup.emit()">{{ groupBy ? i18n.t('grid.ungroup') : i18n.t('grid.group') }}</button>
+    @if (hasExportOptions) {
+      <button type="button" class="data-grid__export-trigger" [matMenuTriggerFor]="exportMenu">
+        {{ i18n.t('grid.exportMenu') }}
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        @if (exportCsv) {
+          <button mat-menu-item type="button" (click)="exportCsvClick.emit()">
+            {{ i18n.t('grid.exportCsv') }}
+          </button>
+        }
+        @if (exportExcel) {
+          <button mat-menu-item type="button" (click)="exportExcelClick.emit()">
+            {{ i18n.t('grid.exportExcel') }}
+          </button>
+        }
+        @if (exportPdf) {
+          <button mat-menu-item type="button" (click)="exportPdfClick.emit()">
+            {{ i18n.t('grid.exportPdf') }}
+          </button>
+        }
+        @if (bulkActions && exportCsv) {
+          <button
+            mat-menu-item
+            type="button"
+            [disabled]="selectedCount === 0"
+            (click)="bulkExportClick.emit()"
+          >
+            {{ i18n.t('grid.bulkExport') }}
+          </button>
+        }
+      </mat-menu>
+    }
   </div>
 
   @if (bulkActions && selectedCount > 0) {
     <div class="data-grid__bulk">
       <span>{{ selectedCount }} {{ i18n.t('grid.selectedCount') }}</span>
-      <button type="button" (click)="bulkExportClick.emit()">{{ i18n.t('grid.bulkExport') }}</button>
       <button type="button" (click)="bulkDeleteClick.emit()">{{ i18n.t('grid.bulkDelete') }}</button>
-    </div>
-  }
-
-  @if (exportCsv || exportExcel || exportPdf) {
-    <div class="data-grid__export">
-      @if (exportCsv) {
-        <button type="button" (click)="exportCsvClick.emit()">{{ i18n.t('grid.exportCsv') }}</button>
-      }
-      @if (exportExcel) {
-        <button type="button" (click)="exportExcelClick.emit()">{{ i18n.t('grid.exportExcel') }}</button>
-      }
-      @if (exportPdf) {
-        <button type="button" (click)="exportPdfClick.emit()">{{ i18n.t('grid.exportPdf') }}</button>
-      }
     </div>
   }
 

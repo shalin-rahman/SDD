@@ -58,7 +58,8 @@ void main() {
 
     expect(find.text(EmcapLocale.t('grid.selectAll')), findsOneWidget);
     expect(find.text(EmcapLocale.t('grid.bulkDelete')), findsOneWidget);
-    expect(find.text(EmcapLocale.t('grid.bulkExport')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('grid.exportMenu')), findsOneWidget);
+    expect(find.text(EmcapLocale.t('grid.bulkExport')), findsNothing);
     expect(find.byType(Checkbox), findsWidgets);
   });
 
@@ -102,6 +103,26 @@ void main() {
     expect(client.deletedIds, isNotEmpty);
   });
 
+  testWidgets('EntityListScreen hides in-body title when showPageTitle is false', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: EmcapTheme.buildThemeData(seed: Colors.blue, brightness: Brightness.light),
+        home: Scaffold(
+          body: EntityListScreen(
+            client: _BulkListClient(),
+            entityCode: 'PRODUCT',
+            title: 'Products',
+            showPageTitle: false,
+          ),
+        ),
+      ),
+    );
+    await settleEntityScreen(tester);
+
+    expect(find.text('Products'), findsNothing);
+    expect(find.widgetWithText(FilledButton, EmcapLocale.t('entity.new')), findsOneWidget);
+  });
+
   testWidgets('bulk export copies CSV to clipboard', (tester) async {
   String? clipboardText;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -122,6 +143,8 @@ void main() {
 
     await tester.tap(find.byType(Checkbox).at(1));
     await tester.pump();
+    await tester.tap(find.text(EmcapLocale.t('grid.exportMenu')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(EmcapLocale.t('grid.bulkExport')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

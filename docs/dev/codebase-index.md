@@ -80,7 +80,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | Menus API | `platform/api/src/emcap/api/routes/menus.py` | Returns `module` + optional `icon` per item (`MenuDefinition.icon`) |
 | Web legacy (archive) | `clients/web-legacy/` | Read-only reference |
 | Mobile | `clients/mobile/lib/` | Flutter shell; theme tokens `lib/theme/app_tokens.dart`; badges `lib/widgets/emcap_badge.dart`; **verify:** `cd clients/mobile && flutter pub get && flutter test --coverage` (80% gate: `scripts/check-flutter-coverage.py`) |
-| Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; bulk actions when `bulk_actions`; STOCK_MOVEMENT post/lines; P25 PO/SO lines, receive/collect, payment summary; **P29-T04/T07** server pagination (`EntityRecordsPage`) + SSE `cancelRecordsStream()` on dispose |
+| Mobile entity | `clients/mobile/lib/app/entity_list_screen.dart`, `entity_record_screen.dart` | P15-T17 list-only grid + push record/create; bulk actions when `bulk_actions`; **Export »** `PopupMenuButton` (`grid.exportMenu`); `showPageTitle: false` in shell (AppBar title only); token typography on offline banner/pagination; STOCK_MOVEMENT post/lines; P25 PO/SO lines, receive/collect, payment summary; **P29-T04/T07** server pagination (`EntityRecordsPage`) + SSE `cancelRecordsStream()` on dispose |
 | Mobile HTTP client | `clients/mobile/lib/api/emcap_client.dart` | **P29-T01** `requestTimeout` (30s) + `EmcapClientTimeoutException`; **P29-T04** `cancelRecordsStream()`; pagination `limit`/`offset`/`total` on `listRecords` |
 | Busy async button | `clients/mobile/lib/widgets/busy_text_button.dart` | **P29-T02** disabled + inline spinner during async `onPressed` (workflow inbox transitions) |
 | `clients/mobile/lib/utils/bulk_grid_util.dart` | P18-T13 bulk selection + CSV/PDF export + org header/footer printable HTML helpers (web parity) |
@@ -154,7 +154,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `.github/workflows/ci.yml` | `e2e-smoke-optional` job on PRs (`continue-on-error: true`) |
 | `scripts/capture-phase24-screenshots.mjs` | P24 document preview + movement lines web PNG pack (`phase24-*.png`); requires local stack |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); run after `flutter test --coverage` green |
-| `scripts/capture-mobile-signoff-screenshots.mjs` | Playwright mobile Product-ready PNG pack (390×844 Flutter web); `--only=m2|p24|p25|p26|p27|vp`; prereq: API + `flutter build web`; P25 uses fresh page+login per entity; install Playwright in `clients/web` then run from web dir |
+| `scripts/capture-mobile-signoff-screenshots.mjs` | Playwright mobile Product-ready PNG pack (390×844 Flutter web); `--only=m2|p17|doc|p24|p25|p26|p27|vp|restore|grid|grid-empty|grid-loading|grid-error|crm|movement|warehouse|branding|invoice|localefmt`; prereq: API + `flutter build web`; P25 fresh page+login per entity; `--only=doc` seeds document via API; `--only=grid-empty` uses post-load `route.fetch` + `q=__NO_MATCH_CAPTURE__` (see `known-pitfalls.md` § grid-empty) |
 
 **Run from repository root:** `scripts\run-emcap.bat`
 
@@ -279,7 +279,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `clients/mobile/test/entity_record_hero_test.dart` | P15-T13/P20-T03/P18-T09 M2 PRODUCT detail hero widget contract (6 tests) |
 | `clients/mobile/test/account_screen_test.dart` | P18-T11 mobile MFA step indicator contract |
 | `clients/mobile/test/entity_list_bulk_test.dart` | P18-T13 `GridMetadata.bulkActions` + `bulk_grid_util` selection/export contract (10 tests) |
-| `clients/mobile/test/entity_list_screen_bulk_test.dart` | P18-T13 `EntityListScreen` bulk toolbar, delete guard, export widget tests (4) |
+| `clients/mobile/test/entity_list_screen_bulk_test.dart` | P18-T13 `EntityListScreen` bulk toolbar, delete guard, **Export »** menu + bulk export widget tests (4) |
 | `clients/mobile/test/entity_list_screen_sse_test.dart` | P18-T20 `EntityListScreen` offline/reload banner + realtime label widget tests (3) |
 | `clients/mobile/test/entity_record_movement_test.dart` | P18-T17 `stock_movement_util` post/lines + soft-delete contract (9 tests) |
 | `clients/mobile/test/entity_record_screen_movement_test.dart` | P18-T17 `EntityRecordScreen` post movement confirm flow widget tests (2) |

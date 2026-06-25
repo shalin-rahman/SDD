@@ -27,7 +27,7 @@ Reusable layout, navigation, data grid, and form components for web shell, entit
 
 | Component | Selector | Use |
 |-----------|----------|-----|
-| `DynamicDataGridComponent` | `app-dynamic-data-grid` | Metadata-driven grid + toolbar; `[loading]` inline panel; empty grid → `EmptyStateComponent` + New CTA |
+| `DynamicDataGridComponent` | `app-dynamic-data-grid` | Metadata-driven grid + toolbar; **Export »** `mat-menu` in toolbar row (`grid.exportMenu`) for CSV/Excel/PDF + bulk export; `[loading]` inline panel; empty grid → `EmptyStateComponent` + New CTA |
 | `DynamicFormViewComponent` | `app-dynamic-form-view` | Metadata-driven form fields (select, lookup, currency, textarea) |
 | `LookupFieldComponent` | `app-lookup-field` | Lookup picker trigger + selected label |
 | `LookupPickerDialogComponent` | (dialog) | Search/select target entity record |

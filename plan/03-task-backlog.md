@@ -502,7 +502,7 @@ Playbook: `plan/18-reference-modules-product.md`
 | EMCAP-P18-T10 | CRM mobile LEAD/CONTACT Product-ready | P18-T06, P18-T09 | Done — `crm_record_screen_test.dart` (2) + contracts (13); matrix §18 mobile Product-ready blocked on M2 PNG only |
 | EMCAP-P18-T16 | Mobile entity platform Product-ready (lookup, status, soft delete) | P18-T09 | Done — `entity_platform_mobile_test.dart` (11) + `lookup_field_test.dart` (3) + `entity_record_screen_lifecycle_test.dart` (2); matrix Product-ready blocked on M2 PNG |
 | EMCAP-P18-T17 | STOCK_MOVEMENT mobile Product-ready | P20-T18, P18-T09 | Done — `entity_record_movement_test.dart` (9) + `entity_record_screen_movement_test.dart` (2); matrix Product-ready blocked on M2 PNG |
-| EMCAP-P18-T18 | Document preview mobile Product-ready | P17-T06 | Done — util (24) + dialog (4/4); matrix §10 mobile Product-ready blocked on device PNG |
+| EMCAP-P18-T18 | Document preview mobile Product-ready | P17-T06 | Done — util (24) + dialog (4/4); `phase24-document-preview-mobile.png` via `capture-mobile-signoff-screenshots.mjs --only=doc` (2026-06-25); matrix §10 **Product-ready (mobile)** |
 | EMCAP-P18-T20 | Grid realtime/offline mobile parity | P15-T14 | Done — contract (8) + `entity_list_screen_sse_test.dart` (3/3); matrix Product-ready blocked on M2 PNG |
 | EMCAP-P18-T19 | Assistant + rule-evaluate product bar | P17-T09, P17-T11 | Done — web flag gate, empty/retry/i18n; rule-evaluate formula gate + specs (2026-06-17) |
 | EMCAP-P18-T22 | Remaining YAML-only settings (AI backend, observability) | P19-T01 | Done — web read-only AI backend summary + observability runbook hints; `ai.enabled` toggle editable (2026-06-17) |

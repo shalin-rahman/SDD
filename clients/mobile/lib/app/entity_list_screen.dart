@@ -14,12 +14,15 @@ class EntityListScreen extends StatefulWidget {
     required this.client,
     required this.entityCode,
     required this.title,
+    this.showPageTitle = true,
     this.onOpenWorkflowInbox,
   });
 
   final EmcapClient client;
   final String entityCode;
   final String title;
+  /// When false, title is shown only by the shell AppBar (avoids duplicate headings).
+  final bool showPageTitle;
   final VoidCallback? onOpenWorkflowInbox;
 
   @override
@@ -241,6 +244,229 @@ class _EntityListScreenState extends State<EntityListScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(label)));
   }
 
+  bool get _hasExportOptions => _exportCsv || _exportExcel || _exportPdf;
+
+  TextStyle _pageTitleStyle(BuildContext context) {
+    final tokens = context.emcapTokens;
+    return Theme.of(context).textTheme.titleLarge!.copyWith(
+          fontSize: tokens.fontTitleLg,
+          fontWeight: FontWeight.w600,
+          color: tokens.text,
+        );
+  }
+
+  TextStyle _mutedBodyStyle(BuildContext context, {double? fontSize}) {
+    final tokens = context.emcapTokens;
+    return Theme.of(context).textTheme.bodySmall!.copyWith(
+          fontSize: fontSize ?? tokens.fontBodySm,
+          color: tokens.textMuted,
+        );
+  }
+
+  Widget _pageTitle(BuildContext context, String title) {
+    return Text(title, style: _pageTitleStyle(context));
+  }
+
+  Widget _listHeader(BuildContext context) {
+    if (!widget.showPageTitle) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: FilledButton(
+          onPressed: () => _openRecord(creatingNew: true),
+          child: Text(EmcapLocale.t('entity.new')),
+        ),
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: _pageTitle(context, widget.title)),
+        FilledButton(
+          onPressed: () => _openRecord(creatingNew: true),
+          child: Text(EmcapLocale.t('entity.new')),
+        ),
+      ],
+    );
+  }
+
+  Widget _offlineStatusBanner(BuildContext context) {
+    final tokens = context.emcapTokens;
+    final text = _changeCount > 0
+        ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')} · ${EmcapLocale.t('grid.snapshot')} $_syncVersion'
+        : '${EmcapLocale.t('grid.offlineStatus')}: $_syncVersion';
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm, vertical: tokens.spaceXs),
+      decoration: BoxDecoration(
+        color: tokens.surfaceContainer,
+        borderRadius: BorderRadius.circular(tokens.radiusMd),
+      ),
+      child: Text(text, style: _mutedBodyStyle(context)),
+    );
+  }
+
+  void _handleExportSelection(
+    String value,
+    DynamicGridRenderer gridRenderer,
+    List<Map<String, dynamic>> working,
+  ) {
+    switch (value) {
+      case 'csv':
+        _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportCsv'));
+      case 'excel':
+        _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportExcel'));
+      case 'pdf':
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(EmcapLocale.t('grid.exportPdf')),
+            content: SingleChildScrollView(child: Text(_exportText(gridRenderer, working))),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportPdf'));
+                  Navigator.pop(ctx);
+                },
+                child: Text(EmcapLocale.t('document.preview.download')),
+              ),
+            ],
+          ),
+        );
+      case 'bulk':
+        _exportSelected(EmcapLocale.t('grid.bulkExport'), gridRenderer, working);
+    }
+  }
+
+  TextStyle _actionLabelStyle(BuildContext context) {
+    final tokens = context.emcapTokens;
+    return Theme.of(context).textTheme.bodyMedium!.copyWith(
+          fontSize: tokens.fontBodyMd,
+          color: tokens.text,
+        );
+  }
+
+  Widget _exportMenuButton(
+    BuildContext context,
+    DynamicGridRenderer gridRenderer,
+    List<Map<String, dynamic>> working,
+  ) {
+    if (!_hasExportOptions) return const SizedBox.shrink();
+    final tokens = context.emcapTokens;
+    return PopupMenuButton<String>(
+      onSelected: (value) => _handleExportSelection(value, gridRenderer, working),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.radiusMd)),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm, vertical: tokens.spaceXs),
+        decoration: BoxDecoration(
+          border: Border.all(color: tokens.border),
+          borderRadius: BorderRadius.circular(tokens.radiusMd),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(EmcapLocale.t('grid.exportMenu'), style: _actionLabelStyle(context)),
+            Icon(Icons.arrow_drop_down, size: tokens.fontBodyMd + 4, color: tokens.textMuted),
+          ],
+        ),
+      ),
+      itemBuilder: (context) {
+        final items = <PopupMenuEntry<String>>[];
+        if (_exportCsv) {
+          items.add(PopupMenuItem(value: 'csv', child: Text(EmcapLocale.t('grid.exportCsv'))));
+        }
+        if (_exportExcel) {
+          items.add(PopupMenuItem(value: 'excel', child: Text(EmcapLocale.t('grid.exportExcel'))));
+        }
+        if (_exportPdf) {
+          items.add(PopupMenuItem(value: 'pdf', child: Text(EmcapLocale.t('grid.exportPdf'))));
+        }
+        if (_bulkActions && _exportCsv) {
+          items.add(
+            PopupMenuItem(
+              value: 'bulk',
+              enabled: _selectedRecordIds.isNotEmpty,
+              child: Text(EmcapLocale.t('grid.bulkExport')),
+            ),
+          );
+        }
+        return items;
+      },
+    );
+  }
+
+  Widget _actionBar(
+    BuildContext context,
+    DynamicGridRenderer gridRenderer,
+    List<Map<String, dynamic>> pageRecords,
+    List<Map<String, dynamic>> working,
+    GridMetadata grid,
+  ) {
+    final tokens = context.emcapTokens;
+    final bulkActions = <Widget>[
+      if (_bulkActions) ...[
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            foregroundColor: tokens.text,
+            textStyle: _actionLabelStyle(context),
+          ),
+          onPressed: pageRecords.isEmpty ? null : () => _toggleSelectAllPage(pageRecords),
+          child: Text(EmcapLocale.t('grid.selectAll')),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            foregroundColor: tokens.text,
+            textStyle: _actionLabelStyle(context),
+          ),
+          onPressed: _selectedRecordIds.isEmpty ? null : _bulkDeleteSelected,
+          child: Text(EmcapLocale.t('grid.bulkDelete')),
+        ),
+      ],
+    ];
+    final secondaryActions = <Widget>[
+      _exportMenuButton(context, gridRenderer, working),
+      if (grid.grouping)
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            foregroundColor: tokens.text,
+            textStyle: _actionLabelStyle(context),
+          ),
+          onPressed: () => setState(() {
+            _groupField = _groupField == null
+                ? (gridRenderer.columnFields().isEmpty ? null : gridRenderer.columnFields().first)
+                : null;
+          }),
+          child: Text(_groupField == null ? EmcapLocale.t('grid.group') : EmcapLocale.t('grid.ungroup')),
+        ),
+    ];
+    final hasSecondary = _hasExportOptions || grid.grouping;
+    if (bulkActions.isEmpty && !hasSecondary) return const SizedBox.shrink();
+    return Padding(
+      padding: EdgeInsets.only(top: tokens.spaceSm),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            ...bulkActions,
+            if (bulkActions.isNotEmpty && hasSecondary) ...[
+              SizedBox(width: tokens.spaceXs),
+              VerticalDivider(width: 1, thickness: 1, color: tokens.border, indent: 4, endIndent: 4),
+              SizedBox(width: tokens.spaceXs),
+            ],
+            ...secondaryActions,
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _openRecord({String? recordId, bool creatingNew = false}) async {
     final changed = await Navigator.of(context, rootNavigator: true).push<bool>(
       MaterialPageRoute(
@@ -343,7 +569,11 @@ class _EntityListScreenState extends State<EntityListScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+        if (widget.showPageTitle)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.emcapTokens.spaceMd),
+            child: _pageTitle(context, widget.title),
+          ),
           Expanded(child: _errorState(_loadError!, onRetry: _loadEntity)),
         ],
       );
@@ -352,7 +582,11 @@ class _EntityListScreenState extends State<EntityListScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+        if (widget.showPageTitle)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.emcapTokens.spaceMd),
+            child: _pageTitle(context, widget.title),
+          ),
           Expanded(child: _loadingPanel()),
         ],
       );
@@ -380,33 +614,27 @@ class _EntityListScreenState extends State<EntityListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
-            ),
-            FilledButton(
-              onPressed: () => _openRecord(creatingNew: true),
-              child: Text(EmcapLocale.t('entity.new')),
-            ),
-          ],
+        Padding(
+          padding: EdgeInsets.fromLTRB(tokens.spaceMd, tokens.spaceSm, tokens.spaceMd, 0),
+          child: _listHeader(context),
         ),
-        SizedBox(height: tokens.spaceSm),
         Expanded(
           child: ListView(
-            padding: EdgeInsets.all(tokens.spaceSm),
+            padding: EdgeInsets.all(tokens.spaceMd),
             children: [
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
                   labelText: EmcapLocale.t('entity.search'),
                   border: const OutlineInputBorder(),
+                  isDense: true,
                 ),
                 onSubmitted: (_) {
                   _page = 1;
                   _reloadList();
                 },
               ),
+              SizedBox(height: tokens.spaceSm),
               Row(
                 children: [
                   TextButton(
@@ -418,8 +646,12 @@ class _EntityListScreenState extends State<EntityListScreen> {
                         : null,
                     child: Text(EmcapLocale.t('grid.prev')),
                   ),
-                  Text(
-                    '${EmcapLocale.t('grid.page')} $_page / $totalPages ($totalRecords ${EmcapLocale.t('grid.records')})',
+                  Expanded(
+                    child: Text(
+                      '${EmcapLocale.t('grid.page')} $_page / $totalPages ($totalRecords ${EmcapLocale.t('grid.records')})',
+                      textAlign: TextAlign.center,
+                      style: _mutedBodyStyle(context),
+                    ),
                   ),
                   TextButton(
                     onPressed: _page < totalPages && !_loadingList
@@ -432,92 +664,30 @@ class _EntityListScreenState extends State<EntityListScreen> {
                   ),
                 ],
               ),
-              Text(
-                _changeCount > 0
-                    ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')} · ${EmcapLocale.t('grid.snapshot')} $_syncVersion'
-                    : '${EmcapLocale.t('grid.offlineStatus')}: $_syncVersion',
-              ),
-              if (_realtimeEnabled)
+              SizedBox(height: tokens.spaceXs),
+              _offlineStatusBanner(context),
+              if (_realtimeEnabled) ...[
+                SizedBox(height: tokens.spaceXs),
                 Text(
                   EmcapLocale.t('settings.grid.realtime'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
+                        fontSize: tokens.fontBodySm,
                       ),
                 ),
-              if (_bulkActions && _selectedRecordIds.isNotEmpty)
+              ],
+              if (_bulkActions && _selectedRecordIds.isNotEmpty) ...[
+                SizedBox(height: tokens.spaceXs),
                 Text(
                   '${_selectedRecordIds.length} ${EmcapLocale.t('grid.selectedCount')}',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: tokens.fontBodyMd),
                 ),
-              if (_bulkError != null)
+              ],
+              if (_bulkError != null) ...[
+                SizedBox(height: tokens.spaceXs),
                 Text(_bulkError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (_bulkActions) ...[
-                    TextButton(
-                      onPressed: pageRecords.isEmpty ? null : () => _toggleSelectAllPage(pageRecords),
-                      child: Text(EmcapLocale.t('grid.selectAll')),
-                    ),
-                    TextButton(
-                      onPressed: _selectedRecordIds.isEmpty ? null : _bulkDeleteSelected,
-                      child: Text(EmcapLocale.t('grid.bulkDelete')),
-                    ),
-                    if (_exportCsv)
-                      TextButton(
-                        onPressed: _selectedRecordIds.isEmpty
-                            ? null
-                            : () => _exportSelected(
-                                  EmcapLocale.t('grid.bulkExport'),
-                                  gridRenderer,
-                                  working,
-                                ),
-                        child: Text(EmcapLocale.t('grid.bulkExport')),
-                      ),
-                  ],
-                  if (_exportCsv)
-                    TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportCsv')),
-                      child: Text(EmcapLocale.t('grid.exportCsv')),
-                    ),
-                  if (_exportExcel)
-                    TextButton(
-                      onPressed: () => _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportExcel')),
-                      child: Text(EmcapLocale.t('grid.exportExcel')),
-                    ),
-                  if (_exportPdf)
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text(EmcapLocale.t('grid.exportPdf')),
-                            content: SingleChildScrollView(child: Text(_exportText(gridRenderer, working))),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  _copyExport(_exportText(gridRenderer, working), EmcapLocale.t('grid.exportPdf'));
-                                  Navigator.pop(ctx);
-                                },
-                                child: Text(EmcapLocale.t('document.preview.download')),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      child: Text(EmcapLocale.t('grid.exportPdf')),
-                    ),
-                  if (grid.grouping)
-                    TextButton(
-                      onPressed: () => setState(() {
-                        _groupField = _groupField == null
-                            ? (gridRenderer.columnFields().isEmpty ? null : gridRenderer.columnFields().first)
-                            : null;
-                      }),
-                      child: Text(_groupField == null ? EmcapLocale.t('grid.group') : EmcapLocale.t('grid.ungroup')),
-                    ),
-                ],
-              ),
+              ],
+              _actionBar(context, gridRenderer, pageRecords, working, grid),
               if (_loadingList)
                 _loadingPanel(inline: true)
               else if (isEmpty)

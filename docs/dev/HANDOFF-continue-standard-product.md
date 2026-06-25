@@ -2,9 +2,9 @@
 
 **Copy into a new Cursor chat** to continue without re-exploring the repo.
 
-**Last updated:** 2026-06-25 (mobile sign-off refresh — 11 device PNGs re-captured; §8 M2 system-field rows elevated in matrix 07)
+**Last updated:** 2026-06-25 (mobile sign-off — **14 device PNGs**; §10 P17 workflow inbox + document preview + account profile Product-ready; §8 M2 system-field rows)
 
-**Honest gate:** Web rows signed with web PNG packs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (**11 mobile PNGs**, refreshed 2026-06-25: M2 PRODUCT, P24 admin×3, P25 finance×5, P26 org profile, P27 locale).
+**Honest gate:** Web rows signed with web PNG packs; **mobile Product-ready** where device PNG exists under `docs/product/screenshots/` (**14 mobile PNGs**, refreshed 2026-06-25: M2 PRODUCT, P17 platform×3, P24 admin×3 + doc preview, P25 finance×5, P26 org profile, P27 locale).
 
 ---
 
@@ -31,7 +31,7 @@
 
 **Agent shell PATH:** prepend `$env:Path = "C:\Users\u1074139\flutter\flutter_windows_3.44.2-stable\flutter\bin;" + $env:Path` before `flutter` commands.
 
-**Next:** Optional Demo+ elevation — org logo/favicon/branding device PNGs (matrix §19); platform-service mobile PNGs (workflow inbox, document preview). Manual capture: `flutter run -d chrome` at 390×844 or device/emulator + `integration_test/*_signoff_test.dart` / `scripts/capture-mobile-signoff-screenshots.mjs`.
+**Next:** Optional Demo+ elevation — org logo/favicon/branding device PNGs (matrix §19); inventory/CRM mobile PNGs (§16–§17). Capture: `node scripts/capture-mobile-signoff-screenshots.mjs --only=p17|doc|…`.
 
 Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 
@@ -42,7 +42,7 @@ Pitfalls: `docs/dev/known-pitfalls.md` § Flutter widget test (3 new entries).
 Phases **24–29 Done** (2026-06-24). Backlog **0 Partial / 0 Pending**; matrix 07 stale Partials closed this session.
 
 1. **Phase R4 deferred admin/platform depth** — permission matrix editor, dashboard charts, template editor depth, editable security policy, rule evaluate mobile, i18n residual sweep (`plan/21-standard-product-residual-gaps.md` §Phase R4)
-2. **Optional Demo+ elevation** — org logo/favicon/branding device PNGs for matrix §19 rows still Demo+; platform-service mobile PNGs (workflow inbox, document preview)
+2. **Optional Demo+ elevation** — org logo/favicon/branding device PNGs for matrix §19 rows still Demo+; inventory/CRM/stock-movement mobile PNGs (§16–§17)
 3. **Maintenance** — `node scripts/audit-i18n.mjs` on any i18n touch; re-run verify block below before release
 
 **Do not commit** unless user explicitly asks.
@@ -107,7 +107,7 @@ Plan: `docs/dev/session-memos/2026-06-18-partials-completion-plan.md`
 | Remaining optional gate | Notes |
 |-------------------------|-------|
 | **Demo+ → Product-ready (optional)** | Matrix §19 logo/favicon/branding/email-signature rows — device PNG evidence |
-| **Platform-service mobile PNGs** | Workflow inbox, document preview, account profile — widget tests green; dedicated device PNG open |
+| **Platform-service mobile PNGs** | ~~Workflow inbox, document preview, account profile~~ **Done 2026-06-25** — `phase17-workflow-inbox-mobile.png`, `phase24-document-preview-mobile.png`, `phase17-account-profile-mobile.png` |
 | **Phase R4 backlog** | Deferred admin/platform depth when product schedules v2 |
 
 ---

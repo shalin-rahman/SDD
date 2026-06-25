@@ -133,6 +133,7 @@ Agents: also read `docs/dev/codebase-index.md` and `plan/16-standard-product-sys
 | ID | User said | Required behavior | Tasks |
 |----|-----------|-------------------|-------|
 | F1 | List and entry are **separate pages**, not master–detail | Web: `/app/entity/:code` = grid only; `/app/entity/:code/:id` = record (new uses `/new`). Mobile: list screen → push detail route. Breadcrumbs back to list. | **P15-T15**, **P15-T17** |
+| F2 | Mobile entity list typography + export UX (2026-06-25) | Page title in shell AppBar only (`showPageTitle: false` on `EntityListScreen`); token typography (`fontTitleLg`, `textMuted`, `surfaceContainer`) on AppBar, offline snapshot banner, pagination. Export formats in single **Export »** dropdown (`grid.exportMenu`); bulk export inside menu when `bulk_actions`. Action bar: horizontal scroll, bulk vs export separated by divider. Web `DynamicDataGridComponent`: export trigger in toolbar row. | Mobile `entity_list_screen.dart`, `shell.dart`; web `dynamic-data-grid.component.*` |
 
 **Not required:** grid columns duplicated on the entry form — grid is for browse/search on the list route; form fields follow form metadata on the record route (user clarified 2026-06-14).
 

@@ -1,4 +1,5 @@
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +13,7 @@ import { formatGridCellValue } from '../utils/field-display.util';
 @Component({
   selector: 'app-dynamic-data-grid',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, EmptyStateComponent, LoadingPanelComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatMenuModule, EmptyStateComponent, LoadingPanelComponent],
   templateUrl: './dynamic-data-grid.component.html',
   styleUrl: './dynamic-data-grid.component.scss',
 })
@@ -59,6 +60,10 @@ export class DynamicDataGridComponent {
 
   get selectedCount(): number {
     return this.selectedRecordIds.length;
+  }
+
+  get hasExportOptions(): boolean {
+    return this.exportCsv || this.exportExcel || this.exportPdf;
   }
 
   isSelected(record: Record<string, unknown>): boolean {

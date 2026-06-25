@@ -1,12 +1,32 @@
 .data-grid__toolbar,
-.data-grid__export {
+.data-grid__bulk {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
+.data-grid__export-trigger,
+.data-grid__toolbar button {
+  font-size: var(--emcap-font-body-md, 1rem);
+  color: var(--emcap-text, #1a1a1a);
+  background: transparent;
+  border: 1px solid var(--emcap-border, #e0e0e0);
+  border-radius: var(--emcap-radius-md, 8px);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--emcap-primary) 8%, var(--emcap-surface));
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
 .data-grid__status {
   font-size: 0.875rem;
   margin: 0 0 0.5rem;

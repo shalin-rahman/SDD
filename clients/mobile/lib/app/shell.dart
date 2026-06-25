@@ -237,6 +237,7 @@ class _EmcapShellState extends State<EmcapShell> {
         client: widget.client,
         entityCode: entityCode,
         title: label,
+        showPageTitle: false,
         onOpenWorkflowInbox: () => _selectKey('workflow'),
       );
     }
@@ -392,7 +393,14 @@ class _EmcapShellState extends State<EmcapShell> {
           key: _scaffoldKey,
           drawer: wide ? null : _drawer(),
           appBar: AppBar(
-            title: Text(selected.label),
+            title: Text(
+              selected.label,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: context.emcapTokens.fontTitleLg,
+                    fontWeight: FontWeight.w600,
+                    color: context.emcapTokens.text,
+                  ),
+            ),
             actions: [
               PopupMenuButton<String>(
                 tooltip: EmcapLocale.t('toolbar.locale'),

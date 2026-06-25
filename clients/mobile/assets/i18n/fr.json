@@ -398,6 +398,7 @@
   "grid.exportCsv": "Exporter CSV",
   "grid.exportExcel": "Exporter Excel",
   "grid.exportPdf": "Exporter PDF",
+  "grid.exportMenu": "Exporter »",
   "grid.filter": "Filtrer",
   "grid.sort": "Trier",
   "grid.page": "Page",

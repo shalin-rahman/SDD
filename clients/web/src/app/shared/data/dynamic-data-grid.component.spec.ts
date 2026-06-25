@@ -80,4 +80,10 @@ describe('DynamicDataGridComponent keyboard navigation', () => {
     expect(component.allPageSelected).toBeTrue();
     expect(component.selectedCount).toBe(2);
   });
+
+  it('exposes export menu when any export format is enabled', () => {
+    expect(component.hasExportOptions).toBeFalse();
+    component.exportCsv = true;
+    expect(component.hasExportOptions).toBeTrue();
+  });
 });
