@@ -50,4 +50,10 @@ void main() {
     final date = DateTime.utc(2026, 6, 19);
     expect(formatDate(date, 'en-US', pattern: DateFormat('yyyy-MM-dd')), '2026-06-19');
   });
+
+  test('formatIsoTimestamp parses sync version for banners', () {
+    final formatted = formatIsoTimestamp('2026-06-25T07:27:53.900841+00:00', 'en-US');
+    expect(formatted, isNotNull);
+    expect(formatted, isNot(contains('T07:27:53')));
+  });
 }

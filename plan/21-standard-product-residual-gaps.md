@@ -193,4 +193,4 @@ Doc sync on any P24 Done: `docs/dev/recipes/sync-docs-after-change.md`, matrix *
 
 ---
 
-**Historical planning artifact (2026-06-18).** Phases **24–28 Done** (2026-06-23). **Current focus:** Phase R4 deferred admin/platform depth (`§4 Phase R4`) + optional Demo+ → Product-ready elevation for org branding (matrix §19). See `docs/dev/HANDOFF-continue-standard-product.md` and `plan/03-task-backlog.md`.
+**Historical planning artifact (2026-06-18).** Phases **24–29 Done** (2026-06-23). **Mobile sign-off complete** (2026-06-29 — 33 PNGs). **Current focus:** Phase **30** web Demo+ elevation + Phase **31** R4 v2 — `plan/22-web-demo-plus-and-r4-execution.md`, `plan/03-task-backlog.md` Phase 30–31, `docs/dev/HANDOFF-continue-standard-product.md`.

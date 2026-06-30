@@ -33,13 +33,15 @@ Actionable tasks grouped by phase. IDs are stable for tracking (`EMCAP-Px-Tyy`).
 | 27 — i18n / l10n (BCP 47) | 12 | 0 | 0 | 12 |
 | 28 — Application review remediation | 14 | 0 | 0 | 14 |
 | 29 — Mobile UX hardening | 9 | 0 | 0 | 9 |
-| **Total** | **414** | **0** | **0** | **416** |
+| 30 — Web Demo+ elevation | 0 | 10 | 0 | 10 |
+| 31 — R4 v2 platform depth | 0 | 13 | 0 | 13 |
+| **Total** | **414** | **23** | **0** | **439** |
 
 **Status legend:** Done · Pending · Partial (started, not complete) · Cancelled (requirement rejected — not scheduled)
 
-**Last updated:** 2026-06-24 (P29 mobile UX hardening T01–T09 Done)
+**Last updated:** 2026-06-29 (mobile sign-off complete — **33** mobile PNGs; Phase **30–31** scheduled per `plan/22-web-demo-plus-and-r4-execution.md`)
 
-**Current focus:** Phase 29 complete — next backlog per `plan/17-standard-product-execution-playbook.md` / Phase R4 residual
+**Current focus:** Phase **30** web Demo+ elevation (W-T quick wins) → Phase **31** R4 v2 (`plan/22` · `plan/21` §Phase R4)
 
 ---
 
@@ -721,6 +723,47 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 ---
 
+## Phase 30 — Web Demo+ elevation
+
+> **Plan:** `plan/22-web-demo-plus-and-r4-execution.md` Track W — elevate matrix 07 web rows from Demo/Demo+ to **Product-ready** (PNG + DoD §3). Mobile sign-off **complete** (33 PNGs); does not reopen mobile gates.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P30-T01 | §19 favicon/accent branding web Product-ready | — | Pending — `phase19-settings-branding-web.png` exists; elevate matrix §19 |
+| EMCAP-P30-T02 | §19 logo upload web Product-ready | — | Pending — settings/org capture PNG |
+| EMCAP-P30-T03 | §19 INVOICE print web Product-ready | — | Pending — P25 print flow PNG |
+| EMCAP-P30-T04 | §8 soft delete restore web Product-ready | — | Pending — restore banner PNG + karma lifecycle |
+| EMCAP-P30-T05 | §9 grid loading + error retry web Product-ready | P30-T04 | Pending — `phase15-product-grid-error-retry.png` web |
+| EMCAP-P30-T06 | §8 status chip web Product-ready | — | Pending — hero chip in M1 pack refresh |
+| EMCAP-P30-T07 | §19 PDF export org header web Product-ready | — | Pending — print/export PNG |
+| EMCAP-P30-T08 | §8 field-type screenshot pack (optional) | — | Pending — enum/lookup/currency/textarea; or accept Demo v1 |
+| EMCAP-P30-T09 | Assistant web Product-ready (optional) | — | Pending — `ai.enabled` demo path + PNG; else stay Demo+ |
+| EMCAP-P30-T10 | Rule evaluate web Product-ready (optional) | — | Pending — formula gate PNG; else stay Demo+ |
+
+---
+
+## Phase 31 — R4 v2 platform depth
+
+> **Plan:** `plan/22-web-demo-plus-and-r4-execution.md` Track R · `plan/21-standard-product-residual-gaps.md` §Phase R4 — net-new routes/APIs; schedule after P30 quick wins unless parallel lanes.
+
+| ID | Task | Depends | Status |
+|----|------|---------|--------|
+| EMCAP-P31-T01 | Mobile reports + history | P30-T01 | Pending — `ReportsScreen` depth; matrix §10 mobile |
+| EMCAP-P31-T02 | Mobile dashboards | P31-T01 | Pending — KPI cards mirror web |
+| EMCAP-P31-T03 | Mobile notifications | P31-T01 | Pending — inbox + mark read |
+| EMCAP-P31-T04 | LOW_STOCK on mobile nav | P31-T01 | Pending — inventory report entry |
+| EMCAP-P31-T05 | Permission matrix editor | — | Pending — API bulk assign + web grid; security review |
+| EMCAP-P31-T06 | Editable security policy | P31-T05 | Pending — rate limit / MFA policy API |
+| EMCAP-P31-T07 | Email/SMS template editor depth | — | Pending — preview, send test |
+| EMCAP-P31-T08 | Dashboard KPI charts | — | Pending — lazy chart module; bundle budget |
+| EMCAP-P31-T09 | Rule evaluate mobile | P31-T08 | Pending — mirror web when `ai.enabled` |
+| EMCAP-P31-T10 | i18n residual sweep | — | Pending — `audit-i18n.mjs` on touched files |
+| EMCAP-P31-T11 | Transfer + posted movement UX | — | Pending — matrix §16 Demo → Product-ready |
+| EMCAP-P31-T12 | PO receive → STOCK_MOVEMENT spawn UX | P31-T11 | Pending — PO detail link + pytest |
+| EMCAP-P31-T13 | Finance field security UX | — | Pending — `accounting.view` hidden fields |
+
+---
+
 ## Crash course — zero-exploration sprints
 
 **Read order (never skip):** `codebase-index.md` → `user-feedback-registry.md` §A/F → this section → task card paths only.
@@ -744,16 +787,12 @@ Playbook: `plan/20-standard-entity-rollout.md` (API · Web · Mobile · Tests �
 
 ## Immediate Next Steps
 
-See **critical path** in `plan/16-standard-product-system.md` §3–§4.
+See **critical path** in `plan/16-standard-product-system.md` §3–§4 and **`plan/22-web-demo-plus-and-r4-execution.md`**.
 
-1. ~~**S1 / M1:** P15-T06 + P20-T02 (PRODUCT web screenshots)~~ **Done** 2026-06-13
-2. ~~**S2 / M2:** P15-T13 + P20-T03~~ **Done** 2026-06-22 — M2 PNG + `flutter test --coverage` **526/526**, **85.43%** line
-3. **S3:** P16-T02–T03 — **Done** (web + Flutter `EmcapThemeTokens`)
-4. **S7 web:** P17-T04+ dashboards, docs (P17-T01, T03 Done)
-5. **S4–S6:** P14 lookup/status, P15 depth, a11y
-6. **S9–S10:** P18 reference modules
-7. **S11–S13:** P19 admin (M1 unblocked)
+1. ~~**Mobile sign-off**~~ **Complete** 2026-06-29 — 33 mobile PNGs; M1–M6 mobile Signed
+2. **Phase 30 — Web Demo+ elevation** — start **P30-T01** (§19 branding web; PNG exists)
+3. **Phase 31 — R4 v2** — schedule after P30 quick wins (mobile platform services, admin v2, backend UX)
 
-Full sprint table: `plan/17-standard-product-execution-playbook.md` §4
+Full execution table: `plan/22-web-demo-plus-and-r4-execution.md` § Recommended execution order
 
 **Agent memory:** `docs/dev/codebase-index.md`, `docs/dev/known-pitfalls.md`, `docs/dev/recipes/`

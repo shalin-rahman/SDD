@@ -142,6 +142,16 @@ Error → cause → fix → prevention test. **Check this before debugging.**
 | **Fix** | Mirror **grid-loading**: load PRODUCT grid (`SKU-` wait), register `context.route` that `route.fetch`es live API with `q=__NO_MATCH_CAPTURE__`, click **Next** to trigger reload; wait for **SKU row count 0** (not empty-state copy); then capture |
 | **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=grid-empty` — `phase15-mobile-product-grid-empty.png` ≥40KB with inbox icon + “No records yet…” + New CTA |
 
+### Mobile signoff Playwright — branding settings expand
+
+| | |
+|--|--|
+| **Symptom** | `--only=branding` exit 1 — `expandSettingsSection(/Branding/i)` cannot match tile though “Branding Primary color…” visible in page text |
+| **Where** | `scripts/capture-mobile-signoff-screenshots.mjs` `captureBranding()` |
+| **Cause** | Flutter `ExpansionTile` splits title and subtitle; combined `getByText('Branding').filter(hasText: …)` never matches; Organization section may be open and obscure Branding |
+| **Fix** | `expandBrandingSettings(page)` — collapse Organization if open; tap subtitle (`Primary color, logo, and tenant theme hints`) or wait for `Domain` / i18n keys (`settings.branding.secondaryColor`, `settings.branding.faviconUrl`) |
+| **Verify** | `node scripts/capture-mobile-signoff-screenshots.mjs --only=branding` — `phase19-settings-branding-mobile.png` ≥20KB |
+
 ### Mobile `context.emcapTokens` without Theme extension
 
 | | |

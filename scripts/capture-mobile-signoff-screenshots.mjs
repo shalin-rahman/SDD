@@ -7,7 +7,7 @@
  *   node scripts/capture-mobile-signoff-screenshots.mjs --only=m2
  *   node scripts/capture-mobile-signoff-screenshots.mjs --only=p17
  *   node scripts/capture-mobile-signoff-screenshots.mjs --only=doc
- *   node scripts/capture-mobile-signoff-screenshots.mjs --only=restore|grid|crm|movement|warehouse|branding|invoice|localefmt|m4
+ *   node scripts/capture-mobile-signoff-screenshots.mjs --only=p17-platform
  */
 import { chromium } from 'playwright';
 import { mkdir, readdir, readFile } from 'node:fs/promises';
@@ -82,7 +82,7 @@ const MIME = {
   '.otf': 'font/otf',
 };
 
-function startStaticWeb() {
+async function ensureStaticWebServer() {
   const server = createServer(async (req, res) => {
     try {
       const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0]);
@@ -102,8 +102,20 @@ function startStaticWeb() {
       res.end('Not found');
     }
   });
-  server.listen(WEB_PORT, '127.0.0.1');
-  return server;
+  try {
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(WEB_PORT, '127.0.0.1', resolve);
+    });
+    return server;
+  } catch (err) {
+    if (err?.code === 'EADDRINUSE') {
+      console.log('Port %s already in use � reusing existing static server.', WEB_PORT);
+      await waitForUrl(BASE);
+      return null;
+    }
+    throw err;
+  }
 }
 
 async function waitForUrl(url, timeoutMs = 60_000) {
@@ -256,32 +268,95 @@ async function openFirstGridRow(page) {
   throw new Error(`No grid row found. Body preview:\n${body}`);
 }
 
-async function expandSettingsSection(page, labelPattern) {
+
+async function scrollSettingsToTop(page) {
+  for (let i = 0; i < 12; i += 1) {
+    await page.mouse.wheel(0, -900);
+    await page.waitForTimeout(120);
+  }
+  await page.waitForTimeout(400);
+}
+
+async function waitSettingsScreen(page) {
   await enableFlutterAccessibility(page);
-  await page.getByText(/Save changes|Platform settings/i).first()
+  await scrollSettingsToTop(page);
+  await page.getByText(/Save changes|Platform settings|Primary color, logo, and tenant theme hints/i).first()
     .waitFor({ state: 'attached', timeout: 90_000 });
-  const patterns = [
-    labelPattern,
-    /Organization/i,
-    /Company name, contact/i,
-    /Organisation/i,
+}
+
+async function expandBrandingSettings(page) {
+  await waitSettingsScreen(page);
+
+  const orgExpanded = page.getByText(/Company display name|Upload logo/i);
+  if ((await orgExpanded.count()) > 0) {
+    const orgTile = page.getByText(/Organization/i).filter({ hasText: /Company name|contact info/i });
+    if ((await orgTile.count()) > 0) {
+      await orgTile.first().click({ force: true, timeout: 3_000 }).catch(() => {});
+      await page.waitForTimeout(900);
+    }
+  }
+
+  const brandingExpanded = async () => {
+    if ((await page.getByLabel('Domain').count()) > 0) return true;
+    if ((await page.getByText(/settings\.branding\.(secondaryColor|faviconUrl)/i).count()) > 0) return true;
+    if ((await page.getByText(/Secondary accent color|Favicon URL/i).count()) > 0) return true;
+    return false;
+  };
+
+  const tileSelectors = [
+    () => page.getByText(/Primary color, logo, and tenant theme hints/i),
+    () => page.getByRole('button', { name: /Branding.*Primary color/i }),
+    () => page.getByText(/Branding Primary color, logo/i),
+    () => page.getByText(/^Branding$/i),
   ];
+  for (let i = 0; i < 48; i += 1) {
+    if (await brandingExpanded()) return;
+    for (const factory of tileSelectors) {
+      const tile = factory();
+      if ((await tile.count()) === 0) continue;
+      const target = tile.first();
+      await target.scrollIntoViewIfNeeded().catch(() => {});
+      await target.click({ force: true, timeout: 3_000 }).catch(() => {});
+      const box = await target.boundingBox();
+      if (box) {
+        await page.mouse.click(box.x + Math.max(8, box.width - 24), box.y + box.height / 2);
+      }
+      await page.waitForTimeout(1_400);
+      if (await brandingExpanded()) return;
+    }
+    await page.mouse.move(195, 520);
+    await page.mouse.wheel(0, 460);
+    await page.waitForTimeout(280);
+  }
+  const body = await page.evaluate(() => document.body?.innerText?.slice(0, 2000) ?? '');
+  throw new Error('Branding settings section not expanded\n' + body);
+}
+
+async function expandSettingsSection(page, labelPattern) {
+  await waitSettingsScreen(page);
+
+  const label = String(labelPattern);
+  let tile;
+  let expanded;
+  if (/Organization/i.test(label)) {
+    tile = page.getByText(/Organization/i).filter({ hasText: /Company name|contact info/i });
+    expanded = page.getByText(/Company display name|Logo URL|Upload logo/i);
+  } else if (/Branding/i.test(label)) {
+    tile = page.getByText(/Branding/i).filter({ hasText: /Primary color|tenant theme/i });
+    expanded = page.getByText(/Secondary accent|Favicon URL/i);
+  } else {
+    tile = page.getByText(labelPattern);
+    expanded = page.getByText(/Company display name|Display name|Legal name/i);
+  }
+
   for (let i = 0; i < 40; i += 1) {
-    for (const pattern of patterns) {
-      for (const locator of [
-        page.getByRole('button', { name: pattern }),
-        page.getByText(pattern),
-      ]) {
-        if ((await locator.count()) > 0) {
-          try {
-            await locator.first().click({ force: true, timeout: 3_000 });
-            await page.waitForTimeout(1_200);
-            const expanded = page.getByText(/Company display name|Display name|Legal name/i);
-            if ((await expanded.count()) > 0) return;
-          } catch {
-            // scroll and retry
-          }
-        }
+    if ((await tile.count()) > 0) {
+      try {
+        await tile.first().click({ force: true, timeout: 3_000 });
+        await page.waitForTimeout(1_200);
+        if ((await expanded.count()) > 0) return;
+      } catch {
+        // scroll and retry
       }
     }
     await page.mouse.move(195, 520);
@@ -291,6 +366,7 @@ async function expandSettingsSection(page, labelPattern) {
   const body = await page.evaluate(() => document.body?.innerText?.slice(0, 2000) ?? '');
   throw new Error(`Settings section not found: ${labelPattern}\n${body}`);
 }
+
 
 async function captureP26(page) {
   console.log('\nphase26-organization-profile-mobile.png…');
@@ -408,6 +484,29 @@ async function captureP17Account(browser) {
   await page.waitForTimeout(2_500);
   await capture(page, 'phase17-account-profile-mobile.png');
   await page.close();
+}
+
+/** P31-T01–T03 — mobile platform services Product-ready PNG pack. */
+async function captureP17PlatformServices(browser) {
+  const screens = [
+    { nav: 'Reports', file: 'phase17-reports-history-mobile.png', wait: /Reports|LOW_STOCK|Run|History|No reports/i },
+    { nav: 'Dashboards', file: 'phase17-dashboards-mobile.png', wait: /Dashboard|KPI|No dashboards|widgets/i },
+    { nav: 'Notifications', file: 'phase17-notifications-mobile.png', wait: /Notification|Mark read|No notifications|Inbox/i },
+  ];
+  for (const { nav, file, wait } of screens) {
+    console.log('\n%s…', file);
+    const page = await browser.newPage({ viewport: VIEWPORT });
+    try {
+      await login(page);
+      await openDrawer(page);
+      await tapPlatformNav(page, nav);
+      await page.getByText(wait).first().waitFor({ state: 'attached', timeout: 90_000 });
+      await page.waitForTimeout(2_000);
+      await capture(page, file);
+    } finally {
+      await page.close();
+    }
+  }
 }
 
 async function captureP24DocumentPreview(browser) {
@@ -755,32 +854,28 @@ async function captureWarehouse(browser) {
 
 async function captureBranding(browser) {
   console.log('\nphase26-organization-logo-mobile.png…');
-  {
-    const page = await browser.newPage({ viewport: VIEWPORT });
-    await login(page);
-    await openDrawer(page);
-    await tapPlatformNav(page, 'Settings');
-    await expandSettingsSection(page, /Organization/i);
-    await scrollUntilVisible(page, () => page.getByText(/Upload logo|logo upload|Logo URL/i));
-    await page.waitForTimeout(1_000);
-    await capture(page, 'phase26-organization-logo-mobile.png');
-    await page.close();
-  }
-
   console.log('\nphase19-settings-branding-mobile.png…');
-  {
-    const page = await browser.newPage({ viewport: VIEWPORT });
-    await login(page);
-    await openDrawer(page);
-    await tapPlatformNav(page, 'Settings');
-    await page.getByText(/Save changes|Platform settings/i).first()
-      .waitFor({ state: 'attached', timeout: 90_000 });
-    await expandSettingsSection(page, /Branding/i);
-    await scrollUntilVisible(page, () => page.getByText(/Favicon|Secondary accent|favicon/i));
-    await page.waitForTimeout(1_000);
-    await capture(page, 'phase19-settings-branding-mobile.png');
-    await page.close();
+  const page = await browser.newPage({ viewport: VIEWPORT });
+  await login(page);
+  await openDrawer(page);
+  await tapPlatformNav(page, 'Settings');
+  await expandSettingsSection(page, /Organization/i);
+  await scrollUntilVisible(page, () => page.getByText(/Upload logo|logo upload|Logo URL/i));
+  await page.waitForTimeout(1_000);
+  await capture(page, 'phase26-organization-logo-mobile.png');
+
+  if ((await page.getByText(/Company display name|Upload logo/i).count()) > 0) {
+    const orgTile = page.getByText(/Organization/i).filter({ hasText: /Company name|contact info/i });
+    if ((await orgTile.count()) > 0) {
+      await orgTile.first().click({ force: true });
+      await page.waitForTimeout(900);
+    }
   }
+  await expandBrandingSettings(page);
+  await scrollUntilVisible(page, () => page.getByLabel('Domain'));
+  await page.waitForTimeout(1_000);
+  await capture(page, 'phase19-settings-branding-mobile.png');
+  await page.close();
 }
 
 async function captureInvoicePrint(browser) {
@@ -822,7 +917,7 @@ async function main() {
   await mkdir(OUT_DIR, { recursive: true });
 
   console.log('Serving Flutter build/web at %s…', BASE);
-  const server = startStaticWeb();
+  const server = await ensureStaticWebServer();
 
   try {
     await waitForUrl(BASE);
@@ -837,6 +932,9 @@ async function main() {
     if (matchesOnly('p17')) {
       await captureP17Workflow(page);
       await captureP17Account(browser);
+    }
+    if (matchesOnly('p17-platform')) {
+      await captureP17PlatformServices(browser);
     }
     if (matchesOnly('doc', 'p24doc')) {
       await captureP24DocumentPreview(browser);
@@ -871,7 +969,7 @@ async function main() {
     const mobile = saved.filter((f) => f.includes('-mobile') && f.endsWith('.png'));
     console.log('\nMobile PNG count in %s: %d', OUT_DIR, mobile.length);
   } finally {
-    await new Promise((resolve) => server.close(resolve));
+    if (server) await new Promise((resolve) => server.close(resolve));
   }
 }
 

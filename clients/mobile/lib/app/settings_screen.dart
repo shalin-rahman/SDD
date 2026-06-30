@@ -1359,6 +1359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           margin: EdgeInsets.only(bottom: tokens.spaceSm),
           child: ExpansionTile(
             title: Text(EmcapLocale.t('settings.sections.branding')),
+            subtitle: Text(EmcapLocale.t('settings.branding.subtitle')),
             children: [
               Padding(
                 padding: EdgeInsets.all(tokens.spaceSm + 4),

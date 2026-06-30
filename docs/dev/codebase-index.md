@@ -16,6 +16,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | **Phase 27 i18n/l10n (BCP 47)** | `plan/26-i18n-l10n-localization.md`, `docs/dev/session-memos/2026-06-18-i18n-gap-audit.md`, `data/i18n/seed/starter-catalog.json` |
 | **Phase 28 finance hardening (app review)** | `plan/28-application-review-remediation.md` — INVOICE/PRODUCT validators, JE UX, mobile parity; coverage ≥80% |
 | **Phase 29 mobile UX hardening** | `plan/29-mobile-ux-hardening.md` — HTTP timeout, `BusyTextButton`, workflow deep-link, SSE cancel, server pagination (API/web/mobile), workflow a11y |
+| **Phase 30–31 post sign-off** | `plan/22-web-demo-plus-and-r4-execution.md` — web Demo+ elevation (P30) + R4 v2 platform depth (P31) |
 | Entity platform + UX | `plan/14-entity-platform-baseline.md`, `plan/15-entity-page-redesign.md` |
 | Product readiness gate | `spec/sdd/07-product-readiness-matrix.md` |
 | **All user feedback (memory)** | `docs/product/user-feedback-registry.md` (§A, §M security/memory tiers) |
@@ -154,7 +155,7 @@ Quick lookup for agents and developers. **Read this before broad codebase search
 | `.github/workflows/ci.yml` | `e2e-smoke-optional` job on PRs (`continue-on-error: true`) |
 | `scripts/capture-phase24-screenshots.mjs` | P24 document preview + movement lines web PNG pack (`phase24-*.png`); requires local stack |
 | `scripts/capture-m2-mobile-screenshots.md` | M2 mobile screenshot runbook (P15-T13 / P20-T03); run after `flutter test --coverage` green |
-| `scripts/capture-mobile-signoff-screenshots.mjs` | Playwright mobile Product-ready PNG pack (390×844 Flutter web); `--only=m2|p17|doc|p24|p25|p26|p27|vp|restore|grid|grid-empty|grid-loading|grid-error|crm|movement|warehouse|branding|invoice|localefmt`; prereq: API + `flutter build web`; P25 fresh page+login per entity; `--only=doc` seeds document via API; `--only=grid-empty` uses post-load `route.fetch` + `q=__NO_MATCH_CAPTURE__` (see `known-pitfalls.md` § grid-empty) |
+| `scripts/capture-mobile-signoff-screenshots.mjs` | Playwright mobile Product-ready PNG pack (390×844 Flutter web); `--only=m2|p17|doc|p24|p25|p26|p27|vp|restore|grid|grid-empty|grid-loading|grid-error|crm|movement|warehouse|branding|invoice|localefmt`; prereq: API + `flutter build web`; **branding:** `expandBrandingSettings()` taps subtitle / Domain label (see `known-pitfalls.md` § branding capture); P25 fresh page+login per entity; `--only=grid-empty` uses post-load `route.fetch` + `q=__NO_MATCH_CAPTURE__` |
 
 **Run from repository root:** `scripts\run-emcap.bat`
 

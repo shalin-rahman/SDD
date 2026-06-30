@@ -74,6 +74,8 @@
 | `session-memos/2026-06-25-mobile-signoff-screenshots.md` | Mobile sign-off PNG refresh + matrix 07 §8 elevation | `capture-mobile-signoff-screenshots.mjs`, `07` §8–§9, 11 mobile PNGs |
 | `session-memos/2026-06-25-mobile-p17-platform-pngs.md` | P17 platform mobile PNGs (workflow, doc preview, account) | `07` §10, `--only=p17|doc`, 14 mobile PNGs total |
 | `session-memos/2026-06-25-mobile-grid-empty-capture.md` | Grid-empty Playwright capture fix + §9 PNG evidence | `capture-mobile-signoff-screenshots.mjs --only=grid-empty`, `07` §9 loading/empty rows |
+| `session-memos/2026-06-13-remaining-signoff-plan.md` | **Mobile sign-off complete** — 33 mobile PNGs; WS1 4/4; M4/M5 Signed; v1 Demo/R4 deferrals | `07` matrix, `HANDOFF-continue-standard-product.md` |
+| `plan/22-web-demo-plus-and-r4-execution.md` | **Phase 30–31** — web Demo+ elevation + R4 v2 execution | `plan/03-task-backlog.md` Phase 30–31, `HANDOFF` |
 | `session-memos/2026-06-14-conversation-architecture-memory.md` | **Master architecture + feedback + learnings** | §L registry, HANDOFF, all session memos index |
 
 **Canonical feedback memory:** `docs/product/user-feedback-registry.md` (prefer over memos).

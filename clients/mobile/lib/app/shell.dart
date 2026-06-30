@@ -96,7 +96,7 @@ class _EmcapShellState extends State<EmcapShell> {
       if (!mounted) return;
       setState(() {
         _multiTenant = health['multi_tenant'] == true;
-        _tenantLabel = 'tenant · ${health['tenant_strategy']} · multi=${health['multi_tenant']}';
+        _tenantLabel = _formatTenantContextLabel(health);
         _tenants = parseTenantEntries(tenants);
         _selectedTenantId = widget.client.getTenantId();
         _aiEnabled = (modules?['ai'] as Map?)?['enabled'] == true;
@@ -129,6 +129,14 @@ class _EmcapShellState extends State<EmcapShell> {
         });
       }
     }
+  }
+
+  String _formatTenantContextLabel(Map<String, dynamic> health) {
+    final strategy = '${health['tenant_strategy'] ?? ''}';
+    final modeKey = 'settings.isolation.modes.$strategy';
+    final modeLabel = EmcapLocale.t(modeKey);
+    final mode = modeLabel == modeKey ? strategy : modeLabel;
+    return '${EmcapLocale.t('toolbar.tenant')} · $mode';
   }
 
   List<_ShellNavEntry> _buildEntries(List<PlatformNavLink> links, List<ModuleNavGroup> groups) {
@@ -453,7 +461,13 @@ class _EmcapShellState extends State<EmcapShell> {
                         child: Row(
                           children: [
                             Expanded(
-                              child: Text(_tenantLabel, style: Theme.of(context).textTheme.bodySmall),
+                              child: Text(
+                                _tenantLabel,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: context.emcapTokens.fontLabelSm,
+                                      color: context.emcapTokens.textMuted,
+                                    ),
+                              ),
                             ),
                             if (_multiTenant && _tenants.isNotEmpty)
                               DropdownButton<String>(

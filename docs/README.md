@@ -6,11 +6,12 @@ All project documentation lives in this repo. Start from `docs/dev/codebase-inde
 
 | Document | Purpose |
 |----------|---------|
-| `plan/03-task-backlog.md` | Task status (Done / Pending / Partial) |
+| `plan/03-task-backlog.md` | Task status (Done / Pending / Partial) — **Phase 30–31** scheduled (23 Pending) |
 | `plan/17-standard-product-execution-playbook.md` | Standard product execution (sprints S1–S15) |
+| `plan/22-web-demo-plus-and-r4-execution.md` | **Post sign-off** — web Demo+ elevation + R4 v2 |
 | `plan/16-standard-product-system.md` | Master roadmap W1–W8, milestones M1–M6 |
 | `plan/16-product-ready-dod.md` | Product-ready checklist |
-| `plan/` | Phase playbooks (0–21) |
+| `plan/` | Phase playbooks (0–31) |
 
 ## SDD & requirements
 

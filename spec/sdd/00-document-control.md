@@ -19,6 +19,7 @@
 | 1.3 | 2026-06-11 | Platform team | Phase 10: Angular CLI web client, ADR-005; `clients/web-legacy` archived |
 | 1.4 | 2026-06-12 | Platform team | Phase 11: run-emcap scripts, JSON seed, lint gates; pitfalls + 143-task backlog |
 | 1.5 | 2026-06-12 | Platform team | Phase 12A: Material shell, shared UI (`clients/web/src/app/shared/`), doc-sync rule; FR-008d |
+| 1.6 | 2026-06-29 | Platform team | Mobile sign-off complete (33 PNGs, M1–M6); Phase 30–31 scheduled (`plan/22`); matrix 07 reconciled |
 
 ## Related documents
 

@@ -6,6 +6,7 @@ import '../metadata_contract.dart';
 import '../theme/app_tokens.dart';
 import '../services/i18n_service.dart';
 import '../utils/field_display.dart';
+import '../utils/locale_format_util.dart';
 import 'entity_record_screen.dart';
 
 class EntityListScreen extends StatefulWidget {
@@ -288,11 +289,22 @@ class _EntityListScreenState extends State<EntityListScreen> {
     );
   }
 
+  String _snapshotLabel() {
+    final locale = EmcapLocale.locale.value.languageCode;
+    final formatted = formatIsoTimestamp(_syncVersion, locale);
+    if (formatted != null) {
+      return _changeCount > 0
+          ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')} · $formatted'
+          : '${EmcapLocale.t('grid.offlineStatus')} · $formatted';
+    }
+    return _changeCount > 0
+        ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')}'
+        : EmcapLocale.t('grid.offlineStatus');
+  }
+
   Widget _offlineStatusBanner(BuildContext context) {
     final tokens = context.emcapTokens;
-    final text = _changeCount > 0
-        ? '${EmcapLocale.t('grid.offlinePrefix')} · $_changeCount ${EmcapLocale.t('grid.changes')} · ${EmcapLocale.t('grid.snapshot')} $_syncVersion'
-        : '${EmcapLocale.t('grid.offlineStatus')}: $_syncVersion';
+    final text = _snapshotLabel();
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: tokens.spaceSm, vertical: tokens.spaceXs),
@@ -664,8 +676,10 @@ class _EntityListScreenState extends State<EntityListScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: tokens.spaceXs),
-              _offlineStatusBanner(context),
+              if (grid.offline && _syncVersion.isNotEmpty) ...[
+                SizedBox(height: tokens.spaceXs),
+                _offlineStatusBanner(context),
+              ],
               if (_realtimeEnabled) ...[
                 SizedBox(height: tokens.spaceXs),
                 Text(

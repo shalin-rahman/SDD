@@ -63,6 +63,8 @@ SDD/
 | User feedback registry | `docs/product/user-feedback-registry.md` |
 | Standard product execution | `plan/17-standard-product-execution-playbook.md` |
 | Product readiness matrix | `spec/sdd/07-product-readiness-matrix.md` |
+| **Post sign-off execution (web Demo+ + R4)** | `plan/22-web-demo-plus-and-r4-execution.md` |
+| **New chat handoff** | `docs/dev/HANDOFF-continue-standard-product.md` |
 | Shared web components | `clients/web/src/app/shared/README.md` |
 | Task backlog | `plan/03-task-backlog.md` |
 | Phase 12 playbook | `plan/12-enterprise-product-ui.md` |

@@ -39,3 +39,15 @@ String formatDate(
   final formatter = pattern ?? DateFormat.yMMMd(tag);
   return formatter.format(value);
 }
+
+String formatDateTime(DateTime value, String localeTag) {
+  final tag = canonicalLocaleTag(localeTag);
+  return DateFormat.yMMMd(tag).add_jm().format(value.toLocal());
+}
+
+/// Parses ISO-8601 sync versions for offline banners; returns null when not a date.
+String? formatIsoTimestamp(String raw, String localeTag) {
+  final parsed = DateTime.tryParse(raw);
+  if (parsed == null) return null;
+  return formatDateTime(parsed, localeTag);
+}
